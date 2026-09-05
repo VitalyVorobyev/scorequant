@@ -347,3 +347,50 @@ table in `audits/AUDIT-SCORE-ORACLE-ROBUSTNESS-5-September-2026.md`.
 Method prior art; the exact fixed-partition uncentred statement is a search
 gap; no re-attribution.
 
+
+## Round 11 — RETENTION-PLUGIN-VECTOR literature-first pass (5 September 2026)
+
+Novelty search run **before** the derivation of the vector retention CLT
+(future claim `RETENTION-PLUGIN-CLT-FROZEN-VECTOR`); table in
+`audits/RETENTION-PLUGIN-CLT-FROZEN-VECTOR-5-September-2026.md`. Reframing:
+\(\eta_D=(\det I_Z/\det V)^{1/d}\) is the geometric mean of the squared
+uncentred canonical correlations between \(S\) and the cell indicator; at
+the evaluation law it is a MANOVA between/total determinant ratio.
+
+- **Radhakrishnan & Kshirsagar (1981), `Radhakrishnan-Kshirsagar-1981`:**
+  abstract read; influence functions of the generalized variance, the
+  MANOVA noncentrality matrix and its eigenvalues, canonical correlations
+  and Wilks' \(\Lambda\) — the matrix influence function of O6.8 in MANOVA
+  form.
+- **Romanazzi (1992), `Romanazzi-1992`:** abstract read; influence function
+  of each squared canonical correlation.
+- **Muirhead & Waternaux (1980), `Muirhead-Waternaux-1980`:** abstract
+  read; CCA asymptotics under finite fourth moments.
+- **Fang & Krishnaiah (1982), `Fang-Krishnaiah-1982`:** record only;
+  functions of eigenvalues under nonnormality.
+- **Seo, Kanda & Fujikoshi (1994; 1995, `Seo-Kanda-Fujikoshi-1995`):**
+  nonnormality in CCA functions and dimensionality tests (the singular
+  \(I_Z\) endpoint).
+- **Sugiura & Fujikoshi (1969), `Sugiura-Fujikoshi-1969`:** abstract read;
+  fixed-alternative expansion of the LR determinant ratio (normal theory);
+  Fujikoshi (2002) is the nonnormal companion (record).
+- **Magnus & Neudecker, `Magnus-Neudecker-1999`; Anderson,
+  `Anderson-2003`:** section numbers from contents scans held in
+  `papers/local/`.
+- **Cramer & Nicewander (1979), `Cramer-Nicewander-1979`;** van den Burg &
+  Lewis (1988); Hotelling (1936); Wilks (1932): lineage of the measure.
+- **Kendall & Stuart Vol. 2 (1961), `Kendall-Stuart-1961`:** primary text
+  read (§26.21–26.24); the correlation ratio's definition, decomposition
+  and normal-theory \(F\) tests, no large-sample variance. **Closes the O6
+  gap.**
+- Adjacent, not transferring: Ogasawara (2007), Cléroux & Ducharme
+  (1989), Cai, Liang & Zhou (2015, PDF in `papers/`).
+
+### Search verdict
+
+Method prior art (delta method + determinant differential + the
+influence functions above + fourth-moment CCA asymptotics); the exact
+geometric-mean statement on a fixed partition with uncentred moments,
+\(0/0:=0\), the plug-in variance and the endpoint treatment is a search
+gap. The packet `WORK/active/RETENTION-PLUGIN-VECTOR.md` was rewritten to
+cite the first and derive only the second.

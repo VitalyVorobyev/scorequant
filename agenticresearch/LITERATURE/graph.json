@@ -1,2591 +1,3027 @@
 {
- "schema_version": "1.0",
- "updated": "2026-09-05",
- "purpose": "Reproducible literature-discovery state for citation snowballing (protocols/literature.md). One record per paper; papers link to claim ids, never merely to 'ScoreQuant'.",
- "record_schema": {
-  "id": "short-slug",
-  "title": "...",
-  "year": 0,
-  "authors": [
-   "..."
-  ],
-  "source_of_discovery": "seed | backward:<id> | forward:<id> | concept-search | author-search",
-  "cites_relevant": [
-   "ids"
-  ],
-  "cited_by_relevant": [
-   "ids"
-  ],
-  "research_area": "fisher-quantization | optimal-design | determinant-clustering | vq | hep-inference | score-compression | other",
-  "relevant_claims": [
-   "claim ids from claims/"
-  ],
-  "status": "unread | screened | deeply_reviewed | irrelevant"
- },
- "rounds": [
-  {
-   "round": 1,
-   "date": "2026-08-29",
-   "mode": "manual-drop",
-   "scope": "Two PDFs added to papers/ by the maintainer and wired into the workspace. Not a snowballing round: no backward or forward citation traversal was run, so cites_relevant/cited_by_relevant are unpopulated.",
-   "papers_added": [
-    "valassi-2020-wdr",
-    "cms-2025-sannt"
-   ]
+  "schema_version": "1.0",
+  "updated": "2026-09-05",
+  "purpose": "Reproducible literature-discovery state for citation snowballing (protocols/literature.md). One record per paper; papers link to claim ids, never merely to 'ScoreQuant'.",
+  "record_schema": {
+    "id": "short-slug",
+    "title": "...",
+    "year": 0,
+    "authors": [
+      "..."
+    ],
+    "source_of_discovery": "seed | backward:<id> | forward:<id> | concept-search | author-search",
+    "cites_relevant": [
+      "ids"
+    ],
+    "cited_by_relevant": [
+      "ids"
+    ],
+    "research_area": "fisher-quantization | optimal-design | determinant-clustering | vq | hep-inference | score-compression | other",
+    "relevant_claims": [
+      "claim ids from claims/"
+    ],
+    "status": "unread | screened | deeply_reviewed | irrelevant"
   },
-  {
-   "round": 2,
-   "date": "2026-08-30",
-   "mode": "targeted-audit-search",
-   "scope": "Independent DS15 audit prior-art search (AUDIT-DS-MARGINS-AT-OPTIMA): 6 axes, 40+ queries, ~350 results screened / ~86 relevant; per-axis counts and the full log in LITERATURE/audits/AUDIT-DS-MARGINS-AT-OPTIMA-30-August-2026.md. Not a snowballing round: no systematic backward/forward traversal; cites_relevant/cited_by_relevant populated only where read directly.",
-   "candidates_screened": 350,
-   "relevant": 86
-  },
-  {
-   "round": 3,
-   "date": "2026-08-30",
-   "mode": "bidirectional-snowball-relevance-screened",
-   "scope": "One backward/forward citation hop from every resolvable seed. OpenAlex was the primary graph; a corrected Semantic Scholar snapshot supplied the globally deduplicated count after the OpenAlex request budget was exhausted.",
-   "sources": [
-    "OpenAlex API snapshot 2026-08-30",
-    "Semantic Scholar Academic Graph fallback snapshot 2026-08-30",
-    "local PDFs in papers/",
-    "DOI, arXiv, PMLR, SIAM, Google Books, and publisher metadata"
-   ],
-   "resolved_seed_count": 31,
-   "resolved_seeds": [
-    "vts-2006",
-    "barnes-han-ozgur-2018",
-    "farias-brossier-2014",
-    "dulek-2023",
-    "kiefer-wolfowitz-1960",
-    "wynn-1970",
-    "wynn-1972",
-    "whittle-1973",
-    "kiefer-1974",
-    "fedorov-1972",
-    "pukelsheim-2006",
-    "friedman-rubin-1967",
-    "scott-symons-1971",
-    "marriott-1971",
-    "spaeth-1977",
-    "spaeth-1985",
-    "zador-1982",
-    "gersho-1979",
-    "telgarsky-vattani-2010",
-    "inferno-2019",
-    "mining-gold-2020",
-    "calibrated-ratios-2015",
-    "thickbrick-2021",
-    "learning-to-bin-2026",
-    "valassi-2020-wdr",
-    "cms-2025-sannt",
-    "moped-2000",
-    "alsing-wandelt-2018",
-    "sally-prl-2018",
-    "sally-guide-2018",
-    "sugiyama-2012"
-   ],
-   "candidate_count": 7300,
-   "candidate_count_scope": "Unique non-seed neighbors in the corrected 28-anchor Semantic Scholar fallback union, deduplicated by DOI, then arXiv id, then normalized title/year. Fedorov, Pukelsheim, and Telgarsky-Vattani were covered by the OpenAlex community traversals but could not be added to this cross-index global union, so 7300 is an auditable retrieved-pool count, not a saturation total.",
-   "duplicate_count": 56,
-   "metadata_filter_count": 2675,
-   "metadata_filtered_out_count": 4625,
-   "relevant_count": 17,
-   "relevant_papers": [
-    "vts-2007-maximin",
-    "barnes-han-ozgur-2020",
-    "lam-reibman-1993",
-    "gubner-1993",
-    "silvey-titterington-1973",
-    "silvey-titterington-torsney-1978",
-    "zador-1963-thesis",
-    "bucklew-wise-1982",
-    "lookabaugh-gray-1989",
-    "gray-linder-li-2002",
-    "gupta-hero-2003",
-    "alsing-wandelt-2019",
-    "charnock-2018-imnn",
-    "alsing-wandelt-feeney-2018",
-    "madminer-2020",
-    "wunsch-2021",
-    "neos-2023"
-   ],
-   "deeply_screened_count": 34,
-   "rejected_near_misses": [
-    "tsitsiklis-1993",
-    "barnes-chen-ozgur-2020",
-    "lazebnik-raginsky-2009",
-    "amari-2011",
-    "zou-et-al-2022",
-    "bryant-williamson-1978",
-    "bryant-1991",
-    "fukunaga-koontz-1970",
-    "maronna-jacovkis-1974",
-    "windham-1987",
-    "banerjee-et-al-2005",
-    "kanungo-et-al-2002",
-    "wunsch-2020-systematics",
-    "oasis-2021",
-    "chen-et-al-2021-parametrized",
-    "diekmann-eich-erdmann-2024"
-   ],
-   "openalex_community_counts": {
-    "fisher_and_score_compression": {
-     "resolved_seeds": 10,
-     "candidate_count": 1319,
-     "raw_edge_count": 1541
+  "rounds": [
+    {
+      "round": 1,
+      "date": "2026-08-29",
+      "mode": "manual-drop",
+      "scope": "Two PDFs added to papers/ by the maintainer and wired into the workspace. Not a snowballing round: no backward or forward citation traversal was run, so cites_relevant/cited_by_relevant are unpopulated.",
+      "papers_added": [
+        "valassi-2020-wdr",
+        "cms-2025-sannt"
+      ]
     },
-    "optimal_design_and_determinant_clustering": {
-     "resolved_seeds": 10,
-     "candidate_count": 4593,
-     "raw_edge_count": 6194
+    {
+      "round": 2,
+      "date": "2026-08-30",
+      "mode": "targeted-audit-search",
+      "scope": "Independent DS15 audit prior-art search (AUDIT-DS-MARGINS-AT-OPTIMA): 6 axes, 40+ queries, ~350 results screened / ~86 relevant; per-axis counts and the full log in LITERATURE/audits/AUDIT-DS-MARGINS-AT-OPTIMA-30-August-2026.md. Not a snowballing round: no systematic backward/forward traversal; cites_relevant/cited_by_relevant populated only where read directly.",
+      "candidates_screened": 350,
+      "relevant": 86
     },
-    "vector_quantization_and_hep": {
-     "resolved_seeds": 9,
-     "candidate_count": 1924,
-     "raw_edge_count": 2282
+    {
+      "round": 3,
+      "date": "2026-08-30",
+      "mode": "bidirectional-snowball-relevance-screened",
+      "scope": "One backward/forward citation hop from every resolvable seed. OpenAlex was the primary graph; a corrected Semantic Scholar snapshot supplied the globally deduplicated count after the OpenAlex request budget was exhausted.",
+      "sources": [
+        "OpenAlex API snapshot 2026-08-30",
+        "Semantic Scholar Academic Graph fallback snapshot 2026-08-30",
+        "local PDFs in papers/",
+        "DOI, arXiv, PMLR, SIAM, Google Books, and publisher metadata"
+      ],
+      "resolved_seed_count": 31,
+      "resolved_seeds": [
+        "vts-2006",
+        "barnes-han-ozgur-2018",
+        "farias-brossier-2014",
+        "dulek-2023",
+        "kiefer-wolfowitz-1960",
+        "wynn-1970",
+        "wynn-1972",
+        "whittle-1973",
+        "kiefer-1974",
+        "fedorov-1972",
+        "pukelsheim-2006",
+        "friedman-rubin-1967",
+        "scott-symons-1971",
+        "marriott-1971",
+        "spaeth-1977",
+        "spaeth-1985",
+        "zador-1982",
+        "gersho-1979",
+        "telgarsky-vattani-2010",
+        "inferno-2019",
+        "mining-gold-2020",
+        "calibrated-ratios-2015",
+        "thickbrick-2021",
+        "learning-to-bin-2026",
+        "valassi-2020-wdr",
+        "cms-2025-sannt",
+        "moped-2000",
+        "alsing-wandelt-2018",
+        "sally-prl-2018",
+        "sally-guide-2018",
+        "sugiyama-2012"
+      ],
+      "candidate_count": 7300,
+      "candidate_count_scope": "Unique non-seed neighbors in the corrected 28-anchor Semantic Scholar fallback union, deduplicated by DOI, then arXiv id, then normalized title/year. Fedorov, Pukelsheim, and Telgarsky-Vattani were covered by the OpenAlex community traversals but could not be added to this cross-index global union, so 7300 is an auditable retrieved-pool count, not a saturation total.",
+      "duplicate_count": 56,
+      "metadata_filter_count": 2675,
+      "metadata_filtered_out_count": 4625,
+      "relevant_count": 17,
+      "relevant_papers": [
+        "vts-2007-maximin",
+        "barnes-han-ozgur-2020",
+        "lam-reibman-1993",
+        "gubner-1993",
+        "silvey-titterington-1973",
+        "silvey-titterington-torsney-1978",
+        "zador-1963-thesis",
+        "bucklew-wise-1982",
+        "lookabaugh-gray-1989",
+        "gray-linder-li-2002",
+        "gupta-hero-2003",
+        "alsing-wandelt-2019",
+        "charnock-2018-imnn",
+        "alsing-wandelt-feeney-2018",
+        "madminer-2020",
+        "wunsch-2021",
+        "neos-2023"
+      ],
+      "deeply_screened_count": 34,
+      "rejected_near_misses": [
+        "tsitsiklis-1993",
+        "barnes-chen-ozgur-2020",
+        "lazebnik-raginsky-2009",
+        "amari-2011",
+        "zou-et-al-2022",
+        "bryant-williamson-1978",
+        "bryant-1991",
+        "fukunaga-koontz-1970",
+        "maronna-jacovkis-1974",
+        "windham-1987",
+        "banerjee-et-al-2005",
+        "kanungo-et-al-2002",
+        "wunsch-2020-systematics",
+        "oasis-2021",
+        "chen-et-al-2021-parametrized",
+        "diekmann-eich-erdmann-2024"
+      ],
+      "openalex_community_counts": {
+        "fisher_and_score_compression": {
+          "resolved_seeds": 10,
+          "candidate_count": 1319,
+          "raw_edge_count": 1541
+        },
+        "optimal_design_and_determinant_clustering": {
+          "resolved_seeds": 10,
+          "candidate_count": 4593,
+          "raw_edge_count": 6194
+        },
+        "vector_quantization_and_hep": {
+          "resolved_seeds": 9,
+          "candidate_count": 1924,
+          "raw_edge_count": 2282
+        }
+      },
+      "limitations": [
+        "Pukelsheim (1993/2006) and Späth (1985) lack stable canonical OpenAlex work records; their bibliographies require manual backward traversal.",
+        "Fedorov (1972) has no indexed OpenAlex reference list and is forward-heavy.",
+        "Learning to bin was manually checked from arXiv:2601.07756 because OpenAlex had no canonical record during the primary snapshot.",
+        "Community counts overlap and are not summed; the globally deduplicated candidate_count comes from the stated fallback scope."
+      ]
+    },
+    {
+      "round": 4,
+      "date": "2026-08-31",
+      "mode": "targeted-packet-search",
+      "scope": "DS-STABLE-BASINS per-theorem minimum for DS17 (protocols/literature.md): principal points / self-consistency cluster registered (Flury 1990, Tarpey-Flury 1996, Tarpey-Li-Flury 1995, Serinko-Babu 1992) plus a five-query obstruction-shaped search that found nothing matching (log in LITERATURE/audits/DS-STABLE-BASINS-31-August-2026.md). Not a snowballing round: no backward/forward traversal.",
+      "papers_added": [
+        "flury-1990-pp",
+        "tarpey-flury-1996-sc",
+        "tarpey-li-flury-1995-ss",
+        "serinko-babu-1992-jmva"
+      ]
+    },
+    {
+      "round": 5,
+      "date": "2026-08-31",
+      "mode": "independent-audit-triangulation-and-targeted-snowball",
+      "scope": "AUDIT-DS-STABLE-BASINS independent per-theorem search. Thirty-six exact queries covered efficient-score/least-favourable-direction orthogonality, Chebyshev equality and association, principal points/self-consistency/LCM, scalar Lloyd fixed points, and empirical nonregularity. Backward and forward metadata were traversed from the four researcher-registered DS17 papers. The existing round 4 conclusions were treated only as comparison.",
+      "sources": [
+        "primary article PDFs or author/publisher full text where accessible",
+        "Project Euclid, Oxford Academic, ScienceDirect, arXiv, author repositories, Crossref/DOI metadata",
+        "backward reference lists and forward title/abstract citation search"
+      ],
+      "query_count": 36,
+      "candidate_count": 55,
+      "candidate_count_scope": "Distinct scholarly title/DOI records retained after deduplicating the visible first-page results of the 36 logged searches; excludes obvious lexical collisions and non-scholarly pages.",
+      "relevant_count": 9,
+      "deeply_reviewed_count": 4,
+      "papers_added": [
+        "bickel-klaassen-ritov-wellner-1993",
+        "esary-proschan-walkup-1967",
+        "hastie-stuetzle-1989",
+        "jakubowski-2021-chebyshev",
+        "tarpey-loperfido-2015"
+      ],
+      "rejected_near_misses": [
+        "bali-boente-2009-functional-principal-points",
+        "matsuura-kurata-2010-location-mixture-principal-points",
+        "generic-fkg-association-results",
+        "choquet-covariance-inequality-results",
+        "application-specific-semiparametric-efficient-score-papers"
+      ],
+      "limitations": [
+        "The Tarpey-Li-Flury 1995 primary proof and Tarpey-Loperfido 2015 primary theorem text remained library-access restricted; exact theorem scope was cross-checked against Tarpey-Flury 1996 primary text and explicit later theorem restatements.",
+        "This was a theorem-targeted one-hop traversal, not a field-wide saturation round; the verdict is a search gap, never a novelty claim."
+      ]
+    },
+    {
+      "round": 6,
+      "date": "2026-08-31",
+      "mode": "targeted-packet-triangulation",
+      "scope": "OPEN-DS-MARGINS-NONCENTERED per-theorem triangulation for the frozen DS18 claim. Five nearest sources were compared across score-function Fisher quantization, scalar optimal-quantizer uniqueness and empirical consistency, generalized Lloyd set convergence, nonregular split-point asymptotics, and finite Hartigan relocation. No broad field-coverage or saturation claim is made.",
+      "sources": [
+        "Venkitasubramaniam-Tong-Swami-2006",
+        "Liu-Pages-2020",
+        "Sabin-Gray-1986",
+        "Serinko-Babu-1992",
+        "Telgarsky-Vattani-2010"
+      ],
+      "relevant_count": 5,
+      "papers_added": [
+        "liu-pages-2020",
+        "sabin-gray-1986"
+      ],
+      "verdict": "search_gap",
+      "limitations": [
+        "This was a theorem-targeted triangulation, not a citation-saturation round.",
+        "No located source combines profiled Fisher information, strict global isolation for the named off-(L) law, convergence of every finite global optimizer, and exact finite one-point exchange stability; absence is recorded only as a search gap."
+      ]
+    },
+    {
+      "round": 7,
+      "date": "2026-08-31",
+      "mode": "independent-audit-triangulation",
+      "scope": "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER independent per-theorem search. Nine query families were aimed separately at the five pieces the audit's algebraic reduction shows DS18 consumes: the nearest-codepoint reduction, scalar uniqueness for a log-concave (not strictly log-concave) law, almost-minimizer rigidity, empirical scalar consistency on a selection-independent event, and finite Hartigan stability. The research session's round 6 was read only afterwards, as comparison material.",
+      "sources": [
+        "web search over publisher, arXiv, Project Euclid, JMLR, PMLR and author repositories",
+        "the workspace's own LITERATURE/topics annotations, verified against the queries"
+      ],
+      "query_count": 9,
+      "candidate_count": 94,
+      "candidate_count_scope": "Distinct scholarly title/DOI records across the visible first-page results of the nine logged query families, before deduplication against the workspace's existing graph.",
+      "relevant_count": 6,
+      "papers_added": [],
+      "keys_registered": [
+        "deCastro-Dorigo-2019"
+      ],
+      "verdict": "search_gap",
+      "findings": [
+        "Six direct antecedents of DS18's scalar toolkit were already in this project's bibliography but unlinked to the node: Kieffer-1983, Mease-Nair-2006, Pollard-1981, Rakhlin-Caponnetto-2006, Fisher-1958, Graf-Luschgy-2000.",
+        "The node's uniqueness citation (Liu-Pages-2020) is mis-scoped for this law: its Proposition 11 assumes strict log-concavity, which Uniform[-1,1] fails; Kieffer-1983 and Mease-Nair-2006 cover it."
+      ],
+      "limitations": [
+        "Theorem-targeted triangulation, not a citation-saturation round.",
+        "No forward-citation traversal was run on Rakhlin-Caponnetto-2006 or Mease-Nair-2006; the rigidity sub-problem saturation gap is logged in gaps.md."
+      ]
+    },
+    {
+      "round": 8,
+      "date": "2026-09-02",
+      "mode": "independent-audit-triangulation",
+      "scope": "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER independent per-theorem search. Six query families aimed separately at the ingredients the audit's algebraic reduction isolates in DS19: design-side D_s/Lagrangian duality on a convex feasible set; exact 1-D k-means DP and its fastest variants (weighted points, ties); one-dimensional and fixed-dimensional parametric search with polynomial comparisons; parametric shortest-path breakpoint complexity; minimax over finite actions with quadratic payoffs; weighted scalar grouping with ties. The research session's 1 September triangulation was read only afterwards, as comparison material.",
+      "sources": [
+        "web search over publisher, arXiv, ACM DL, Project Euclid, IEEE Xplore, The R Journal and author repositories",
+        "primary-text reads of the Toledo author preprint and the Gronlund et al. arXiv preprint",
+        "the workspace's own LITERATURE/topics annotations, verified against the queries"
+      ],
+      "query_count": 6,
+      "candidate_count": 52,
+      "candidate_count_scope": "Distinct scholarly title/DOI records across the visible first-page results of the six logged query families, before deduplication against the workspace's existing graph.",
+      "relevant_count": 6,
+      "papers_added": [
+        "pukelsheim-titterington-1983",
+        "megiddo-1983",
+        "toledo-1993",
+        "gronlund-etal-2017",
+        "wang-song-2011",
+        "carstensen-1983"
+      ],
+      "keys_registered": [
+        "Pukelsheim-Titterington-1983",
+        "Megiddo-1983",
+        "Toledo-1993",
+        "Gronlund-etal-2017",
+        "Wang-Song-2011",
+        "Carstensen-1983"
+      ],
+      "verdict": "search_gap",
+      "findings": [
+        "Exact minimisation of the tilt dual for fixed d_lambda and variable K is already covered in arithmetic complexity by parametric search (Megiddo 1983 at d_lambda=1; Toledo 1993 in fixed dimension with polynomial comparisons); DS19.2's exact-computation scope (fixed K and fixed d_lambda) was narrower than the literature allows. Bit complexity is not covered by either source.",
+        "The fixed-tilt interval DP is the classical 1-D k-means DP (Wang-Song 2011) and runs in O(KN) after sorting (Gronlund et al. 2017), improving DS19.2's O(KN^2) statement; weighted points are covered there, exact ties are not.",
+        "Design-side D_s duality (Silvey-Titterington 1973; Pukelsheim-Titterington 1983) is a convex-feasible-set template only; the hard-partition interchange fails by exact witnesses at N=3."
+      ],
+      "limitations": [
+        "Theorem-targeted triangulation, not a citation-saturation round.",
+        "Carstensen 1983 is a secondary record (thesis not read).",
+        "No forward-citation traversal was run on Toledo 1993; later fixed-dimension parametric-search and real-RAM-to-bit-complexity results may exist and are logged in gaps.md."
+      ]
+    },
+    {
+      "round": 9,
+      "date": "2026-09-05",
+      "mode": "researcher-triangulation",
+      "scope": "SCORE-ORACLE-ROBUSTNESS per-theorem triangulation for RETENTION-PLUGIN-CLT-FROZEN-SCALAR (O6): delta method for smooth functions of sample means, influence-function variance estimation, and the sampling theory of the correlation ratio / eta-squared. Retrieval delegated (metadata verification via web search over publisher pages, MathSciNet review, course notes quoting theorem statements, the Biometrika contents index and jstatsoft.org); triangulation judgments by the researcher session.",
+      "sources": [
+        "web search over publisher pages, MathSciNet, course notes and journal indexes",
+        "no primary-text reads; every theorem number carries the verification status recorded in its note"
+      ],
+      "query_count": 5,
+      "candidate_count": 12,
+      "candidate_count_scope": "Distinct textbook and article records returned by the five query families before deduplication.",
+      "relevant_count": 6,
+      "papers_added": [
+        "vandervaart-1998",
+        "cramer-1946",
+        "serfling-1980",
+        "hampel-etal-1986",
+        "wishart-1932",
+        "kelley-2007"
+      ],
+      "keys_registered": [
+        "vanderVaart-1998",
+        "Cramer-1946",
+        "Serfling-1980",
+        "Hampel-Ronchetti-Rousseeuw-Stahel-1986",
+        "Wishart-1932",
+        "Kelley-2007"
+      ],
+      "verdict": "prior_art_found",
+      "findings": [
+        "O6.2-O6.4 are a direct instance of the multivariate delta method for functions of sample means (van der Vaart Thm 3.1; Serfling Sec. 3.3 Thm B; Cramer Ch. 28) combined with the influence-function variance formula (Hampel et al. 1986); no novelty is claimed for the method.",
+        "The closed-form influence function of the uncentred correlation ratio with a fixed partition, the RSS identity, and the two-atoms-per-cell characterisation of sigma^2 = 0 were not located as stated in any source; they are recorded as project algebra inside a bridge node, not as a search gap and not as novelty.",
+        "The classical eta-squared interval literature (Wishart 1932; Kelley 2007) is normal-theory and centred, and does not transfer."
+      ],
+      "limitations": [
+        "Theorem-targeted triangulation, not a citation-saturation round.",
+        "No primary text was read; van der Vaart and Serfling theorem numbers rest on secondary quotations, Cramer's on memory, Hampel et al.'s section number is unverified.",
+        "Kendall and Stuart Vol. 2 (asymptotic variance of the sample correlation ratio) was not located to a section and is not registered."
+      ]
+    },
+    {
+      "round": 10,
+      "date": "2026-09-05",
+      "mode": "audit-triangulation",
+      "scope": "AUDIT-SCORE-ORACLE-ROBUSTNESS independent prior-art pass on RETENTION-PLUGIN-CLT-FROZEN-SCALAR: verification of the four theorem/section numbers recorded on 5 September, the correlation-ratio literature, delta-method effect-size intervals without normality, influence functions of ratio-of-quadratic-form statistics.",
+      "sources": [
+        "web verification delegated to a subordinate agent: ETH/archive.org contents scans, the author's lecture notes (van der Vaart), Google Books and journal records, Project Euclid abstracts",
+        "triangulation judgments by the auditing session"
+      ],
+      "query_count": 9,
+      "candidate_count": 14,
+      "candidate_count_scope": "Distinct book and article records examined before deduplication.",
+      "relevant_count": 3,
+      "papers_added": [
+        "bhattacharya-ghosh-1978",
+        "hall-1992",
+        "donner-koval-1980"
+      ],
+      "keys_registered": [
+        "Bhattacharya-Ghosh-1978",
+        "Hall-1992",
+        "Donner-Koval-1980"
+      ],
+      "verdict": "prior_art_found",
+      "findings": [
+        "van der Vaart Thm 3.1 and Cramer Ch. 28 Sec. 28.4 confirmed in primary text; the sample-variance example is Example 3.2; Ch. 20 is the functional delta method.",
+        "Serfling Sec. 3.3 Theorem A/B labels and Hampel et al. equation numbers remain unresolved (no readable text reachable); Kendall and Stuart Vol. 2 Ch. 26 is the correlation chapter but the correlation-ratio section was not retrievable.",
+        "No direct statement of the uncentred fixed-partition correlation-ratio CLT with the closed-form influence function was located: prior art for the method, search gap for the statement, no re-attribution."
+      ],
+      "limitations": [
+        "Theorem-targeted, not a saturation round.",
+        "Primary-text reads limited to contents scans, the author's notes and one abstract."
+      ]
+    },
+    {
+      "round": 11,
+      "date": "2026-09-05",
+      "mode": "pre-theorem-novelty-search",
+      "scope": "RETENTION-PLUGIN-VECTOR literature-first pass for the future claim RETENTION-PLUGIN-CLT-FROZEN-VECTOR (geometric-mean retention as a determinant ratio / geometric mean of squared canonical correlations): influence functions of determinant-type multivariate parameters, canonical-correlation and MANOVA asymptotics under finite fourth moments, non-null Wilks-lambda expansions, matrix differential calculus; one-hop forward round on Radhakrishnan-Kshirsagar 1981 (62 citers), Muirhead-Waternaux 1980 (100 of 165), Romanazzi 1992 (45). Retries of the two O6 gaps: Kendall & Stuart resolved (primary text), Serfling still open.",
+      "sources": [
+        "OpenAlex",
+        "Crossref",
+        "Google Books search-inside",
+        "archive.org OCR",
+        "arXiv"
+      ],
+      "candidates_screened": 232,
+      "relevant_added": 20,
+      "saturation": false,
+      "table": "audits/RETENTION-PLUGIN-CLT-FROZEN-VECTOR-5-September-2026.md"
     }
-   },
-   "limitations": [
-    "Pukelsheim (1993/2006) and Späth (1985) lack stable canonical OpenAlex work records; their bibliographies require manual backward traversal.",
-    "Fedorov (1972) has no indexed OpenAlex reference list and is forward-heavy.",
-    "Learning to bin was manually checked from arXiv:2601.07756 because OpenAlex had no canonical record during the primary snapshot.",
-    "Community counts overlap and are not summed; the globally deduplicated candidate_count comes from the stated fallback scope."
-   ]
-  },
-  {
-   "round": 4,
-   "date": "2026-08-31",
-   "mode": "targeted-packet-search",
-   "scope": "DS-STABLE-BASINS per-theorem minimum for DS17 (protocols/literature.md): principal points / self-consistency cluster registered (Flury 1990, Tarpey-Flury 1996, Tarpey-Li-Flury 1995, Serinko-Babu 1992) plus a five-query obstruction-shaped search that found nothing matching (log in LITERATURE/audits/DS-STABLE-BASINS-31-August-2026.md). Not a snowballing round: no backward/forward traversal.",
-   "papers_added": [
-    "flury-1990-pp",
-    "tarpey-flury-1996-sc",
-    "tarpey-li-flury-1995-ss",
-    "serinko-babu-1992-jmva"
-   ]
-  },
-  {
-   "round": 5,
-   "date": "2026-08-31",
-   "mode": "independent-audit-triangulation-and-targeted-snowball",
-   "scope": "AUDIT-DS-STABLE-BASINS independent per-theorem search. Thirty-six exact queries covered efficient-score/least-favourable-direction orthogonality, Chebyshev equality and association, principal points/self-consistency/LCM, scalar Lloyd fixed points, and empirical nonregularity. Backward and forward metadata were traversed from the four researcher-registered DS17 papers. The existing round 4 conclusions were treated only as comparison.",
-   "sources": [
-    "primary article PDFs or author/publisher full text where accessible",
-    "Project Euclid, Oxford Academic, ScienceDirect, arXiv, author repositories, Crossref/DOI metadata",
-    "backward reference lists and forward title/abstract citation search"
-   ],
-   "query_count": 36,
-   "candidate_count": 55,
-   "candidate_count_scope": "Distinct scholarly title/DOI records retained after deduplicating the visible first-page results of the 36 logged searches; excludes obvious lexical collisions and non-scholarly pages.",
-   "relevant_count": 9,
-   "deeply_reviewed_count": 4,
-   "papers_added": [
-    "bickel-klaassen-ritov-wellner-1993",
-    "esary-proschan-walkup-1967",
-    "hastie-stuetzle-1989",
-    "jakubowski-2021-chebyshev",
-    "tarpey-loperfido-2015"
-   ],
-   "rejected_near_misses": [
-    "bali-boente-2009-functional-principal-points",
-    "matsuura-kurata-2010-location-mixture-principal-points",
-    "generic-fkg-association-results",
-    "choquet-covariance-inequality-results",
-    "application-specific-semiparametric-efficient-score-papers"
-   ],
-   "limitations": [
-    "The Tarpey-Li-Flury 1995 primary proof and Tarpey-Loperfido 2015 primary theorem text remained library-access restricted; exact theorem scope was cross-checked against Tarpey-Flury 1996 primary text and explicit later theorem restatements.",
-    "This was a theorem-targeted one-hop traversal, not a field-wide saturation round; the verdict is a search gap, never a novelty claim."
-   ]
-  },
-  {
-   "round": 6,
-   "date": "2026-08-31",
-   "mode": "targeted-packet-triangulation",
-   "scope": "OPEN-DS-MARGINS-NONCENTERED per-theorem triangulation for the frozen DS18 claim. Five nearest sources were compared across score-function Fisher quantization, scalar optimal-quantizer uniqueness and empirical consistency, generalized Lloyd set convergence, nonregular split-point asymptotics, and finite Hartigan relocation. No broad field-coverage or saturation claim is made.",
-   "sources": [
-    "Venkitasubramaniam-Tong-Swami-2006",
-    "Liu-Pages-2020",
-    "Sabin-Gray-1986",
-    "Serinko-Babu-1992",
-    "Telgarsky-Vattani-2010"
-   ],
-   "relevant_count": 5,
-   "papers_added": [
-    "liu-pages-2020",
-    "sabin-gray-1986"
-   ],
-   "verdict": "search_gap",
-   "limitations": [
-    "This was a theorem-targeted triangulation, not a citation-saturation round.",
-    "No located source combines profiled Fisher information, strict global isolation for the named off-(L) law, convergence of every finite global optimizer, and exact finite one-point exchange stability; absence is recorded only as a search gap."
-   ]
-  },
-  {
-   "round": 7,
-   "date": "2026-08-31",
-   "mode": "independent-audit-triangulation",
-   "scope": "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER independent per-theorem search. Nine query families were aimed separately at the five pieces the audit's algebraic reduction shows DS18 consumes: the nearest-codepoint reduction, scalar uniqueness for a log-concave (not strictly log-concave) law, almost-minimizer rigidity, empirical scalar consistency on a selection-independent event, and finite Hartigan stability. The research session's round 6 was read only afterwards, as comparison material.",
-   "sources": [
-    "web search over publisher, arXiv, Project Euclid, JMLR, PMLR and author repositories",
-    "the workspace's own LITERATURE/topics annotations, verified against the queries"
-   ],
-   "query_count": 9,
-   "candidate_count": 94,
-   "candidate_count_scope": "Distinct scholarly title/DOI records across the visible first-page results of the nine logged query families, before deduplication against the workspace's existing graph.",
-   "relevant_count": 6,
-   "papers_added": [],
-   "keys_registered": [
-    "deCastro-Dorigo-2019"
-   ],
-   "verdict": "search_gap",
-   "findings": [
-    "Six direct antecedents of DS18's scalar toolkit were already in this project's bibliography but unlinked to the node: Kieffer-1983, Mease-Nair-2006, Pollard-1981, Rakhlin-Caponnetto-2006, Fisher-1958, Graf-Luschgy-2000.",
-    "The node's uniqueness citation (Liu-Pages-2020) is mis-scoped for this law: its Proposition 11 assumes strict log-concavity, which Uniform[-1,1] fails; Kieffer-1983 and Mease-Nair-2006 cover it."
-   ],
-   "limitations": [
-    "Theorem-targeted triangulation, not a citation-saturation round.",
-    "No forward-citation traversal was run on Rakhlin-Caponnetto-2006 or Mease-Nair-2006; the rigidity sub-problem saturation gap is logged in gaps.md."
-   ]
-  },
-  {
-   "round": 8,
-   "date": "2026-09-02",
-   "mode": "independent-audit-triangulation",
-   "scope": "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER independent per-theorem search. Six query families aimed separately at the ingredients the audit's algebraic reduction isolates in DS19: design-side D_s/Lagrangian duality on a convex feasible set; exact 1-D k-means DP and its fastest variants (weighted points, ties); one-dimensional and fixed-dimensional parametric search with polynomial comparisons; parametric shortest-path breakpoint complexity; minimax over finite actions with quadratic payoffs; weighted scalar grouping with ties. The research session's 1 September triangulation was read only afterwards, as comparison material.",
-   "sources": [
-    "web search over publisher, arXiv, ACM DL, Project Euclid, IEEE Xplore, The R Journal and author repositories",
-    "primary-text reads of the Toledo author preprint and the Gronlund et al. arXiv preprint",
-    "the workspace's own LITERATURE/topics annotations, verified against the queries"
-   ],
-   "query_count": 6,
-   "candidate_count": 52,
-   "candidate_count_scope": "Distinct scholarly title/DOI records across the visible first-page results of the six logged query families, before deduplication against the workspace's existing graph.",
-   "relevant_count": 6,
-   "papers_added": [
-    "pukelsheim-titterington-1983",
-    "megiddo-1983",
-    "toledo-1993",
-    "gronlund-etal-2017",
-    "wang-song-2011",
-    "carstensen-1983"
-   ],
-   "keys_registered": [
-    "Pukelsheim-Titterington-1983",
-    "Megiddo-1983",
-    "Toledo-1993",
-    "Gronlund-etal-2017",
-    "Wang-Song-2011",
-    "Carstensen-1983"
-   ],
-   "verdict": "search_gap",
-   "findings": [
-    "Exact minimisation of the tilt dual for fixed d_lambda and variable K is already covered in arithmetic complexity by parametric search (Megiddo 1983 at d_lambda=1; Toledo 1993 in fixed dimension with polynomial comparisons); DS19.2's exact-computation scope (fixed K and fixed d_lambda) was narrower than the literature allows. Bit complexity is not covered by either source.",
-    "The fixed-tilt interval DP is the classical 1-D k-means DP (Wang-Song 2011) and runs in O(KN) after sorting (Gronlund et al. 2017), improving DS19.2's O(KN^2) statement; weighted points are covered there, exact ties are not.",
-    "Design-side D_s duality (Silvey-Titterington 1973; Pukelsheim-Titterington 1983) is a convex-feasible-set template only; the hard-partition interchange fails by exact witnesses at N=3."
-   ],
-   "limitations": [
-    "Theorem-targeted triangulation, not a citation-saturation round.",
-    "Carstensen 1983 is a secondary record (thesis not read).",
-    "No forward-citation traversal was run on Toledo 1993; later fixed-dimension parametric-search and real-RAM-to-bit-complexity results may exist and are logged in gaps.md."
-   ]
-  },
-  {
-   "round": 9,
-   "date": "2026-09-05",
-   "mode": "researcher-triangulation",
-   "scope": "SCORE-ORACLE-ROBUSTNESS per-theorem triangulation for RETENTION-PLUGIN-CLT-FROZEN-SCALAR (O6): delta method for smooth functions of sample means, influence-function variance estimation, and the sampling theory of the correlation ratio / eta-squared. Retrieval delegated (metadata verification via web search over publisher pages, MathSciNet review, course notes quoting theorem statements, the Biometrika contents index and jstatsoft.org); triangulation judgments by the researcher session.",
-   "sources": [
-    "web search over publisher pages, MathSciNet, course notes and journal indexes",
-    "no primary-text reads; every theorem number carries the verification status recorded in its note"
-   ],
-   "query_count": 5,
-   "candidate_count": 12,
-   "candidate_count_scope": "Distinct textbook and article records returned by the five query families before deduplication.",
-   "relevant_count": 6,
-   "papers_added": [
-    "vandervaart-1998",
-    "cramer-1946",
-    "serfling-1980",
-    "hampel-etal-1986",
-    "wishart-1932",
-    "kelley-2007"
-   ],
-   "keys_registered": [
-    "vanderVaart-1998",
-    "Cramer-1946",
-    "Serfling-1980",
-    "Hampel-Ronchetti-Rousseeuw-Stahel-1986",
-    "Wishart-1932",
-    "Kelley-2007"
-   ],
-   "verdict": "prior_art_found",
-   "findings": [
-    "O6.2-O6.4 are a direct instance of the multivariate delta method for functions of sample means (van der Vaart Thm 3.1; Serfling Sec. 3.3 Thm B; Cramer Ch. 28) combined with the influence-function variance formula (Hampel et al. 1986); no novelty is claimed for the method.",
-    "The closed-form influence function of the uncentred correlation ratio with a fixed partition, the RSS identity, and the two-atoms-per-cell characterisation of sigma^2 = 0 were not located as stated in any source; they are recorded as project algebra inside a bridge node, not as a search gap and not as novelty.",
-    "The classical eta-squared interval literature (Wishart 1932; Kelley 2007) is normal-theory and centred, and does not transfer."
-   ],
-   "limitations": [
-    "Theorem-targeted triangulation, not a citation-saturation round.",
-    "No primary text was read; van der Vaart and Serfling theorem numbers rest on secondary quotations, Cramer's on memory, Hampel et al.'s section number is unverified.",
-    "Kendall and Stuart Vol. 2 (asymptotic variance of the sample correlation ratio) was not located to a section and is not registered."
-   ]
-  },
-  {
-   "round": 10,
-   "date": "2026-09-05",
-   "mode": "audit-triangulation",
-   "scope": "AUDIT-SCORE-ORACLE-ROBUSTNESS independent prior-art pass on RETENTION-PLUGIN-CLT-FROZEN-SCALAR: verification of the four theorem/section numbers recorded on 5 September, the correlation-ratio literature, delta-method effect-size intervals without normality, influence functions of ratio-of-quadratic-form statistics.",
-   "sources": [
-    "web verification delegated to a subordinate agent: ETH/archive.org contents scans, the author's lecture notes (van der Vaart), Google Books and journal records, Project Euclid abstracts",
-    "triangulation judgments by the auditing session"
-   ],
-   "query_count": 9,
-   "candidate_count": 14,
-   "candidate_count_scope": "Distinct book and article records examined before deduplication.",
-   "relevant_count": 3,
-   "papers_added": [
-    "bhattacharya-ghosh-1978",
-    "hall-1992",
-    "donner-koval-1980"
-   ],
-   "keys_registered": [
-    "Bhattacharya-Ghosh-1978",
-    "Hall-1992",
-    "Donner-Koval-1980"
-   ],
-   "verdict": "prior_art_found",
-   "findings": [
-    "van der Vaart Thm 3.1 and Cramer Ch. 28 Sec. 28.4 confirmed in primary text; the sample-variance example is Example 3.2; Ch. 20 is the functional delta method.",
-    "Serfling Sec. 3.3 Theorem A/B labels and Hampel et al. equation numbers remain unresolved (no readable text reachable); Kendall and Stuart Vol. 2 Ch. 26 is the correlation chapter but the correlation-ratio section was not retrievable.",
-    "No direct statement of the uncentred fixed-partition correlation-ratio CLT with the closed-form influence function was located: prior art for the method, search gap for the statement, no re-attribution."
-   ],
-   "limitations": [
-    "Theorem-targeted, not a saturation round.",
-    "Primary-text reads limited to contents scans, the author's notes and one abstract."
-   ]
-  }
- ],
- "papers": [
-  {
-   "id": "valassi-2020-wdr",
-   "title": "Optimising HEP parameter fits via Monte Carlo weight derivative regression",
-   "year": 2020,
-   "authors": [
-    "A. Valassi"
-   ],
-   "bibliography_key": "Valassi-2020",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "FI-QUANT-IDENTITY",
-    "INFO-D-EFFICIENCY",
-    "INFO-DIRECTIONAL-DIAGNOSTICS"
-   ],
-   "status": "screened",
-   "note": "d=1 statement of the score-space reduction and of the retained-information ratio, in HEP language. Attribution question open -- see LITERATURE/reviewed.md."
-  },
-  {
-   "id": "cms-2025-sannt",
-   "title": "Development of systematic uncertainty-aware neural network trainings for binned-likelihood analyses at the LHC",
-   "year": 2025,
-   "authors": [
-    "CMS Collaboration"
-   ],
-   "bibliography_key": "CMS-2025",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "DS-SCHUR"
-   ],
-   "status": "screened",
-   "note": "Minimises (F^{-1})_{rr} over parameter-of-interest plus 224 nuisances on a binned likelihood: the D_s objective at s=1, at production scale. Cites INFERNO and a KDE surrogate as the known workarounds for non-differentiable bin edges (no graph records for those yet). Motivation, not prior art -- no claim cites it."
-  },
-  {
-   "id": "vts-2006",
-   "title": "Score-Function Quantization for Distributed Estimation",
-   "year": 2006,
-   "authors": [
-    "P. Venkitasubramaniam",
-    "L. Tong",
-    "A. Swami"
-   ],
-   "bibliography_key": "Venkitasubramaniam-Tong-Swami-2006",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "vts-2007-maximin"
-   ],
-   "research_area": "fisher-quantization",
-   "relevant_claims": [
-    "FI-QUANT-IDENTITY",
-    "TRACE-WHITENED-KMEANS",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "barnes-han-ozgur-2018",
-   "title": "A Geometric Characterization of Fisher Information from Quantized Samples with Applications to Distributed Statistical Estimation",
-   "year": 2018,
-   "authors": [
-    "L. P. Barnes",
-    "Y. Han",
-    "A. Özgür"
-   ],
-   "bibliography_key": "Barnes-Han-Ozgur-2018",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "barnes-han-ozgur-2020"
-   ],
-   "research_area": "fisher-quantization",
-   "relevant_claims": [
-    "FI-QUANT-IDENTITY",
-    "TRACE-WHITENED-KMEANS"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "farias-brossier-2014",
-   "title": "Scalar Quantization for Estimation: From An Asymptotic Design to a Practical Solution",
-   "year": 2014,
-   "authors": [
-    "R. C. Farias",
-    "J.-M. Brossier"
-   ],
-   "bibliography_key": "Farias-Brossier-2013",
-   "source_of_discovery": "seed",
-   "cites_relevant": [
-    "vts-2007-maximin"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "fisher-quantization",
-   "relevant_claims": [
-    "TRACE-WHITENED-KMEANS",
-    "OPEN-D-HIGH-RATE"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Journal title differs from the arXiv title used by the registry key."
-  },
-  {
-   "id": "dulek-2023",
-   "title": "On the Optimality of Sufficient Statistics-Based Quantizers",
-   "year": 2023,
-   "authors": [
-    "B. Dülek"
-   ],
-   "bibliography_key": "Dulek-2023",
-   "source_of_discovery": "seed",
-   "cites_relevant": [
-    "vts-2007-maximin",
-    "lam-reibman-1993",
-    "gubner-1993"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "fisher-quantization",
-   "relevant_claims": [
-    "TRACE-WHITENED-KMEANS"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "kiefer-wolfowitz-1960",
-   "title": "The Equivalence of Two Extremum Problems",
-   "year": 1960,
-   "authors": [
-    "J. Kiefer",
-    "J. Wolfowitz"
-   ],
-   "bibliography_key": "Kiefer-Wolfowitz-1960",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "silvey-titterington-1973"
-   ],
-   "research_area": "optimal-design",
-   "relevant_claims": [
-    "DS-CLASSICAL-DESIGN-THEORY"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "wynn-1970",
-   "title": "The Sequential Generation of D-Optimum Experimental Designs",
-   "year": 1970,
-   "authors": [
-    "H. P. Wynn"
-   ],
-   "bibliography_key": "Wynn-1970",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "silvey-titterington-torsney-1978"
-   ],
-   "research_area": "optimal-design",
-   "relevant_claims": [
-    "DS-CLASSICAL-DESIGN-THEORY",
-    "D-EXCHANGE-TERMINATES"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "wynn-1972",
-   "title": "Results in the Theory and Construction of D-Optimum Experimental Designs",
-   "year": 1972,
-   "authors": [
-    "H. P. Wynn"
-   ],
-   "bibliography_key": "Wynn-1972",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "optimal-design",
-   "relevant_claims": [
-    "DS-CLASSICAL-DESIGN-THEORY",
-    "DS-SCHUR"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "whittle-1973",
-   "title": "Some General Points in the Theory of Optimal Experimental Design",
-   "year": 1973,
-   "authors": [
-    "P. Whittle"
-   ],
-   "bibliography_key": "Whittle-1973",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "silvey-titterington-torsney-1978"
-   ],
-   "research_area": "optimal-design",
-   "relevant_claims": [
-    "DS-CLASSICAL-DESIGN-THEORY",
-    "GENERAL-SUPERGRADIENT-SCREENING"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "kiefer-1974",
-   "title": "General Equivalence Theory for Optimum Designs (Approximate Theory)",
-   "year": 1974,
-   "authors": [
-    "J. Kiefer"
-   ],
-   "bibliography_key": "Kiefer-1974",
-   "source_of_discovery": "seed",
-   "cites_relevant": [
-    "silvey-titterington-1973"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "optimal-design",
-   "relevant_claims": [
-    "DS-CLASSICAL-DESIGN-THEORY",
-    "GENERAL-SUPERGRADIENT-SCREENING"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "fedorov-1972",
-   "title": "Theory of Optimal Experiments",
-   "year": 1972,
-   "authors": [
-    "V. V. Fedorov"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "optimal-design",
-   "relevant_claims": [
-    "DS-CLASSICAL-DESIGN-THEORY",
-    "D-EXCHANGE-TERMINATES"
-   ],
-   "status": "screened",
-   "note": "Resolved by ISBN 0122507509; the OpenAlex record has no indexed references."
-  },
-  {
-   "id": "pukelsheim-2006",
-   "title": "Optimal Design of Experiments",
-   "year": 2006,
-   "authors": [
-    "F. Pukelsheim"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "optimal-design",
-   "relevant_claims": [
-    "DS-CLASSICAL-DESIGN-THEORY"
-   ],
-   "status": "screened",
-   "note": "SIAM edition DOI 10.1137/1.9780898719109; no stable canonical OpenAlex work record."
-  },
-  {
-   "id": "friedman-rubin-1967",
-   "title": "On Some Invariant Criteria for Grouping Data",
-   "year": 1967,
-   "authors": [
-    "H. P. Friedman",
-    "J. Rubin"
-   ],
-   "bibliography_key": "Friedman-Rubin-1967",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "determinant-clustering",
-   "relevant_claims": [
-    "D-POP-VORONOI",
-    "D-EXCHANGE-TERMINATES"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "scott-symons-1971",
-   "title": "Clustering Methods Based on Likelihood Ratio Criteria",
-   "year": 1971,
-   "authors": [
-    "A. J. Scott",
-    "M. J. Symons"
-   ],
-   "bibliography_key": "Scott-Symons-1971",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "determinant-clustering",
-   "relevant_claims": [
-    "D-POP-VORONOI",
-    "OPEN-D-UNRESTRICTED-CONSISTENCY"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "marriott-1971",
-   "title": "Practical Problems in a Method of Cluster Analysis",
-   "year": 1971,
-   "authors": [
-    "F. H. C. Marriott"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "determinant-clustering",
-   "relevant_claims": [
-    "D-POP-VORONOI",
-    "D-EXCHANGE-TERMINATES"
-   ],
-   "status": "screened"
-  },
-  {
-   "id": "spaeth-1977",
-   "title": "Computational Experiences with the Exchange Method",
-   "year": 1977,
-   "authors": [
-    "H. Späth"
-   ],
-   "bibliography_key": "Spaeth-1977",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "determinant-clustering",
-   "relevant_claims": [
-    "D-EXCHANGE-TERMINATES",
-    "D-RANK2-MOVE"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "spaeth-1985",
-   "title": "Cluster Dissection and Analysis: Theory, FORTRAN Programs, Examples",
-   "year": 1985,
-   "authors": [
-    "H. Späth"
-   ],
-   "bibliography_key": "Spaeth-1985",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "determinant-clustering",
-   "relevant_claims": [
-    "D-EXCHANGE-TERMINATES",
-    "D-RANK2-MOVE"
-   ],
-   "status": "screened",
-   "note": "Resolved by ISBN 9780470201299; citation indexing remains incomplete."
-  },
-  {
-   "id": "zador-1982",
-   "title": "Asymptotic Quantization Error of Continuous Signals and the Quantization Dimension",
-   "year": 1982,
-   "authors": [
-    "P. Zador"
-   ],
-   "bibliography_key": "Zador-1982",
-   "source_of_discovery": "seed",
-   "cites_relevant": [
-    "zador-1963-thesis"
-   ],
-   "cited_by_relevant": [
-    "bucklew-wise-1982",
-    "lookabaugh-gray-1989",
-    "gray-linder-li-2002"
-   ],
-   "research_area": "vq",
-   "relevant_claims": [
-    "OPEN-D-HIGH-RATE"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "gersho-1979",
-   "title": "Asymptotically Optimal Block Quantization",
-   "year": 1979,
-   "authors": [
-    "A. Gersho"
-   ],
-   "bibliography_key": "Gersho-1979",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "bucklew-wise-1982",
-    "lookabaugh-gray-1989",
-    "gupta-hero-2003"
-   ],
-   "research_area": "vq",
-   "relevant_claims": [
-    "OPEN-D-HIGH-RATE"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "telgarsky-vattani-2010",
-   "title": "Hartigan's Method: k-means Clustering without Voronoi",
-   "year": 2010,
-   "authors": [
-    "M. Telgarsky",
-    "A. Vattani"
-   ],
-   "bibliography_key": "Telgarsky-Vattani-2010",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vq",
-   "relevant_claims": [
-    "D-EXCHANGE-IMPLIES-VORONOI",
-    "D-VORONOI-NOT-EXCHANGE",
-    "D-GUARDED-LLOYD",
-    "DS-STABLE-STATE-SELECTION",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Primary PMLR full text reviewed 30 Aug 2026: direct precedent for one-point Hartigan terminal geometry, but no profiled objective, nuisance block, or empirical-to-population funnel."
-  },
-  {
-   "id": "inferno-2019",
-   "title": "INFERNO: Inference-Aware Neural Optimisation",
-   "year": 2019,
-   "authors": [
-    "P. de Castro",
-    "T. Dorigo"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [
-    "charnock-2018-imnn"
-   ],
-   "cited_by_relevant": [
-    "wunsch-2021",
-    "neos-2023"
-   ],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "DS-SCHUR",
-    "SOFT-RANDOMIZED-FIM",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-   ],
-   "status": "deeply_reviewed",
-   "bibliography_key": "deCastro-Dorigo-2019",
-   "note": "Registered a bibliography key during the DS18 audit (31 Aug 2026): it is the closest applied statement of DS18's objective -- an Asimov-likelihood inverse Hessian, i.e. a profiled-Fisher surrogate -- but over soft differentiable histograms of a neural summary, with no hard partition, no uniqueness or isolation statement, and no optimality theorem."
-  },
-  {
-   "id": "mining-gold-2020",
-   "title": "Mining Gold from Implicit Models to Improve Likelihood-Free Inference",
-   "year": 2020,
-   "authors": [
-    "J. Brehmer",
-    "G. Louppe",
-    "J. Pavez",
-    "K. Cranmer"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [
-    "alsing-wandelt-2019",
-    "charnock-2018-imnn",
-    "alsing-wandelt-feeney-2018",
-    "sally-guide-2018"
-   ],
-   "cited_by_relevant": [
-    "alsing-wandelt-2019",
-    "madminer-2020"
-   ],
-   "research_area": "score-compression",
-   "relevant_claims": [
-    "RATIO-LOCAL-SCORE",
-    "PROXY-TRUE-RETAINED-FI",
-    "OPEN-SCORE-PERTURBATION"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "calibrated-ratios-2015",
-   "title": "Approximating Likelihood Ratios with Calibrated Discriminative Classifiers",
-   "year": 2015,
-   "authors": [
-    "K. Cranmer",
-    "J. Pavez",
-    "G. Louppe"
-   ],
-   "bibliography_key": "Cranmer-Pavez-Louppe-2015",
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "sally-guide-2018"
-   ],
-   "research_area": "score-compression",
-   "relevant_claims": [
-    "CLASSIFIER-RATIO-ORACLE",
-    "CLASSIFIER-MIXTURE-SCORE-FORMULA"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "thickbrick-2021",
-   "title": "ThickBrick: Optimal Event Selection and Categorization in High Energy Physics. Part I: Signal Discovery",
-   "year": 2021,
-   "authors": [
-    "K. T. Matchev",
-    "P. Shyamsundar"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "learning-to-bin-2026"
-   ],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "D-GUARDED-LLOYD",
-    "REPRESENTATION-QUANTIZATION-LOSS"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "learning-to-bin-2026",
-   "title": "Learning to Bin: Differentiable and Bayesian Optimization for Multi-Dimensional Discriminants in High-Energy Physics",
-   "year": 2026,
-   "authors": [
-    "J. Erdmann",
-    "N. K. Kasaraguppe",
-    "F. Mausolf"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [
-    "inferno-2019",
-    "thickbrick-2021",
-    "wunsch-2021",
-    "neos-2023"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "DS-SCHUR",
-    "D-GUARDED-LLOYD",
-    "OPEN-HEP-NUISANCE-SCALING"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "moped-2000",
-   "title": "Massive Lossless Data Compression and Multiple Parameter Estimation from Galaxy Spectra",
-   "year": 2000,
-   "authors": [
-    "A. Heavens",
-    "R. Jimenez",
-    "O. Lahav"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "alsing-wandelt-2018",
-    "alsing-wandelt-2019",
-    "charnock-2018-imnn",
-    "alsing-wandelt-feeney-2018"
-   ],
-   "research_area": "score-compression",
-   "relevant_claims": [
-    "FI-LOSSLESS-IFF-SCORE-MEASURABLE",
-    "REPRESENTATION-QUANTIZATION-LOSS"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "alsing-wandelt-2018",
-   "title": "Generalized Massive Optimal Data Compression",
-   "year": 2018,
-   "authors": [
-    "J. Alsing",
-    "B. Wandelt"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [
-    "moped-2000"
-   ],
-   "cited_by_relevant": [
-    "alsing-wandelt-2019"
-   ],
-   "research_area": "score-compression",
-   "relevant_claims": [
-    "FI-LOSSLESS-IFF-SCORE-MEASURABLE",
-    "REPRESENTATION-QUANTIZATION-LOSS"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "sally-prl-2018",
-   "title": "Constraining Effective Field Theories with Machine Learning",
-   "year": 2018,
-   "authors": [
-    "J. Brehmer",
-    "K. Cranmer",
-    "G. Louppe",
-    "J. Pavez"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [
-    "calibrated-ratios-2015"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "score-compression",
-   "relevant_claims": [
-    "RATIO-LOCAL-SCORE",
-    "PROXY-TRUE-RETAINED-FI"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "sally-guide-2018",
-   "title": "A Guide to Constraining Effective Field Theories with Machine Learning",
-   "year": 2018,
-   "authors": [
-    "J. Brehmer",
-    "K. Cranmer",
-    "G. Louppe",
-    "J. Pavez"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [
-    "calibrated-ratios-2015"
-   ],
-   "cited_by_relevant": [
-    "mining-gold-2020"
-   ],
-   "research_area": "score-compression",
-   "relevant_claims": [
-    "RATIO-LOCAL-SCORE",
-    "REPRESENTATION-QUANTIZATION-LOSS",
-    "PROXY-TRUE-RETAINED-FI"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "sugiyama-2012",
-   "title": "Density Ratio Estimation in Machine Learning",
-   "year": 2012,
-   "authors": [
-    "M. Sugiyama",
-    "T. Suzuki",
-    "T. Kanamori"
-   ],
-   "source_of_discovery": "seed",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "calibrated-ratios-2015"
-   ],
-   "research_area": "score-compression",
-   "relevant_claims": [
-    "RATIO-LOCAL-SCORE",
-    "CLASSIFIER-RATIO-ORACLE"
-   ],
-   "status": "screened"
-  },
-  {
-   "id": "vts-2007-maximin",
-   "title": "Quantization for Maximin ARE in Distributed Estimation",
-   "year": 2007,
-   "authors": [
-    "P. Venkitasubramaniam",
-    "L. Tong",
-    "A. Swami"
-   ],
-   "bibliography_key": "Venkitasubramaniam-Tong-Swami-2007",
-   "source_of_discovery": "forward:vts-2006",
-   "cites_relevant": [
-    "vts-2006"
-   ],
-   "cited_by_relevant": [
-    "farias-brossier-2014",
-    "dulek-2023"
-   ],
-   "research_area": "fisher-quantization",
-   "relevant_claims": [
-    "TRACE-WHITENED-KMEANS",
-    "OPEN-D-HIGH-RATE",
-    "OPEN-PARAMETER-MISMATCH"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "barnes-han-ozgur-2020",
-   "title": "Lower Bounds for Learning Distributions under Communication Constraints via Fisher Information",
-   "year": 2020,
-   "authors": [
-    "L. P. Barnes",
-    "Y. Han",
-    "A. Özgür"
-   ],
-   "bibliography_key": "Barnes-Han-Ozgur-2020",
-   "source_of_discovery": "forward:barnes-han-ozgur-2018",
-   "cites_relevant": [
-    "barnes-han-ozgur-2018"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "fisher-quantization",
-   "relevant_claims": [
-    "FI-QUANT-IDENTITY",
-    "TRACE-WHITENED-KMEANS"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "lam-reibman-1993",
-   "title": "Design of Quantizers for Decentralized Estimation Systems",
-   "year": 1993,
-   "authors": [
-    "W. Lam",
-    "A. R. Reibman"
-   ],
-   "source_of_discovery": "backward:vts-2006",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "vts-2006",
-    "barnes-han-ozgur-2018",
-    "dulek-2023"
-   ],
-   "research_area": "fisher-quantization",
-   "relevant_claims": [
-    "FI-QUANT-IDENTITY",
-    "TRACE-WHITENED-KMEANS"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "gubner-1993",
-   "title": "Distributed Estimation and Quantization",
-   "year": 1993,
-   "authors": [
-    "J. A. Gubner"
-   ],
-   "source_of_discovery": "backward:vts-2006",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "vts-2006",
-    "dulek-2023"
-   ],
-   "research_area": "fisher-quantization",
-   "relevant_claims": [
-    "FI-QUANT-IDENTITY",
-    "TRACE-WHITENED-KMEANS"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "li-mathias-2000",
-   "title": "Extremal Characterizations of the Schur Complement and Resulting Inequalities",
-   "year": 2000,
-   "authors": [
-    "C.-K. Li",
-    "R. Mathias"
-   ],
-   "bibliography_key": "Li-Mathias-2000",
-   "source_of_discovery": "targeted-audit-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "DS-PROFILED-VARIATIONAL",
-    "AUDIT-DS-POPULATION-BRIDGE",
-    "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "DS-TILT-DUAL-CERTIFICATE",
-    "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
-    "DS-MATRIX-TILT-NONQUASICONVEX",
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
-   ],
-   "status": "deeply_reviewed",
-   "note": "SIAM Review 42(2):233-246, Theorem 2.2. Exact generalized-Schur Loewner minimum and attainment set for a fixed PSD block matrix; no minimax interchange over hard partitions."
-  },
-  {
-   "id": "silvey-titterington-1973",
-   "title": "A Geometric Approach to Optimal Design Theory",
-   "year": 1973,
-   "authors": [
-    "S. D. Silvey",
-    "D. M. Titterington"
-   ],
-   "bibliography_key": "Silvey-Titterington-1973",
-   "source_of_discovery": "backward:kiefer-1974",
-   "cites_relevant": [
-    "kiefer-wolfowitz-1960"
-   ],
-   "cited_by_relevant": [
-    "kiefer-1974"
-   ],
-   "research_area": "optimal-design",
-   "relevant_claims": [
-    "DS-CLASSICAL-DESIGN-THEORY",
-    "DS-SCHUR",
-    "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "DS-TILT-DUAL-CERTIFICATE",
-    "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Biometrika 60(1):21-32. D and Ds equivalence via Strong Lagrangian Theory on the convex approximate-design simplex; certificate precedent, not hard-partition strong duality."
-  },
-  {
-   "id": "silvey-titterington-torsney-1978",
-   "title": "An Algorithm for Optimal Designs on a Design Space",
-   "year": 1978,
-   "authors": [
-    "S. D. Silvey",
-    "D. M. Titterington",
-    "B. Torsney"
-   ],
-   "bibliography_key": "Silvey-Titterington-Torsney-1978",
-   "source_of_discovery": "forward:wynn-1970",
-   "cites_relevant": [
-    "wynn-1970",
-    "whittle-1973"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "optimal-design",
-   "relevant_claims": [
-    "DS-CLASSICAL-DESIGN-THEORY",
-    "D-EXCHANGE-TERMINATES"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "zador-1963-thesis",
-   "title": "Development and Evaluation of Procedures for Quantizing Multivariate Distributions",
-   "year": 1963,
-   "authors": [
-    "P. Zador"
-   ],
-   "source_of_discovery": "backward:zador-1982",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "zador-1982"
-   ],
-   "research_area": "vq",
-   "relevant_claims": [
-    "OPEN-D-HIGH-RATE"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "bucklew-wise-1982",
-   "title": "Multidimensional Asymptotic Quantization Theory with rth Power Distortion Measures",
-   "year": 1982,
-   "authors": [
-    "J. A. Bucklew",
-    "G. L. Wise"
-   ],
-   "bibliography_key": "Bucklew-Wise-1982",
-   "source_of_discovery": "forward:gersho-1979",
-   "cites_relevant": [
-    "gersho-1979",
-    "zador-1982"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "vq",
-   "relevant_claims": [
-    "OPEN-D-HIGH-RATE",
-    "TRACE-WHITENED-KMEANS"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "lookabaugh-gray-1989",
-   "title": "High-Resolution Quantization Theory and the Vector Quantizer Advantage",
-   "year": 1989,
-   "authors": [
-    "T. Lookabaugh",
-    "R. M. Gray"
-   ],
-   "source_of_discovery": "forward:gersho-1979",
-   "cites_relevant": [
-    "gersho-1979",
-    "zador-1982"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "vq",
-   "relevant_claims": [
-    "OPEN-D-HIGH-RATE"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "gray-linder-li-2002",
-   "title": "A Lagrangian Formulation of Zador's Entropy-Constrained Quantization Theorem",
-   "year": 2002,
-   "authors": [
-    "R. M. Gray",
-    "T. Linder",
-    "J. Li"
-   ],
-   "source_of_discovery": "forward:zador-1982",
-   "cites_relevant": [
-    "zador-1982"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "vq",
-   "relevant_claims": [
-    "OPEN-D-HIGH-RATE"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "gupta-hero-2003",
-   "title": "High-Rate Vector Quantization for Detection",
-   "year": 2003,
-   "authors": [
-    "R. Gupta",
-    "A. O. Hero"
-   ],
-   "bibliography_key": "Gupta-Hero-2003",
-   "source_of_discovery": "forward:gersho-1979",
-   "cites_relevant": [
-    "gersho-1979"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "vq",
-   "relevant_claims": [
-    "OPEN-D-HIGH-RATE",
-    "FI-LOSS-DECOMPOSITION"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "alsing-wandelt-2019",
-   "title": "Nuisance Hardened Data Compression for Fast Likelihood-Free Inference",
-   "year": 2019,
-   "authors": [
-    "J. Alsing",
-    "B. Wandelt"
-   ],
-   "bibliography_key": "Alsing-Wandelt-2019",
-   "source_of_discovery": "forward:moped-2000",
-   "cites_relevant": [
-    "moped-2000",
-    "alsing-wandelt-2018",
-    "mining-gold-2020"
-   ],
-   "cited_by_relevant": [
-    "mining-gold-2020"
-   ],
-   "research_area": "score-compression",
-   "relevant_claims": [
-    "DS-SCHUR",
-    "DS-EFFICIENT-SCORE-DOMINATION",
-    "OPEN-HEP-NUISANCE-SCALING"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "charnock-2018-imnn",
-   "title": "Automatic Physical Inference with Information Maximizing Neural Networks",
-   "year": 2018,
-   "authors": [
-    "T. Charnock",
-    "G. Lavaux",
-    "B. Wandelt"
-   ],
-   "source_of_discovery": "forward:moped-2000",
-   "cites_relevant": [
-    "moped-2000"
-   ],
-   "cited_by_relevant": [
-    "inferno-2019",
-    "mining-gold-2020"
-   ],
-   "research_area": "score-compression",
-   "relevant_claims": [
-    "REPRESENTATION-QUANTIZATION-LOSS",
-    "OPEN-REPRESENTATION-LOSS-ESTIMATION"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "alsing-wandelt-feeney-2018",
-   "title": "Massive Optimal Data Compression and Density Estimation for Scalable, Likelihood-Free Inference in Cosmology",
-   "year": 2018,
-   "authors": [
-    "J. Alsing",
-    "B. Wandelt",
-    "S. Feeney"
-   ],
-   "source_of_discovery": "forward:moped-2000",
-   "cites_relevant": [
-    "moped-2000"
-   ],
-   "cited_by_relevant": [
-    "mining-gold-2020"
-   ],
-   "research_area": "score-compression",
-   "relevant_claims": [
-    "REPRESENTATION-QUANTIZATION-LOSS",
-    "PROXY-TRUE-RETAINED-FI"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "madminer-2020",
-   "title": "MadMiner: Machine Learning-Based Inference for Particle Physics",
-   "year": 2020,
-   "authors": [
-    "J. Brehmer",
-    "F. Kling",
-    "I. Espejo",
-    "K. Cranmer"
-   ],
-   "source_of_discovery": "forward:mining-gold-2020",
-   "cites_relevant": [
-    "mining-gold-2020"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "PROXY-TRUE-RETAINED-FI",
-    "REPRESENTATION-QUANTIZATION-LOSS",
-    "OPEN-HEP-NUISANCE-SCALING"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "wunsch-2021",
-   "title": "Optimal Statistical Inference in the Presence of Systematic Uncertainties Using Neural Network Optimization Based on Binned Poisson Likelihoods with Nuisance Parameters",
-   "year": 2021,
-   "authors": [
-    "S. Wunsch",
-    "S. Jörger",
-    "R. Wolf",
-    "G. Quast"
-   ],
-   "source_of_discovery": "forward:inferno-2019",
-   "cites_relevant": [
-    "inferno-2019"
-   ],
-   "cited_by_relevant": [
-    "learning-to-bin-2026",
-    "cms-2025-sannt"
-   ],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "DS-SCHUR",
-    "OPEN-HEP-NUISANCE-SCALING",
-    "SOFT-RANDOMIZED-FIM"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "neos-2023",
-   "title": "neos: End-to-End-Optimised Summary Statistics for High Energy Physics",
-   "year": 2023,
-   "authors": [
-    "N. D. Simpson",
-    "L. Heinrich"
-   ],
-   "source_of_discovery": "forward:inferno-2019",
-   "cites_relevant": [
-    "inferno-2019"
-   ],
-   "cited_by_relevant": [
-    "learning-to-bin-2026",
-    "cms-2025-sannt"
-   ],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "DS-SCHUR",
-    "OPEN-HEP-NUISANCE-SCALING"
-   ],
-   "status": "deeply_reviewed"
-  },
-  {
-   "id": "zhang-blum-kaplan-lu-2018",
-   "title": "A Fundamental Limitation on Maximum Parameter Dimension for Accurate Estimation With Quantized Data",
-   "year": 2018,
-   "authors": [
-    "X. Zhang",
-    "R. S. Blum",
-    "L. M. Kaplan",
-    "Y. Lu"
-   ],
-   "bibliography_key": "Zhang-Blum-Kaplan-Lu-2018",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "fisher-quantization",
-   "relevant_claims": [
-    "FI-RANK-CEILING"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Already annotated before round 2; normalized into the machine graph during this round and not counted among the 17 new relevant candidates."
-  },
-  {
-   "id": "tsitsiklis-1993",
-   "title": "Extremal Properties of Likelihood-Ratio Quantizers",
-   "year": 1993,
-   "authors": [
-    "J. N. Tsitsiklis"
-   ],
-   "source_of_discovery": "backward:vts-2006",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "vts-2006",
-    "dulek-2023"
-   ],
-   "research_area": "other",
-   "relevant_claims": [
-    "FI-QUANT-IDENTITY"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "barnes-chen-ozgur-2020",
-   "title": "Fisher Information Under Local Differential Privacy",
-   "year": 2020,
-   "authors": [
-    "L. P. Barnes",
-    "W. Chen",
-    "A. Özgür"
-   ],
-   "source_of_discovery": "forward:barnes-han-ozgur-2018",
-   "cites_relevant": [
-    "barnes-han-ozgur-2018"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "FI-LOSS-DECOMPOSITION",
-    "TRACE-WHITENED-KMEANS"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "lazebnik-raginsky-2009",
-   "title": "Supervised Learning of Quantizer Codebooks by Information Loss Minimization",
-   "year": 2009,
-   "authors": [
-    "S. Lazebnik",
-    "M. Raginsky"
-   ],
-   "source_of_discovery": "backward:dulek-2023",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "dulek-2023"
-   ],
-   "research_area": "other",
-   "relevant_claims": [
-    "REPRESENTATION-QUANTIZATION-LOSS"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "amari-2011",
-   "title": "On Optimal Data Compression in Multiterminal Statistical Inference",
-   "year": 2011,
-   "authors": [
-    "S.-i. Amari"
-   ],
-   "source_of_discovery": "backward:barnes-han-ozgur-2018",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "barnes-han-ozgur-2018"
-   ],
-   "research_area": "other",
-   "relevant_claims": [
-    "FI-QUANT-IDENTITY"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "zou-et-al-2022",
-   "title": "Goal-Oriented Quantization: Analysis, Design, and Application to Resource Allocation",
-   "year": 2022,
-   "authors": [
-    "H. Zou",
-    "C. Zhang",
-    "S. Lasaulce",
-    "L. Saludjian",
-    "H. V. Poor"
-   ],
-   "source_of_discovery": "forward:farias-brossier-2014",
-   "cites_relevant": [
-    "farias-brossier-2014"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "OPEN-D-HIGH-RATE"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "bryant-williamson-1978",
-   "title": "Asymptotic Behaviour of Classification Maximum Likelihood Estimates",
-   "year": 1978,
-   "authors": [
-    "P. Bryant",
-    "J. Williamson"
-   ],
-   "source_of_discovery": "forward:scott-symons-1971",
-   "cites_relevant": [
-    "scott-symons-1971"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "determinant-clustering",
-   "relevant_claims": [
-    "OPEN-D-UNRESTRICTED-CONSISTENCY"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "bryant-1991",
-   "title": "Large-Sample Results for Optimization-Based Clustering Methods",
-   "year": 1991,
-   "authors": [
-    "P. G. Bryant"
-   ],
-   "source_of_discovery": "forward:scott-symons-1971",
-   "cites_relevant": [
-    "scott-symons-1971"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "determinant-clustering",
-   "relevant_claims": [
-    "OPEN-D-UNRESTRICTED-CONSISTENCY",
-    "OPEN-D-EXCHANGE-CONSISTENCY"
-   ],
-   "status": "irrelevant",
-   "note": "Primary theorem and assumptions could not be verified; retained as a boundary/gap marker."
-  },
-  {
-   "id": "fukunaga-koontz-1970",
-   "title": "A Criterion and an Algorithm for Grouping Data",
-   "year": 1970,
-   "authors": [
-    "K. Fukunaga",
-    "W. Koontz"
-   ],
-   "source_of_discovery": "forward:friedman-rubin-1967",
-   "cites_relevant": [
-    "friedman-rubin-1967"
-   ],
-   "cited_by_relevant": [
-    "spaeth-1977"
-   ],
-   "research_area": "determinant-clustering",
-   "relevant_claims": [
-    "D-POP-VORONOI"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "maronna-jacovkis-1974",
-   "title": "Multivariate Clustering Procedures with Variable Metrics",
-   "year": 1974,
-   "authors": [
-    "R. A. Maronna",
-    "P. M. Jacovkis"
-   ],
-   "source_of_discovery": "forward:friedman-rubin-1967",
-   "cites_relevant": [
-    "friedman-rubin-1967"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "determinant-clustering",
-   "relevant_claims": [
-    "D-POP-VORONOI"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "windham-1987",
-   "title": "Parameter Modification for Clustering Criteria",
-   "year": 1987,
-   "authors": [
-    "M. P. Windham"
-   ],
-   "source_of_discovery": "forward:friedman-rubin-1967",
-   "cites_relevant": [
-    "friedman-rubin-1967",
-    "scott-symons-1971"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "determinant-clustering",
-   "relevant_claims": [
-    "D-RANK2-MOVE",
-    "D-LOGDET-GAIN"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "banerjee-et-al-2005",
-   "title": "Clustering with Bregman Divergences",
-   "year": 2005,
-   "authors": [
-    "A. Banerjee",
-    "S. Merugu",
-    "I. Dhillon",
-    "J. Ghosh"
-   ],
-   "source_of_discovery": "backward:telgarsky-vattani-2010",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "telgarsky-vattani-2010"
-   ],
-   "research_area": "vq",
-   "relevant_claims": [
-    "D-POP-VORONOI",
-    "D-GUARDED-LLOYD",
-    "TRACE-WHITENED-KMEANS"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "kanungo-et-al-2002",
-   "title": "A Local Search Approximation Algorithm for k-Means Clustering",
-   "year": 2002,
-   "authors": [
-    "T. Kanungo",
-    "D. Mount",
-    "N. Netanyahu",
-    "C. Piatko",
-    "R. Silverman",
-    "A. Wu"
-   ],
-   "source_of_discovery": "backward:telgarsky-vattani-2010",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "telgarsky-vattani-2010"
-   ],
-   "research_area": "vq",
-   "relevant_claims": [
-    "D-EXCHANGE-IMPLIES-VORONOI",
-    "D-EXCHANGE-TERMINATES"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "wunsch-2020-systematics",
-   "title": "Reducing the Dependence of the Neural Network Function to Systematic Uncertainties in the Input Space",
-   "year": 2020,
-   "authors": [
-    "S. Wunsch",
-    "S. Jörger",
-    "R. Wolf",
-    "G. Quast"
-   ],
-   "source_of_discovery": "forward:inferno-2019",
-   "cites_relevant": [
-    "inferno-2019"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "OPEN-HEP-NUISANCE-SCALING"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "oasis-2021",
-   "title": "OASIS: Optimal Analysis-Specific Importance Sampling for Event Generation",
-   "year": 2021,
-   "authors": [
-    "K. Matchev",
-    "P. Shyamsundar"
-   ],
-   "source_of_discovery": "forward:mining-gold-2020",
-   "cites_relevant": [
-    "mining-gold-2020"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "FI-QUANT-IDENTITY"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "chen-et-al-2021-parametrized",
-   "title": "Parametrized Classifiers for Optimal EFT Sensitivity",
-   "year": 2021,
-   "authors": [
-    "S. Chen",
-    "A. Glioti",
-    "G. Panico",
-    "A. Wulzer"
-   ],
-   "source_of_discovery": "forward:inferno-2019",
-   "cites_relevant": [
-    "inferno-2019",
-    "mining-gold-2020",
-    "thickbrick-2021"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "CLASSIFIER-RATIO-ORACLE",
-    "REPRESENTATION-QUANTIZATION-LOSS"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "diekmann-eich-erdmann-2024",
-   "title": "Binning High-Dimensional Classifier Output for HEP Analyses through a Clustering Algorithm",
-   "year": 2024,
-   "authors": [
-    "J. Diekmann",
-    "M. Eich",
-    "J. Erdmann"
-   ],
-   "source_of_discovery": "backward:learning-to-bin-2026",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "learning-to-bin-2026"
-   ],
-   "research_area": "hep-inference",
-   "relevant_claims": [
-    "TRACE-WHITENED-KMEANS",
-    "REPRESENTATION-QUANTIZATION-LOSS"
-   ],
-   "status": "irrelevant"
-  },
-  {
-   "id": "pollard-1981-kmeans",
-   "title": "Strong Consistency of K-Means Clustering",
-   "year": 1981,
-   "authors": [
-    "D. Pollard"
-   ],
-   "bibliography_key": "Pollard-1981",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "AUDIT-DS-MARGINS-AT-OPTIMA",
-    "OPEN-DS-FINITE-POP-BRIDGE",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Verbatim (full Yale scan, 30 Aug 2026): a.s. Hausdorff consistency of empirical optimal centers and value, under uniqueness for EVERY j <= k and a phi-moment; the engine of DS15 Prop 5 and conclusions (2)-(3)."
-  },
-  {
-   "id": "rakhlin-caponnetto-2006",
-   "title": "Stability of K-Means Clustering",
-   "year": 2006,
-   "authors": [
-    "A. Rakhlin",
-    "A. Caponnetto"
-   ],
-   "bibliography_key": "Rakhlin-Caponnetto-2006",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "DS-STABLE-MARGINS-PRICE",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Primary NeurIPS full text reviewed 30 Aug 2026: population almost-minimizers shrink under a unique optimum and a covering-number uniform law transfers the result empirically. Direct prior art for DS16.1's compact-codebook rigidity only; arbitrary groupings, unbounded finite-second-moment sources, and signed nuisance moments remain DS16-specific work."
-  },
-  {
-   "id": "graf-luschgy-2000-foundations",
-   "title": "Foundations of Quantization for Probability Distributions",
-   "year": 2000,
-   "authors": [
-    "S. Graf",
-    "H. Luschgy"
-   ],
-   "bibliography_key": "Graf-Luschgy-2000",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "AUDIT-DS-MARGINS-AT-OPTIMA",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-   ],
-   "status": "screened",
-   "note": "Book unreachable (403/500); positive-mass/null-boundary content secondary-verified (Roychowdhury Prop 1.1; Liu-Pages: Thm 4.2 null boundaries, Thm 4.12 existence); Thm 5.1 scalar log-concave uniqueness confirmed twice; the 'Thm 4.1' numbering for positive mass remains unverified."
-  },
-  {
-   "id": "kieffer-1983-uniqueness",
-   "title": "Uniqueness of locally optimal quantizer for log-concave density and convex error weighting function",
-   "year": 1983,
-   "authors": [
-    "J. C. Kieffer"
-   ],
-   "bibliography_key": "Kieffer-1983",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "AUDIT-DS-MARGINS-AT-OPTIMA",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-   ],
-   "status": "screened",
-   "note": "DS18 audit (31 Aug 2026): log-concavity of the density suffices, so this -- not the strict-log-concavity route of Fleischer/Liu-Pages Prop 11 -- is the source that covers Uniform[-1,1], the named law's efficient-score marginal."
-  },
-  {
-   "id": "levrard-2015-nonasymptotic",
-   "title": "Nonasymptotic bounds for vector quantization in Hilbert spaces",
-   "year": 2015,
-   "authors": [
-    "C. Levrard"
-   ],
-   "bibliography_key": "Levrard-2015",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "AUDIT-DS-MARGINS-AT-OPTIMA"
-   ],
-   "status": "screened",
-   "note": "Verbatim (full text, 30 Aug 2026): Definition 2.1 margin condition is a hypothesis on the LAW at population optima, never proven at optima; arXiv id corrected to 1405.6672 (1310.7138 is the 2013 precursor)."
-  },
-  {
-   "id": "silvey-1978-singular",
-   "title": "Optimal design measures with singular information matrices",
-   "year": 1978,
-   "authors": [
-    "S. D. Silvey"
-   ],
-   "bibliography_key": "Silvey-1978",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "optimal-design",
-   "relevant_claims": [
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "AUDIT-DS-MARGINS-AT-OPTIMA",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-   ],
-   "status": "screened",
-   "note": "Secondary only (Lopez-Fidalgo & Rodriguez-Diaz restatement; St. John-Draper 1975 verbatim for the Kiefer/Karlin-Studden singular-Ds background): equivalence theory PERMITS singular information at Ds optima; no inevitability statement. Theorem itself unread (JSTOR)."
-  },
-  {
-   "id": "fisher-1958-grouping",
-   "title": "On Grouping for Maximum Homogeneity",
-   "year": 1958,
-   "authors": [
-    "W. D. Fisher"
-   ],
-   "bibliography_key": "Fisher-1958",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "AUDIT-DS-MARGINS-AT-OPTIMA",
-    "DS-SCALAR-EFFICIENT-DP",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "DS-TILT-DUAL-CERTIFICATE",
-    "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
-    "DS-STRIP-DP-DELTA-CONSISTENCY",
-    "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY",
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
-   ],
-   "status": "screened",
-   "note": "Verbatim (Brown scan pp. 789-792): optimal 1-D weighted SSE partitions are contiguous (appendix proof); the classical anchor for DS8 and DS15 Prop 4's interval-optimum leg."
-  },
-  {
-   "id": "gajjar-radhakrishnan-2019",
-   "title": "Parametric Shortest Paths in Planar Graphs",
-   "year": 2019,
-   "authors": [
-    "K. Gajjar",
-    "J. Radhakrishnan"
-   ],
-   "bibliography_key": "Gajjar-Radhakrishnan-2019",
-   "source_of_discovery": "concept-search:parametric-dp-boundary",
-   "cites_relevant": [
-    "carstensen-1983"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "DS-TILT-DUAL-CERTIFICATE",
-    "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY",
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
-   ],
-   "status": "screened",
-   "note": "FOCS 2019:876-895; primary author preprint and publisher metadata checked 1 Sep 2026. Linear-parameter planar shortest paths can have n^{Omega(log n)} envelope pieces. Boundary warning only: not a lower bound for the restricted interval-segmentation DAG with quadratic costs."
-  },
-  {
-   "id": "mease-nair-2006-unique",
-   "title": "Unique optimal partitions of distributions and connections to hazard rates and stochastic ordering",
-   "year": 2006,
-   "authors": [
-    "D. Mease",
-    "V. N. Nair"
-   ],
-   "bibliography_key": "Mease-Nair-2006",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "AUDIT-DS-MARGINS-AT-OPTIMA",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-   ],
-   "status": "screened",
-   "note": "Verbatim (full text): log-concave-density uniqueness via likelihood-ratio ordering; refutes Eubank-1988's weaker condition by a three-stationary-point counterexample - pins DS15 assumption (S) to density log-concavity."
-  },
-  {
-   "id": "blanchard-jaffe-zhivotovskiy-2025",
-   "title": "Consistency and inconsistency in k-means clustering",
-   "year": 2025,
-   "authors": [
-    "M. Blanchard",
-    "A. Q. Jaffe",
-    "N. Zhivotovskiy"
-   ],
-   "bibliography_key": "Blanchard-Jaffe-Zhivotovskiy-2025",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "AUDIT-DS-MARGINS-AT-OPTIMA",
-    "OPEN-DS-MARGINS-NONCENTERED"
-   ],
-   "status": "screened",
-   "note": "Abstract: balance constraints restore k-means consistency at no asymptotic cost - closest published structure to DS15 Prop 6; engage before publication."
-  },
-  {
-   "id": "flury-1990-pp",
-   "title": "Principal points",
-   "year": 1990,
-   "authors": [
-    "B. A. Flury"
-   ],
-   "bibliography_key": "Flury-1990",
-   "source_of_discovery": "targeted-packet-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "tarpey-li-flury-1995-ss",
-    "tarpey-flury-1996-sc"
-   ],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
-    "DS-STABLE-BASINS-LCM-CLASSIFICATION"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Primary text reviewed 31 Aug 2026. Defines globally MSE-optimal principal points; proves the two-point elliptical leading-eigenvector result and dim span <= k-1, but states the k>2 leading principal-subspace result only as a conjecture. No general existence or arbitrary self-consistent-point theorem."
-  },
-  {
-   "id": "tarpey-flury-1996-sc",
-   "title": "Self-consistency: a fundamental concept in statistics",
-   "year": 1996,
-   "authors": [
-    "T. Tarpey",
-    "B. Flury"
-   ],
-   "bibliography_key": "Tarpey-Flury-1996",
-   "source_of_discovery": "targeted-packet-search",
-   "cites_relevant": [
-    "flury-1990-pp",
-    "hastie-stuetzle-1989",
-    "tarpey-li-flury-1995-ss"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
-    "DS-STABLE-BASINS-FIXED-POINT-GATE",
-    "DS-STABLE-BASINS-LCM-CLASSIFICATION"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Primary text reviewed 31 Aug 2026. Credits Hastie-Stuetzle for the term and defines E[X|Y]=Y. Theorem 4.1 under LCM plus projection-measurability forces the q-dimensional support span of self-consistent Y to be spanned by q covariance eigenvectors, not necessarily the leading q."
-  },
-  {
-   "id": "tarpey-li-flury-1995-ss",
-   "title": "Principal points and self-consistent points of elliptical distributions",
-   "year": 1995,
-   "authors": [
-    "T. Tarpey",
-    "L. Li",
-    "B. D. Flury"
-   ],
-   "bibliography_key": "Tarpey-Li-Flury-1995",
-   "source_of_discovery": "targeted-packet-search",
-   "cites_relevant": [
-    "flury-1990-pp"
-   ],
-   "cited_by_relevant": [
-    "tarpey-flury-1996-sc",
-    "tarpey-loperfido-2015"
-   ],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
-    "DS-STABLE-BASINS-LCM-CLASSIFICATION"
-   ],
-   "status": "screened",
-   "note": "Theorem scope cross-checked 31 Aug 2026 against Tarpey-Flury 1996 primary text and later explicit restatements: n principal points of a centered elliptical law spanning dimension q lie in the leading q-eigenspace. Primary proof not retrieved; do not silently extend the leading-eigenspace conclusion to every self-consistent point set."
-  },
-  {
-   "id": "serinko-babu-1992-jmva",
-   "title": "Weak limit theorems for univariate k-mean clustering under a nonregular condition",
-   "year": 1992,
-   "authors": [
-    "R. J. Serinko",
-    "G. J. Babu"
-   ],
-   "bibliography_key": "Serinko-Babu-1992",
-   "source_of_discovery": "targeted-packet-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "DS-STABLE-BASINS-FIXED-POINT-GATE",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Primary PDF read verbatim 31 Aug 2026: split-function formulation of 1-D k-means over ordered cutpoints, unique global optimum, singular-Hessian nonregular case with n^{1/4} rates. Per-law degeneracy asymptotics, not a class-wide forcing theorem."
-  },
-  {
-   "id": "bickel-klaassen-ritov-wellner-1993",
-   "title": "Efficient and Adaptive Estimation for Semiparametric Models",
-   "year": 1993,
-   "authors": [
-    "P. J. Bickel",
-    "C. A. J. Klaassen",
-    "Y. Ritov",
-    "J. A. Wellner"
-   ],
-   "bibliography_key": "Bickel-Klaassen-Ritov-Wellner-1993",
-   "source_of_discovery": "concept-search:efficient-score-orthogonality",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "score-compression",
-   "relevant_claims": [
-    "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
-    "DS-STABLE-BASINS-FIXED-POINT-GATE"
-   ],
-   "status": "screened",
-   "note": "Classical source for efficient scores as L2 residuals orthogonal to nuisance tangent directions. Re-attribution boundary: this covers the full-data projection/normal equation, not DS17's binned tilt residual or hard-partition obstruction."
-  },
-  {
-   "id": "esary-proschan-walkup-1967",
-   "title": "Association of Random Variables, with Applications",
-   "year": 1967,
-   "authors": [
-    "J. D. Esary",
-    "F. Proschan",
-    "D. W. Walkup"
-   ],
-   "bibliography_key": "Esary-Proschan-Walkup-1967",
-   "source_of_discovery": "backward:jakubowski-2021-chebyshev",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "jakubowski-2021-chebyshev"
-   ],
-   "research_area": "other",
-   "relevant_claims": [
-    "DS-STABLE-BASINS-CENTERED-OBSTRUCTION"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Primary paper reviewed for the definition and closure properties of association. It supplies the historical covariance-sign language; it does not contain the exact equality theorem DS17 consumes."
-  },
-  {
-   "id": "hastie-stuetzle-1989",
-   "title": "Principal Curves",
-   "year": 1989,
-   "authors": [
-    "T. Hastie",
-    "W. Stuetzle"
-   ],
-   "bibliography_key": "Hastie-Stuetzle-1989",
-   "source_of_discovery": "backward:tarpey-flury-1996-sc",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "tarpey-flury-1996-sc"
-   ],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "DS-STABLE-BASINS-FIXED-POINT-GATE"
-   ],
-   "status": "screened",
-   "note": "Origin of self-consistent curves and of the terminology explicitly credited by Tarpey-Flury 1996. Vocabulary provenance only; no finite point, nuisance, or profiled-information theorem."
-  },
-  {
-   "id": "jakubowski-2021-chebyshev",
-   "title": "A complement to the Chebyshev integral inequality",
-   "year": 2021,
-   "authors": [
-    "A. Jakubowski"
-   ],
-   "bibliography_key": "Jakubowski-2021",
-   "source_of_discovery": "concept-search:chebyshev-equality",
-   "cites_relevant": [
-    "esary-proschan-walkup-1967"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "DS-STABLE-BASINS-CENTERED-OBSTRUCTION"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Primary text and proof read verbatim 31 Aug 2026. Theorem 1.2 is exactly the monotone-covariance equality condition, proved via an iid-copy product identity. It supports DS17's conditional equality step after conditioning; the cell-measurability and rank consequences remain project-specific."
-  },
-  {
-   "id": "liu-pages-2020",
-   "title": "Convergence rate of optimal quantization and application to the clustering performance of the empirical measure",
-   "year": 2020,
-   "authors": [
-    "Y. Liu",
-    "G. Pagès"
-   ],
-   "bibliography_key": "Liu-Pages-2020",
-   "source_of_discovery": "targeted-packet-triangulation",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Primary JMLR text used for optimal-codebook consistency and scalar uniqueness/positive-Hessian context. Its additive quadratic-distortion results do not supply DS18's profiled Fisher sandwich, equality chain, or exact finite exchange stability."
-  },
-  {
-   "id": "sabin-gray-1986",
-   "title": "Global convergence and empirical consistency of the generalized Lloyd algorithm",
-   "year": 1986,
-   "authors": [
-    "M. J. Sabin",
-    "R. M. Gray"
-   ],
-   "bibliography_key": "Sabin-Gray-1986",
-   "source_of_discovery": "targeted-packet-triangulation",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "OPEN-DS-FINITE-POP-BRIDGE",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-   ],
-   "status": "screened",
-   "note": "Closest structural precedent for generalized Lloyd set convergence and empirical consistency under source-independent convex additive distortion. It has no nuisance Schur complement, profiled-information equality chain, or exact finite ordinary-exchange conclusion."
-  },
-  {
-   "id": "tarpey-loperfido-2015",
-   "title": "Self-consistency and a generalized principal subspace theorem",
-   "year": 2015,
-   "authors": [
-    "T. Tarpey",
-    "N. Loperfido"
-   ],
-   "bibliography_key": "Tarpey-Loperfido-2015",
-   "source_of_discovery": "forward:tarpey-li-flury-1995-ss",
-   "cites_relevant": [
-    "tarpey-flury-1996-sc",
-    "tarpey-li-flury-1995-ss"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
-    "DS-STABLE-BASINS-LCM-CLASSIFICATION"
-   ],
-   "status": "screened",
-   "note": "Missed forward source from round 4. Generalizes principal-subspace results through self-consistency to location-mixture/skew-normal settings. It is closer on the beyond-elliptical axis, but the objective remains squared approximation error and no nuisance/profiled fixed point appears. Primary theorem text remains library-access pending."
-  },
-  {
-   "id": "pukelsheim-titterington-1983",
-   "title": "General Differential and Lagrangian Theory for Optimal Experimental Design",
-   "year": 1983,
-   "authors": [
-    "F. Pukelsheim",
-    "D. M. Titterington"
-   ],
-   "bibliography_key": "Pukelsheim-Titterington-1983",
-   "source_of_discovery": "concept-search:ds-design-duality-audit19",
-   "cites_relevant": [
-    "silvey-titterington-1973"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "optimal-design",
-   "relevant_claims": [
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "DS-TILT-DUAL-CERTIFICATE",
-    "DS-TILT-DUAL-STRONG-DUALITY-FAILS"
-   ],
-   "status": "screened",
-   "note": "Ann. Statist. 11(4):1060-1068; primary record checked 2 Sep 2026. Subgradient/Lagrangian duality over the convex design-measure set; comparison template only, since hard partitions defeat the interchange (CE-DS-TILT-DUAL-GAP-001/-002)."
-  },
-  {
-   "id": "megiddo-1983",
-   "title": "Applying Parallel Computation Algorithms in the Design of Serial Algorithms",
-   "year": 1983,
-   "authors": [
-    "N. Megiddo"
-   ],
-   "bibliography_key": "Megiddo-1983",
-   "source_of_discovery": "concept-search:parametric-search-audit19",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "toledo-1993"
-   ],
-   "research_area": "other",
-   "relevant_claims": [
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "DS-TILT-DUAL-CERTIFICATE",
-    "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY"
-   ],
-   "status": "screened",
-   "note": "J. ACM 30(4):852-865; primary record checked 2 Sep 2026. Parametric search; lifts the fixed-tilt interval DP to an arithmetic-polynomial exact dual minimiser at d_lambda=1."
-  },
-  {
-   "id": "toledo-1993",
-   "title": "Maximizing Non-Linear Concave Functions in Fixed Dimension",
-   "year": 1993,
-   "authors": [
-    "S. Toledo"
-   ],
-   "bibliography_key": "Toledo-1993",
-   "source_of_discovery": "concept-search:parametric-search-audit19",
-   "cites_relevant": [
-    "megiddo-1983"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "DS-TILT-DUAL-CERTIFICATE",
-    "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY"
-   ],
-   "status": "deeply_reviewed",
-   "note": "Complexity in Numerical Optimization (1993) pp. 429-447; FOCS 1992 extended abstract. Primary text read 2 Sep 2026 (abstract, section 1, section 2 definitions): fixed dimension, piecewise polynomial concave F, evaluator with bounded-degree polynomial comparisons; maximum in time polynomial in the evaluator's arithmetic operations. Settles fixed d_lambda, variable K exact minimisation of the tilt dual in arithmetic (not bit) complexity."
-  },
-  {
-   "id": "gronlund-etal-2017",
-   "title": "Fast Exact k-Means, k-Medians and Bregman Divergence Clustering in 1D",
-   "year": 2017,
-   "authors": [
-    "A. Gronlund",
-    "K. G. Larsen",
-    "A. Mathiasen",
-    "J. S. Nielsen",
-    "S. Schneider",
-    "M. Song"
-   ],
-   "bibliography_key": "Gronlund-etal-2017",
-   "source_of_discovery": "concept-search:1d-kmeans-exact-audit19",
-   "cites_relevant": [
-    "wang-song-2011",
-    "fisher-1958-grouping"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "DS-TILT-DUAL-CERTIFICATE",
-    "DS-SCALAR-EFFICIENT-DP",
-    "DS-STRIP-DP-DELTA-CONSISTENCY"
-   ],
-   "status": "screened",
-   "note": "arXiv:1701.07204; primary text pp. 1-2 read 2 Sep 2026. Contiguous DP O(kn^2); O(n log n + kn) / O(kn) sorted via monotone-matrix search; weighted scalar quantization form covered."
-  },
-  {
-   "id": "wang-song-2011",
-   "title": "Ckmeans.1d.dp: Optimal k-means Clustering in One Dimension by Dynamic Programming",
-   "year": 2011,
-   "authors": [
-    "H. Wang",
-    "M. Song"
-   ],
-   "bibliography_key": "Wang-Song-2011",
-   "source_of_discovery": "concept-search:1d-kmeans-exact-audit19",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "gronlund-etal-2017"
-   ],
-   "research_area": "vector-quantization",
-   "relevant_claims": [
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "DS-TILT-DUAL-CERTIFICATE",
-    "DS-SCALAR-EFFICIENT-DP"
-   ],
-   "status": "screened",
-   "note": "The R Journal 3(2):29-33; primary record checked 2 Sep 2026. The O(kn^2) contiguous DP of DS19.2."
-  },
-  {
-   "id": "carstensen-1983",
-   "title": "Complexity of some parametric integer and network programming problems",
-   "year": 1983,
-   "authors": [
-    "P. J. Carstensen"
-   ],
-   "bibliography_key": "Carstensen-1983",
-   "source_of_discovery": "backward:gajjar-radhakrishnan-2019",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "gajjar-radhakrishnan-2019"
-   ],
-   "research_area": "other",
-   "relevant_claims": [
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY"
-   ],
-   "status": "screened",
-   "note": "Ph.D. thesis, University of Michigan; secondary record only (2 Sep 2026). n^{Omega(log n)} parametric shortest-path breakpoints with matching upper bound; envelope warning, not a bound for the tilted interval DP."
-  },
-  {
-   "id": "vandervaart-1998",
-   "title": "Asymptotic Statistics",
-   "year": 1998,
-   "authors": [
-    "A. W. van der Vaart"
-   ],
-   "bibliography_key": "vanderVaart-1998",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
-    "OPEN-RETENTION-UNCERTAINTY"
-   ],
-   "status": "screened",
-   "note": "Delta method Thm 3.1 (primary text via the author's notes with identical numbering); sample variance under E X^4 < inf is Example 3.2; Ch. 20 functional delta method; Thm 5.23 number secondary. Verified in the 5 Sep 2026 audit."
-  },
-  {
-   "id": "cramer-1946",
-   "title": "Mathematical Methods of Statistics",
-   "year": 1946,
-   "authors": [
-    "H. Cramer"
-   ],
-   "bibliography_key": "Cramer-1946",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "serfling-1980"
-   ],
-   "research_area": "other",
-   "relevant_claims": [
-    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
-    "OPEN-RETENTION-UNCERTAINTY"
-   ],
-   "status": "screened",
-   "note": "Ch. 28 'Asymptotic properties of sampling distributions', Sec. 28.4 'Functions of moments' confirmed in primary text (5 Sep 2026 audit); Sec. 27.4 and 27.7 are the finite-sample companions."
-  },
-  {
-   "id": "serfling-1980",
-   "title": "Approximation Theorems of Mathematical Statistics",
-   "year": 1980,
-   "authors": [
-    "R. J. Serfling"
-   ],
-   "bibliography_key": "Serfling-1980",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [
-    "cramer-1946"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
-    "OPEN-RETENTION-UNCERTAINTY"
-   ],
-   "status": "screened",
-   "note": "Ch. 3 'Transformations of given statistics' (p. 117, primary record). Sec. 3.3 Theorem A/B labels unresolved after the 5 Sep 2026 audit; cite the section, not the theorem letter, until read."
-  },
-  {
-   "id": "hampel-etal-1986",
-   "title": "Robust Statistics: The Approach Based on Influence Functions",
-   "year": 1986,
-   "authors": [
-    "F. R. Hampel",
-    "E. M. Ronchetti",
-    "P. J. Rousseeuw",
-    "W. A. Stahel"
-   ],
-   "bibliography_key": "Hampel-Ronchetti-Rousseeuw-Stahel-1986",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
-    "OPEN-RETENTION-UNCERTAINTY"
-   ],
-   "status": "screened",
-   "note": "Asymptotic variance as the integral of the squared influence function, cited to p. 85 within Sec. 2.1 (secondary); Ch. 2 begins p. 78 (primary record). Equation numbers unresolved (5 Sep 2026 audit)."
-  },
-  {
-   "id": "wishart-1932",
-   "title": "A note on the distribution of the correlation ratio",
-   "year": 1932,
-   "authors": [
-    "J. Wishart"
-   ],
-   "bibliography_key": "Wishart-1932",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [
-    "kelley-2007"
-   ],
-   "research_area": "other",
-   "relevant_claims": [
-    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
-    "OPEN-RETENTION-UNCERTAINTY"
-   ],
-   "status": "screened",
-   "note": "Normal-theory exact distribution of the correlation ratio; lineage only, does not transfer. Existence verified from the Biometrika contents index; text not read. Journal record confirmed (primary record, 5 Sep 2026 audit); normal-theory content not read."
-  },
-  {
-   "id": "kelley-2007",
-   "title": "Confidence intervals for standardized effect sizes: theory, application, and implementation",
-   "year": 2007,
-   "authors": [
-    "K. Kelley"
-   ],
-   "bibliography_key": "Kelley-2007",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [
-    "wishart-1932"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
-    "OPEN-RETENTION-UNCERTAINTY"
-   ],
-   "status": "screened",
-   "note": "Noncentral-F intervals for eta-squared under normal-theory ANOVA; does not transfer. Verified at jstatsoft.org (v020i08)."
-  },
-  {
-   "id": "bhattacharya-ghosh-1978",
-   "title": "On the validity of the formal Edgeworth expansion",
-   "year": 1978,
-   "authors": [
-    "R. N. Bhattacharya",
-    "J. K. Ghosh"
-   ],
-   "bibliography_key": "Bhattacharya-Ghosh-1978",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [
-    "cramer-1946"
-   ],
-   "cited_by_relevant": [
-    "hall-1992"
-   ],
-   "research_area": "other",
-   "relevant_claims": [
-    "RETENTION-PLUGIN-COVERAGE-DOOR3",
-    "AUDIT-SCORE-ORACLE-ROBUSTNESS"
-   ],
-   "status": "screened",
-   "note": "Edgeworth expansion for smooth functions of sample-mean vectors; backdrop of the O6.7 second-order readings. Abstract read (5 Sep 2026 audit)."
-  },
-  {
-   "id": "hall-1992",
-   "title": "The Bootstrap and Edgeworth Expansion",
-   "year": 1992,
-   "authors": [
-    "P. Hall"
-   ],
-   "bibliography_key": "Hall-1992",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [
-    "bhattacharya-ghosh-1978"
-   ],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "RETENTION-PLUGIN-COVERAGE-DOOR3",
-    "AUDIT-SCORE-ORACLE-ROBUSTNESS"
-   ],
-   "status": "screened",
-   "note": "Smooth function model; studentized-statistic skewness (p. 76, section unresolved). Explains the measured sign flip of the studentized skew. Record only (5 Sep 2026 audit)."
-  },
-  {
-   "id": "donner-koval-1980",
-   "title": "The large sample variance of an intraclass correlation",
-   "year": 1980,
-   "authors": [
-    "A. Donner",
-    "J. J. Koval"
-   ],
-   "bibliography_key": "Donner-Koval-1980",
-   "source_of_discovery": "concept-search",
-   "cites_relevant": [],
-   "cited_by_relevant": [],
-   "research_area": "other",
-   "relevant_claims": [
-    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
-    "AUDIT-SCORE-ORACLE-ROBUSTNESS"
-   ],
-   "status": "screened",
-   "note": "Delta-method variance of the ANOVA intraclass correlation under a normal random-effects model; nearest applied kin of O6, nothing transfers beyond the algebraic shape. Journal record (5 Sep 2026 audit)."
-  }
- ]
+  ],
+  "papers": [
+    {
+      "id": "valassi-2020-wdr",
+      "title": "Optimising HEP parameter fits via Monte Carlo weight derivative regression",
+      "year": 2020,
+      "authors": [
+        "A. Valassi"
+      ],
+      "bibliography_key": "Valassi-2020",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "FI-QUANT-IDENTITY",
+        "INFO-D-EFFICIENCY",
+        "INFO-DIRECTIONAL-DIAGNOSTICS"
+      ],
+      "status": "screened",
+      "note": "d=1 statement of the score-space reduction and of the retained-information ratio, in HEP language. Attribution question open -- see LITERATURE/reviewed.md."
+    },
+    {
+      "id": "cms-2025-sannt",
+      "title": "Development of systematic uncertainty-aware neural network trainings for binned-likelihood analyses at the LHC",
+      "year": 2025,
+      "authors": [
+        "CMS Collaboration"
+      ],
+      "bibliography_key": "CMS-2025",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "DS-SCHUR"
+      ],
+      "status": "screened",
+      "note": "Minimises (F^{-1})_{rr} over parameter-of-interest plus 224 nuisances on a binned likelihood: the D_s objective at s=1, at production scale. Cites INFERNO and a KDE surrogate as the known workarounds for non-differentiable bin edges (no graph records for those yet). Motivation, not prior art -- no claim cites it."
+    },
+    {
+      "id": "vts-2006",
+      "title": "Score-Function Quantization for Distributed Estimation",
+      "year": 2006,
+      "authors": [
+        "P. Venkitasubramaniam",
+        "L. Tong",
+        "A. Swami"
+      ],
+      "bibliography_key": "Venkitasubramaniam-Tong-Swami-2006",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "vts-2007-maximin"
+      ],
+      "research_area": "fisher-quantization",
+      "relevant_claims": [
+        "FI-QUANT-IDENTITY",
+        "TRACE-WHITENED-KMEANS",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "barnes-han-ozgur-2018",
+      "title": "A Geometric Characterization of Fisher Information from Quantized Samples with Applications to Distributed Statistical Estimation",
+      "year": 2018,
+      "authors": [
+        "L. P. Barnes",
+        "Y. Han",
+        "A. Özgür"
+      ],
+      "bibliography_key": "Barnes-Han-Ozgur-2018",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "barnes-han-ozgur-2020"
+      ],
+      "research_area": "fisher-quantization",
+      "relevant_claims": [
+        "FI-QUANT-IDENTITY",
+        "TRACE-WHITENED-KMEANS"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "farias-brossier-2014",
+      "title": "Scalar Quantization for Estimation: From An Asymptotic Design to a Practical Solution",
+      "year": 2014,
+      "authors": [
+        "R. C. Farias",
+        "J.-M. Brossier"
+      ],
+      "bibliography_key": "Farias-Brossier-2013",
+      "source_of_discovery": "seed",
+      "cites_relevant": [
+        "vts-2007-maximin"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "fisher-quantization",
+      "relevant_claims": [
+        "TRACE-WHITENED-KMEANS",
+        "OPEN-D-HIGH-RATE"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Journal title differs from the arXiv title used by the registry key."
+    },
+    {
+      "id": "dulek-2023",
+      "title": "On the Optimality of Sufficient Statistics-Based Quantizers",
+      "year": 2023,
+      "authors": [
+        "B. Dülek"
+      ],
+      "bibliography_key": "Dulek-2023",
+      "source_of_discovery": "seed",
+      "cites_relevant": [
+        "vts-2007-maximin",
+        "lam-reibman-1993",
+        "gubner-1993"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "fisher-quantization",
+      "relevant_claims": [
+        "TRACE-WHITENED-KMEANS"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "kiefer-wolfowitz-1960",
+      "title": "The Equivalence of Two Extremum Problems",
+      "year": 1960,
+      "authors": [
+        "J. Kiefer",
+        "J. Wolfowitz"
+      ],
+      "bibliography_key": "Kiefer-Wolfowitz-1960",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "silvey-titterington-1973"
+      ],
+      "research_area": "optimal-design",
+      "relevant_claims": [
+        "DS-CLASSICAL-DESIGN-THEORY"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "wynn-1970",
+      "title": "The Sequential Generation of D-Optimum Experimental Designs",
+      "year": 1970,
+      "authors": [
+        "H. P. Wynn"
+      ],
+      "bibliography_key": "Wynn-1970",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "silvey-titterington-torsney-1978"
+      ],
+      "research_area": "optimal-design",
+      "relevant_claims": [
+        "DS-CLASSICAL-DESIGN-THEORY",
+        "D-EXCHANGE-TERMINATES"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "wynn-1972",
+      "title": "Results in the Theory and Construction of D-Optimum Experimental Designs",
+      "year": 1972,
+      "authors": [
+        "H. P. Wynn"
+      ],
+      "bibliography_key": "Wynn-1972",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "optimal-design",
+      "relevant_claims": [
+        "DS-CLASSICAL-DESIGN-THEORY",
+        "DS-SCHUR"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "whittle-1973",
+      "title": "Some General Points in the Theory of Optimal Experimental Design",
+      "year": 1973,
+      "authors": [
+        "P. Whittle"
+      ],
+      "bibliography_key": "Whittle-1973",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "silvey-titterington-torsney-1978"
+      ],
+      "research_area": "optimal-design",
+      "relevant_claims": [
+        "DS-CLASSICAL-DESIGN-THEORY",
+        "GENERAL-SUPERGRADIENT-SCREENING"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "kiefer-1974",
+      "title": "General Equivalence Theory for Optimum Designs (Approximate Theory)",
+      "year": 1974,
+      "authors": [
+        "J. Kiefer"
+      ],
+      "bibliography_key": "Kiefer-1974",
+      "source_of_discovery": "seed",
+      "cites_relevant": [
+        "silvey-titterington-1973"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "optimal-design",
+      "relevant_claims": [
+        "DS-CLASSICAL-DESIGN-THEORY",
+        "GENERAL-SUPERGRADIENT-SCREENING"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "fedorov-1972",
+      "title": "Theory of Optimal Experiments",
+      "year": 1972,
+      "authors": [
+        "V. V. Fedorov"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "optimal-design",
+      "relevant_claims": [
+        "DS-CLASSICAL-DESIGN-THEORY",
+        "D-EXCHANGE-TERMINATES"
+      ],
+      "status": "screened",
+      "note": "Resolved by ISBN 0122507509; the OpenAlex record has no indexed references."
+    },
+    {
+      "id": "pukelsheim-2006",
+      "title": "Optimal Design of Experiments",
+      "year": 2006,
+      "authors": [
+        "F. Pukelsheim"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "optimal-design",
+      "relevant_claims": [
+        "DS-CLASSICAL-DESIGN-THEORY"
+      ],
+      "status": "screened",
+      "note": "SIAM edition DOI 10.1137/1.9780898719109; no stable canonical OpenAlex work record."
+    },
+    {
+      "id": "friedman-rubin-1967",
+      "title": "On Some Invariant Criteria for Grouping Data",
+      "year": 1967,
+      "authors": [
+        "H. P. Friedman",
+        "J. Rubin"
+      ],
+      "bibliography_key": "Friedman-Rubin-1967",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "determinant-clustering",
+      "relevant_claims": [
+        "D-POP-VORONOI",
+        "D-EXCHANGE-TERMINATES"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "scott-symons-1971",
+      "title": "Clustering Methods Based on Likelihood Ratio Criteria",
+      "year": 1971,
+      "authors": [
+        "A. J. Scott",
+        "M. J. Symons"
+      ],
+      "bibliography_key": "Scott-Symons-1971",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "determinant-clustering",
+      "relevant_claims": [
+        "D-POP-VORONOI",
+        "OPEN-D-UNRESTRICTED-CONSISTENCY"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "marriott-1971",
+      "title": "Practical Problems in a Method of Cluster Analysis",
+      "year": 1971,
+      "authors": [
+        "F. H. C. Marriott"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "determinant-clustering",
+      "relevant_claims": [
+        "D-POP-VORONOI",
+        "D-EXCHANGE-TERMINATES"
+      ],
+      "status": "screened"
+    },
+    {
+      "id": "spaeth-1977",
+      "title": "Computational Experiences with the Exchange Method",
+      "year": 1977,
+      "authors": [
+        "H. Späth"
+      ],
+      "bibliography_key": "Spaeth-1977",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "determinant-clustering",
+      "relevant_claims": [
+        "D-EXCHANGE-TERMINATES",
+        "D-RANK2-MOVE"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "spaeth-1985",
+      "title": "Cluster Dissection and Analysis: Theory, FORTRAN Programs, Examples",
+      "year": 1985,
+      "authors": [
+        "H. Späth"
+      ],
+      "bibliography_key": "Spaeth-1985",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "determinant-clustering",
+      "relevant_claims": [
+        "D-EXCHANGE-TERMINATES",
+        "D-RANK2-MOVE"
+      ],
+      "status": "screened",
+      "note": "Resolved by ISBN 9780470201299; citation indexing remains incomplete."
+    },
+    {
+      "id": "zador-1982",
+      "title": "Asymptotic Quantization Error of Continuous Signals and the Quantization Dimension",
+      "year": 1982,
+      "authors": [
+        "P. Zador"
+      ],
+      "bibliography_key": "Zador-1982",
+      "source_of_discovery": "seed",
+      "cites_relevant": [
+        "zador-1963-thesis"
+      ],
+      "cited_by_relevant": [
+        "bucklew-wise-1982",
+        "lookabaugh-gray-1989",
+        "gray-linder-li-2002"
+      ],
+      "research_area": "vq",
+      "relevant_claims": [
+        "OPEN-D-HIGH-RATE"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "gersho-1979",
+      "title": "Asymptotically Optimal Block Quantization",
+      "year": 1979,
+      "authors": [
+        "A. Gersho"
+      ],
+      "bibliography_key": "Gersho-1979",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "bucklew-wise-1982",
+        "lookabaugh-gray-1989",
+        "gupta-hero-2003"
+      ],
+      "research_area": "vq",
+      "relevant_claims": [
+        "OPEN-D-HIGH-RATE"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "telgarsky-vattani-2010",
+      "title": "Hartigan's Method: k-means Clustering without Voronoi",
+      "year": 2010,
+      "authors": [
+        "M. Telgarsky",
+        "A. Vattani"
+      ],
+      "bibliography_key": "Telgarsky-Vattani-2010",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vq",
+      "relevant_claims": [
+        "D-EXCHANGE-IMPLIES-VORONOI",
+        "D-VORONOI-NOT-EXCHANGE",
+        "D-GUARDED-LLOYD",
+        "DS-STABLE-STATE-SELECTION",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Primary PMLR full text reviewed 30 Aug 2026: direct precedent for one-point Hartigan terminal geometry, but no profiled objective, nuisance block, or empirical-to-population funnel."
+    },
+    {
+      "id": "inferno-2019",
+      "title": "INFERNO: Inference-Aware Neural Optimisation",
+      "year": 2019,
+      "authors": [
+        "P. de Castro",
+        "T. Dorigo"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [
+        "charnock-2018-imnn"
+      ],
+      "cited_by_relevant": [
+        "wunsch-2021",
+        "neos-2023"
+      ],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "DS-SCHUR",
+        "SOFT-RANDOMIZED-FIM",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+      ],
+      "status": "deeply_reviewed",
+      "bibliography_key": "deCastro-Dorigo-2019",
+      "note": "Registered a bibliography key during the DS18 audit (31 Aug 2026): it is the closest applied statement of DS18's objective -- an Asimov-likelihood inverse Hessian, i.e. a profiled-Fisher surrogate -- but over soft differentiable histograms of a neural summary, with no hard partition, no uniqueness or isolation statement, and no optimality theorem."
+    },
+    {
+      "id": "mining-gold-2020",
+      "title": "Mining Gold from Implicit Models to Improve Likelihood-Free Inference",
+      "year": 2020,
+      "authors": [
+        "J. Brehmer",
+        "G. Louppe",
+        "J. Pavez",
+        "K. Cranmer"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [
+        "alsing-wandelt-2019",
+        "charnock-2018-imnn",
+        "alsing-wandelt-feeney-2018",
+        "sally-guide-2018"
+      ],
+      "cited_by_relevant": [
+        "alsing-wandelt-2019",
+        "madminer-2020"
+      ],
+      "research_area": "score-compression",
+      "relevant_claims": [
+        "RATIO-LOCAL-SCORE",
+        "PROXY-TRUE-RETAINED-FI",
+        "OPEN-SCORE-PERTURBATION"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "calibrated-ratios-2015",
+      "title": "Approximating Likelihood Ratios with Calibrated Discriminative Classifiers",
+      "year": 2015,
+      "authors": [
+        "K. Cranmer",
+        "J. Pavez",
+        "G. Louppe"
+      ],
+      "bibliography_key": "Cranmer-Pavez-Louppe-2015",
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "sally-guide-2018"
+      ],
+      "research_area": "score-compression",
+      "relevant_claims": [
+        "CLASSIFIER-RATIO-ORACLE",
+        "CLASSIFIER-MIXTURE-SCORE-FORMULA"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "thickbrick-2021",
+      "title": "ThickBrick: Optimal Event Selection and Categorization in High Energy Physics. Part I: Signal Discovery",
+      "year": 2021,
+      "authors": [
+        "K. T. Matchev",
+        "P. Shyamsundar"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "learning-to-bin-2026"
+      ],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "D-GUARDED-LLOYD",
+        "REPRESENTATION-QUANTIZATION-LOSS"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "learning-to-bin-2026",
+      "title": "Learning to Bin: Differentiable and Bayesian Optimization for Multi-Dimensional Discriminants in High-Energy Physics",
+      "year": 2026,
+      "authors": [
+        "J. Erdmann",
+        "N. K. Kasaraguppe",
+        "F. Mausolf"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [
+        "inferno-2019",
+        "thickbrick-2021",
+        "wunsch-2021",
+        "neos-2023"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "DS-SCHUR",
+        "D-GUARDED-LLOYD",
+        "OPEN-HEP-NUISANCE-SCALING"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "moped-2000",
+      "title": "Massive Lossless Data Compression and Multiple Parameter Estimation from Galaxy Spectra",
+      "year": 2000,
+      "authors": [
+        "A. Heavens",
+        "R. Jimenez",
+        "O. Lahav"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "alsing-wandelt-2018",
+        "alsing-wandelt-2019",
+        "charnock-2018-imnn",
+        "alsing-wandelt-feeney-2018"
+      ],
+      "research_area": "score-compression",
+      "relevant_claims": [
+        "FI-LOSSLESS-IFF-SCORE-MEASURABLE",
+        "REPRESENTATION-QUANTIZATION-LOSS"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "alsing-wandelt-2018",
+      "title": "Generalized Massive Optimal Data Compression",
+      "year": 2018,
+      "authors": [
+        "J. Alsing",
+        "B. Wandelt"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [
+        "moped-2000"
+      ],
+      "cited_by_relevant": [
+        "alsing-wandelt-2019"
+      ],
+      "research_area": "score-compression",
+      "relevant_claims": [
+        "FI-LOSSLESS-IFF-SCORE-MEASURABLE",
+        "REPRESENTATION-QUANTIZATION-LOSS"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "sally-prl-2018",
+      "title": "Constraining Effective Field Theories with Machine Learning",
+      "year": 2018,
+      "authors": [
+        "J. Brehmer",
+        "K. Cranmer",
+        "G. Louppe",
+        "J. Pavez"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [
+        "calibrated-ratios-2015"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "score-compression",
+      "relevant_claims": [
+        "RATIO-LOCAL-SCORE",
+        "PROXY-TRUE-RETAINED-FI"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "sally-guide-2018",
+      "title": "A Guide to Constraining Effective Field Theories with Machine Learning",
+      "year": 2018,
+      "authors": [
+        "J. Brehmer",
+        "K. Cranmer",
+        "G. Louppe",
+        "J. Pavez"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [
+        "calibrated-ratios-2015"
+      ],
+      "cited_by_relevant": [
+        "mining-gold-2020"
+      ],
+      "research_area": "score-compression",
+      "relevant_claims": [
+        "RATIO-LOCAL-SCORE",
+        "REPRESENTATION-QUANTIZATION-LOSS",
+        "PROXY-TRUE-RETAINED-FI"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "sugiyama-2012",
+      "title": "Density Ratio Estimation in Machine Learning",
+      "year": 2012,
+      "authors": [
+        "M. Sugiyama",
+        "T. Suzuki",
+        "T. Kanamori"
+      ],
+      "source_of_discovery": "seed",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "calibrated-ratios-2015"
+      ],
+      "research_area": "score-compression",
+      "relevant_claims": [
+        "RATIO-LOCAL-SCORE",
+        "CLASSIFIER-RATIO-ORACLE"
+      ],
+      "status": "screened"
+    },
+    {
+      "id": "vts-2007-maximin",
+      "title": "Quantization for Maximin ARE in Distributed Estimation",
+      "year": 2007,
+      "authors": [
+        "P. Venkitasubramaniam",
+        "L. Tong",
+        "A. Swami"
+      ],
+      "bibliography_key": "Venkitasubramaniam-Tong-Swami-2007",
+      "source_of_discovery": "forward:vts-2006",
+      "cites_relevant": [
+        "vts-2006"
+      ],
+      "cited_by_relevant": [
+        "farias-brossier-2014",
+        "dulek-2023"
+      ],
+      "research_area": "fisher-quantization",
+      "relevant_claims": [
+        "TRACE-WHITENED-KMEANS",
+        "OPEN-D-HIGH-RATE",
+        "OPEN-PARAMETER-MISMATCH"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "barnes-han-ozgur-2020",
+      "title": "Lower Bounds for Learning Distributions under Communication Constraints via Fisher Information",
+      "year": 2020,
+      "authors": [
+        "L. P. Barnes",
+        "Y. Han",
+        "A. Özgür"
+      ],
+      "bibliography_key": "Barnes-Han-Ozgur-2020",
+      "source_of_discovery": "forward:barnes-han-ozgur-2018",
+      "cites_relevant": [
+        "barnes-han-ozgur-2018"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "fisher-quantization",
+      "relevant_claims": [
+        "FI-QUANT-IDENTITY",
+        "TRACE-WHITENED-KMEANS"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "lam-reibman-1993",
+      "title": "Design of Quantizers for Decentralized Estimation Systems",
+      "year": 1993,
+      "authors": [
+        "W. Lam",
+        "A. R. Reibman"
+      ],
+      "source_of_discovery": "backward:vts-2006",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "vts-2006",
+        "barnes-han-ozgur-2018",
+        "dulek-2023"
+      ],
+      "research_area": "fisher-quantization",
+      "relevant_claims": [
+        "FI-QUANT-IDENTITY",
+        "TRACE-WHITENED-KMEANS"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "gubner-1993",
+      "title": "Distributed Estimation and Quantization",
+      "year": 1993,
+      "authors": [
+        "J. A. Gubner"
+      ],
+      "source_of_discovery": "backward:vts-2006",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "vts-2006",
+        "dulek-2023"
+      ],
+      "research_area": "fisher-quantization",
+      "relevant_claims": [
+        "FI-QUANT-IDENTITY",
+        "TRACE-WHITENED-KMEANS"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "li-mathias-2000",
+      "title": "Extremal Characterizations of the Schur Complement and Resulting Inequalities",
+      "year": 2000,
+      "authors": [
+        "C.-K. Li",
+        "R. Mathias"
+      ],
+      "bibliography_key": "Li-Mathias-2000",
+      "source_of_discovery": "targeted-audit-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "DS-PROFILED-VARIATIONAL",
+        "AUDIT-DS-POPULATION-BRIDGE",
+        "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "DS-TILT-DUAL-CERTIFICATE",
+        "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
+        "DS-MATRIX-TILT-NONQUASICONVEX",
+        "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
+      ],
+      "status": "deeply_reviewed",
+      "note": "SIAM Review 42(2):233-246, Theorem 2.2. Exact generalized-Schur Loewner minimum and attainment set for a fixed PSD block matrix; no minimax interchange over hard partitions."
+    },
+    {
+      "id": "silvey-titterington-1973",
+      "title": "A Geometric Approach to Optimal Design Theory",
+      "year": 1973,
+      "authors": [
+        "S. D. Silvey",
+        "D. M. Titterington"
+      ],
+      "bibliography_key": "Silvey-Titterington-1973",
+      "source_of_discovery": "backward:kiefer-1974",
+      "cites_relevant": [
+        "kiefer-wolfowitz-1960"
+      ],
+      "cited_by_relevant": [
+        "kiefer-1974"
+      ],
+      "research_area": "optimal-design",
+      "relevant_claims": [
+        "DS-CLASSICAL-DESIGN-THEORY",
+        "DS-SCHUR",
+        "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "DS-TILT-DUAL-CERTIFICATE",
+        "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
+        "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Biometrika 60(1):21-32. D and Ds equivalence via Strong Lagrangian Theory on the convex approximate-design simplex; certificate precedent, not hard-partition strong duality."
+    },
+    {
+      "id": "silvey-titterington-torsney-1978",
+      "title": "An Algorithm for Optimal Designs on a Design Space",
+      "year": 1978,
+      "authors": [
+        "S. D. Silvey",
+        "D. M. Titterington",
+        "B. Torsney"
+      ],
+      "bibliography_key": "Silvey-Titterington-Torsney-1978",
+      "source_of_discovery": "forward:wynn-1970",
+      "cites_relevant": [
+        "wynn-1970",
+        "whittle-1973"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "optimal-design",
+      "relevant_claims": [
+        "DS-CLASSICAL-DESIGN-THEORY",
+        "D-EXCHANGE-TERMINATES"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "zador-1963-thesis",
+      "title": "Development and Evaluation of Procedures for Quantizing Multivariate Distributions",
+      "year": 1963,
+      "authors": [
+        "P. Zador"
+      ],
+      "source_of_discovery": "backward:zador-1982",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "zador-1982"
+      ],
+      "research_area": "vq",
+      "relevant_claims": [
+        "OPEN-D-HIGH-RATE"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "bucklew-wise-1982",
+      "title": "Multidimensional Asymptotic Quantization Theory with rth Power Distortion Measures",
+      "year": 1982,
+      "authors": [
+        "J. A. Bucklew",
+        "G. L. Wise"
+      ],
+      "bibliography_key": "Bucklew-Wise-1982",
+      "source_of_discovery": "forward:gersho-1979",
+      "cites_relevant": [
+        "gersho-1979",
+        "zador-1982"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "vq",
+      "relevant_claims": [
+        "OPEN-D-HIGH-RATE",
+        "TRACE-WHITENED-KMEANS"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "lookabaugh-gray-1989",
+      "title": "High-Resolution Quantization Theory and the Vector Quantizer Advantage",
+      "year": 1989,
+      "authors": [
+        "T. Lookabaugh",
+        "R. M. Gray"
+      ],
+      "source_of_discovery": "forward:gersho-1979",
+      "cites_relevant": [
+        "gersho-1979",
+        "zador-1982"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "vq",
+      "relevant_claims": [
+        "OPEN-D-HIGH-RATE"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "gray-linder-li-2002",
+      "title": "A Lagrangian Formulation of Zador's Entropy-Constrained Quantization Theorem",
+      "year": 2002,
+      "authors": [
+        "R. M. Gray",
+        "T. Linder",
+        "J. Li"
+      ],
+      "source_of_discovery": "forward:zador-1982",
+      "cites_relevant": [
+        "zador-1982"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "vq",
+      "relevant_claims": [
+        "OPEN-D-HIGH-RATE"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "gupta-hero-2003",
+      "title": "High-Rate Vector Quantization for Detection",
+      "year": 2003,
+      "authors": [
+        "R. Gupta",
+        "A. O. Hero"
+      ],
+      "bibliography_key": "Gupta-Hero-2003",
+      "source_of_discovery": "forward:gersho-1979",
+      "cites_relevant": [
+        "gersho-1979"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "vq",
+      "relevant_claims": [
+        "OPEN-D-HIGH-RATE",
+        "FI-LOSS-DECOMPOSITION"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "alsing-wandelt-2019",
+      "title": "Nuisance Hardened Data Compression for Fast Likelihood-Free Inference",
+      "year": 2019,
+      "authors": [
+        "J. Alsing",
+        "B. Wandelt"
+      ],
+      "bibliography_key": "Alsing-Wandelt-2019",
+      "source_of_discovery": "forward:moped-2000",
+      "cites_relevant": [
+        "moped-2000",
+        "alsing-wandelt-2018",
+        "mining-gold-2020"
+      ],
+      "cited_by_relevant": [
+        "mining-gold-2020"
+      ],
+      "research_area": "score-compression",
+      "relevant_claims": [
+        "DS-SCHUR",
+        "DS-EFFICIENT-SCORE-DOMINATION",
+        "OPEN-HEP-NUISANCE-SCALING"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "charnock-2018-imnn",
+      "title": "Automatic Physical Inference with Information Maximizing Neural Networks",
+      "year": 2018,
+      "authors": [
+        "T. Charnock",
+        "G. Lavaux",
+        "B. Wandelt"
+      ],
+      "source_of_discovery": "forward:moped-2000",
+      "cites_relevant": [
+        "moped-2000"
+      ],
+      "cited_by_relevant": [
+        "inferno-2019",
+        "mining-gold-2020"
+      ],
+      "research_area": "score-compression",
+      "relevant_claims": [
+        "REPRESENTATION-QUANTIZATION-LOSS",
+        "OPEN-REPRESENTATION-LOSS-ESTIMATION"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "alsing-wandelt-feeney-2018",
+      "title": "Massive Optimal Data Compression and Density Estimation for Scalable, Likelihood-Free Inference in Cosmology",
+      "year": 2018,
+      "authors": [
+        "J. Alsing",
+        "B. Wandelt",
+        "S. Feeney"
+      ],
+      "source_of_discovery": "forward:moped-2000",
+      "cites_relevant": [
+        "moped-2000"
+      ],
+      "cited_by_relevant": [
+        "mining-gold-2020"
+      ],
+      "research_area": "score-compression",
+      "relevant_claims": [
+        "REPRESENTATION-QUANTIZATION-LOSS",
+        "PROXY-TRUE-RETAINED-FI"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "madminer-2020",
+      "title": "MadMiner: Machine Learning-Based Inference for Particle Physics",
+      "year": 2020,
+      "authors": [
+        "J. Brehmer",
+        "F. Kling",
+        "I. Espejo",
+        "K. Cranmer"
+      ],
+      "source_of_discovery": "forward:mining-gold-2020",
+      "cites_relevant": [
+        "mining-gold-2020"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "PROXY-TRUE-RETAINED-FI",
+        "REPRESENTATION-QUANTIZATION-LOSS",
+        "OPEN-HEP-NUISANCE-SCALING"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "wunsch-2021",
+      "title": "Optimal Statistical Inference in the Presence of Systematic Uncertainties Using Neural Network Optimization Based on Binned Poisson Likelihoods with Nuisance Parameters",
+      "year": 2021,
+      "authors": [
+        "S. Wunsch",
+        "S. Jörger",
+        "R. Wolf",
+        "G. Quast"
+      ],
+      "source_of_discovery": "forward:inferno-2019",
+      "cites_relevant": [
+        "inferno-2019"
+      ],
+      "cited_by_relevant": [
+        "learning-to-bin-2026",
+        "cms-2025-sannt"
+      ],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "DS-SCHUR",
+        "OPEN-HEP-NUISANCE-SCALING",
+        "SOFT-RANDOMIZED-FIM"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "neos-2023",
+      "title": "neos: End-to-End-Optimised Summary Statistics for High Energy Physics",
+      "year": 2023,
+      "authors": [
+        "N. D. Simpson",
+        "L. Heinrich"
+      ],
+      "source_of_discovery": "forward:inferno-2019",
+      "cites_relevant": [
+        "inferno-2019"
+      ],
+      "cited_by_relevant": [
+        "learning-to-bin-2026",
+        "cms-2025-sannt"
+      ],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "DS-SCHUR",
+        "OPEN-HEP-NUISANCE-SCALING"
+      ],
+      "status": "deeply_reviewed"
+    },
+    {
+      "id": "zhang-blum-kaplan-lu-2018",
+      "title": "A Fundamental Limitation on Maximum Parameter Dimension for Accurate Estimation With Quantized Data",
+      "year": 2018,
+      "authors": [
+        "X. Zhang",
+        "R. S. Blum",
+        "L. M. Kaplan",
+        "Y. Lu"
+      ],
+      "bibliography_key": "Zhang-Blum-Kaplan-Lu-2018",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "fisher-quantization",
+      "relevant_claims": [
+        "FI-RANK-CEILING"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Already annotated before round 2; normalized into the machine graph during this round and not counted among the 17 new relevant candidates."
+    },
+    {
+      "id": "tsitsiklis-1993",
+      "title": "Extremal Properties of Likelihood-Ratio Quantizers",
+      "year": 1993,
+      "authors": [
+        "J. N. Tsitsiklis"
+      ],
+      "source_of_discovery": "backward:vts-2006",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "vts-2006",
+        "dulek-2023"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "FI-QUANT-IDENTITY"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "barnes-chen-ozgur-2020",
+      "title": "Fisher Information Under Local Differential Privacy",
+      "year": 2020,
+      "authors": [
+        "L. P. Barnes",
+        "W. Chen",
+        "A. Özgür"
+      ],
+      "source_of_discovery": "forward:barnes-han-ozgur-2018",
+      "cites_relevant": [
+        "barnes-han-ozgur-2018"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "FI-LOSS-DECOMPOSITION",
+        "TRACE-WHITENED-KMEANS"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "lazebnik-raginsky-2009",
+      "title": "Supervised Learning of Quantizer Codebooks by Information Loss Minimization",
+      "year": 2009,
+      "authors": [
+        "S. Lazebnik",
+        "M. Raginsky"
+      ],
+      "source_of_discovery": "backward:dulek-2023",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "dulek-2023"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "REPRESENTATION-QUANTIZATION-LOSS"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "amari-2011",
+      "title": "On Optimal Data Compression in Multiterminal Statistical Inference",
+      "year": 2011,
+      "authors": [
+        "S.-i. Amari"
+      ],
+      "source_of_discovery": "backward:barnes-han-ozgur-2018",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "barnes-han-ozgur-2018"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "FI-QUANT-IDENTITY"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "zou-et-al-2022",
+      "title": "Goal-Oriented Quantization: Analysis, Design, and Application to Resource Allocation",
+      "year": 2022,
+      "authors": [
+        "H. Zou",
+        "C. Zhang",
+        "S. Lasaulce",
+        "L. Saludjian",
+        "H. V. Poor"
+      ],
+      "source_of_discovery": "forward:farias-brossier-2014",
+      "cites_relevant": [
+        "farias-brossier-2014"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-D-HIGH-RATE"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "bryant-williamson-1978",
+      "title": "Asymptotic Behaviour of Classification Maximum Likelihood Estimates",
+      "year": 1978,
+      "authors": [
+        "P. Bryant",
+        "J. Williamson"
+      ],
+      "source_of_discovery": "forward:scott-symons-1971",
+      "cites_relevant": [
+        "scott-symons-1971"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "determinant-clustering",
+      "relevant_claims": [
+        "OPEN-D-UNRESTRICTED-CONSISTENCY"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "bryant-1991",
+      "title": "Large-Sample Results for Optimization-Based Clustering Methods",
+      "year": 1991,
+      "authors": [
+        "P. G. Bryant"
+      ],
+      "source_of_discovery": "forward:scott-symons-1971",
+      "cites_relevant": [
+        "scott-symons-1971"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "determinant-clustering",
+      "relevant_claims": [
+        "OPEN-D-UNRESTRICTED-CONSISTENCY",
+        "OPEN-D-EXCHANGE-CONSISTENCY"
+      ],
+      "status": "irrelevant",
+      "note": "Primary theorem and assumptions could not be verified; retained as a boundary/gap marker."
+    },
+    {
+      "id": "fukunaga-koontz-1970",
+      "title": "A Criterion and an Algorithm for Grouping Data",
+      "year": 1970,
+      "authors": [
+        "K. Fukunaga",
+        "W. Koontz"
+      ],
+      "source_of_discovery": "forward:friedman-rubin-1967",
+      "cites_relevant": [
+        "friedman-rubin-1967"
+      ],
+      "cited_by_relevant": [
+        "spaeth-1977"
+      ],
+      "research_area": "determinant-clustering",
+      "relevant_claims": [
+        "D-POP-VORONOI"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "maronna-jacovkis-1974",
+      "title": "Multivariate Clustering Procedures with Variable Metrics",
+      "year": 1974,
+      "authors": [
+        "R. A. Maronna",
+        "P. M. Jacovkis"
+      ],
+      "source_of_discovery": "forward:friedman-rubin-1967",
+      "cites_relevant": [
+        "friedman-rubin-1967"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "determinant-clustering",
+      "relevant_claims": [
+        "D-POP-VORONOI"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "windham-1987",
+      "title": "Parameter Modification for Clustering Criteria",
+      "year": 1987,
+      "authors": [
+        "M. P. Windham"
+      ],
+      "source_of_discovery": "forward:friedman-rubin-1967",
+      "cites_relevant": [
+        "friedman-rubin-1967",
+        "scott-symons-1971"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "determinant-clustering",
+      "relevant_claims": [
+        "D-RANK2-MOVE",
+        "D-LOGDET-GAIN"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "banerjee-et-al-2005",
+      "title": "Clustering with Bregman Divergences",
+      "year": 2005,
+      "authors": [
+        "A. Banerjee",
+        "S. Merugu",
+        "I. Dhillon",
+        "J. Ghosh"
+      ],
+      "source_of_discovery": "backward:telgarsky-vattani-2010",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "telgarsky-vattani-2010"
+      ],
+      "research_area": "vq",
+      "relevant_claims": [
+        "D-POP-VORONOI",
+        "D-GUARDED-LLOYD",
+        "TRACE-WHITENED-KMEANS"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "kanungo-et-al-2002",
+      "title": "A Local Search Approximation Algorithm for k-Means Clustering",
+      "year": 2002,
+      "authors": [
+        "T. Kanungo",
+        "D. Mount",
+        "N. Netanyahu",
+        "C. Piatko",
+        "R. Silverman",
+        "A. Wu"
+      ],
+      "source_of_discovery": "backward:telgarsky-vattani-2010",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "telgarsky-vattani-2010"
+      ],
+      "research_area": "vq",
+      "relevant_claims": [
+        "D-EXCHANGE-IMPLIES-VORONOI",
+        "D-EXCHANGE-TERMINATES"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "wunsch-2020-systematics",
+      "title": "Reducing the Dependence of the Neural Network Function to Systematic Uncertainties in the Input Space",
+      "year": 2020,
+      "authors": [
+        "S. Wunsch",
+        "S. Jörger",
+        "R. Wolf",
+        "G. Quast"
+      ],
+      "source_of_discovery": "forward:inferno-2019",
+      "cites_relevant": [
+        "inferno-2019"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "OPEN-HEP-NUISANCE-SCALING"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "oasis-2021",
+      "title": "OASIS: Optimal Analysis-Specific Importance Sampling for Event Generation",
+      "year": 2021,
+      "authors": [
+        "K. Matchev",
+        "P. Shyamsundar"
+      ],
+      "source_of_discovery": "forward:mining-gold-2020",
+      "cites_relevant": [
+        "mining-gold-2020"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "FI-QUANT-IDENTITY"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "chen-et-al-2021-parametrized",
+      "title": "Parametrized Classifiers for Optimal EFT Sensitivity",
+      "year": 2021,
+      "authors": [
+        "S. Chen",
+        "A. Glioti",
+        "G. Panico",
+        "A. Wulzer"
+      ],
+      "source_of_discovery": "forward:inferno-2019",
+      "cites_relevant": [
+        "inferno-2019",
+        "mining-gold-2020",
+        "thickbrick-2021"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "CLASSIFIER-RATIO-ORACLE",
+        "REPRESENTATION-QUANTIZATION-LOSS"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "diekmann-eich-erdmann-2024",
+      "title": "Binning High-Dimensional Classifier Output for HEP Analyses through a Clustering Algorithm",
+      "year": 2024,
+      "authors": [
+        "J. Diekmann",
+        "M. Eich",
+        "J. Erdmann"
+      ],
+      "source_of_discovery": "backward:learning-to-bin-2026",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "learning-to-bin-2026"
+      ],
+      "research_area": "hep-inference",
+      "relevant_claims": [
+        "TRACE-WHITENED-KMEANS",
+        "REPRESENTATION-QUANTIZATION-LOSS"
+      ],
+      "status": "irrelevant"
+    },
+    {
+      "id": "pollard-1981-kmeans",
+      "title": "Strong Consistency of K-Means Clustering",
+      "year": 1981,
+      "authors": [
+        "D. Pollard"
+      ],
+      "bibliography_key": "Pollard-1981",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "OPEN-DS-MARGINS-AT-OPTIMA",
+        "AUDIT-DS-MARGINS-AT-OPTIMA",
+        "OPEN-DS-FINITE-POP-BRIDGE",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Verbatim (full Yale scan, 30 Aug 2026): a.s. Hausdorff consistency of empirical optimal centers and value, under uniqueness for EVERY j <= k and a phi-moment; the engine of DS15 Prop 5 and conclusions (2)-(3)."
+    },
+    {
+      "id": "rakhlin-caponnetto-2006",
+      "title": "Stability of K-Means Clustering",
+      "year": 2006,
+      "authors": [
+        "A. Rakhlin",
+        "A. Caponnetto"
+      ],
+      "bibliography_key": "Rakhlin-Caponnetto-2006",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "DS-STABLE-MARGINS-PRICE",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Primary NeurIPS full text reviewed 30 Aug 2026: population almost-minimizers shrink under a unique optimum and a covering-number uniform law transfers the result empirically. Direct prior art for DS16.1's compact-codebook rigidity only; arbitrary groupings, unbounded finite-second-moment sources, and signed nuisance moments remain DS16-specific work."
+    },
+    {
+      "id": "graf-luschgy-2000-foundations",
+      "title": "Foundations of Quantization for Probability Distributions",
+      "year": 2000,
+      "authors": [
+        "S. Graf",
+        "H. Luschgy"
+      ],
+      "bibliography_key": "Graf-Luschgy-2000",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "OPEN-DS-MARGINS-AT-OPTIMA",
+        "AUDIT-DS-MARGINS-AT-OPTIMA",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+      ],
+      "status": "screened",
+      "note": "Book unreachable (403/500); positive-mass/null-boundary content secondary-verified (Roychowdhury Prop 1.1; Liu-Pages: Thm 4.2 null boundaries, Thm 4.12 existence); Thm 5.1 scalar log-concave uniqueness confirmed twice; the 'Thm 4.1' numbering for positive mass remains unverified."
+    },
+    {
+      "id": "kieffer-1983-uniqueness",
+      "title": "Uniqueness of locally optimal quantizer for log-concave density and convex error weighting function",
+      "year": 1983,
+      "authors": [
+        "J. C. Kieffer"
+      ],
+      "bibliography_key": "Kieffer-1983",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "OPEN-DS-MARGINS-AT-OPTIMA",
+        "AUDIT-DS-MARGINS-AT-OPTIMA",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+      ],
+      "status": "screened",
+      "note": "DS18 audit (31 Aug 2026): log-concavity of the density suffices, so this -- not the strict-log-concavity route of Fleischer/Liu-Pages Prop 11 -- is the source that covers Uniform[-1,1], the named law's efficient-score marginal."
+    },
+    {
+      "id": "levrard-2015-nonasymptotic",
+      "title": "Nonasymptotic bounds for vector quantization in Hilbert spaces",
+      "year": 2015,
+      "authors": [
+        "C. Levrard"
+      ],
+      "bibliography_key": "Levrard-2015",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "OPEN-DS-MARGINS-AT-OPTIMA",
+        "AUDIT-DS-MARGINS-AT-OPTIMA"
+      ],
+      "status": "screened",
+      "note": "Verbatim (full text, 30 Aug 2026): Definition 2.1 margin condition is a hypothesis on the LAW at population optima, never proven at optima; arXiv id corrected to 1405.6672 (1310.7138 is the 2013 precursor)."
+    },
+    {
+      "id": "silvey-1978-singular",
+      "title": "Optimal design measures with singular information matrices",
+      "year": 1978,
+      "authors": [
+        "S. D. Silvey"
+      ],
+      "bibliography_key": "Silvey-1978",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "optimal-design",
+      "relevant_claims": [
+        "OPEN-DS-MARGINS-AT-OPTIMA",
+        "AUDIT-DS-MARGINS-AT-OPTIMA",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+      ],
+      "status": "screened",
+      "note": "Secondary only (Lopez-Fidalgo & Rodriguez-Diaz restatement; St. John-Draper 1975 verbatim for the Kiefer/Karlin-Studden singular-Ds background): equivalence theory PERMITS singular information at Ds optima; no inevitability statement. Theorem itself unread (JSTOR)."
+    },
+    {
+      "id": "fisher-1958-grouping",
+      "title": "On Grouping for Maximum Homogeneity",
+      "year": 1958,
+      "authors": [
+        "W. D. Fisher"
+      ],
+      "bibliography_key": "Fisher-1958",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "OPEN-DS-MARGINS-AT-OPTIMA",
+        "AUDIT-DS-MARGINS-AT-OPTIMA",
+        "DS-SCALAR-EFFICIENT-DP",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "DS-TILT-DUAL-CERTIFICATE",
+        "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
+        "DS-STRIP-DP-DELTA-CONSISTENCY",
+        "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY",
+        "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
+      ],
+      "status": "screened",
+      "note": "Verbatim (Brown scan pp. 789-792): optimal 1-D weighted SSE partitions are contiguous (appendix proof); the classical anchor for DS8 and DS15 Prop 4's interval-optimum leg."
+    },
+    {
+      "id": "gajjar-radhakrishnan-2019",
+      "title": "Parametric Shortest Paths in Planar Graphs",
+      "year": 2019,
+      "authors": [
+        "K. Gajjar",
+        "J. Radhakrishnan"
+      ],
+      "bibliography_key": "Gajjar-Radhakrishnan-2019",
+      "source_of_discovery": "concept-search:parametric-dp-boundary",
+      "cites_relevant": [
+        "carstensen-1983"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "DS-TILT-DUAL-CERTIFICATE",
+        "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY",
+        "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
+      ],
+      "status": "screened",
+      "note": "FOCS 2019:876-895; primary author preprint and publisher metadata checked 1 Sep 2026. Linear-parameter planar shortest paths can have n^{Omega(log n)} envelope pieces. Boundary warning only: not a lower bound for the restricted interval-segmentation DAG with quadratic costs."
+    },
+    {
+      "id": "mease-nair-2006-unique",
+      "title": "Unique optimal partitions of distributions and connections to hazard rates and stochastic ordering",
+      "year": 2006,
+      "authors": [
+        "D. Mease",
+        "V. N. Nair"
+      ],
+      "bibliography_key": "Mease-Nair-2006",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "OPEN-DS-MARGINS-AT-OPTIMA",
+        "AUDIT-DS-MARGINS-AT-OPTIMA",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+      ],
+      "status": "screened",
+      "note": "Verbatim (full text): log-concave-density uniqueness via likelihood-ratio ordering; refutes Eubank-1988's weaker condition by a three-stationary-point counterexample - pins DS15 assumption (S) to density log-concavity."
+    },
+    {
+      "id": "blanchard-jaffe-zhivotovskiy-2025",
+      "title": "Consistency and inconsistency in k-means clustering",
+      "year": 2025,
+      "authors": [
+        "M. Blanchard",
+        "A. Q. Jaffe",
+        "N. Zhivotovskiy"
+      ],
+      "bibliography_key": "Blanchard-Jaffe-Zhivotovskiy-2025",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "OPEN-DS-MARGINS-AT-OPTIMA",
+        "AUDIT-DS-MARGINS-AT-OPTIMA",
+        "OPEN-DS-MARGINS-NONCENTERED"
+      ],
+      "status": "screened",
+      "note": "Abstract: balance constraints restore k-means consistency at no asymptotic cost - closest published structure to DS15 Prop 6; engage before publication."
+    },
+    {
+      "id": "flury-1990-pp",
+      "title": "Principal points",
+      "year": 1990,
+      "authors": [
+        "B. A. Flury"
+      ],
+      "bibliography_key": "Flury-1990",
+      "source_of_discovery": "targeted-packet-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "tarpey-li-flury-1995-ss",
+        "tarpey-flury-1996-sc"
+      ],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
+        "DS-STABLE-BASINS-LCM-CLASSIFICATION"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Primary text reviewed 31 Aug 2026. Defines globally MSE-optimal principal points; proves the two-point elliptical leading-eigenvector result and dim span <= k-1, but states the k>2 leading principal-subspace result only as a conjecture. No general existence or arbitrary self-consistent-point theorem."
+    },
+    {
+      "id": "tarpey-flury-1996-sc",
+      "title": "Self-consistency: a fundamental concept in statistics",
+      "year": 1996,
+      "authors": [
+        "T. Tarpey",
+        "B. Flury"
+      ],
+      "bibliography_key": "Tarpey-Flury-1996",
+      "source_of_discovery": "targeted-packet-search",
+      "cites_relevant": [
+        "flury-1990-pp",
+        "hastie-stuetzle-1989",
+        "tarpey-li-flury-1995-ss"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
+        "DS-STABLE-BASINS-FIXED-POINT-GATE",
+        "DS-STABLE-BASINS-LCM-CLASSIFICATION"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Primary text reviewed 31 Aug 2026. Credits Hastie-Stuetzle for the term and defines E[X|Y]=Y. Theorem 4.1 under LCM plus projection-measurability forces the q-dimensional support span of self-consistent Y to be spanned by q covariance eigenvectors, not necessarily the leading q."
+    },
+    {
+      "id": "tarpey-li-flury-1995-ss",
+      "title": "Principal points and self-consistent points of elliptical distributions",
+      "year": 1995,
+      "authors": [
+        "T. Tarpey",
+        "L. Li",
+        "B. D. Flury"
+      ],
+      "bibliography_key": "Tarpey-Li-Flury-1995",
+      "source_of_discovery": "targeted-packet-search",
+      "cites_relevant": [
+        "flury-1990-pp"
+      ],
+      "cited_by_relevant": [
+        "tarpey-flury-1996-sc",
+        "tarpey-loperfido-2015"
+      ],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
+        "DS-STABLE-BASINS-LCM-CLASSIFICATION"
+      ],
+      "status": "screened",
+      "note": "Theorem scope cross-checked 31 Aug 2026 against Tarpey-Flury 1996 primary text and later explicit restatements: n principal points of a centered elliptical law spanning dimension q lie in the leading q-eigenspace. Primary proof not retrieved; do not silently extend the leading-eigenspace conclusion to every self-consistent point set."
+    },
+    {
+      "id": "serinko-babu-1992-jmva",
+      "title": "Weak limit theorems for univariate k-mean clustering under a nonregular condition",
+      "year": 1992,
+      "authors": [
+        "R. J. Serinko",
+        "G. J. Babu"
+      ],
+      "bibliography_key": "Serinko-Babu-1992",
+      "source_of_discovery": "targeted-packet-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "DS-STABLE-BASINS-FIXED-POINT-GATE",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Primary PDF read verbatim 31 Aug 2026: split-function formulation of 1-D k-means over ordered cutpoints, unique global optimum, singular-Hessian nonregular case with n^{1/4} rates. Per-law degeneracy asymptotics, not a class-wide forcing theorem."
+    },
+    {
+      "id": "bickel-klaassen-ritov-wellner-1993",
+      "title": "Efficient and Adaptive Estimation for Semiparametric Models",
+      "year": 1993,
+      "authors": [
+        "P. J. Bickel",
+        "C. A. J. Klaassen",
+        "Y. Ritov",
+        "J. A. Wellner"
+      ],
+      "bibliography_key": "Bickel-Klaassen-Ritov-Wellner-1993",
+      "source_of_discovery": "concept-search:efficient-score-orthogonality",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "score-compression",
+      "relevant_claims": [
+        "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
+        "DS-STABLE-BASINS-FIXED-POINT-GATE"
+      ],
+      "status": "screened",
+      "note": "Classical source for efficient scores as L2 residuals orthogonal to nuisance tangent directions. Re-attribution boundary: this covers the full-data projection/normal equation, not DS17's binned tilt residual or hard-partition obstruction."
+    },
+    {
+      "id": "esary-proschan-walkup-1967",
+      "title": "Association of Random Variables, with Applications",
+      "year": 1967,
+      "authors": [
+        "J. D. Esary",
+        "F. Proschan",
+        "D. W. Walkup"
+      ],
+      "bibliography_key": "Esary-Proschan-Walkup-1967",
+      "source_of_discovery": "backward:jakubowski-2021-chebyshev",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "jakubowski-2021-chebyshev"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "DS-STABLE-BASINS-CENTERED-OBSTRUCTION"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Primary paper reviewed for the definition and closure properties of association. It supplies the historical covariance-sign language; it does not contain the exact equality theorem DS17 consumes."
+    },
+    {
+      "id": "hastie-stuetzle-1989",
+      "title": "Principal Curves",
+      "year": 1989,
+      "authors": [
+        "T. Hastie",
+        "W. Stuetzle"
+      ],
+      "bibliography_key": "Hastie-Stuetzle-1989",
+      "source_of_discovery": "backward:tarpey-flury-1996-sc",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "tarpey-flury-1996-sc"
+      ],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "DS-STABLE-BASINS-FIXED-POINT-GATE"
+      ],
+      "status": "screened",
+      "note": "Origin of self-consistent curves and of the terminology explicitly credited by Tarpey-Flury 1996. Vocabulary provenance only; no finite point, nuisance, or profiled-information theorem."
+    },
+    {
+      "id": "jakubowski-2021-chebyshev",
+      "title": "A complement to the Chebyshev integral inequality",
+      "year": 2021,
+      "authors": [
+        "A. Jakubowski"
+      ],
+      "bibliography_key": "Jakubowski-2021",
+      "source_of_discovery": "concept-search:chebyshev-equality",
+      "cites_relevant": [
+        "esary-proschan-walkup-1967"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "DS-STABLE-BASINS-CENTERED-OBSTRUCTION"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Primary text and proof read verbatim 31 Aug 2026. Theorem 1.2 is exactly the monotone-covariance equality condition, proved via an iid-copy product identity. It supports DS17's conditional equality step after conditioning; the cell-measurability and rank consequences remain project-specific."
+    },
+    {
+      "id": "liu-pages-2020",
+      "title": "Convergence rate of optimal quantization and application to the clustering performance of the empirical measure",
+      "year": 2020,
+      "authors": [
+        "Y. Liu",
+        "G. Pagès"
+      ],
+      "bibliography_key": "Liu-Pages-2020",
+      "source_of_discovery": "targeted-packet-triangulation",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "OPEN-DS-MARGINS-AT-OPTIMA",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Primary JMLR text used for optimal-codebook consistency and scalar uniqueness/positive-Hessian context. Its additive quadratic-distortion results do not supply DS18's profiled Fisher sandwich, equality chain, or exact finite exchange stability."
+    },
+    {
+      "id": "sabin-gray-1986",
+      "title": "Global convergence and empirical consistency of the generalized Lloyd algorithm",
+      "year": 1986,
+      "authors": [
+        "M. J. Sabin",
+        "R. M. Gray"
+      ],
+      "bibliography_key": "Sabin-Gray-1986",
+      "source_of_discovery": "targeted-packet-triangulation",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "OPEN-DS-FINITE-POP-BRIDGE",
+        "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+        "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+      ],
+      "status": "screened",
+      "note": "Closest structural precedent for generalized Lloyd set convergence and empirical consistency under source-independent convex additive distortion. It has no nuisance Schur complement, profiled-information equality chain, or exact finite ordinary-exchange conclusion."
+    },
+    {
+      "id": "tarpey-loperfido-2015",
+      "title": "Self-consistency and a generalized principal subspace theorem",
+      "year": 2015,
+      "authors": [
+        "T. Tarpey",
+        "N. Loperfido"
+      ],
+      "bibliography_key": "Tarpey-Loperfido-2015",
+      "source_of_discovery": "forward:tarpey-li-flury-1995-ss",
+      "cites_relevant": [
+        "tarpey-flury-1996-sc",
+        "tarpey-li-flury-1995-ss"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
+        "DS-STABLE-BASINS-LCM-CLASSIFICATION"
+      ],
+      "status": "screened",
+      "note": "Missed forward source from round 4. Generalizes principal-subspace results through self-consistency to location-mixture/skew-normal settings. It is closer on the beyond-elliptical axis, but the objective remains squared approximation error and no nuisance/profiled fixed point appears. Primary theorem text remains library-access pending."
+    },
+    {
+      "id": "pukelsheim-titterington-1983",
+      "title": "General Differential and Lagrangian Theory for Optimal Experimental Design",
+      "year": 1983,
+      "authors": [
+        "F. Pukelsheim",
+        "D. M. Titterington"
+      ],
+      "bibliography_key": "Pukelsheim-Titterington-1983",
+      "source_of_discovery": "concept-search:ds-design-duality-audit19",
+      "cites_relevant": [
+        "silvey-titterington-1973"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "optimal-design",
+      "relevant_claims": [
+        "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "DS-TILT-DUAL-CERTIFICATE",
+        "DS-TILT-DUAL-STRONG-DUALITY-FAILS"
+      ],
+      "status": "screened",
+      "note": "Ann. Statist. 11(4):1060-1068; primary record checked 2 Sep 2026. Subgradient/Lagrangian duality over the convex design-measure set; comparison template only, since hard partitions defeat the interchange (CE-DS-TILT-DUAL-GAP-001/-002)."
+    },
+    {
+      "id": "megiddo-1983",
+      "title": "Applying Parallel Computation Algorithms in the Design of Serial Algorithms",
+      "year": 1983,
+      "authors": [
+        "N. Megiddo"
+      ],
+      "bibliography_key": "Megiddo-1983",
+      "source_of_discovery": "concept-search:parametric-search-audit19",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "toledo-1993"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "DS-TILT-DUAL-CERTIFICATE",
+        "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY"
+      ],
+      "status": "screened",
+      "note": "J. ACM 30(4):852-865; primary record checked 2 Sep 2026. Parametric search; lifts the fixed-tilt interval DP to an arithmetic-polynomial exact dual minimiser at d_lambda=1."
+    },
+    {
+      "id": "toledo-1993",
+      "title": "Maximizing Non-Linear Concave Functions in Fixed Dimension",
+      "year": 1993,
+      "authors": [
+        "S. Toledo"
+      ],
+      "bibliography_key": "Toledo-1993",
+      "source_of_discovery": "concept-search:parametric-search-audit19",
+      "cites_relevant": [
+        "megiddo-1983"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "DS-TILT-DUAL-CERTIFICATE",
+        "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Complexity in Numerical Optimization (1993) pp. 429-447; FOCS 1992 extended abstract. Primary text read 2 Sep 2026 (abstract, section 1, section 2 definitions): fixed dimension, piecewise polynomial concave F, evaluator with bounded-degree polynomial comparisons; maximum in time polynomial in the evaluator's arithmetic operations. Settles fixed d_lambda, variable K exact minimisation of the tilt dual in arithmetic (not bit) complexity."
+    },
+    {
+      "id": "gronlund-etal-2017",
+      "title": "Fast Exact k-Means, k-Medians and Bregman Divergence Clustering in 1D",
+      "year": 2017,
+      "authors": [
+        "A. Gronlund",
+        "K. G. Larsen",
+        "A. Mathiasen",
+        "J. S. Nielsen",
+        "S. Schneider",
+        "M. Song"
+      ],
+      "bibliography_key": "Gronlund-etal-2017",
+      "source_of_discovery": "concept-search:1d-kmeans-exact-audit19",
+      "cites_relevant": [
+        "wang-song-2011",
+        "fisher-1958-grouping"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "DS-TILT-DUAL-CERTIFICATE",
+        "DS-SCALAR-EFFICIENT-DP",
+        "DS-STRIP-DP-DELTA-CONSISTENCY"
+      ],
+      "status": "screened",
+      "note": "arXiv:1701.07204; primary text pp. 1-2 read 2 Sep 2026. Contiguous DP O(kn^2); O(n log n + kn) / O(kn) sorted via monotone-matrix search; weighted scalar quantization form covered."
+    },
+    {
+      "id": "wang-song-2011",
+      "title": "Ckmeans.1d.dp: Optimal k-means Clustering in One Dimension by Dynamic Programming",
+      "year": 2011,
+      "authors": [
+        "H. Wang",
+        "M. Song"
+      ],
+      "bibliography_key": "Wang-Song-2011",
+      "source_of_discovery": "concept-search:1d-kmeans-exact-audit19",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "gronlund-etal-2017"
+      ],
+      "research_area": "vector-quantization",
+      "relevant_claims": [
+        "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "DS-TILT-DUAL-CERTIFICATE",
+        "DS-SCALAR-EFFICIENT-DP"
+      ],
+      "status": "screened",
+      "note": "The R Journal 3(2):29-33; primary record checked 2 Sep 2026. The O(kn^2) contiguous DP of DS19.2."
+    },
+    {
+      "id": "carstensen-1983",
+      "title": "Complexity of some parametric integer and network programming problems",
+      "year": 1983,
+      "authors": [
+        "P. J. Carstensen"
+      ],
+      "bibliography_key": "Carstensen-1983",
+      "source_of_discovery": "backward:gajjar-radhakrishnan-2019",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "gajjar-radhakrishnan-2019"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
+        "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY"
+      ],
+      "status": "screened",
+      "note": "Ph.D. thesis, University of Michigan; secondary record only (2 Sep 2026). n^{Omega(log n)} parametric shortest-path breakpoints with matching upper bound; envelope warning, not a bound for the tilted interval DP."
+    },
+    {
+      "id": "vandervaart-1998",
+      "title": "Asymptotic Statistics",
+      "year": 1998,
+      "authors": [
+        "A. W. van der Vaart"
+      ],
+      "bibliography_key": "vanderVaart-1998",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
+        "OPEN-RETENTION-UNCERTAINTY"
+      ],
+      "status": "screened",
+      "note": "Delta method Thm 3.1 (primary text via the author's notes with identical numbering); sample variance under E X^4 < inf is Example 3.2; Ch. 20 functional delta method; Thm 5.23 number secondary. Verified in the 5 Sep 2026 audit."
+    },
+    {
+      "id": "cramer-1946",
+      "title": "Mathematical Methods of Statistics",
+      "year": 1946,
+      "authors": [
+        "H. Cramer"
+      ],
+      "bibliography_key": "Cramer-1946",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "serfling-1980"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
+        "OPEN-RETENTION-UNCERTAINTY"
+      ],
+      "status": "screened",
+      "note": "Ch. 28 'Asymptotic properties of sampling distributions', Sec. 28.4 'Functions of moments' confirmed in primary text (5 Sep 2026 audit); Sec. 27.4 and 27.7 are the finite-sample companions."
+    },
+    {
+      "id": "serfling-1980",
+      "title": "Approximation Theorems of Mathematical Statistics",
+      "year": 1980,
+      "authors": [
+        "R. J. Serfling"
+      ],
+      "bibliography_key": "Serfling-1980",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [
+        "cramer-1946"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
+        "OPEN-RETENTION-UNCERTAINTY"
+      ],
+      "status": "screened",
+      "note": "Ch. 3 'Transformations of given statistics' (p. 117, primary record). Sec. 3.3 Theorem A/B labels unresolved after the 5 Sep 2026 audit; cite the section, not the theorem letter, until read."
+    },
+    {
+      "id": "hampel-etal-1986",
+      "title": "Robust Statistics: The Approach Based on Influence Functions",
+      "year": 1986,
+      "authors": [
+        "F. R. Hampel",
+        "E. M. Ronchetti",
+        "P. J. Rousseeuw",
+        "W. A. Stahel"
+      ],
+      "bibliography_key": "Hampel-Ronchetti-Rousseeuw-Stahel-1986",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
+        "OPEN-RETENTION-UNCERTAINTY"
+      ],
+      "status": "screened",
+      "note": "Asymptotic variance as the integral of the squared influence function, cited to p. 85 within Sec. 2.1 (secondary); Ch. 2 begins p. 78 (primary record). Equation numbers unresolved (5 Sep 2026 audit)."
+    },
+    {
+      "id": "wishart-1932",
+      "title": "A note on the distribution of the correlation ratio",
+      "year": 1932,
+      "authors": [
+        "J. Wishart"
+      ],
+      "bibliography_key": "Wishart-1932",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "kelley-2007"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
+        "OPEN-RETENTION-UNCERTAINTY"
+      ],
+      "status": "screened",
+      "note": "Normal-theory exact distribution of the correlation ratio; lineage only, does not transfer. Existence verified from the Biometrika contents index; text not read. Journal record confirmed (primary record, 5 Sep 2026 audit); normal-theory content not read."
+    },
+    {
+      "id": "kelley-2007",
+      "title": "Confidence intervals for standardized effect sizes: theory, application, and implementation",
+      "year": 2007,
+      "authors": [
+        "K. Kelley"
+      ],
+      "bibliography_key": "Kelley-2007",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [
+        "wishart-1932"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
+        "OPEN-RETENTION-UNCERTAINTY"
+      ],
+      "status": "screened",
+      "note": "Noncentral-F intervals for eta-squared under normal-theory ANOVA; does not transfer. Verified at jstatsoft.org (v020i08)."
+    },
+    {
+      "id": "bhattacharya-ghosh-1978",
+      "title": "On the validity of the formal Edgeworth expansion",
+      "year": 1978,
+      "authors": [
+        "R. N. Bhattacharya",
+        "J. K. Ghosh"
+      ],
+      "bibliography_key": "Bhattacharya-Ghosh-1978",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [
+        "cramer-1946"
+      ],
+      "cited_by_relevant": [
+        "hall-1992"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "RETENTION-PLUGIN-COVERAGE-DOOR3",
+        "AUDIT-SCORE-ORACLE-ROBUSTNESS"
+      ],
+      "status": "screened",
+      "note": "Edgeworth expansion for smooth functions of sample-mean vectors; backdrop of the O6.7 second-order readings. Abstract read (5 Sep 2026 audit)."
+    },
+    {
+      "id": "hall-1992",
+      "title": "The Bootstrap and Edgeworth Expansion",
+      "year": 1992,
+      "authors": [
+        "P. Hall"
+      ],
+      "bibliography_key": "Hall-1992",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [
+        "bhattacharya-ghosh-1978"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "RETENTION-PLUGIN-COVERAGE-DOOR3",
+        "AUDIT-SCORE-ORACLE-ROBUSTNESS"
+      ],
+      "status": "screened",
+      "note": "Smooth function model; studentized-statistic skewness (p. 76, section unresolved). Explains the measured sign flip of the studentized skew. Record only (5 Sep 2026 audit)."
+    },
+    {
+      "id": "donner-koval-1980",
+      "title": "The large sample variance of an intraclass correlation",
+      "year": 1980,
+      "authors": [
+        "A. Donner",
+        "J. J. Koval"
+      ],
+      "bibliography_key": "Donner-Koval-1980",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
+        "AUDIT-SCORE-ORACLE-ROBUSTNESS"
+      ],
+      "status": "screened",
+      "note": "Delta-method variance of the ANOVA intraclass correlation under a normal random-effects model; nearest applied kin of O6, nothing transfers beyond the algebraic shape. Journal record (5 Sep 2026 audit)."
+    },
+    {
+      "id": "radhakrishnan-kshirsagar-1981",
+      "title": "Influence functions for certain parameters in multivariate analysis",
+      "year": 1981,
+      "authors": [
+        "R. Radhakrishnan",
+        "A. M. Kshirsagar"
+      ],
+      "bibliography_key": "Radhakrishnan-Kshirsagar-1981",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [
+        "campbell-1978"
+      ],
+      "cited_by_relevant": [
+        "romanazzi-1992"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Influence functions of generalized variance, MANOVA noncentrality matrix, canonical correlations, Wilks' Lambda; abstract read (5 Sep 2026 vector-packet pass)."
+    },
+    {
+      "id": "campbell-1978",
+      "title": "The influence function as an aid in outlier detection in discriminant analysis",
+      "year": 1978,
+      "authors": [
+        "N. A. Campbell"
+      ],
+      "source_of_discovery": "backward:radhakrishnan-kshirsagar-1981",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "radhakrishnan-kshirsagar-1981"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Influence function of Mahalanobis D^2 and discriminant coefficients, two normal populations; J. R. Statist. Soc. C 27(3):251-258. Record only."
+    },
+    {
+      "id": "romanazzi-1992",
+      "title": "Influence in canonical correlation analysis",
+      "year": 1992,
+      "authors": [
+        "M. Romanazzi"
+      ],
+      "bibliography_key": "Romanazzi-1992",
+      "source_of_discovery": "forward:radhakrishnan-kshirsagar-1981",
+      "cites_relevant": [
+        "radhakrishnan-kshirsagar-1981"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Influence function of each squared canonical correlation via generalized-eigenproblem perturbation; Psychometrika 57(2):237-259; abstract read."
+    },
+    {
+      "id": "muirhead-waternaux-1980",
+      "title": "Asymptotic distributions in canonical correlation analysis and other multivariate procedures for nonnormal populations",
+      "year": 1980,
+      "authors": [
+        "R. J. Muirhead",
+        "C. M. Waternaux"
+      ],
+      "bibliography_key": "Muirhead-Waternaux-1980",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "fang-krishnaiah-1982",
+        "seo-kanda-fujikoshi-1994",
+        "seo-kanda-fujikoshi-1995",
+        "cleroux-ducharme-1989",
+        "ogasawara-2007"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "CCA asymptotics under finite fourth moments, fourth cumulants, elliptical case; Biometrika 67(1):31-43; abstract read."
+    },
+    {
+      "id": "fang-krishnaiah-1982",
+      "title": "Asymptotic distributions of functions of the eigenvalues of some random matrices for nonnormal populations",
+      "year": 1982,
+      "authors": [
+        "C. Fang",
+        "P. R. Krishnaiah"
+      ],
+      "bibliography_key": "Fang-Krishnaiah-1982",
+      "source_of_discovery": "forward:muirhead-waternaux-1980",
+      "cites_relevant": [
+        "muirhead-waternaux-1980"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Functions of eigenvalues of covariance/MANOVA/CCA matrices under nonnormality; JMVA 12(1):39-63; record only, text unread."
+    },
+    {
+      "id": "seo-kanda-fujikoshi-1994",
+      "title": "The effects on the distributions of sample canonical correlations under nonnormality",
+      "year": 1994,
+      "authors": [
+        "T. Seo",
+        "T. Kanda",
+        "Y. Fujikoshi"
+      ],
+      "source_of_discovery": "forward:muirhead-waternaux-1980",
+      "cites_relevant": [
+        "muirhead-waternaux-1980"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Expansions for functions of canonical correlations under nonnormality (perturbation method); Comm. Statist. 23(9):2615-2628; abstract read."
+    },
+    {
+      "id": "seo-kanda-fujikoshi-1995",
+      "title": "The effects of nonnormality on tests for dimensionality in canonical correlation and MANOVA models",
+      "year": 1995,
+      "authors": [
+        "T. Seo",
+        "T. Kanda",
+        "Y. Fujikoshi"
+      ],
+      "bibliography_key": "Seo-Kanda-Fujikoshi-1995",
+      "source_of_discovery": "forward:muirhead-waternaux-1980",
+      "cites_relevant": [
+        "muirhead-waternaux-1980"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Dimensionality (rank) tests under nonnormality: the singular-I_Z endpoint; JMVA 52(2):325-337; record."
+    },
+    {
+      "id": "cleroux-ducharme-1989",
+      "title": "Vector correlation for elliptical distributions",
+      "year": 1989,
+      "authors": [
+        "R. Cleroux",
+        "G. R. Ducharme"
+      ],
+      "source_of_discovery": "forward:muirhead-waternaux-1980",
+      "cites_relevant": [
+        "muirhead-waternaux-1980"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Asymptotic distribution of a vector-correlation measure under elliptical laws; Comm. Statist. 18(4):1441-1454; abstract read; adjacent."
+    },
+    {
+      "id": "ogasawara-2007",
+      "title": "Asymptotic expansions of the distributions of estimators in canonical correlation analysis under nonnormality",
+      "year": 2007,
+      "authors": [
+        "H. Ogasawara"
+      ],
+      "source_of_discovery": "forward:muirhead-waternaux-1980",
+      "cites_relevant": [
+        "muirhead-waternaux-1980"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Edgeworth expansions of CCA estimators, studentized forms, Rozeboom's between-set correlation; JMVA 98(9):1726-1750; secondary summary."
+    },
+    {
+      "id": "sugiura-fujikoshi-1969",
+      "title": "Asymptotic expansions of the non-null distributions of the likelihood ratio criteria for multivariate linear hypothesis and independence",
+      "year": 1969,
+      "authors": [
+        "N. Sugiura",
+        "Y. Fujikoshi"
+      ],
+      "bibliography_key": "Sugiura-Fujikoshi-1969",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "fujikoshi-2002"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Fixed-alternative expansion of the LR determinant-ratio criterion to order N^-2, normal theory; Ann. Math. Statist. 40(3):942-952; abstract read."
+    },
+    {
+      "id": "fujikoshi-2002",
+      "title": "Asymptotic expansions for the distributions of multivariate basic statistics and one-way MANOVA tests under nonnormality",
+      "year": 2002,
+      "authors": [
+        "Y. Fujikoshi"
+      ],
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [
+        "sugiura-fujikoshi-1969"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "One-way MANOVA tests under nonnormality; JSPI 108(1-2):263-282; record only."
+    },
+    {
+      "id": "magnus-neudecker-1999",
+      "title": "Matrix Differential Calculus with Applications in Statistics and Econometrics",
+      "year": 1999,
+      "authors": [
+        "J. R. Magnus",
+        "H. Neudecker"
+      ],
+      "bibliography_key": "Magnus-Neudecker-1999",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Ch. 8 s8.3 differential of a determinant, s8.4 inverse; contents scan in papers/local/."
+    },
+    {
+      "id": "anderson-2003",
+      "title": "An Introduction to Multivariate Statistical Analysis",
+      "year": 2003,
+      "authors": [
+        "T. W. Anderson"
+      ],
+      "bibliography_key": "Anderson-2003",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Generalized variance, LR criterion, MANOVA, canonical correlations, asymptotic roots; 2nd-ed. contents scan in papers/local/; 3rd-ed. numbering unverified."
+    },
+    {
+      "id": "cramer-nicewander-1979",
+      "title": "Some symmetric, invariant measures of multivariate association",
+      "year": 1979,
+      "authors": [
+        "E. M. Cramer",
+        "W. A. Nicewander"
+      ],
+      "bibliography_key": "Cramer-Nicewander-1979",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [
+        "vandenburg-lewis-1988"
+      ],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Symmetric invariant association measures are functions of the canonical correlations; Psychometrika 44(1):43-54; abstract read."
+    },
+    {
+      "id": "vandenburg-lewis-1988",
+      "title": "Some properties of two measures of multivariate association",
+      "year": 1988,
+      "authors": [
+        "W. van den Burg",
+        "C. Lewis"
+      ],
+      "source_of_discovery": "forward:cramer-nicewander-1979",
+      "cites_relevant": [
+        "cramer-nicewander-1979"
+      ],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Lambda-based vs Pillai-based symmetric indices; Psychometrika 53(1):109-122; abstract read; adjacent."
+    },
+    {
+      "id": "hotelling-1936",
+      "title": "Relations between two sets of variates",
+      "year": 1936,
+      "authors": [
+        "H. Hotelling"
+      ],
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Canonical correlations; vector correlation and alienation coefficients as determinant ratios; Biometrika 28(3-4):321-377; lineage record."
+    },
+    {
+      "id": "wilks-1932b",
+      "title": "Certain generalizations in the analysis of variance",
+      "year": 1932,
+      "authors": [
+        "S. S. Wilks"
+      ],
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Wilks' Lambda; Biometrika 24(3-4):471-494; lineage record."
+    },
+    {
+      "id": "kendall-stuart-1961",
+      "title": "The Advanced Theory of Statistics, Vol. 2: Inference and Relationship",
+      "year": 1961,
+      "authors": [
+        "M. G. Kendall",
+        "A. Stuart"
+      ],
+      "bibliography_key": "Kendall-Stuart-1961",
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "deeply_reviewed",
+      "note": "Ch. 26 s26.21-26.24 correlation ratio, decomposition (26.50), normal-theory F tests, no large-sample variance; primary text (archive.org OCR). Resolves the O6 gap."
+    },
+    {
+      "id": "cai-liang-zhou-2015",
+      "title": "Law of log determinant of sample covariance matrix and optimal estimation of differential entropy for high-dimensional Gaussian distributions",
+      "year": 2015,
+      "authors": [
+        "T. T. Cai",
+        "T. Liang",
+        "H. H. Zhou"
+      ],
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "screened",
+      "note": "Corollary 1: fixed-p CLT for log det of the sample covariance, Gaussian sampling; arXiv:1309.0482, PDF in papers/; adjacent (Gaussian, high-dimensional focus)."
+    },
+    {
+      "id": "liu-bathke-harrar-2011",
+      "title": "A nonparametric version of Wilks' lambda - asymptotic results and small sample approximations",
+      "year": 2011,
+      "authors": [
+        "C. Liu",
+        "A. C. Bathke",
+        "S. W. Harrar"
+      ],
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "OPEN-RETENTION-UNCERTAINTY",
+        "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+      ],
+      "status": "irrelevant",
+      "note": "Rank-based nonparametric Lambda; Statist. Probab. Lett. 81(10):1502-1506; different statistic; rejected."
+    }
+  ]
 }

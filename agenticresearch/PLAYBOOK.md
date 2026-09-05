@@ -7,12 +7,16 @@ not authorization to resume it. One session executes one selected packet.
 
 ```text
 Execute agenticresearch/WORK/active/RETENTION-PLUGIN-VECTOR.md in a fresh context.
-Check out branch score-oracle-robustness at its tip (the AUDIT-SCORE-ORACLE-ROBUSTNESS
-commit). Follow agenticresearch/README.md and protocols/theorem.md: falsify in exact
-arithmetic before proving, derive the matrix influence function of the geometric-mean
-retention yourself, and stop at proved, reduced or refuted with the O7 section, the
-claim nodes and the measured table. No src/ change, no public API. Close with a
-plain-English report of what was proved and what remains.
+Check out branch main at its tip (O6 proved and audited, PR #53; the literature-first
+pass of 5 September 2026 is in LITERATURE/audits/RETENTION-PLUGIN-CLT-FROZEN-VECTOR-5-September-2026.md).
+Follow agenticresearch/README.md and protocols/theorem.md. The method is prior art: cite
+the delta method, the determinant differential and the located influence-function and
+fourth-moment sources; do not re-prove them. Falsify in exact arithmetic first, treat the
+endpoints (singular I_Z, eta_D in {0,1}, sigma^2 = 0) before the limit theorem, derive the
+matrix influence function in cell moments and check it against O6.2 at d = 1 and against
+the cited forms at the evaluation law. Stop at proved, reduced or refuted with the O7
+section, the claim nodes and the measured table. No src/ change, no public API. Close
+with a plain-English report of what was proved, what is textbook, and what remains.
 ```
 
 ## Other session types

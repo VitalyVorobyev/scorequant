@@ -78,3 +78,22 @@ Screened and found irrelevant, with one-line reasons, so nobody re-screens them.
   instantiate projection off a nuisance tangent space, but add no theorem
   beyond the Bickel–Klaassen–Ritov–Wellner classical source and no hard-cell
   geometry; `DS-STABLE-BASINS-FIXED-POINT-GATE`.
+
+## RETENTION-PLUGIN-VECTOR literature-first pass — 5 September 2026
+
+- **Liu, Bathke & Harrar (2011), “A nonparametric version of Wilks'
+  lambda — asymptotic results and small sample approximations”** —
+  rank-based statistic, not the moment plug-in; assessed against the
+  future `RETENTION-PLUGIN-CLT-FROZEN-VECTOR`.
+- **Jolliffe & Lukudu (1993), “The influence of a single observation on
+  some standard test statistics”** — one-sample \(t\) and variance tests.
+- **Kshirsagar & Gupta (1990), “Direction and collinearity factors of
+  Wilks's \(\Lambda\) — a review”** — Bartlett factorization of \(\Lambda\)
+  under normal theory; no asymptotics without normality.
+- **Josse & Holmes (2016), “Measuring multivariate association and
+  beyond”, Statistical Surveys 10:132–167** — survey of association
+  coefficients (RV, dCov, kernel measures); no determinant-ratio
+  asymptotics.
+- **Anderson (1999), “Asymptotic theory for canonical correlation
+  analysis”, JMVA 70:1–29** — normal sampling only; Muirhead & Waternaux
+  (1980) is the fourth-moment source.

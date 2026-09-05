@@ -8,7 +8,7 @@
   "level": "information_accounting",
   "status": "open",
   "publication_status": "open",
-  "statement": "Develop influence-function or bootstrap confidence intervals for reported retention functionals (e.g. geometric-mean retention), handling the non-smoothness of hard assignment at cell boundaries, so retention is reported with error bars rather than as a point estimate. Settled special case (5 Sep 2026, RETENTION-PLUGIN-CLT-FROZEN-SCALAR): frozen rule, scalar true score, iid equally weighted oracle-score evaluation sample - the plug-in ratio is asymptotically normal with a consistent influence-function variance and a valid Wald interval whenever sigma^2 > 0. Still open: vector scores and the geometric-mean retention (det R)^(1/d) as a matrix functional of the same moments; rules refitted on the evaluation sample, where the boundary non-smoothness enters; weighted samples; any uncertainty statement without an oracle score; and the degenerate second-order limit of n(eta_hat - eta) when sigma^2 = 0 (eta in {0, 1} or two-atom cells), where the Wald interval is measured to be conservative with width O(1/n). The special case was independently audited 5 Sep 2026 (AUDITS/AUDIT-SCORE-ORACLE-ROBUSTNESS-001.md): verified with the sigma^2 = 0 wording hardened at eta = 0.",
+  "statement": "Develop influence-function or bootstrap confidence intervals for reported retention functionals (e.g. geometric-mean retention), handling the non-smoothness of hard assignment at cell boundaries, so retention is reported with error bars rather than as a point estimate. Settled special case (5 Sep 2026, RETENTION-PLUGIN-CLT-FROZEN-SCALAR): frozen rule, scalar true score, iid equally weighted oracle-score evaluation sample - the plug-in ratio is asymptotically normal with a consistent influence-function variance and a valid Wald interval whenever sigma^2 > 0. Still open: vector scores and the geometric-mean retention (det R)^(1/d) as a matrix functional of the same moments; rules refitted on the evaluation sample, where the boundary non-smoothness enters; weighted samples; any uncertainty statement without an oracle score; and the degenerate second-order limit of n(eta_hat - eta) when sigma^2 = 0 (eta in {0, 1} or two-atom cells), where the Wald interval is measured to be conservative with width O(1/n). The special case was independently audited 5 Sep 2026 (AUDITS/AUDIT-SCORE-ORACLE-ROBUSTNESS-001.md): verified with the sigma^2 = 0 wording hardened at eta = 0. Literature-first pass for the vector case run 5 Sep 2026 (LITERATURE/audits/RETENTION-PLUGIN-CLT-FROZEN-VECTOR-5-September-2026.md): the vector CLT is the delta method plus the determinant differential with influence functions already in Radhakrishnan & Kshirsagar (1981) and fourth-moment canonical-correlation asymptotics in Muirhead & Waternaux (1980); the geometric-mean form on a fixed partition with uncentred moments, the plug-in variance and the endpoints are the search gap the packet RETENTION-PLUGIN-VECTOR now targets.",
   "dependencies": [
     "PROXY-TRUE-RETAINED-FI",
     "INFO-RETENTION-SPECTRUM",
@@ -18,5 +18,16 @@
     "file": "OPEN_PROBLEMS.md",
     "section": "OP27. Finite-sample uncertainty for retention estimates"
   },
-  "programme": "P4"
+  "programme": "P4",
+  "literature": [
+    "Radhakrishnan-Kshirsagar-1981",
+    "Romanazzi-1992",
+    "Muirhead-Waternaux-1980",
+    "Fang-Krishnaiah-1982",
+    "Seo-Kanda-Fujikoshi-1995",
+    "Sugiura-Fujikoshi-1969",
+    "Magnus-Neudecker-1999",
+    "Anderson-2003",
+    "Cramer-Nicewander-1979"
+  ]
 }

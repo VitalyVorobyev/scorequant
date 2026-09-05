@@ -31,7 +31,8 @@
     "vanderVaart-1998",
     "Cramer-1946",
     "Serfling-1980",
-    "Hampel-Ronchetti-Rousseeuw-Stahel-1986"
+    "Hampel-Ronchetti-Rousseeuw-Stahel-1986",
+    "Kendall-Stuart-1961"
   ],
   "literature_search_status": "prior_art_found",
   "proof_location": {

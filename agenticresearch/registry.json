@@ -423,6 +423,46 @@
     "Donner-Koval-1980": {
       "title": "The large sample variance of an intraclass correlation",
       "note": "A. Donner and J. J. Koval, Biometrika 67(3):719-722, 1980. Delta-method variance of a between-over-total ratio under a normal random-effects model; nearest applied kin of O6. Registered 5 Sep 2026 (audit); journal record."
+    },
+    "Radhakrishnan-Kshirsagar-1981": {
+      "title": "Influence functions for certain parameters in multivariate analysis",
+      "note": "R. Radhakrishnan, A. M. Kshirsagar, Comm. Statist. Theory Methods 10(6):515-529, 1981. Influence functions of the generalized variance, the MANOVA noncentrality matrix and its eigenvalues, canonical correlations, Wilks' Lambda. Registered 5 Sep 2026 (vector-packet literature pass); abstract read."
+    },
+    "Romanazzi-1992": {
+      "title": "Influence in canonical correlation analysis",
+      "note": "M. Romanazzi, Psychometrika 57(2):237-259, 1992. Influence function of each squared canonical correlation via generalized-eigenproblem perturbation. Registered 5 Sep 2026; abstract read."
+    },
+    "Muirhead-Waternaux-1980": {
+      "title": "Asymptotic distributions in canonical correlation analysis and other multivariate procedures for nonnormal populations",
+      "note": "R. J. Muirhead, C. M. Waternaux, Biometrika 67(1):31-43, 1980. Canonical-correlation asymptotics under finite fourth moments. Registered 5 Sep 2026; abstract read."
+    },
+    "Fang-Krishnaiah-1982": {
+      "title": "Asymptotic distributions of functions of the eigenvalues of some random matrices for nonnormal populations",
+      "note": "C. Fang, P. R. Krishnaiah, J. Multivariate Anal. 12(1):39-63, 1982. Registered 5 Sep 2026; journal record only, text unread."
+    },
+    "Seo-Kanda-Fujikoshi-1995": {
+      "title": "The effects of nonnormality on tests for dimensionality in canonical correlation and MANOVA models",
+      "note": "T. Seo, T. Kanda, Y. Fujikoshi, J. Multivariate Anal. 52(2):325-337, 1995. The singular-I_Z endpoint as a dimensionality test. Registered 5 Sep 2026; journal record."
+    },
+    "Sugiura-Fujikoshi-1969": {
+      "title": "Asymptotic expansions of the non-null distributions of the likelihood ratio criteria for multivariate linear hypothesis and independence",
+      "note": "N. Sugiura, Y. Fujikoshi, Ann. Math. Statist. 40(3):942-952, 1969. Fixed-alternative expansion of the determinant-ratio criterion, normal theory. Registered 5 Sep 2026; abstract read."
+    },
+    "Magnus-Neudecker-1999": {
+      "title": "Matrix Differential Calculus with Applications in Statistics and Econometrics",
+      "note": "J. R. Magnus, H. Neudecker, Wiley, 1988/1999 (3rd ed. 2019). Ch. 8 s8.3 differential of a determinant, s8.4 of an inverse. Registered 5 Sep 2026; contents scan (papers/local/)."
+    },
+    "Anderson-2003": {
+      "title": "An Introduction to Multivariate Statistical Analysis",
+      "note": "T. W. Anderson, Wiley, 3rd ed. 2003 (2nd ed. 1984). Generalized variance s7.5, LR criterion s8.3-8.5, MANOVA s8.9, canonical correlations ch. 12, asymptotic roots s13.5-13.6. Registered 5 Sep 2026; 2nd-ed. contents scan (papers/local/); 3rd-ed. numbering unverified."
+    },
+    "Cramer-Nicewander-1979": {
+      "title": "Some symmetric, invariant measures of multivariate association",
+      "note": "E. M. Cramer, W. A. Nicewander, Psychometrika 44(1):43-54, 1979. Symmetric invariant association measures are functions of the canonical correlations. Registered 5 Sep 2026; abstract read."
+    },
+    "Kendall-Stuart-1961": {
+      "title": "The Advanced Theory of Statistics, Vol. 2: Inference and Relationship",
+      "note": "M. G. Kendall, A. Stuart, Griffin, 1961. Ch. 26 s26.21-26.24: correlation ratio, decomposition (26.50), normal-theory F tests; no large-sample variance. Registered 5 Sep 2026; primary text (archive.org OCR)."
     }
   },
   "agent_usage": {

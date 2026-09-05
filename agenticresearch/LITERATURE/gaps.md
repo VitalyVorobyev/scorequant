@@ -85,10 +85,34 @@ Communities, venues, or periods suspected under-covered by the current graph.
   strata and may hold a rigidity lemma in exactly the form DS18 needs. It sits
   on a terminology island from the quantization literature and is invisible to
   the standing vocabulary in `protocols/literature.md`.
-- **Two unresolved primary-text items for O6 (5 September 2026 audit).**
-  Serfling (1980) §3.3: which of Theorem A / Theorem B is the real-valued
-  delta method needing only differentiability at the point; Kendall &
-  Stuart Vol. 2 Ch. 26: the section giving the correlation ratio's
-  large-sample variance and whether a non-normal moment-based form exists.
-  Both need a physical or lending copy; every web route returned no text.
+- **One unresolved primary-text item for O6 (5 September 2026 audit;
+  retried the same day).** Serfling (1980) §3.3: which of Theorem A /
+  Theorem B is the real-valued delta method needing only differentiability
+  at the point — still needs a physical or lending copy (Google Books
+  search-inside returns no snippet, the archive copy is lending-only).
+  *Resolved:* Kendall & Stuart Vol. 2 (1961) §26.21–26.24 define the
+  correlation ratio and give Fisher's normal-theory \(F\) tests only; **no
+  large-sample variance and no moment-based non-normal form exist there**
+  (`Kendall-Stuart-1961`, primary text). Vol. 1 Chapter 10 was not checked.
 
+
+## After the RETENTION-PLUGIN-VECTOR literature-first pass — 5 September 2026
+
+- **Two load-bearing texts are known by abstract or record only.**
+  Radhakrishnan & Kshirsagar (1981) (the \(\Lambda\)/noncentrality-matrix
+  influence functions) and Fang & Krishnaiah (1982) (functions of
+  eigenvalues under nonnormality) are paywalled; O7 should cite them for
+  the method only after the statements are read. Fujikoshi (2002) and
+  Ogasawara (2007) are in the same state.
+- **Anderson 3rd-edition numbering is unverified.** Section titles were
+  checked on the 1984 contents scan; the theorem giving the sample
+  covariance's asymptotic law under finite fourth moments (the packet's
+  "Anderson 2003 §3") has no verified number.
+- **Cramer & Nicewander (1979): exact measure list unread.** Whether the
+  geometric mean of the squared canonical correlations is one of their
+  ordered measures is unknown; it decides whether \(\eta_D\) has a name in
+  the association-measure literature.
+- **Second citation hop not run.** Citers of Fang & Krishnaiah (1982) and
+  of Seo, Kanda & Fujikoshi (1995) were not screened; the fixed-partition
+  CCA-with-indicators case (canonical discriminant analysis under
+  nonnormality) may sit there.

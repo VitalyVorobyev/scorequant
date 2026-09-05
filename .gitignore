@@ -18,6 +18,8 @@ website/static/runtime/pyodide/
 website/static/runtime/wheels/
 flowcyt-results/
 papers/VenkTongSwami_Quant_06CISS.pdf
+# Publisher scans and catalogue pages held for the literature record; see papers/README.md.
+papers/local/
 
 # Copied from docs/examples/assets/ by website/scripts/generate_walkthroughs.py;
 # generated on every build, so not committed a second time.

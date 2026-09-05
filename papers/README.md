@@ -19,6 +19,7 @@ PMLR open-access proceedings. Publisher-only papers are listed with their DOI in
 | `telgarsky_vattani_2010_hartigan_kmeans_pmlr_v9.pdf` | M. Telgarsky, A. Vattani. "Hartigan's Method: k-means Clustering without Voronoi." AISTATS, PMLR 9, 820–827 (2010). |
 | `barnes_han_ozgur_2019_fisher_communication_constraints_arXiv1902.02890.pdf` | L. P. Barnes, Y. Han, A. Özgür. "Lower Bounds for Learning Distributions under Communication Constraints via Fisher Information." JMLR 21(236) (2020). arXiv:1902.02890. Extends the Allerton 2018 quantized-Fisher-information geometry below. |
 | `the-equivalence-of-two-extremum-problems.pdf` | J. Kiefer, J. Wolfowitz. "The Equivalence of Two Extremum Problems." Canadian J. Math. 12, 363–366 (1960). doi:10.4153/CJM-1960-030-4. Origin of the D-/G-optimality equivalence theorem. |
+| `cai_liang_zhou_2015_log_determinant_sample_covariance_arXiv1309.0482.pdf` | T. T. Cai, T. Liang, H. H. Zhou. "Law of log determinant of sample covariance matrix and optimal estimation of differential entropy for high-dimensional Gaussian distributions." J. Multivariate Anal. 137, 161–172 (2015). arXiv:1309.0482. Corollary 1: fixed-dimension CLT for the log determinant (Gaussian). Screened for the vector retention packet, 5 Sep 2026. |
 
 ## Referenced, not redistributable here (use the DOI)
 
@@ -44,3 +45,21 @@ PMLR open-access proceedings. Publisher-only papers are listed with their DOI in
 - J. Max. "Quantizing for minimum distortion." IRE Trans. Inf. Theory 6(1), 7–12 (1960). doi:10.1109/TIT.1960.1057548.
 - J. N. Tsitsiklis. "Extremal properties of likelihood-ratio quantizers." IEEE Trans. Commun. 41(4), 550–558 (1993). doi:10.1109/26.223779. (Detection-side analogue: sufficiency of likelihood-ratio space for quantizer design.)
 - R. M. Gray, D. L. Neuhoff. "Quantization." IEEE Trans. Inf. Theory 44(6), 2325–2383 (1998). doi:10.1109/18.720541. (Canonical survey of quantization theory.)
+
+## Held locally, not committed (`papers/local/`, gitignored)
+
+Publisher scans, catalogue contents pages and author-hosted notes that are
+not ours to redistribute. Each entry says what it is and what was read from
+it, so the next session need not re-fetch it. Re-download instructions are
+in `agenticresearch/LITERATURE/audits/` files of the same date.
+
+| File | What it is | What was used |
+| --- | --- | --- |
+| `anderson_1984_multivariate_2nd_ed_toc_gbv.pdf` | GBV catalogue scan of the contents of T. W. Anderson, *An Introduction to Multivariate Statistical Analysis*, 2nd ed. (1984). | Section titles §7.5, §8.3–8.5, §8.9, §12.2–12.4, §13.5–13.6 (registry key `Anderson-2003`). |
+| `magnus_neudecker_matrix_differential_calculus_toc_gbv.pdf` | GBV catalogue scan of the contents of Magnus & Neudecker, *Matrix Differential Calculus* (1988/1999 edition, not identified on the page). | Ch. 8 §8.3 determinant, §8.4 inverse; Ch. 9 §9.10 (key `Magnus-Neudecker-1999`). |
+| `vandervaart_1998_asymptotic_statistics_frontmatter_cup.pdf` | Cambridge University Press front matter and contents of van der Vaart, *Asymptotic Statistics* (1998). | Chapter 3 §3.1, Chapter 20 titles (key `vanderVaart-1998`, O6 audit). |
+| `vandervaart_mathematische_statistiek_lecture_notes.pdf` | A. W. van der Vaart, *Mathematische Statistiek*, author-hosted lecture notes (Dutch) with the book's numbering. | Theorem 3.1 (delta method) statement read here (O6 audit). |
+
+Also used but not stored: the archive.org OCR text of Kendall & Stuart
+Vol. 2 (1961), read in full for Chapter 26 (key `Kendall-Stuart-1961`); it
+is public on archive.org and 2 MB, so it is re-fetched on demand.

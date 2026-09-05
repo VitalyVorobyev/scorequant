@@ -125,3 +125,175 @@ estimator under the one-way random-effects model.
 ratio; the grouping is random and the law normal, so nothing beyond the
 algebraic shape transfers to O6's fixed partition of an oracle score.
 **Verification:** journal record (primary record), audit 5 Sep 2026.
+
+## Radhakrishnan & Kshirsagar (1981) — influence functions in multivariate analysis
+
+**Key:** Radhakrishnan-Kshirsagar-1981
+
+**Paper:** *Influence functions for certain parameters in multivariate
+analysis*, Communications in Statistics — Theory and Methods 10(6):515–529.
+doi:10.1080/03610928108828055.
+**Result:** closed-form Hampel influence functions for the generalized
+variance, the regression-coefficient matrix, the MANOVA noncentrality
+matrix \(\Sigma^{-1}\delta\) and its eigenvalues, canonical correlations,
+principal components and the parameters behind Pillai's statistic,
+Hotelling's \(T_0^2\) and Wilks' \(\Lambda\); \(r^2\), \(R^2\) and Mahalanobis
+\(D^2\) as special cases.
+**Use:** the matrix influence function named in O6.8 exists here in the
+centred several-populations form; at the evaluation law O7's \(I_Z\) is the
+between-group matrix, so the packet's \(\psi\) must reduce to theirs.
+**Verification:** abstract read (primary text, OpenAlex/T&F record);
+full text paywalled (5 Sep 2026 vector-packet literature pass).
+
+## Romanazzi (1992) — influence in canonical correlation analysis
+
+**Key:** Romanazzi-1992
+
+**Paper:** *Influence in canonical correlation analysis*, Psychometrika
+57(2):237–259. doi:10.1007/BF02294507.
+**Result:** perturbation theory of the generalized eigenproblem yields the
+influence function of each squared canonical correlation and canonical
+vector pair; three sample versions; the squared multiple correlation and
+correspondence-analysis eigenvalues as special cases.
+**Use:** second route to O7's influence function
+(\(\log\eta_D=d^{-1}\sum_i\log\rho_i^2\)); needs simple \(\rho_i\), which the
+determinant route does not.
+**Verification:** abstract read (primary text, Crossref), 5 Sep 2026.
+
+## Muirhead & Waternaux (1980) — canonical correlations without normality
+
+**Key:** Muirhead-Waternaux-1980
+
+**Paper:** *Asymptotic distributions in canonical correlation analysis and
+other multivariate procedures for nonnormal populations*, Biometrika
+67(1):31–43. doi:10.1093/biomet/67.1.31.
+**Result:** for populations with finite fourth moments, the sample canonical
+correlations and their test statistics are asymptotically normal with a
+covariance involving fourth-order cumulants; elliptical simplification and
+a corrected chi-squared test for zero coefficients.
+**Use:** O7's fourth-moment hypothesis and mechanism; \(\eta_D\) is a smooth
+symmetric function of their \(\rho_i^2\), so the vector CLT off the
+endpoints follows by one delta step. One block of O7 is the bounded
+indicator \(\mathbf 1_Z\), and the moments are uncentred.
+**Verification:** abstract read (primary text, OUP page), 5 Sep 2026.
+
+## Fang & Krishnaiah (1982) — functions of eigenvalues, nonnormal populations
+
+**Key:** Fang-Krishnaiah-1982
+
+**Paper:** *Asymptotic distributions of functions of the eigenvalues of
+some random matrices for nonnormal populations*, Journal of Multivariate
+Analysis 12(1):39–63. doi:10.1016/0047-259X(82)90081-1.
+**Result:** limit laws of smooth functions of the eigenvalues of the
+standard covariance/MANOVA/canonical-correlation random matrices under
+nonnormal sampling (fourth-cumulant covariance).
+**Use:** the closest general theorem to "\(\sqrt n(\hat\eta_D-\eta_D)\) is
+normal"; citation candidate once read.
+**Verification:** journal record only (primary record, OpenAlex); text
+unread (5 Sep 2026).
+
+## Seo, Kanda & Fujikoshi (1995) — dimensionality tests under nonnormality
+
+**Key:** Seo-Kanda-Fujikoshi-1995
+
+**Paper:** *The effects of nonnormality on tests for dimensionality in
+canonical correlation and MANOVA models*, Journal of Multivariate Analysis
+52(2):325–337. doi:10.1006/jmva.1995.1017. Companion: Seo, Kanda &
+Fujikoshi (1994), Comm. Statist. Theory Methods 23(9):2615–2628
+(expansions for functions of canonical correlations under nonnormality,
+perturbation method; abstract read).
+**Result:** null distributions of the dimensionality (rank) tests in CCA
+and MANOVA under nonnormal populations.
+**Use:** the singular-\(I_Z\) endpoint of O7 (\(\eta_D=0\)) is the
+dimensionality hypothesis; the plug-in is then \(O_p(1/n)\), not
+\(O_p(n^{-1/2})\).
+**Verification:** journal record (primary record); the 1994 companion's
+abstract read (5 Sep 2026).
+
+## Sugiura & Fujikoshi (1969) — non-null expansions of the LR criterion
+
+**Key:** Sugiura-Fujikoshi-1969
+
+**Paper:** *Asymptotic expansions of the non-null distributions of the
+likelihood ratio criteria for multivariate linear hypothesis and
+independence*, Annals of Mathematical Statistics 40(3):942–952.
+doi:10.1214/aoms/1177697599.
+**Result:** the non-null distribution of the LR (determinant-ratio)
+criterion for the multivariate linear hypothesis, expanded to order
+\(N^{-2}\) under a fixed alternative with no rank assumption on the
+noncentrality matrix; normal theory.
+**Use:** fixed-alternative asymptotic normality of a determinant ratio and
+the second-order terms behind O7's coverage table; the fourth-moment
+version is Fujikoshi (2002), JSPI 108:263–282 (record only).
+**Verification:** abstract read (primary text, OpenAlex), 5 Sep 2026.
+
+## Magnus & Neudecker — matrix differential calculus
+
+**Key:** Magnus-Neudecker-1999
+
+**Paper:** *Matrix Differential Calculus with Applications in Statistics
+and Econometrics*, Wiley (1988; revised 1999; 3rd ed. 2019).
+**Result:** Part Three, Chapter 8 "Some important differentials": §8.3 "The
+differential of a determinant" (p. 149, \(d|X|=|X|\operatorname{tr}X^{-1}dX\)),
+§8.4 "The differential of an inverse" (p. 151); Chapter 9 §9.10 "Scalar
+functions of a matrix, II: determinant" (p. 178).
+**Use:** the two differentials behind O7's influence function.
+**Verification:** contents scan (primary record, GBV catalogue PDF held in
+`papers/local/`); the scan's edition is not identified on the page, and
+the 2019 edition renumbers — verify page numbers before citing them
+(5 Sep 2026).
+
+## Anderson — An Introduction to Multivariate Statistical Analysis
+
+**Key:** Anderson-2003
+
+**Paper:** *An Introduction to Multivariate Statistical Analysis*, Wiley,
+3rd ed. 2003 (2nd ed. 1984).
+**Result:** §7.5 "The generalized variance"; §8.3–8.5 likelihood-ratio
+criterion for linear hypotheses, its distribution and asymptotic expansion;
+§8.9 "Multivariate analysis of variance"; §12.2–12.4 canonical
+correlations, estimation and inference; §13.5–13.6 asymptotic
+distributions of roots (one and two Wishart matrices). Normal theory
+throughout these sections.
+**Use:** background for O7's determinant ratio and the canonical-correlation
+reading.
+**Verification:** section titles from the 2nd-edition contents scan
+(primary record, `papers/local/`); the 3rd-edition numbering and the
+theorem giving the sample covariance's asymptotic law under finite fourth
+moments (cited in the packet as "Anderson 2003 §3") are **unverified**
+(5 Sep 2026).
+
+## Cramer & Nicewander (1979) — measures of multivariate association
+
+**Key:** Cramer-Nicewander-1979
+
+**Paper:** *Some symmetric, invariant measures of multivariate
+association*, Psychometrika 44(1):43–54. doi:10.1007/BF02293783.
+**Result:** the symmetric, linearly invariant measures of association
+between two sets of variables are all functions of the canonical
+correlations, generalize \(R^2\), and are strictly ordered for any two sets.
+**Use:** lineage of \(\eta_D=(\prod\rho_i^2)^{1/d}\) as a symmetric invariant
+measure; van den Burg & Lewis (1988), Psychometrika 53(1):109–122, compare
+the \(\Lambda\)-based and Pillai-based indices.
+**Verification:** abstract read (primary text, Crossref); whether the
+geometric mean itself is in their list is unread (paywalled, `gaps.md`),
+5 Sep 2026.
+
+## Kendall & Stuart (1961) — the correlation ratio, Vol. 2 Chapter 26
+
+**Key:** Kendall-Stuart-1961
+
+**Paper:** *The Advanced Theory of Statistics*, Vol. 2 *Inference and
+Relationship*, Griffin, 1961 (2nd ed. 1963/Hafner).
+**Result:** §26.21–26.22 define the population correlation ratio
+(26.40), (26.47) and the sample version (26.48) with \(0\le r^2\le e^2\le1\)
+(26.49); §26.23–26.24 give the decomposition (26.50)–(26.51) and the
+normal-theory \(F\) tests (26.52)–(26.55) for \(\eta^2=0\), \(\rho=0\) and
+linearity, attributed to Fisher, via Cochran's theorem with the arrays
+fixed. No large-sample variance of the correlation ratio and no
+moment-based non-normal form are given.
+**Use:** lineage of O6's uncentred correlation ratio; (26.50) is the
+centred analogue of O6.1's RSS identity. Closes the O6 gap "Kendall &
+Stuart Vol. 2 Ch. 26 section".
+**Verification:** primary text (archive.org OCR of the 1961 volume), 5 Sep
+2026; Vol. 1 Chapter 10 (standard errors) not checked.

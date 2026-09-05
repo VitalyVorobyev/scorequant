@@ -129,6 +129,13 @@ theorem cellMass_erase {S : Sample d N} {z : Fin N → Fin K} {i : Fin N} :
 def fisher (S : Sample d N) (z : Fin N → Fin K) : Matrix (Fin d) (Fin d) ℝ :=
   ∑ c, cellBlock (cellMass S z c) (cellSum S z c)
 
+/-- The retained information is symmetric: each cell block is. -/
+theorem fisher_isSymm (S : Sample d N) (z : Fin N → Fin K) :
+    (fisher S z).IsSymm := by
+  ext i j
+  simp only [Matrix.transpose_apply, fisher, Matrix.sum_apply, cellBlock_apply]
+  exact Finset.sum_congr rfl fun c _ => by ring
+
 /-- The Mahalanobis form `(s - μ)ᵀ H (s - μ)` used throughout the D chain. -/
 def mahalanobis (H : Matrix (Fin d) (Fin d) ℝ) (s μ : Fin d → ℝ) : ℝ :=
   (s - μ) ⬝ᵥ H.mulVec (s - μ)

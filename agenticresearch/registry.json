@@ -1,5 +1,5 @@
 {
-  "schema_version": "4.0",
+  "schema_version": "4.1",
   "project": "ScoreQuant",
   "updated": "2026-09-05",
   "canonical_problem_file": "PROBLEM.md",
@@ -26,6 +26,18 @@
     "not_searched": "No targeted prior-art search has been run for this claim.",
     "search_gap": "Targeted prior-art search found no direct precedent; recorded in LITERATURE/; not a novelty claim.",
     "prior_art_found": "Direct or near-direct precedent located; see the literature entry cited by the claim."
+  },
+  "formal_proof_contract": {
+    "meaning": "Optional machine-checked evidence attached to the canonical claim. It does not replace status, publication_status, proof_location, or an informal statement audit, and it certifies the stated theorem only - never the Python/JAX implementation of it.",
+    "required_fields": [
+      "system",
+      "spec",
+      "file",
+      "declaration",
+      "statement_audit"
+    ],
+    "path_base": "agenticresearch/",
+    "spec_rule": "spec names the frozen statement boundary, which a prover may not edit after the statement audit. A claim whose statement is not separately frozen and audited does not carry formal_proof, even when a Lean proof of it exists."
   },
   "levels": [
     "universal",

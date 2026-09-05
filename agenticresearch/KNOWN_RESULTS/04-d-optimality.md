@@ -52,6 +52,10 @@ Then
 }
 \]
 
+Machine-checked for arbitrary \(d\) as `ScoreQuantFormal.fisher_relocate_sub` in
+`formal/ScoreQuantFormal/Relocation.lean`. The statement is not separately
+frozen and audited, so `D-RANK2-MOVE` carries no `formal_proof` field yet.
+
 ## D3. Exact log-det relocation gain — [PROJECT-PROVED]
 
 **Claims:** D-LOGDET-GAIN
@@ -71,6 +75,11 @@ q_{ab}=u_a^\top Hu_b,
 [(1+\alpha q_{aa})(1-\beta q_{bb})+\alpha\beta q_{ab}^2].
 }
 \]
+
+Machine-checked for arbitrary \(d\) as `ScoreQuantFormal.det_add_rank_two` in
+`formal/ScoreQuantFormal/DetGain.lean`, through the Weinstein-Aronszajn
+identity; `detRatio_eq_one_add_exchangeExcess` joins it to the frozen scalar
+core. Statement not separately frozen, so no `formal_proof` field yet.
 
 This supports exact \(O(d^2)\)-type candidate evaluation with cached factorizations.
 
@@ -112,9 +121,15 @@ gives \(Av=\mu_a-\mu_b\), hence
 =v^\top Pv\le v^\top v=1/W_a+1/W_b.
 \]
 
+Both halves are machine-checked for arbitrary \(d\) as
+`ScoreQuantFormal.centroid_leverage_bound` and
+`ScoreQuantFormal.leverage_bound` in `formal/ScoreQuantFormal/Leverage.lean`,
+via the same projector argument. Statement not separately frozen, so no
+`formal_proof` field yet.
+
 ## D5. Exchange stability implies strict D-Voronoi geometry — [PROJECT-PROVED; audited]
 
-**Claims:** D-EXCHANGE-IMPLIES-VORONOI, D-EXCHANGE-VIOLATION-LOWER-BOUND
+**Claims:** D-EXCHANGE-IMPLIES-VORONOI, D-EXCHANGE-VIOLATION-LOWER-BOUND, D-EXCHANGE-SCALAR-CORE
 
 Let coincident score rows be merged into distinct atoms with positive weights,
 and partition those atoms into exactly \(K\) nonempty cells. Assume \(I\succ0\),
@@ -172,6 +187,17 @@ nonzero solver gain tolerances are outside the theorem. At tolerance
 disagreement has exact gain exceeding \(\varepsilon\); strict training-label
 reproduction need not hold.
 
+**Machine-checked.** The whole of D5 is verified in Lean 4.33.1 + Mathlib for
+arbitrary \(d\): the frozen statement boundary is
+`formal/ScoreQuantFormal/ExchangeVoronoiSpec.lean` and the proof is
+`ScoreQuantFormal.exchange_voronoi`, with the quantitative bound as
+`ScoreQuantFormal.violation_log_gain` and its determinant forms
+`violation_lower_bound` / `violation_strict_gain`. Distinct centroids are
+*derived* there, as here, by `centroid_ne_of_stable`. Independent statement
+audit: `AUDITS/FORMALIZATION-D-EXCHANGE-IMPLIES-VORONOI-001.md`. The
+formalization covers the merged-atoms branch of the duplicate hypothesis only,
+and certifies nothing about the Python/JAX implementation.
+
 Publication-grade audit and proof: `AUDITS/AUDIT-D-EXCHANGE-VORONOI-001.md`.
 Exact-rational regression: `py/audit_d_exchange_voronoi.py`.
 
@@ -204,6 +230,11 @@ A finite global optimum is exchange stable, hence strict D-Voronoi. Therefore un
 
 This does **not** say every D-Voronoi fixed point is globally optimal.
 
+The realizability half is machine-checked as
+`ScoreQuantFormal.globalOptimum_strictVoronoi` in
+`formal/ScoreQuantFormal/Corollaries.lean`. The equal-optimum-value half is
+not formalized, so this claim carries no `formal_proof` field.
+
 ## D8. Monotone exact one-point exchange — [PROJECT-PROVED]
 
 **Claims:** D-EXCHANGE-TERMINATES
@@ -215,6 +246,13 @@ Accepting only exact positive D gains gives:
 - finite termination because the labeling set is finite;
 - a terminal one-point exchange-stable solution;
 - by D5/D6, a canonical deployable D quantizer.
+
+The strict-ascent and no-infinite-run core is machine-checked as
+`ScoreQuantFormal.no_infinite_strict_ascent`, and the existence of a terminal
+exchange-stable state as `ScoreQuantFormal.exists_exchangeStable`, both in
+`formal/ScoreQuantFormal/Corollaries.lean`. The claim's "terminates at a
+one-point exchange-stable state" phrasing is not itself a frozen statement, so
+this claim carries no `formal_proof` field.
 
 ## D9. Adaptive Mahalanobis Lloyd is not monotone — [COUNTEREXAMPLE]
 

@@ -24,6 +24,17 @@ jobs:
       UV_PYTHON: "3.13"
     steps:
       - uses: actions/checkout@v7
+      - name: Lean formal gate
+        uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: agenticresearch/formal
+          auto-config: false
+          build: true
+          build-args: "--wfail"
+          leanchecker: true
+          axiom-audit: true
+          axiom-audit-root: ScoreQuantFormal
+          axiom-audit-allow: propext,Classical.choice,Quot.sound
       - uses: astral-sh/setup-uv@v10.0.1
         with:
           enable-cache: true

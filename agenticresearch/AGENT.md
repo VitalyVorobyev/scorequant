@@ -19,6 +19,7 @@ and are read when relevant, not up front.
 | What falsifies naive generalizations | `COUNTEREXAMPLES/` |
 | What to work on | `WORK/active/` packet, then `OPEN_PROBLEMS.md` |
 | How to derive / audit / search / measure / build | `protocols/{theorem,audit,literature,numerical,algorithm}.md` |
+| How to machine-check a frozen claim | `protocols/formalization.md`, `formal/README.md` |
 | Prior art | `LITERATURE/`, `papers/` |
 | Measured evidence (never theorem authority) | `NUMERICAL_EVIDENCE.md` |
 | Paper snapshots (lagging; do not load bodies) | `manuscripts/README.md` |
@@ -130,6 +131,10 @@ harness; the workspace files, not the harness, are the contract.
 - **Exhaustive numerical searches run detached** (background task or separate
   session) and report only the summary line plus the serialized artifact —
   never raw enumeration output.
+- **Formal evidence is subordinate to this registry.** `formal_proof` marks a claim whose
+  statement is separately frozen in a `*Spec.lean` and independently audited; partial or
+  unfrozen Lean coverage is recorded in `KNOWN_RESULTS/` prose instead. A Lean build
+  certifies a statement, never the Python/JAX implementation of it (ADR 0030).
 - **Audits require independence** (`protocols/audit.md`): a fresh session with
   no shared derivation context, only the packet, the registry, and the proof
   artifact. Researcher and auditor must not be the same context.

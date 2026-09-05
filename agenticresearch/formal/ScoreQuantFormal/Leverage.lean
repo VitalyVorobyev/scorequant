@@ -90,12 +90,12 @@ private theorem sum_pair_of_support {a b : Fin K} (hab : a ≠ b) (f : Fin K →
   simp only [Finset.mem_insert, Finset.mem_singleton, not_or] at hc
   exact hzero c hc.1 hc.2
 
-/-- **D4, the centroid leverage inequality.** -/
-theorem leverage_bound (S : Sample d N) (z : Fin N → Fin K)
-    (hne : ∀ c, (cell z c).Nonempty) (hpd : (fisher S z).PosDef) (a b : Fin K)
-    (hab : a ≠ b) :
-    qform (fisher S z)⁻¹ (centroid S z a - centroid S z b) (centroid S z a - centroid S z b)
-      ≤ (cellMass S z a)⁻¹ + (cellMass S z b)⁻¹ := by
+/-- The projector bound behind D4: any direction realized as `A v` has quadratic
+form at most `vᵀ v` in the `I⁻¹` metric. -/
+theorem qform_rootFactor_le (S : Sample d N) (z : Fin N → Fin K)
+    (hne : ∀ c, (cell z c).Nonempty) (hpd : (fisher S z).PosDef) (v : Fin K → ℝ) :
+    qform (fisher S z)⁻¹ ((rootFactor S z).mulVec v) ((rootFactor S z).mulVec v)
+      ≤ v ⬝ᵥ v := by
   classical
   set I := fisher S z with hI
   set A := rootFactor S z with hA
@@ -114,11 +114,60 @@ theorem leverage_bound (S : Sample d N) (z : Fin N → Fin K)
       ← hfac,
       show Aᵀ * I⁻¹ * I * I⁻¹ * A = Aᵀ * (I⁻¹ * I) * I⁻¹ * A by simp only [Matrix.mul_assoc],
       Matrix.nonsing_inv_mul I hunit, Matrix.mul_one]
+  have hquad : qform I⁻¹ (A.mulVec v) (A.mulVec v) = v ⬝ᵥ P.mulVec v := by
+    -- `qform` stays folded so the rewrites land on the right-hand side only.
+    rw [hP, show Aᵀ * I⁻¹ * A = Aᵀ * (I⁻¹ * A) by rw [Matrix.mul_assoc],
+      ← Matrix.mulVec_mulVec, ← Matrix.mulVec_mulVec, Matrix.dotProduct_mulVec,
+      Matrix.vecMul_transpose]
+    rfl
+  rw [hquad]
+  exact qform_le_of_symm_idem hPsymm hPidem v
+
+/-- Reciprocal of a square root, used to turn test-vector norms into cell masses. -/
+private theorem inv_sqrt_sq {x : ℝ} (hx : 0 < x) :
+    (Real.sqrt x)⁻¹ * (Real.sqrt x)⁻¹ = x⁻¹ := by
+  rw [← mul_inv, Real.mul_self_sqrt hx.le]
+
+/-- **D4, first half: the single-centroid leverage inequality** `μ_cᵀ I⁻¹ μ_c ≤ 1/W_c`. -/
+theorem centroid_leverage_bound (S : Sample d N) (z : Fin N → Fin K)
+    (hne : ∀ c, (cell z c).Nonempty) (hpd : (fisher S z).PosDef) (c : Fin K) :
+    qform (fisher S z)⁻¹ (centroid S z c) (centroid S z c) ≤ (cellMass S z c)⁻¹ := by
+  classical
+  have hWc : 0 < cellMass S z c := cellMass_pos (hne c)
+  have hsc : Real.sqrt (cellMass S z c) ≠ 0 := ne_of_gt (Real.sqrt_pos.mpr hWc)
+  set v : Fin K → ℝ :=
+    Function.update (fun _ => (0 : ℝ)) c (Real.sqrt (cellMass S z c))⁻¹ with hv
+  have hvc : v c = (Real.sqrt (cellMass S z c))⁻¹ := by rw [hv, Function.update_self]
+  have hvo : ∀ e, e ≠ c → v e = 0 := fun e he => by
+    rw [hv, Function.update_of_ne he]
+  have hAv : (rootFactor S z).mulVec v = centroid S z c := by
+    funext i
+    rw [Matrix.mulVec, dotProduct,
+      Finset.sum_eq_single c (fun e _ he => by rw [hvo e he, mul_zero])
+        (fun h => absurd (Finset.mem_univ c) h)]
+    rw [hvc]
+    simp only [rootFactor, Matrix.of_apply]
+    rw [show Real.sqrt (cellMass S z c) * centroid S z c i * (Real.sqrt (cellMass S z c))⁻¹
+        = centroid S z c i *
+          (Real.sqrt (cellMass S z c) * (Real.sqrt (cellMass S z c))⁻¹) by ring,
+      mul_inv_cancel₀ hsc, mul_one]
+  have hvv : v ⬝ᵥ v = (cellMass S z c)⁻¹ := by
+    rw [dotProduct,
+      Finset.sum_eq_single c (fun e _ he => by rw [hvo e he, mul_zero])
+        (fun h => absurd (Finset.mem_univ c) h),
+      hvc, inv_sqrt_sq hWc]
+  rw [← hAv, ← hvv]
+  exact qform_rootFactor_le S z hne hpd v
+
+/-- **D4, second half: the centroid-difference leverage inequality.** -/
+theorem leverage_bound (S : Sample d N) (z : Fin N → Fin K)
+    (hne : ∀ c, (cell z c).Nonempty) (hpd : (fisher S z).PosDef) (a b : Fin K)
+    (hab : a ≠ b) :
+    qform (fisher S z)⁻¹ (centroid S z a - centroid S z b) (centroid S z a - centroid S z b)
+      ≤ (cellMass S z a)⁻¹ + (cellMass S z b)⁻¹ := by
+  classical
   have hWa : 0 < cellMass S z a := cellMass_pos (hne a)
   have hWb : 0 < cellMass S z b := cellMass_pos (hne b)
-  have hinvsq : ∀ x : ℝ, 0 < x → (Real.sqrt x)⁻¹ * (Real.sqrt x)⁻¹ = x⁻¹ := by
-    intro x hx
-    rw [← mul_inv, Real.mul_self_sqrt hx.le]
   have hsa : Real.sqrt (cellMass S z a) ≠ 0 := ne_of_gt (Real.sqrt_pos.mpr hWa)
   have hsb : Real.sqrt (cellMass S z b) ≠ 0 := ne_of_gt (Real.sqrt_pos.mpr hWb)
   -- The test vector supported on cells `a` and `b`.
@@ -132,12 +181,12 @@ theorem leverage_bound (S : Sample d N) (z : Fin N → Fin K)
   have hvc : ∀ c, c ≠ a → c ≠ b → v c = 0 := by
     intro c hca hcb
     rw [hv, Function.update_of_ne hcb, Function.update_of_ne hca]
-  have hAv : A.mulVec v = centroid S z a - centroid S z b := by
+  have hAv : (rootFactor S z).mulVec v = centroid S z a - centroid S z b := by
     funext i
     rw [Matrix.mulVec, dotProduct,
-      sum_pair_of_support hab (fun c => A i c * v c)
+      sum_pair_of_support hab (fun c => rootFactor S z i c * v c)
         (fun c hca hcb => by rw [hvc c hca hcb, mul_zero])]
-    rw [hva, hvb, hA]
+    rw [hva, hvb]
     simp only [rootFactor, Matrix.of_apply, Pi.sub_apply]
     rw [show Real.sqrt (cellMass S z a) * centroid S z a i * (Real.sqrt (cellMass S z a))⁻¹
           = centroid S z a i *
@@ -151,15 +200,9 @@ theorem leverage_bound (S : Sample d N) (z : Fin N → Fin K)
     rw [dotProduct,
       sum_pair_of_support hab (fun c => v c * v c)
         (fun c hca hcb => by rw [hvc c hca hcb, mul_zero])]
-    rw [hva, hvb, neg_mul_neg, hinvsq _ hWa, hinvsq _ hWb]
-  have hquad : qform I⁻¹ (A.mulVec v) (A.mulVec v) = v ⬝ᵥ P.mulVec v := by
-    -- `qform` stays folded so the rewrites land on the right-hand side only.
-    rw [hP, show Aᵀ * I⁻¹ * A = Aᵀ * (I⁻¹ * A) by rw [Matrix.mul_assoc],
-      ← Matrix.mulVec_mulVec, ← Matrix.mulVec_mulVec, Matrix.dotProduct_mulVec,
-      Matrix.vecMul_transpose]
-    rfl
-  rw [← hAv, hquad, ← hvv]
-  exact qform_le_of_symm_idem hPsymm hPidem v
+    rw [hva, hvb, neg_mul_neg, inv_sqrt_sq hWa, inv_sqrt_sq hWb]
+  rw [← hAv, ← hvv]
+  exact qform_rootFactor_le S z hne hpd v
 
 end
 

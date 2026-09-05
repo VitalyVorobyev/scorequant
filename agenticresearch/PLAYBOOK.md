@@ -21,6 +21,11 @@ plain-English report of what was proved and what remains.
   then follows `protocols/audit.md`. Do not give it the derivation transcript.
 - **Literature:** identify one claim or question and follow `protocols/literature.md`.
   A search gap does not prove novelty.
+- **Formal statement audit:** a fresh context receives the claim nodes, the prose proof and
+  the frozen `*Spec.lean`, and returns `exact match` / `match after hardening` / `mismatch`
+  per `protocols/formalization.md`. Never give it the formalizing session's transcript.
+- **Formal prover:** may edit the proof module only. No `sorry`, no project axiom, no edit
+  to the frozen spec, no claim about `src/`.
 - **Bookkeeping:** name the exact registry/document change; do no new mathematics.
 
 Derivation remains with its owner; wide reading can be delegated under `AGENT.md`.
@@ -35,6 +40,7 @@ After claim edits, regenerate indexes. Validate with:
 uv run python agenticresearch/py/registry.py reindex
 uv run python agenticresearch/py/registry.py validate
 JAX_ENABLE_X64=1 MPLBACKEND=Agg uv run pytest tests/test_research_claims.py tests/test_research_registry.py
+(cd agenticresearch/formal && lake build --wfail)   # only when formal evidence changed
 ```
 
 Run the contributor checks relevant to other changed files. Promotion to a shipped guarantee

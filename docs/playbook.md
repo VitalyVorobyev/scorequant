@@ -250,4 +250,5 @@ uv build
 uv run mkdocs build --strict
 ```
 
-Plus `corepack pnpm validate` in `website/` when the portal changed.
+Plus `corepack pnpm validate` in `website/` when the portal changed, and
+`(cd agenticresearch/formal && lake build --wfail)` when the Lean formal evidence changed.

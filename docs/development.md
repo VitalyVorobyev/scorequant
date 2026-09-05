@@ -24,6 +24,22 @@ uv build
 uv run mkdocs build --strict
 ```
 
+## Validate formal research claims
+
+Selected registry claims carry a machine-checked proof in an isolated Lean 4 workspace. It is a
+separate toolchain, needed only when the formal evidence changes:
+
+```bash
+curl https://elan.lean-lang.org/elan-init.sh -sSf | sh   # once
+cd agenticresearch/formal && lake exe cache get && lake build --wfail
+```
+
+The build is a required pull-request and release gate, alongside `leanchecker` and an axiom
+audit allowing exactly `propext`, `Classical.choice` and `Quot.sound`. It certifies the stated
+theorems, not that ScoreQuant's Python/JAX code implements them. Upgrading `lean-toolchain`, the
+Mathlib revision and `lake-manifest.json` is a dedicated reviewed change; they move together.
+See [ADR 0030](adr/0030-formal-verification-track.md).
+
 X64 is an explicit application and CI choice. The package never changes global JAX configuration during import.
 
 ## Test tiers and parallelism

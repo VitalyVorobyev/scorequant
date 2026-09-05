@@ -162,10 +162,9 @@ theorem scalar_assumptions (S : Sample d N) (z : Fin N → Fin K)
 /-- **`D-EXCHANGE-VIOLATION-LOWER-BOUND`.** A tied-or-worse nearest-centroid
 comparison from a non-singleton source has determinant ratio at least
 `1 + (α β / 4) q_δ²`. -/
-theorem violation_lower_bound (S : Sample d N) (z : Fin N → Fin K)
-    (hne : ∀ c, (cell z c).Nonempty) (hpd : (fisher S z).PosDef) :
+theorem violation_lower_bound (S : Sample d N) (z : Fin N → Fin K) :
     ViolationLowerBound S z := by
-  intro i b hadm hviol
+  rintro ⟨-, hne, hpd⟩ i b hadm hviol
   rw [mahalanobis_eq_qform, mahalanobis_eq_qform] at hviol
   have hassum := scalar_assumptions S z hne hpd i hadm hviol
   have hbound := scalarExchangeLowerBound hassum
@@ -189,6 +188,56 @@ theorem violation_lower_bound (S : Sample d N) (z : Fin N → Fin K)
   rw [hdelta] at hbound
   have := mul_le_mul_of_nonneg_left (add_le_add_left hbound 1) hdetpos.le
   linarith [this]
+
+/-- **The strict half of `D-EXCHANGE-VIOLATION-LOWER-BOUND`.** Distinct
+centroids turn the quantitative bound into a strictly positive exact gain. -/
+theorem violation_strict_gain (S : Sample d N) (z : Fin N → Fin K) :
+    ViolationStrictGain S z := by
+  rintro ⟨hmerged, hne, hpd⟩ i b hadm hcent hviol
+  have hbound := violation_lower_bound S z ⟨hmerged, hne, hpd⟩ i b hadm hviol
+  have hdetpos : 0 < (fisher S z).det := posDef_det_pos hpd
+  have hsep : 0 < centroidSeparation S z (z i) b :=
+    qform_inv_pos hpd (sub_ne_zero.mpr hcent)
+  have hw := S.weight_pos i
+  have hWa : S.weight i < cellMass S z (z i) := weight_lt_cellMass S z i hadm.2
+  have hWb : 0 < cellMass S z b := cellMass_pos (hne b)
+  have hQ : 0 < alpha (S.weight i) (cellMass S z (z i)) *
+      beta (S.weight i) (cellMass S z b) / 4 * centroidSeparation S z (z i) b ^ 2 :=
+    mul_pos (div_pos (mul_pos (alpha_pos hw hWa) (beta_pos hw hWb)) (by norm_num))
+      (pow_pos hsep 2)
+  have hexpand : (fisher S z).det *
+      (1 + alpha (S.weight i) (cellMass S z (z i)) *
+        beta (S.weight i) (cellMass S z b) / 4 * centroidSeparation S z (z i) b ^ 2)
+      = (fisher S z).det + (fisher S z).det *
+        (alpha (S.weight i) (cellMass S z (z i)) *
+          beta (S.weight i) (cellMass S z b) / 4 *
+          centroidSeparation S z (z i) b ^ 2) := by ring
+  have hpos := mul_pos hdetpos hQ
+  linarith
+
+/-- **The `F_D` phrasing of `D-EXCHANGE-VIOLATION-LOWER-BOUND`.** -/
+theorem violation_log_gain (S : Sample d N) (z : Fin N → Fin K) :
+    ViolationLogGain S z := by
+  rintro ⟨hmerged, hne, hpd⟩ i b hadm hcent hviol
+  have hbound := violation_lower_bound S z ⟨hmerged, hne, hpd⟩ i b hadm hviol
+  have hdetpos : 0 < (fisher S z).det := posDef_det_pos hpd
+  have hsep : 0 < centroidSeparation S z (z i) b :=
+    qform_inv_pos hpd (sub_ne_zero.mpr hcent)
+  have hw := S.weight_pos i
+  have hWa : S.weight i < cellMass S z (z i) := weight_lt_cellMass S z i hadm.2
+  have hWb : 0 < cellMass S z b := cellMass_pos (hne b)
+  have hQ : 0 < alpha (S.weight i) (cellMass S z (z i)) *
+      beta (S.weight i) (cellMass S z b) / 4 * centroidSeparation S z (z i) b ^ 2 :=
+    mul_pos (div_pos (mul_pos (alpha_pos hw hWa) (beta_pos hw hWb)) (by norm_num))
+      (pow_pos hsep 2)
+  refine ⟨Real.log_pos (by linarith), ?_⟩
+  have hleft : 0 < (fisher S z).det *
+      (1 + alpha (S.weight i) (cellMass S z (z i)) *
+        beta (S.weight i) (cellMass S z b) / 4 *
+        centroidSeparation S z (z i) b ^ 2) := mul_pos hdetpos (by linarith)
+  have hlog := Real.log_le_log hleft hbound
+  rw [Real.log_mul (ne_of_gt hdetpos) (by positivity)] at hlog
+  linarith
 
 /-- Stability forces distinct centroids: no separate hypothesis is needed. -/
 theorem centroid_ne_of_stable (S : Sample d N) (z : Fin N → Fin K)
@@ -281,30 +330,9 @@ theorem exchangeStable_implies_strictVoronoi (S : Sample d N) (z : Fin N → Fin
       · exact ⟨x, hx, hxi⟩
     by_contra hle
     push Not at hle
-    have hbound := violation_lower_bound S z hne hpd i c hadm
+    have hgain := violation_strict_gain S z ⟨hmerged, hne, hpd⟩ i c hadm hcent
       (by rw [mahalanobis_eq_qform, mahalanobis_eq_qform]; exact hle)
-    have hstab := hstable i c hadm
-    -- The separation is strictly positive because the centroids differ.
-    have hsep : 0 < centroidSeparation S z (z i) c := by
-      refine qform_inv_pos hpd ?_
-      exact sub_ne_zero.mpr hcent
-    have hw := S.weight_pos i
-    have hWa : S.weight i < cellMass S z (z i) := weight_lt_cellMass S z i hadm.2
-    have hWb : 0 < cellMass S z c := cellMass_pos (hne c)
-    have ha := alpha_pos hw hWa
-    have hb := beta_pos hw hWb
-    have hQ : 0 < alpha (S.weight i) (cellMass S z (z i)) *
-        beta (S.weight i) (cellMass S z c) / 4 * centroidSeparation S z (z i) c ^ 2 :=
-      mul_pos (div_pos (mul_pos ha hb) (by norm_num)) (pow_pos hsep 2)
-    have hexpand : (fisher S z).det *
-        (1 + alpha (S.weight i) (cellMass S z (z i)) *
-          beta (S.weight i) (cellMass S z c) / 4 * centroidSeparation S z (z i) c ^ 2)
-        = (fisher S z).det + (fisher S z).det *
-          (alpha (S.weight i) (cellMass S z (z i)) *
-            beta (S.weight i) (cellMass S z c) / 4 *
-            centroidSeparation S z (z i) c ^ 2) := by ring
-    have hpos := mul_pos hdetpos hQ
-    linarith [hbound, hstab]
+    linarith [hstable i c hadm]
   · -- Singleton source: its own distance is zero and every other centroid differs.
     have hsingle : cell z (z i) = {i} := by
       have hi : i ∈ cell z (z i) := by simp
@@ -317,6 +345,12 @@ theorem exchangeStable_implies_strictVoronoi (S : Sample d N) (z : Fin N → Fin
     refine qform_inv_pos hpd ?_
     rw [← hci]
     exact sub_ne_zero.mpr (Ne.symm hcent)
+
+/-- **`D-EXCHANGE-IMPLIES-VORONOI`, in the frozen form of the specification.** -/
+theorem exchange_voronoi (S : Sample d N) (z : Fin N → Fin K) :
+    ExchangeVoronoiConclusion S z := by
+  rintro ⟨hmerged, hne, hpd⟩ hstable
+  exact exchangeStable_implies_strictVoronoi S z hmerged hne hpd hstable
 
 /-- The same theorem with stability written on the D objective `F_D = log det I`. -/
 theorem exchangeStableLogDet_implies_strictVoronoi (S : Sample d N) (z : Fin N → Fin K)

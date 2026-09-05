@@ -1,0 +1,36 @@
+{
+  "id": "D-EXCHANGE-SCALAR-CORE",
+  "title": "Scalar core of the D exchange-violation lower bound",
+  "criterion": [
+    "D"
+  ],
+  "level": "finite_assignment",
+  "status": "project_proved",
+  "publication_status": "internal",
+  "statement": "For real w, W_a, W_b, q_aa, q_bb, q_ab with 0<w<W_a, W_b>0, q_aa>=0, q_bb>=0, q_bb<=q_aa, and 0<=q_delta=q_aa+q_bb-2q_ab<=1/W_a+1/W_b, define alpha=wW_a/(W_a-w), beta=wW_b/(W_b+w), and E=alpha q_aa-beta q_bb-alpha beta(q_aa q_bb-q_ab^2). Then E>=alpha beta(q_delta^2+(q_aa-q_bb)^2)/4, hence E>=alpha beta q_delta^2/4, and q_delta>0 implies E>0.",
+  "assumptions": [
+    "real scalar quantities",
+    "0 < source atom weight < source cell mass",
+    "positive destination cell mass",
+    "nonnegative self quadratic products",
+    "q_bb <= q_aa",
+    "0 <= q_delta <= 1/W_a + 1/W_b"
+  ],
+  "dependencies": [],
+  "proof_location": {
+    "file": "KNOWN_RESULTS/04-d-optimality.md",
+    "section": "D5. Exchange stability implies strict D-Voronoi geometry"
+  },
+  "formal_proof": {
+    "system": "Lean 4.33.1 + Mathlib 4.33.1",
+    "spec": "formal/ScoreQuantFormal/ScalarExchangeSpec.lean",
+    "file": "formal/ScoreQuantFormal/ScalarExchange.lean",
+    "declaration": "ScoreQuantFormal.scalarExchangeStrengthenedLowerBound",
+    "statement_audit": "AUDITS/FORMALIZATION-D-EXCHANGE-SCALAR-CORE-001.md"
+  },
+  "role": "machine-checked real-arithmetic bridge inside the finite D exchange theorem",
+  "implies": [
+    "D-EXCHANGE-VIOLATION-LOWER-BOUND"
+  ],
+  "warning": "This formal proof starts after the matrix/determinant reduction and stops before the logarithm, distinct-centroid, singleton, duplicate-atom, and full Voronoi arguments. Those layers are now machine-checked separately on D-EXCHANGE-IMPLIES-VORONOI; this node remains the scalar lemma they rest on."
+}

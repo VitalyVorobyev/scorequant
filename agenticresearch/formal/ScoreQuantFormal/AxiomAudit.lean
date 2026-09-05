@@ -52,6 +52,22 @@ namespace ScoreQuantFormal
 #guard_msgs in
 #print axioms violation_lower_bound
 
+/-- info: 'ScoreQuantFormal.violation_strict_gain' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms violation_strict_gain
+
+/-- info: 'ScoreQuantFormal.exchange_voronoi' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms exchange_voronoi
+
+/-- info: 'ScoreQuantFormal.violation_log_gain' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms violation_log_gain
+
+/-- info: 'ScoreQuantFormal.centroid_leverage_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms centroid_leverage_bound
+
 /-- info: 'ScoreQuantFormal.centroid_ne_of_stable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms centroid_ne_of_stable

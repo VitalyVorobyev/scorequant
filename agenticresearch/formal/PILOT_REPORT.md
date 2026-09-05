@@ -37,3 +37,32 @@ the scalar-to-geometric interpretation. Do not start population measure theory,
 profiled \(D_s\), or a specialized prover integration. The finite D dependency
 chain remains the only approved expansion path, and this report does not itself
 authorize that next implementation.
+
+---
+
+## Follow-up, 5 September 2026: the finite D chain in general dimension
+
+The go/no-go above was taken up under [ADR 0030](../../docs/adr/0030-formal-verification-track.md),
+which widened the approved track from "inner-product identities" to the whole finite D chain in
+arbitrary dimension. D2, D3, D4, D5 and the D7/D8 corollaries are now machine-checked.
+
+What transferred, and what the second round learned:
+
+- **The frozen scalar core plugged in unmodified.** `ScalarExchangeAssumptions` turned out to be
+  exactly what the matrix layer discharges: the violation hypothesis is `q_bb ≤ q_aa`, the
+  positivity facts come from `PosDef`, and `q_δ ≤ 1/W_a + 1/W_b` is precisely D4. Freezing the
+  right six scalars in August was what made September cheap.
+- **Representing a cell by its unnormalized weighted sum** rather than its centroid reduced the
+  D2 algebra to two standalone rank-one identities in `(W, T)` plus a cancellation, and kept
+  Finset bookkeeping out of the matrix proofs.
+- **`Matrix.det_one_add_mul_comm`** — Weinstein–Aronszajn — turns the `d × d` determinant into a
+  `2 × 2` one in a single rewrite. No specialized tactic was needed here either.
+- **The projector argument for D4 needs no Cauchy–Schwarz**: `1 − P` is symmetric idempotent, so
+  `vᵀ(1−P)v` is a sum of squares.
+- **The statement audit earned its keep.** It found that the frozen file contained the conclusion
+  but neither the hypotheses nor the implication — a prover could have weakened the theorem
+  without touching an audited file — and a false docstring claim that the determinant and
+  log-determinant objectives are interchangeable, with an explicit witness. Both were fixed
+  before the marker went into the registry.
+
+Nanoda remains disabled for the same upstream reason.

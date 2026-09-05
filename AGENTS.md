@@ -51,6 +51,12 @@ public registry or provisional backend class.
 
 - `agenticresearch/` is the mathematical scientific memory (claim registry, counterexample bank, open-problem queue). It governs itself through its own `agenticresearch/AGENT.md` and is excluded from the Ruff gate.
 - The library crosses into it at exactly two points: `tests/test_research_claims.py` reads counterexample fixtures from `agenticresearch/COUNTEREXAMPLES/`, and `tests/test_research_registry.py` runs `agenticresearch/py/registry.py validate` plus the index-freshness check. Research results become library behavior only by being copied into deterministic regression tests or theorem-cited code paths.
+- Selected claims carry `formal_proof`: a machine-checked Lean proof of a *separately frozen and
+  independently audited* statement, under `agenticresearch/formal/` and governed by
+  `protocols/formalization.md` and ADR 0030. Partial or unfrozen Lean coverage is recorded in
+  `KNOWN_RESULTS/` prose instead, never as a registry marker, and no Lean result certifies the
+  Python/JAX implementation. Lean and Lake are the only language workspace beside Python/uv and
+  Node/pnpm; run `(cd agenticresearch/formal && lake build --wfail)` when formal evidence changes.
 - The registry is one file per claim under `agenticresearch/claims/`, with vocabularies in `registry.json`. Every index is generated — never hand-edit `claims/INDEX.md`, `COUNTEREXAMPLES/INDEX.md`, or `LITERATURE/BIBLIOGRAPHY.md`; run `python agenticresearch/py/registry.py reindex`.
 - Code in `src/` that relies on a theorem names it; code that refuses a capability names the counterexample forcing the refusal. Keep both in sync with the registry.
 

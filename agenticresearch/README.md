@@ -10,7 +10,7 @@ and measured evidence. Claims are atomic; a session addresses one scientific que
 3. The selected `WORK/active/` packet; `OPEN_PROBLEMS.md` alone selects current work.
 4. Relevant claims through `uv run python agenticresearch/py/registry.py show <ID> --deps --proof`,
    then only the cited proofs, counterexamples and evidence needed by the packet.
-5. The applicable `protocols/{theorem,audit,literature,numerical,algorithm}.md`.
+5. The applicable `protocols/{theorem,audit,literature,numerical,algorithm,formalization}.md`.
 
 Read manuscript metadata only for a paper task; do not load manuscript bodies or historical
 plans for an ordinary derivation session. `archive/` is history, not current instructions.

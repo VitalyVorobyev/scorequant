@@ -56,6 +56,8 @@ Module ownership (keep code in its owning module):
 - `ratios.py` — density-ratio algebra: prior correction, ratio-to-score maps, closure diagnostic
 - `components.py` — linear models and the intensity score adapter
 - `criteria.py`, `config.py`, `result.py`, `api.py` — public contracts and orchestration
+- `agenticresearch/formal/` — isolated Lean 4 + Mathlib workspace; machine-checked proofs of
+  frozen claim statements (ADR 0030), built with `(cd agenticresearch/formal && lake build --wfail)`
 - `examples/`, `tests/`, `benchmarks/`, `agenticresearch/` — datasets, tuning, exploration (agenticresearch is excluded from the Ruff gate; anything relied upon gets copied into a deterministic regression test)
 
 Public arrays are always `numpy.ndarray`. Every public entry point takes `execution=` (an `ExecutionConfig`, default JAX); a result records the execution it was fitted under and reuses it for prediction unless overridden.

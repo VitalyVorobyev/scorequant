@@ -33,12 +33,15 @@ dimension `d`:
 | `ScalarExchangeSpec.lean` / `ScalarExchange.lean` | the frozen scalar core inside D5 |
 | `ExchangeVoronoiSpec.lean` / `ExchangeVoronoi.lean` | D5, exchange stability ⇒ strict `I⁻¹`-Voronoi |
 | `Corollaries.lean` | D7 realizability, D8 termination |
+| `Counterexamples.lean` | two exact boundary witnesses for D5 |
 | `AxiomAudit.lean` | a guarded `#print axioms` per exported theorem |
 
 Not covered: profiled `D_s`, population or atomless statements, anything
 asymptotic, positive gain tolerances, singular objectives, capacity or balance
-constraints, the converse `D-VORONOI-NOT-EXCHANGE`, and the compiled predictor.
-Each frozen spec lists its own non-coverage; ADR 0030 governs the scope.
+constraints, and the compiled predictor `D-FINITE-INDUCTIVE-CLOSURE`. The
+converse `D-VORONOI-NOT-EXCHANGE` is covered only as the explicit witness in
+`Counterexamples.lean`, not as a general statement. Each frozen spec lists its
+own non-coverage; ADR 0030 governs the scope.
 
 ## Trust policy
 

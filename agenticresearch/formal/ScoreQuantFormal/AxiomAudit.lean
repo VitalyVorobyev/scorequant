@@ -1,4 +1,4 @@
-import ScoreQuantFormal.Corollaries
+import ScoreQuantFormal.Counterexamples
 
 /-!
 # Axiom audit
@@ -93,5 +93,27 @@ namespace ScoreQuantFormal
 /-- info: 'ScoreQuantFormal.exists_exchangeStable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms exists_exchangeStable
+
+/-! ## Boundary witnesses -/
+
+/-- info: 'ScoreQuantFormal.UnmergedDuplicates.all_but_injectivity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms UnmergedDuplicates.all_but_injectivity
+
+/-- info: 'ScoreQuantFormal.UnmergedDuplicates.not_strictVoronoi' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms UnmergedDuplicates.not_strictVoronoi
+
+/-- info: 'ScoreQuantFormal.UnmergedDuplicates.score_not_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms UnmergedDuplicates.score_not_injective
+
+/-- info: 'ScoreQuantFormal.VoronoiConverse.strictVoronoi' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms VoronoiConverse.strictVoronoi
+
+/-- info: 'ScoreQuantFormal.VoronoiConverse.not_exchangeStable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms VoronoiConverse.not_exchangeStable
 
 end ScoreQuantFormal

@@ -180,7 +180,9 @@ The converse fails.
 
 Exact ties between distinct centroids are therefore ruled out, not left as an
 unresolved degeneracy. Split duplicate atoms are a genuine boundary failure:
-see `COUNTEREXAMPLES/CE-D-UNMERGED-DUPLICATES-001.json`. Zero-weight rows,
+see `COUNTEREXAMPLES/CE-D-UNMERGED-DUPLICATES-001.json`, machine-checked as
+`ScoreQuantFormal.UnmergedDuplicates.not_strictVoronoi` — every hypothesis but
+injectivity of the score map holds there, and the conclusion fails. Zero-weight rows,
 singular/pseudodeterminant objectives, extra capacity or mass constraints, and
 nonzero solver gain tolerances are outside the theorem. At tolerance
 \(\varepsilon>0\), the implementation certifies only that no geometric
@@ -277,6 +279,14 @@ Measured suite: decreasing steps occurred in 57/300 instances; one explicit exam
 **Claims:** D-VORONOI-NOT-EXCHANGE
 
 Measured suite: 35/100 Lloyd/Voronoi fixed points still admitted an exact improving one-point move, with improvements up to about 1.033 nat.
+
+The exact witness `CE-D-VORONOI-CONVERSE-001` is machine-checked as
+`ScoreQuantFormal.VoronoiConverse.strictVoronoi` together with
+`VoronoiConverse.not_exchangeStable` in
+`formal/ScoreQuantFormal/Counterexamples.lean`: every row is strictly nearest
+its own centroid, yet moving row 2 raises the retained information from
+\(25/48\) to \(9/16\). The claim's `formal_proof` field stays empty because
+its `statement` is the proposition being refuted (ADR 0030).
 
 ## D11. Exact global enumeration for fixed \((d,K)\) — [PROJECT-PROVED]
 

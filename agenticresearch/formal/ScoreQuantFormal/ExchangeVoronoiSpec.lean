@@ -61,9 +61,10 @@ stronger theorem; the `F_D` phrasing is proved as a corollary in
 * Zero-weight rows, capacity, balance, or minimum-mass constraints, any of which
   can make a genuine geometric violation inadmissible.
 * Singular or pseudodeterminant objectives, and projected-subspace variants.
-* The converse implication (`D-VORONOI-NOT-EXCHANGE`) and the compiled
-  predictor (`D-FINITE-INDUCTIVE-CLOSURE`). The two downstream corollaries D7
-  and D8 *are* formalized, in `Corollaries.lean`.
+* The compiled predictor (`D-FINITE-INDUCTIVE-CLOSURE`). The converse
+  (`D-VORONOI-NOT-EXCHANGE`) is not stated in general; only its explicit
+  witness is checked, in `Counterexamples.lean`. The two downstream corollaries
+  D7 and D8 *are* formalized, in `Corollaries.lean`.
 * The population/atomless statement (`D-POP-VORONOI`) and any empirical-to-
   population transfer.
 * Score-estimation error and the observation-to-score step.

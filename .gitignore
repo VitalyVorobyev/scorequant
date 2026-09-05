@@ -23,3 +23,6 @@ papers/VenkTongSwami_Quant_06CISS.pdf
 # generated on every build, so not committed a second time.
 website/static/walkthrough-figures/
 setenv.sh
+
+# Lean build artifacts (agenticresearch/formal)
+agenticresearch/formal/.lake/

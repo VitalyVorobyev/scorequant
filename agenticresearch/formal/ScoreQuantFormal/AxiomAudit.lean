@@ -1,4 +1,4 @@
-import ScoreQuantFormal.ExchangeVoronoi
+import ScoreQuantFormal.Corollaries
 
 /-!
 # Axiom audit
@@ -63,5 +63,19 @@ namespace ScoreQuantFormal
 /-- info: 'ScoreQuantFormal.exchangeStableLogDet_implies_strictVoronoi' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms exchangeStableLogDet_implies_strictVoronoi
+
+/-! ## Corollaries D7 and D8 -/
+
+/-- info: 'ScoreQuantFormal.globalOptimum_strictVoronoi' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms globalOptimum_strictVoronoi
+
+/-- info: 'ScoreQuantFormal.no_infinite_strict_ascent' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms no_infinite_strict_ascent
+
+/-- info: 'ScoreQuantFormal.exists_exchangeStable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms exists_exchangeStable
 
 end ScoreQuantFormal

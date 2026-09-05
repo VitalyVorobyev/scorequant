@@ -57,6 +57,20 @@ theorem qform_comm {H : Matrix (Fin d) (Fin d) ℝ} (hH : Hᵀ = H) (u v : Fin d
   simp [this]
   ring
 
+theorem qform_sub_right (H : Matrix (Fin d) (Fin d) ℝ) (u v w : Fin d → ℝ) :
+    qform H u (v - w) = qform H u v - qform H u w := by
+  simp [qform, Matrix.mulVec_sub, dotProduct_sub]
+
+theorem qform_sub_left (H : Matrix (Fin d) (Fin d) ℝ) (u v w : Fin d → ℝ) :
+    qform H (u - v) w = qform H u w - qform H v w := by
+  simp [qform, sub_dotProduct]
+
+/-- Expansion of the quadratic form of a difference, in a symmetric metric. -/
+theorem qform_sub_self {H : Matrix (Fin d) (Fin d) ℝ} (hH : Hᵀ = H) (u v : Fin d → ℝ) :
+    qform H (u - v) (u - v) = qform H u u - 2 * qform H u v + qform H v v := by
+  rw [qform_sub_left, qform_sub_right, qform_sub_right, qform_comm hH v u]
+  ring
+
 /-- Entries of a `2 × 2` Gram-type product are quadratic forms of the rows. -/
 theorem gram_entry (H : Matrix (Fin d) (Fin d) ℝ) (P Q : Matrix (Fin 2) (Fin d) ℝ)
     (k l : Fin 2) : (P * (H * Qᵀ)) k l = qform H (P k) (Q l) := rfl

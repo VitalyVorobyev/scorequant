@@ -2656,3 +2656,177 @@ def test_o6_audit_two_atom_law_has_zero_variance_and_upward_biased_plugin() -> N
             assert eta_hat >= eta
             if eta_hat == eta:
                 assert sigma2_hat == 0
+
+
+def _o7_exact_plugin(
+    scores: list[list[Fraction]], labels: list[int], weights: list[Fraction], n_bins: int
+) -> tuple[Fraction, list[Fraction], list[list[Fraction]], list[list[Fraction]]]:
+    """Exact O7 plug-in on a weighted atom sample in d = 2.
+
+    Returns the determinant ratio r = eta_D^2, the influence values of r
+    (psi_r = 2 eta_D psi), V and I_Z. The 2x2 inverse is explicit so the test
+    carries no linear-algebra helper of its own.
+    """
+    d = 2
+    p = [sum(w for w, z in zip(weights, labels, strict=True) if z == b) for b in range(n_bins)]
+    m = [
+        [
+            sum(w * s[i] for s, w, z in zip(scores, weights, labels, strict=True) if z == b)
+            for i in range(d)
+        ]
+        for b in range(n_bins)
+    ]
+    v = [
+        [sum(w * s[i] * s[j] for s, w in zip(scores, weights, strict=True)) for j in range(d)]
+        for i in range(d)
+    ]
+    i_z = [
+        [sum(m[b][i] * m[b][j] / p[b] for b in range(n_bins) if p[b]) for j in range(d)]
+        for i in range(d)
+    ]
+
+    def det(a: list[list[Fraction]]) -> Fraction:
+        return a[0][0] * a[1][1] - a[0][1] * a[1][0]
+
+    def inv(a: list[list[Fraction]]) -> list[list[Fraction]]:
+        dd = det(a)
+        return [[a[1][1] / dd, -a[0][1] / dd], [-a[1][0] / dd, a[0][0] / dd]]
+
+    def quad(a: list[list[Fraction]], x: list[Fraction], y: list[Fraction]) -> Fraction:
+        return sum(x[i] * a[i][j] * y[j] for i in range(d) for j in range(d))
+
+    ratio = det(i_z) / det(v)
+    iz_inv, v_inv = inv(i_z), inv(v)
+    psi_r = []
+    for s, z in zip(scores, labels, strict=True):
+        c = [x / p[z] for x in m[z]]
+        psi_r.append(ratio * (2 * quad(iz_inv, s, c) - quad(iz_inv, c, c) - quad(v_inv, s, s)))
+    return ratio, psi_r, v, i_z
+
+
+def test_o7_vector_plugin_influence_function_matches_exact_gateaux_differences() -> None:
+    """O7 (RETENTION-PLUGIN-CLT-FROZEN-VECTOR): finite identities behind the vector CLT.
+
+    Pins, in exact rational arithmetic on a d = 2 sample with a duplicate atom
+    and a declared-empty cell: the within-cell-scatter form of V_hat - I_hat_Z,
+    the exact zero mean of the influence function, and the closed form
+    ``psi_r = r [2 S^T I_Z^{-1} c_Z - c_Z^T I_Z^{-1} c_Z - S^T V^{-1} S]`` of the
+    determinant ratio r against exact Gateaux difference quotients whose O(eps)
+    remainder halves when eps halves; then agreement of r^(1/2) with the
+    library's ``geometric_mean_retention``.
+    """
+    rows = [
+        (2, 1),
+        (-1, 3),
+        (0, -2),
+        (3, 3),
+        (-2, -1),
+        (1, 0),
+        (1, 0),
+        (-3, 2),
+        (2, -3),
+        (0, 1),
+        (4, -1),
+        (-1, -1),
+    ]
+    labels = [0, 1, 2, 0, 1, 2, 2, 1, 3, 3, 0, 1]
+    n_bins = 5  # cell 4 is declared and stays empty
+    n = len(rows)
+    scores = [[Fraction(a), Fraction(b)] for a, b in rows]
+    uniform = [Fraction(1, n)] * n
+    ratio, psi_r, v, i_z = _o7_exact_plugin(scores, labels, uniform, n_bins)
+    assert 0 < ratio < 1
+    assert sum(psi_r) == 0
+    counts = [labels.count(b) for b in range(n_bins)]
+    means = [
+        [
+            sum(scores[k][i] for k in range(n) if labels[k] == b) / counts[b]
+            if counts[b]
+            else Fraction(0)
+            for i in range(2)
+        ]
+        for b in range(n_bins)
+    ]
+    within = [
+        [
+            sum(
+                (s[i] - means[z][i]) * (s[j] - means[z][j])
+                for s, z in zip(scores, labels, strict=True)
+            )
+            / n
+            for j in range(2)
+        ]
+        for i in range(2)
+    ]
+    assert [[v[i][j] - i_z[i][j] for j in range(2)] for i in range(2)] == within
+    for j in range(n):
+        gaps = []
+        for k in (10, 11, 12):
+            eps = Fraction(1, 2**k)
+            w = [(1 - eps) / n] * n
+            w[j] += eps
+            ratio_eps, _, _, _ = _o7_exact_plugin(scores, labels, w, n_bins)
+            gaps.append((ratio_eps - ratio) / eps - psi_r[j])
+        assert abs(gaps[0]) < Fraction(1, 100)
+        for a, b in ((gaps[0], gaps[1]), (gaps[1], gaps[2])):
+            assert b != 0 and abs(a / b - 2) < Fraction(1, 5)
+    report = sq.information_report(np.array(rows, dtype=float), np.array(labels), n_bins=n_bins)
+    assert float(report.geometric_mean_retention) == pytest.approx(
+        math.sqrt(float(ratio)), abs=1e-12
+    )
+
+
+def test_o7_ellipsoid_law_has_zero_influence_variance_on_the_whole_circle() -> None:
+    """CE-O7-ELLIPSOID-ZERO-VARIANCE-001 (RETENTION-PLUGIN-VECTOR, 6 Sep 2026).
+
+    Four cells related by quarter turns with two atoms each give E[S] = 0,
+    V = (25/2) I, I_Z = (9/2) I, eta_D = 9/25 and psi = 0 at every atom; as a
+    polynomial, psi_r is a multiple of the circle |s - (25/3, 0)|^2 = (20/3)^2,
+    the cell-0 ellipsoid of O7.4(a), so every law on that circle with the same
+    cell mean - atomless ones included - has sigma^2 = 0. O6's "atomless cell
+    implies sigma^2 > 0 when eta > 0" does not lift to d >= 2.
+    """
+    fixture_path = RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-O7-ELLIPSOID-ZERO-VARIANCE-001.json"
+    assert fixture_path.is_file(), f"counterexample fixture missing at {fixture_path}"
+    fixture = json.loads(fixture_path.read_text())
+    scores = [[Fraction(x) for x in row] for row in fixture["scores"]]
+    labels = list(fixture["labels_before"])
+    weights = [Fraction(w) for w in fixture["weights"]]
+    n_bins = fixture["K"]
+    assert sum(weights) == 1 and n_bins == 4 and len(scores) == 8
+    assert [sum(w * s[i] for s, w in zip(scores, weights, strict=True)) for i in range(2)] == [0, 0]
+    ratio, psi_r, v, i_z = _o7_exact_plugin(scores, labels, weights, n_bins)
+    assert v == [[Fraction(25, 2), 0], [0, Fraction(25, 2)]]
+    assert i_z == [[Fraction(9, 2), 0], [0, Fraction(9, 2)]]
+    assert ratio == Fraction(81, 625)
+    assert psi_r == [0] * 8
+    # psi_r as a polynomial in s for cell 0, c_0 = (3, 0):
+    # r [2 s^T I_Z^{-1} c - c^T I_Z^{-1} c - s^T V^{-1} s]
+    c0 = [Fraction(3), Fraction(0)]
+
+    def psi_r_at(s: list[Fraction]) -> Fraction:
+        return ratio * (
+            2 * Fraction(2, 9) * (s[0] * c0[0] + s[1] * c0[1])
+            - Fraction(2, 9) * (c0[0] ** 2 + c0[1] ** 2)
+            - Fraction(2, 25) * (s[0] ** 2 + s[1] ** 2)
+        )
+
+    def circle(s: list[Fraction]) -> Fraction:
+        return s[0] ** 2 + s[1] ** 2 - Fraction(50, 3) * s[0] + 25
+
+    for num in range(-7, 8):
+        t = Fraction(num, 3)
+        on_circle = [
+            Fraction(25, 3) + Fraction(20, 3) * (1 - t * t) / (1 + t * t),
+            Fraction(20, 3) * 2 * t / (1 + t * t),
+        ]
+        assert circle(on_circle) == 0 and psi_r_at(on_circle) == 0
+        generic = [t + Fraction(1, 7), t * t - 2]
+        assert psi_r_at(generic) + Fraction(2, 25) * ratio * circle(generic) == 0
+    report = sq.information_report(
+        np.array([[float(x) for x in s] for s in scores]),
+        np.array(labels),
+        np.array([float(w) for w in weights]),
+        n_bins=n_bins,
+    )
+    assert float(report.geometric_mean_retention) == pytest.approx(0.36, abs=1e-14)

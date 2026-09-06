@@ -1,0 +1,33 @@
+{
+  "id": "RETENTION-PLUGIN-COVERAGE-VECTOR",
+  "title": "Measured coverage of the frozen-rule vector retention interval on closed-form laws",
+  "criterion": [
+    "D"
+  ],
+  "level": "application",
+  "status": "measured",
+  "publication_status": "internal",
+  "statement": "Measured evidence only (py/retention_plugin_vector.py, SeedSequence([20260906, law, n]), 2000 replicates per size at n = 100, 300, 1000, 3000). Population references: Hermite scores of x ~ N(0, 1) under interval partitions, closed-form via truncated-Gaussian moment recursions and confirmed by cut-aligned Gauss-Legendre to 1e-13 (d = 2, K = 4: eta_D = 0.690666, sigma = 0.673175, E||S||^4 = 83; d = 3, K = 5: eta_D = 0.629969, sigma = 1.624099, E||S||^4 = 4259); a bounded three-component Gaussian mixture with two interior fractions by two quadrature routes agreeing to 2.3e-15 (d = 2, K = 4: eta_D = 0.330317, sigma = 0.621795, E||S||^4 = 22.2); a D-exchange rule fitted by the library on 4000 training draws of the d = 2 Hermite score and compiled, whose three x-cuts were located by bisection (eta_D = 0.743363, sigma = 0.557001). Coverage of the 95% Wald interval: bounded mixture 0.950, 0.945, 0.956, 0.945 with SD(eta_hat_D) = sigma/sqrt(n), sigma_hat within 8% of sigma at n = 100 and 3% beyond, studentized skew |<= 0.16|; Hermite d = 2: 0.681, 0.813, 0.892, 0.937; library rule: 0.816, 0.861, 0.889, 0.927; Hermite d = 3: 0.399, 0.556, 0.733, 0.827 - on these unbounded polynomial scores every first-order quantity converges as the theorem says but sigma_hat under-estimates sigma by 46% -> 5% (d = 2) and 76% -> 25% (d = 3), so the interval is liberal at every size tested. Singular endpoints (eta_D = 0): d = 2, K = 2: n^{1/2} mean(eta_hat_D) = 0.70, 0.66, 0.63, 0.63 and coverage of 0 = 0.926, 0.946, 0.954, 0.956; d = 3, K = 3: n^{1/3} mean(eta_hat_D) = 0.61, 0.57, 0.55, 0.53 and coverage 0.720, 0.753, 0.788, 0.802; the median half-width is a fixed multiple (2.9 resp. 1.8) of eta_hat_D. The atomless sigma^2 = 0 arc law of CE-O7-ELLIPSOID-ZERO-VARIANCE-001 (eta_D = 9/25): coverage 0.996-0.999, n*bias 1.4 and n*SD 1.55 at every size (width O(1/n)), eta_hat_D >= eta_D in 85% of replicates. No regular-law interval left [0, 1]; empty cells in 4 of 32,000 regular replicates (n = 100, p_b <= 0.085).",
+  "assumptions": [
+    "population quantities are closed-form (truncated-Gaussian moments) or deterministic quadrature with cut-aligned pieces; the reported integration error is the disagreement of independent routes, not a rigorous bound",
+    "Monte Carlo coverage with deterministic seeds; measured, never theorem authority; nothing is claimed about coverage on heavy-tailed scores beyond the recorded numbers",
+    "the library-fitted rule is frozen by its located x-cuts; the compiled rule's labels at 9600 quadrature nodes agree with the cut labelling (moments agree to 5.3e-15)",
+    "one partition per law; no statement about other cuts, other K, or refitted rules"
+  ],
+  "dependencies": [
+    "RETENTION-PLUGIN-CLT-FROZEN-VECTOR",
+    "RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE"
+  ],
+  "literature_search_status": "prior_art_found",
+  "proof_location": {
+    "file": "KNOWN_RESULTS/10-oracle.md",
+    "section": "O7. Frozen-rule vector retention: plug-in asymptotics of the geometric-mean retention"
+  },
+  "artifact": "py/retention_plugin_vector.py",
+  "role": "falsification experiment for O7.2-O7.4 and the endpoints, run before the proof was trusted; did not falsify, and exposed the heavy-tail second-order effect and the endpoint behaviour",
+  "warning": "Measured coverage is not a proof (packet rule). The under-coverage on polynomial scores is a recorded second-order effect governed by E||S||^4, not a counterexample to the first-order theorem; the bounded-score law is the library's mixture-fraction use case and is nominal from n = 100.",
+  "literature": [
+    "Sugiura-Fujikoshi-1969",
+    "Bhattacharya-Ghosh-1978"
+  ]
+}

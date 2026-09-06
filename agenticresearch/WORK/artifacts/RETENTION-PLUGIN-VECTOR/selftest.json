@@ -1,0 +1,69 @@
+{
+  "provenance": {
+    "mode": "selftest",
+    "params": {},
+    "git_revision": "9e6dc891f6f039f4d38eb1a41ba608a13067fa55",
+    "script_sha256": "de075c44ac8d91999edbc0da49c19fcff5c96899bd16affb2de6fbba68ed6de8",
+    "python": "3.13.12",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "numpy": "2.5.2",
+    "scorequant": "0.2.0"
+  },
+  "cases": {
+    "d2": {
+      "d": 2,
+      "n": 12,
+      "K_declared": 5,
+      "n_empty_cells": 1,
+      "det_ratio": "1096/5925",
+      "eta_D": 0.4300917378346002,
+      "within_scatter_identity": true,
+      "det_ratio_in_unit_interval": true,
+      "sum_psi_hat_zero": true,
+      "gateaux": {
+        "worst_first_order_gap_at_eps_2^-10": 0.005722512490029448,
+        "worst_deviation_of_remainder_halving_ratio_from_2": 0.009288283770353596,
+        "pass": true
+      },
+      "library_geometric_mean_retention_gap": 1.1102230246251565e-16,
+      "library_effective_rank": 2,
+      "pass": true
+    },
+    "d3": {
+      "d": 3,
+      "n": 14,
+      "K_declared": 4,
+      "n_empty_cells": 0,
+      "det_ratio": "5191/2968650",
+      "eta_D": 0.12047511337534975,
+      "within_scatter_identity": true,
+      "det_ratio_in_unit_interval": true,
+      "sum_psi_hat_zero": true,
+      "gateaux": {
+        "worst_first_order_gap_at_eps_2^-10": 0.0010874664732100456,
+        "worst_deviation_of_remainder_halving_ratio_from_2": 0.018374954796729206,
+        "pass": true
+      },
+      "library_geometric_mean_retention_gap": 4.163336342344337e-17,
+      "library_effective_rank": 3,
+      "pass": true
+    }
+  },
+  "K_equals_d_centred_sample": {
+    "det_ratio_exact": "0",
+    "library_geometric_mean_retention": 1.6362907133597074e-09,
+    "note": "exact 0; the library's value is the d-th root of a rounding-level determinant",
+    "pass": true
+  },
+  "d1_reduction_to_o6": {
+    "max_gap": 1.5092094240998222e-15,
+    "pass": true
+  },
+  "rank_rtol_projection": {
+    "library_effective_rank": 2,
+    "library_geometric_mean_retention": 0.4300917378346001,
+    "two_dimensional_plugin": 0.4300917378346002,
+    "note": "the library reports the 2-D ratio with exponent 1/rank; the 3-D plug-in of the theorem is 0/0"
+  },
+  "pass": true
+}

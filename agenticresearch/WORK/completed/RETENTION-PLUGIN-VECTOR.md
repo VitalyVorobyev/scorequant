@@ -1,6 +1,6 @@
 # RETENTION-PLUGIN-VECTOR — error bars for the vector geometric-mean retention under a frozen rule
 
-**Programme:** P4 (OP27) · **Opened:** 5 September 2026 · **Status:** active
+**Programme:** P4 (OP27) · **Opened:** 5 September 2026 · **Status:** completed 6 September 2026 — see Outcome below (original packet text kept verbatim)
 (literature-first pass done 5 September 2026; derivation not started)
 **Source:** branch `main` after PR #53 (O6 proved and audited) and the
 literature commit that rewrote this packet
@@ -181,3 +181,99 @@ longer iid, and the hard-assignment non-smoothness appears. First target: the
 population D-exchange/Voronoi stationary rule of `D-POP-VORONOI` with an
 empirical-process argument under a margin condition, or an exact
 counterexample showing the plug-in is not \(\sqrt n\)-normal without one.
+
+---
+
+## Outcome (6 September 2026)
+
+**Status:** completed · **Programme:** P4 (OP27) · **Claim target:** the frozen-rule
+vector special case of `OPEN-RETENTION-UNCERTAINTY`.
+
+**Verdict: PROVED**, as a bridge — and, as the literature pass predicted, the
+CLT itself is textbook; what the session added is the reduction to the library's
+cell moments and the endpoints.
+
+- **The result** (`KNOWN_RESULTS/10-oracle.md` §O7; `RETENTION-PLUGIN-CLT-FROZEN-VECTOR`,
+  status `bridge`): conditional on the frozen rule, on an iid equally weighted
+  oracle-score evaluation sample, the plug-in geometric-mean retention
+  \(\hat\eta_D=(\det\hat I_Z/\det\hat V)^{1/d}\) — exactly `geometric_mean_retention`
+  when \(\hat V\succ0\) and nothing is projected — satisfies
+  \(\hat V-\hat I_Z=\) within-cell scatter (O7.1), \(\sqrt n(\hat\eta_D-\eta_D)\Rightarrow N(0,\sigma^2)\)
+  with \(\psi=(\eta_D/d)[2S^\top I_Z^{-1}c_Z-c_Z^\top I_Z^{-1}c_Z-S^\top V^{-1}S]\) (O7.2;
+  the packet's conjectured form, verified, reducing to O6.2 at \(d=1\) and equal to
+  the average of Romanazzi's per-coefficient canonical-correlation influence
+  functions), admits the strongly consistent \(\hat\sigma^2=n^{-1}\sum\hat\psi_i^2\)
+  with \(\sum\hat\psi_i=0\) exactly (O7.3), and the Wald interval is valid iff
+  \(\sigma^2>0\) (O7.4). Assumptions: positive cell probabilities, finite fourth
+  moment, \(V\succ0\), \(I_Z\succ0\) (new: needs \(K\ge d+1\) at the reference law),
+  \(\sigma^2>0\).
+- **Endpoints (the part that differs from O6).** \(\sigma^2=0\) iff every cell's
+  conditional law is supported on the ellipsoid
+  \((s-VI_Z^{-1}c_b)^\top V^{-1}(s-VI_Z^{-1}c_b)=c_b^\top I_Z^{-1}(V-I_Z)I_Z^{-1}c_b\).
+  Absolutely continuous cells force \(\sigma^2>0\); atomless cells do **not** when
+  \(d\ge2\): `CE-O7-ELLIPSOID-ZERO-VARIANCE-001` (four quarter-turn cells, two atoms
+  each, \(\eta_D=9/25\), \(\psi\) vanishing on the whole circle as a polynomial
+  identity, hence also for the atomless arc law). At singular \(I_Z\) the plug-in
+  is biased upward at rate \(n^{-(d-r)/d}\) with a positive limit under a stated
+  nondegeneracy (`RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`, `project_proved`):
+  slower than \(n^{-1/2}\) for \(d\ge2\), so the interval must not be used at
+  \(K\le d\) or any rank-deficient \(I_Z\).
+- **Falsification ran first** (`RETENTION-PLUGIN-COVERAGE-VECTOR`, measured): exact
+  identities and exact Gateaux differences in \(d=2,3\); closed-form Hermite laws
+  (\(d=2,3\)), a bounded three-component mixture, and a library-fitted, compiled
+  D-exchange rule with bisection-located cuts, references by two routes agreeing
+  to \(10^{-13}\). Coverage is nominal from \(n=100\) on the bounded mixture-fraction
+  scores (0.950, 0.945, 0.956, 0.945) and liberal at every \(n\le3000\) on the
+  unbounded polynomial scores (0.68→0.94 in \(d=2\), 0.40→0.83 in \(d=3\)) because
+  \(\hat\sigma\) under-estimates \(\sigma\) there — a fourth-moment second-order effect,
+  recorded, not a counterexample. Did not falsify.
+- **Prior art:** cite-vs-derive as planned; one retrieval pass tried to read the
+  six statements (`LITERATURE/audits/RETENTION-PLUGIN-CLT-FROZEN-VECTOR-5-September-2026.md`,
+  post-derivation section): Romanazzi's form agrees (secondary restatement),
+  Fang & Krishnaiah's abstract confirms repeated roots are covered, Radhakrishnan
+  & Kshirsagar's formula could not be obtained (`gaps.md`).
+  `literature_search_status: prior_art_found`.
+
+## Practical interpretation
+
+With an oracle-score evaluation sample of \(n\) events the number the library
+reports for a frozen rule carries an error bar of about \(\sigma/\sqrt n\) computable
+in one extra pass — for the bounded mixture law \(\pm0.04\) at \(n=1000\). For bounded
+(mixture-fraction) scores that bar is trustworthy from a few hundred events;
+for unbounded polynomial-type scores it is too narrow until \(n\) is far larger;
+at \(K\le d\), or whenever the binned information is rank-deficient, the reported
+number is itself a positively biased quantity of order \(n^{-1/d}\) and no
+interval applies. Without an oracle sample nothing here applies.
+
+## Artifacts
+
+- `KNOWN_RESULTS/10-oracle.md` §O7 (O7.0–O7.8); `KNOWN_RESULTS/index.md` chapter row.
+- Claims: `RETENTION-PLUGIN-CLT-FROZEN-VECTOR` (bridge),
+  `RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE` (project_proved),
+  `RETENTION-PLUGIN-COVERAGE-VECTOR` (measured) new; `OPEN-RETENTION-UNCERTAINTY` patched.
+- `COUNTEREXAMPLES/CE-O7-ELLIPSOID-ZERO-VARIANCE-001.json` and catalogue entry.
+- Instrument `py/retention_plugin_vector.py` (selftest / fixtures / popref / coverage /
+  all); artifacts under `WORK/artifacts/RETENTION-PLUGIN-VECTOR/`; ledger rows
+  `N-VECTOR-RETENTION-*`.
+- CI pins `tests/test_research_claims.py::test_o7_vector_plugin_influence_function_matches_exact_gateaux_differences`
+  and `::test_o7_ellipsoid_law_has_zero_influence_variance_on_the_whole_circle`.
+- Literature: post-derivation section of the round-11 audit file; `topics/08` verification
+  lines for Fang & Krishnaiah and Romanazzi; `gaps.md`.
+- `OPEN_PROBLEMS.md` (work limit, OP27), `PLAYBOOK.md` (next: independent audit of O7),
+  `manuscripts/README.md`.
+- No `src/` change; no public uncertainty API (packet exclusion).
+
+## Deviations from the attack plan
+
+- The door2 example was not used: its default problem has one signal fraction, so
+  \(d=1\); the library-realistic case is instead a D-exchange rule fitted and compiled
+  on the \(d=2\) Hermite score, plus a bounded three-component mixture law.
+- The primary texts of Radhakrishnan & Kshirsagar and Fang & Krishnaiah remain unread;
+  the agreement check used a citer's restatement of Romanazzi's form.
+
+## Next dependency-blocking question
+
+An **independent audit** of O7 first (`PLAYBOOK.md` carries the prompt). Then the genuine
+OP27: rules **refitted on the evaluation sample** — the population D-exchange/Voronoi
+stationary rule of `D-POP-VORONOI` with an empirical-process argument under a margin
+condition, or an exact counterexample showing the plug-in is not \(\sqrt n\)-normal without one.

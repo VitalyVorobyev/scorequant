@@ -34,7 +34,7 @@ Status vocabulary (mirrors `registry.json` `status_definitions`):
 | 7. A-optimality control theory | `07-a-optimality.md` | A1, A2, A3, A4 |
 | 8. Randomized/soft quantizers and empirical geometric optimization | `08-soft.md` | S1, S2, S3, S4, S5, S6 |
 | 9. Empirical-to-population theory | `09-consistency.md` | C1, C2 |
-| 10. Score/density-ratio/classifier access | `10-oracle.md` | O1, O2, O3, O4, O5, O6 |
+| 10. Score/density-ratio/classifier access | `10-oracle.md` | O1, O2, O3, O4, O5, O6, O7 |
 | 11. Information-efficiency outputs | `11-efficiency.md` | I1, I2, I3 |
 
 ## 12. Numerical evidence as regression tests — [MEASURED]

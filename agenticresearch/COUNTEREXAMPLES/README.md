@@ -599,3 +599,39 @@ iff \(\eta>0\) and some positive-probability cell is atomless.
 
 **Fixture:** `CE-O6-ETA-ZERO-MULTIATOM-VARIANCE-001.json`.
 **Regression:** `tests/test_research_claims.py::test_o6_audit_eta_zero_law_has_zero_influence_variance_with_many_atoms`.
+
+---
+
+## CE-O7-ELLIPSOID-ZERO-VARIANCE-001 — an atomless vector law with zero influence variance at interior \(\eta_D\)
+
+**Status:** exact rational boundary counterexample (RETENTION-PLUGIN-VECTOR, 6 Sep 2026).
+
+**Claim falsified:**
+
+> The scalar \(\sigma^2=0\) characterisation of O6.4 lifts to vector scores:
+> for \(0<\eta_D<1\) the influence variance of the frozen-rule geometric-mean
+> retention plug-in vanishes only for laws with at most two atoms per cell,
+> so an atomless cell of positive probability implies \(\sigma^2>0\) whenever
+> \(\eta_D>0\).
+
+\(d=2\), \(K=4\), cells related by quarter turns; cell 0 carries
+\(S\in\{(3,4),(3,-4)\}\) with weight \(1/8\) each. Then \(E[S]=0\),
+\(p_b=1/4\), \(V=\tfrac{25}{2}I\), \(I_Z=\tfrac92I\), \(\eta_D=9/25\) (determinant
+ratio \(81/625\)), and the O7 influence function
+\(\psi=\tfrac{\eta_D}{2}[2s^\top I_Z^{-1}c_b-c_b^\top I_Z^{-1}c_b-s^\top V^{-1}s]\)
+vanishes at every atom. More: as a polynomial in \(s\),
+\(\psi_r(s)=-\tfrac{2r}{25}\big(s_1^2+s_2^2-\tfrac{50}{3}s_1+25\big)\) with
+\(r=\eta_D^2\), so \(\psi\) vanishes on the whole circle
+\(|s-(25/3,0)|^2=(20/3)^2\) — the cell-0 zero-variance ellipsoid of O7.4(a).
+Every law on that circle with mean \((3,0)\) is therefore a \(\sigma^2=0\) law
+at \(\eta_D=9/25\), including the **atomless** law uniform on the arc of
+half-angle \(\alpha\approx1.1311\) (\(\sin\alpha/\alpha=4/5\)) about the far
+point; measured on it, the Wald interval is conservative with width
+\(O(1/n)\). At \(d=1\) the ellipsoid is O6's two-point set, which is why the
+scalar remark was true there. Correct statement: \(\sigma^2=0\) iff every
+cell's conditional law is supported on its ellipsoid; absolutely continuous
+cells are excluded, atomless singular laws are not. Theory:
+`KNOWN_RESULTS/10-oracle.md` O7.4(a).
+
+**Fixture:** `CE-O7-ELLIPSOID-ZERO-VARIANCE-001.json`.
+**Regression:** `tests/test_research_claims.py::test_o7_ellipsoid_law_has_zero_influence_variance_on_the_whole_circle`.

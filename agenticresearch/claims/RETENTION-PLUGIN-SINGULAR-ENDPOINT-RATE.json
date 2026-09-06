@@ -1,0 +1,35 @@
+{
+  "id": "RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE",
+  "title": "Singular binned information: the plug-in geometric-mean retention is biased upward at rate n^{-(d-r)/d}",
+  "criterion": [
+    "D"
+  ],
+  "level": "information_accounting",
+  "status": "project_proved",
+  "publication_status": "internal",
+  "statement": "Under a frozen rule with iid equally weighted evaluation pairs (S_i, Z_i), positive cell probabilities, E||S||^2 < infinity and V = E[S S^T] positive definite, if I_Z = sum_b m_b m_b^T / p_b has rank r < d (so eta_D = 0), then the plug-in eta_hat_D = (det I_hat_Z / det V_hat)^(1/d) is O_p(n^{-(d-r)/d}): with U an orthonormal null basis of I_Z, U^T m_b = 0 for every cell but U^T m_hat_b = O_p(n^{-1/2}), so the null block of I_hat_Z and its Schur complement are O_p(1/n) and det I_hat_Z = O_p(n^{-(d-r)}). If moreover K >= d and E[U^T S S^T U 1{Z=b}] is positive definite for every cell, then n^{(d-r)/d} eta_hat_D converges in law to a strictly positive random variable, (det(R^T I_Z R) det(W P^{-1} W^T) / det V)^(1/d) with W = G (I - Lambda), G the (d-r) x K matrix of independent Gaussian limits of sqrt(n) U^T m_hat_b and Lambda the rank-r projection Lambda_{b'b} = (R^T m_b')^T (R^T I_Z R)^{-1} (R^T m_b) / p_b'. Consequences: at d = 1 the bias is O(1/n) (O6); at d >= 2 with r = d - 1 it is n^{-1/d}, slower than the n^{-1/2} CLT scale, the Wald half-width is of the same order as the plug-in (measured), and coverage of the true value 0 converges to a law-dependent constant, not to 1 - alpha. The reference-law instance is K = d, where FI-RANK-CEILING forces eta_D = 0 while the sample plug-in - and the library's reported number - is positive.",
+  "assumptions": [
+    "positive cell probabilities; E||S||^2 < infinity (no fourth moment is needed for the rate); V positive definite; the rule is frozen so the pairs are iid",
+    "the lower bound needs K >= d (so that K - r >= d - r) and a nondegenerate conditional second moment of the null-direction score U^T S in every cell; the upper bound needs neither",
+    "the joint law of the limits of sqrt(n) U^T m_hat_b across cells is Gaussian with independent blocks because the cross-covariances E[U^T S 1{Z=b} (U^T S 1{Z=b'})^T] vanish for b != b'",
+    "the limit law is not characterised beyond positivity; the classical setting is the dimensionality test of Seo, Kanda & Fujikoshi (1995), whose statement was not read (LITERATURE/gaps.md)",
+    "measured (O7.7): n^{1/d} eta_hat_D stabilises at 0.63 on the d = 2, K = 2 Hermite law and drifts 0.61 -> 0.53 on the d = 3, K = 3 law at n <= 3000; coverage of 0 tends to 0.95 and 0.80 respectively",
+    "not yet independently audited (6 Sep 2026)"
+  ],
+  "dependencies": [
+    "RETENTION-PLUGIN-CLT-FROZEN-VECTOR",
+    "FI-RANK-CEILING"
+  ],
+  "literature": [
+    "Seo-Kanda-Fujikoshi-1995",
+    "vanderVaart-1998"
+  ],
+  "literature_search_status": "search_gap",
+  "proof_location": {
+    "file": "KNOWN_RESULTS/10-oracle.md",
+    "section": "O7. Frozen-rule vector retention: plug-in asymptotics of the geometric-mean retention"
+  },
+  "artifact": "py/retention_plugin_vector.py",
+  "role": "the eta_D = 0 endpoint of O7: says why the Wald interval must not be used at K <= d or any rank-deficient binned information, and that the bias there is slower than n^{-1/2} in d >= 2",
+  "warning": "Project-level proposition inside O7.4(b) (Schur complement of a positive semidefinite empirical Gram matrix plus the CLT for the null-direction cell moments). The classical null theory of the dimensionality test covers the same limit for Gaussian and elliptical sampling; a search gap for the fixed-partition uncentred form, not novelty. Not yet independently audited."
+}

@@ -157,8 +157,12 @@ vector pair; three sample versions; the squared multiple correlation and
 correspondence-analysis eigenvalues as special cases.
 **Use:** second route to O7's influence function
 (\(\log\eta_D=d^{-1}\sum_i\log\rho_i^2\)); needs simple \(\rho_i\), which the
-determinant route does not.
-**Verification:** abstract read (primary text, Crossref), 5 Sep 2026.
+determinant route does not. Post-derivation check (6 Sep 2026): with the
+per-coefficient form \(\operatorname{IF}(\rho_i^2)=-\rho_i^2u_i^2+2\rho_iu_iv_i-\rho_i^2v_i^2\)
+as restated by a citer (arXiv:1809.01625, secondary), O7's \(\psi\) equals
+\((\eta_D/d)\sum_i\operatorname{IF}(\rho_i^2)/\rho_i^2\) exactly.
+**Verification:** abstract read (primary text, Crossref), 5 Sep 2026; the
+formula only through a secondary restatement (6 Sep 2026).
 
 ## Muirhead & Waternaux (1980) — canonical correlations without normality
 
@@ -188,9 +192,13 @@ Analysis 12(1):39–63. doi:10.1016/0047-259X(82)90081-1.
 standard covariance/MANOVA/canonical-correlation random matrices under
 nonnormal sampling (fourth-cumulant covariance).
 **Use:** the closest general theorem to "\(\sqrt n(\hat\eta_D-\eta_D)\) is
-normal"; citation candidate once read.
-**Verification:** journal record only (primary record, OpenAlex); text
-unread (5 Sep 2026).
+normal", and the one that covers repeated \(\rho_i\) — the abstract states
+the results are for population eigenvalues *with multiplicities*, which the
+determinant route of O7.2 also tolerates. Cited for the method in
+`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`.
+**Verification:** abstract read verbatim (primary text via RePEc and
+ScienceDirect metadata, 6 Sep 2026); theorem numbering and the covariance
+formula unread.
 
 ## Seo, Kanda & Fujikoshi (1995) — dimensionality tests under nonnormality
 

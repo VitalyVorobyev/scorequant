@@ -6,7 +6,7 @@
 ## Question
 
 Before spending a session proving the vector geometric-mean retention CLT
-(`WORK/active/RETENTION-PLUGIN-VECTOR.md`), is the statement, or its method,
+(`WORK/completed/RETENTION-PLUGIN-VECTOR.md`), is the statement, or its method,
 already in the literature? Also: retry the two O6 primary-text gaps.
 
 ## Outcome
@@ -39,7 +39,7 @@ already in the literature? Also: retry the two O6 primary-text gaps.
   `RETENTION-PLUGIN-CLT-FROZEN-SCALAR` link the keys.
 - `papers/`: Cai–Liang–Zhou arXiv PDF committed; `papers/local/` (gitignored)
   holds the contents scans and notes, listed in `papers/README.md`.
-- `WORK/active/RETENTION-PLUGIN-VECTOR.md` rewritten: cite-vs-derive table,
+- `WORK/completed/RETENTION-PLUGIN-VECTOR.md` rewritten: cite-vs-derive table,
   endpoints first; `PLAYBOOK.md` prompt updated.
 
 ## Validation
@@ -49,6 +49,6 @@ commit).
 
 ## Next question
 
-Run `WORK/active/RETENTION-PLUGIN-VECTOR.md`. Before citing them for more than
+Run `WORK/completed/RETENTION-PLUGIN-VECTOR.md`. Before citing them for more than
 the method, read the statements of Radhakrishnan & Kshirsagar (1981) and Fang
 & Krishnaiah (1982) (paywalled; `gaps.md`).

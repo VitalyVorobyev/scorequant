@@ -113,4 +113,12 @@ the door3 surrogate-gap discussion, as a bridge, not as novelty. Independently a
 2026 (`AUDITS/AUDIT-SCORE-ORACLE-ROBUSTNESS-001.md`): verified; the \(\sigma^2=0\) characterisation
 is corrected at \(\eta=0\) (no two-atom restriction there, atomless cells do not rescue (A4)) — any
 v10 text must carry the hardened statement; no re-attribution to prior art.
+Registry-only, 6 September 2026: O7 (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, not yet audited) — the
+vector companion of O6 for the geometric-mean D-retention the library reports, with the matrix
+influence function, the ellipsoid characterisation of \(\sigma^2=0\)
+(`CE-O7-ELLIPSOID-ZERO-VARIANCE-001`) and the singular-endpoint rate
+(`RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`). A v10 would cite it where the paper reports
+`geometric_mean_retention` on held-out data, as a bridge from the delta method and the published
+canonical-correlation influence functions, never as novelty; the measured heavy-tail
+under-coverage (O7.7) belongs in any such text as a caveat.
 The dated staleness log that preceded this section is `../archive/manuscript-staleness-log.md`.

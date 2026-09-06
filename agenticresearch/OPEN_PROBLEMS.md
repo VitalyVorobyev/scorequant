@@ -9,15 +9,20 @@ branches. A session works on a `WORK/active/` packet drawn from a programme —
 the whole branch, not one OP leaf. OP numbers are stable ids; claim
 `proof_location`s point at them.
 
-## Current work limit (5 September 2026)
+## Current work limit (6 September 2026)
 
-No scientific question is active. The P2 packet `SCORE-ORACLE-ROBUSTNESS` closed on 5 September
-2026 (`WORK/completed/SCORE-ORACLE-ROBUSTNESS.md`) with the conditional scalar retention
-interval **proved** as a bridge (`RETENTION-PLUGIN-CLT-FROZEN-SCALAR`, O6): a user with an
-independent oracle-score evaluation sample can now put a valid \(n^{-1/2}\) error bar on the
-true retention of a frozen rule and see the proxy surrogate's discrepancy as bias outside that
-bar. P2's perturbation and calibration questions (OP17, OP18) and P4's `OPEN-RETENTION-UNCERTAINTY`
-remainder stay open; the next packet is chosen explicitly (see `PLAYBOOK.md`), not resumed.
+No scientific question is active. The P4 packet `RETENTION-PLUGIN-VECTOR` closed on 6 September
+2026 (`WORK/completed/RETENTION-PLUGIN-VECTOR.md`) with the vector case **proved** as a bridge
+(`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, O7): the number the library reports,
+`geometric_mean_retention`, carries a valid conditional \(n^{-1/2}\) Wald interval on an
+independent oracle-score evaluation sample, with the \(\sigma^2=0\) set characterised as an
+ellipsoid per cell (`CE-O7-ELLIPSOID-ZERO-VARIANCE-001`: atomless laws can sit on it when
+\(d\ge2\)) and the singular endpoint biased at rate \(n^{-(d-r)/d}\)
+(`RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`). It succeeds the scalar O6 of 5 September 2026
+(`WORK/completed/SCORE-ORACLE-ROBUSTNESS.md`, audited). O7 is **not yet independently audited**;
+that audit is the next bounded task before any library use. P2's perturbation and calibration
+questions (OP17, OP18) and P4's `OPEN-RETENTION-UNCERTAINTY` remainder (refitted rules, weights,
+no oracle) stay open; the next packet is chosen explicitly (see `PLAYBOOK.md`), not resumed.
 
 OP31 and `WORK/active/DS-TILT-DUAL-EXACT-COMPLEXITY.md` are **parked until an
 explicit reopening decision**. The packet remains at its existing path to
@@ -154,6 +159,19 @@ the evaluation sample (where the boundary non-smoothness actually enters); weigh
 the degenerate limit of \(n(\hat\eta-\eta)\) when \(\sigma^2=0\) (\(\eta\in\{0,1\}\) or two-atom cells).
 Audited 5 September 2026 (`AUDITS/AUDIT-SCORE-ORACLE-ROBUSTNESS-001.md`): verified with the (A4)
 wording hardened at \(\eta=0\).*
+
+*Vector case settled 6 September 2026 (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, O7; not yet audited):
+frozen rule, \(d\)-dimensional true score, the geometric-mean D-retention
+\((\det I_Z/\det V)^{1/d}\) — the library's reported number — with the matrix influence function
+\(\psi=(\eta_D/d)[2S^\top I_Z^{-1}c_Z-c_Z^\top I_Z^{-1}c_Z-S^\top V^{-1}S]\), a consistent plug-in
+variance and a Wald interval valid iff \(\sigma^2>0\); \(\sigma^2=0\) iff every cell's conditional
+law sits on an ellipsoid (`CE-O7-ELLIPSOID-ZERO-VARIANCE-001`: atomless such laws exist for
+\(d\ge2\), so O6's atomless remark does not lift); at singular \(I_Z\) (e.g. \(K\le d\)) the plug-in
+is biased upward at rate \(n^{-(d-r)/d}\) (`RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`), slower
+than \(n^{-1/2}\) for \(d\ge2\). Measured: nominal from \(n=100\) on bounded mixture-fraction
+scores, liberal at \(n\le3000\) on unbounded polynomial scores (a fourth-moment second-order
+effect). Remaining: refitted rules; weights; no oracle; the profiled \(D_s\) retention; the
+degenerate limits; a second-order-corrected interval for heavy-tailed scores.*
 
 ---
 

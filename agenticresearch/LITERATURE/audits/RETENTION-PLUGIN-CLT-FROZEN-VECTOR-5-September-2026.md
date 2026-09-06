@@ -6,7 +6,7 @@ Run 5 September 2026, **before** the derivation, at the owner's request
 ("make a better literature search before spending time and compute in
 proving something well known"). Mode: novelty search of
 `protocols/literature.md` for the statement the packet
-`WORK/active/RETENTION-PLUGIN-VECTOR.md` intends to prove (future claim id
+`WORK/completed/RETENTION-PLUGIN-VECTOR.md` intends to prove (future claim id
 `RETENTION-PLUGIN-CLT-FROZEN-VECTOR`), plus a one-hop forward-citation round
 on the two nearest sources. Retrieval was done inline (OpenAlex, Crossref,
 Google Books search-inside, archive.org OCR, arXiv); no subagent. Labels:
@@ -253,3 +253,29 @@ technique claim.
   exists there). Serfling §3.3 Theorem A/B labels remain unresolved
   (Google Books search-inside returns no snippet; the archive copy is
   lending-only; the e-bookshelf sample is HTML, not the book).
+
+## Post-derivation check (6 September 2026, RETENTION-PLUGIN-VECTOR session)
+
+The derivation (`KNOWN_RESULTS/10-oracle.md` O7) produced
+\(\psi=(\eta_D/d)[2S^\top I_Z^{-1}c_Z-c_Z^\top I_Z^{-1}c_Z-S^\top V^{-1}S]\). A retrieval pass
+for the six statements above (one `sonnet` agent, WebSearch/WebFetch, no
+subscription access) then tried to read the primary texts. Outcome, claim by claim:
+
+| Cited item | What was obtained | Comparison with the derived \(\psi\) |
+|---|---|---|
+| Romanazzi (1992) per-coefficient influence function | **secondary**: restated as \(\operatorname{IF}(\rho_i^2)=-\rho_i^2u_i^2+2\rho_iu_iv_i-\rho_i^2v_i^2\) for standardized canonical variates \(u_i,v_i\) in Alam, Shahjaman & Rahman, arXiv:1809.01625 (Thm 2.1, its linear degenerate case); the original (Springer) stayed paywalled | **agrees.** In canonical coordinates \(S^\top V^{-1}S=\sum_iu_i^2\), \(c_Z^\top I_Z^{-1}c_Z=\sum_iv_i^2\), \(S^\top I_Z^{-1}c_Z=\sum_iu_iv_i/\rho_i\), so \(\psi=(\eta_D/d)\sum_i\operatorname{IF}(\rho_i^2)/\rho_i^2\) exactly (O7.2). Their simple-root hypothesis is not needed for the sum. |
+| Fang & Krishnaiah (1982) | **primary text, abstract** (RePEc and ScienceDirect metadata, verbatim): asymptotic joint distributions of functions of the eigenvalues of covariance, correlation and canonical-correlation matrices "in nonnull situations when the population eigenvalues have multiplicities", without normality, by Edgeworth-type expansions | the general theorem behind O7.2 with repeated \(\rho_i\) explicitly allowed; cited for the method. Theorem number and covariance formula unread. |
+| Muirhead & Waternaux (1980) | **primary record, abstract**: finite fourth moments, fourth-order cumulants, elliptical simplification; secondary paraphrase that the test statistics are \(N(0,\kappa+1)\) for distinct coefficients | mechanism and hypothesis (A2) as expected; theorem number and the vector covariance form unconfirmed. |
+| Radhakrishnan & Kshirsagar (1981) | **citation only**: no abstract page, no citing restatement of the \(\Lambda\)/noncentrality-matrix influence function reached (T&F, no mirror) | **not compared.** The centred \(\Lambda\)-influence at the reference law follows from O7.2 by \(\operatorname{IF}(\log\Lambda)=-\sum_i\operatorname{IF}(\rho_i^2)/(1-\rho_i^2)\), but agreement with their printed formula is unverified. |
+| Seo, Kanda & Fujikoshi (1995) | **primary record, abstract**: perturbation expansions of the dimensionality test statistics under nonnormality, elliptical expectations, corrected statistics | the classical setting of O7.4(b); their null rate/limit form was not obtained, so `RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE` is recorded as project-level with `literature_search_status: search_gap`. |
+| Serfling (1980) §3.3 A/B | **conflicting secondary**: Beutner et al. (2024, WIREs Comp. Stat.) cite "Sect. 3.3, Theorem B" for the delta method; a UW lecture-notes chapter labels the real-valued single-point case "Serfling's theorem A" (possibly referring to Ch. 6) | unresolved; the registry note stays as is. |
+
+Consequence: the O7 claim node cites all six for the *method* and states in its
+warning that Radhakrishnan & Kshirsagar and Fang & Krishnaiah were not read.
+Evidence labels above follow `protocols/literature.md`. No new bibliography key
+was registered (the arXiv restatement is a secondary source and is named here
+only). URLs used: doi:10.1016/0047-259X(82)90081-1 (RePEc mirror
+ideas.repec.org/a/eee/jmvana/v12y1982i1p39-63.html);
+academic.oup.com/biomet/article-abstract/67/1/31/276545;
+ideas.repec.org/a/eee/jmvana/v52y1995i2p325-337.html; arxiv.org/abs/1809.01625;
+sites.stat.washington.edu/jaw/COURSES/580s/581/LECTNOTES/ch7c.pdf.

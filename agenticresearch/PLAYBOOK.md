@@ -6,18 +6,26 @@ not authorization to resume it. One session executes one selected packet.
 ## Next session
 
 ```text
-Execute agenticresearch/WORK/active/RETENTION-PLUGIN-VECTOR.md in a fresh context.
-Check out branch main at its tip (O6 proved and audited, PR #53; the literature-first
-pass of 5 September 2026 is in LITERATURE/audits/RETENTION-PLUGIN-CLT-FROZEN-VECTOR-5-September-2026.md).
-Follow agenticresearch/README.md and protocols/theorem.md. The method is prior art: cite
-the delta method, the determinant differential and the located influence-function and
-fourth-moment sources; do not re-prove them. Falsify in exact arithmetic first, treat the
-endpoints (singular I_Z, eta_D in {0,1}, sigma^2 = 0) before the limit theorem, derive the
-matrix influence function in cell moments and check it against O6.2 at d = 1 and against
-the cited forms at the evaluation law. Stop at proved, reduced or refuted with the O7
-section, the claim nodes and the measured table. No src/ change, no public API. Close
-with a plain-English report of what was proved, what is textbook, and what remains.
+Independent audit of RETENTION-PLUGIN-CLT-FROZEN-VECTOR (O7) and its companions
+RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE and CE-O7-ELLIPSOID-ZERO-VARIANCE-001, in a fresh
+context that has not seen the RETENTION-PLUGIN-VECTOR derivation. Inputs: the claim nodes
+(registry.py show <ID> --deps --proof), KNOWN_RESULTS/10-oracle.md section O7, the audited
+O6 and its audit AUDITS/AUDIT-SCORE-ORACLE-ROBUSTNESS-001.md, the instrument
+py/retention_plugin_vector.py and its artifacts under WORK/artifacts/RETENTION-PLUGIN-VECTOR/.
+Follow protocols/audit.md. Attack: the phi-route delta method with the everywhere-defined
+functional; the three trace identities behind E[psi] = 0 and sum psi_hat = 0; the ellipsoid
+characterisation of sigma^2 = 0 (is the "iff" tight, and is the absolutely-continuous
+sufficiency correctly stated?); the singular-endpoint rate proposition (the independence of
+the null-direction Gaussian blocks, the rank-r projection Lambda, the K >= d condition, and
+whether the lower bound's nondegeneracy hypothesis is necessary); the library-agreement
+claim including the rank_rtol caveat; and the reading of the heavy-tail under-coverage as
+second order (replicate with fresh seeds; probe a bounded law of your own). Verdict per
+protocols/audit.md; harden statements rather than re-derive. No src/ change.
 ```
+
+After the audit, the next research packet is the genuine OP27 remainder: rules refitted on
+the evaluation sample (empirical-process argument under a margin condition, or an exact
+counterexample to \(\sqrt n\)-normality), targeting `OPEN-RETENTION-UNCERTAINTY`.
 
 ## Other session types
 

@@ -31,7 +31,7 @@
   "boundary_counterexamples": [
     "CE-D-UNMERGED-DUPLICATES-001"
   ],
-  "warning": "The internal proof has passed the priority-0 audit. The targeted literature search found no direct equivalent, but that search gap is not a novelty/priority claim.",
+  "warning": "The internal proof has passed the priority-0 audit. The targeted literature search found no direct equivalent, but that search gap is not a novelty/priority claim. The statement is machine-checked in Lean for arbitrary dimension d, on the merged-atoms branch of the duplicate hypothesis only; the alternative 'labels constant on every duplicate class' branch, positive gain tolerances, singular objectives, and any equivalence with the Python/JAX implementation are outside the formalization.",
   "role": "primary structural theorem",
   "implies": [
     "AUDIT-D-EXCHANGE-VORONOI",
@@ -39,5 +39,12 @@
     "D-GLOBAL-GEOMETRIC-REALIZABILITY",
     "OPEN-CRITERION-CHARACTERIZATION",
     "OPEN-D-EXCHANGE-CONSISTENCY"
-  ]
+  ],
+  "formal_proof": {
+    "system": "Lean 4.33.1 + Mathlib 4.33.1",
+    "spec": "formal/ScoreQuantFormal/ExchangeVoronoiSpec.lean",
+    "file": "formal/ScoreQuantFormal/ExchangeVoronoi.lean",
+    "declaration": "ScoreQuantFormal.exchange_voronoi",
+    "statement_audit": "AUDITS/FORMALIZATION-D-EXCHANGE-IMPLIES-VORONOI-001.md"
+  }
 }

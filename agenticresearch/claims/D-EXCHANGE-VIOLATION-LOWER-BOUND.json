@@ -7,13 +7,21 @@
   "level": "finite_assignment",
   "status": "project_proved",
   "publication_status": "internal",
-  "statement": "For the theorem-triggering violation, \u0394F_D >= log(1+\u03b1\u03b2 q_delta^2/4)>0 for distinct centroids.",
+  "statement": "For the theorem-triggering violation, ΔF_D >= log(1+αβ q_delta^2/4)>0 for distinct centroids.",
   "dependencies": [
-    "D-LOGDET-GAIN",
-    "D-LEVERAGE"
+    "D-EXCHANGE-SCALAR-CORE",
+    "D-LEVERAGE",
+    "D-LOGDET-GAIN"
   ],
   "proof_location": {
     "file": "KNOWN_RESULTS/04-d-optimality.md",
     "section": "D5. Exchange stability implies strict D-Voronoi geometry"
+  },
+  "formal_proof": {
+    "system": "Lean 4.33.1 + Mathlib 4.33.1",
+    "spec": "formal/ScoreQuantFormal/ExchangeVoronoiSpec.lean",
+    "file": "formal/ScoreQuantFormal/ExchangeVoronoi.lean",
+    "declaration": "ScoreQuantFormal.violation_log_gain",
+    "statement_audit": "AUDITS/FORMALIZATION-D-EXCHANGE-IMPLIES-VORONOI-001.md"
   }
 }

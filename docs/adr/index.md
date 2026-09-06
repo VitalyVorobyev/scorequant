@@ -31,4 +31,5 @@ Only decisions that materially constrain future implementation are recorded here
 27. [ADR 0027 — A landing page at the root, the documentation at `/docs/`, the portal at `/portal/`](0027-landing-page-at-the-root.md) — supersedes ADR 0025
 28. [ADR 0028 — Focus research on user decisions and documentation on executable lessons](0028-focused-research-and-teaching.md)
 29. [ADR 0029 — Lessons replace the free-form browser Lab](0029-lessons-replace-the-free-form-lab.md) — extends ADR 0028; supersedes ADR 0019's Lab console and marimo embed
-30. [ADR 0031 — The portal is four surfaces, and its pages are articles](0031-portal-reduced-to-four-surfaces.md) — supersedes in part ADR 0019, 0020 and 0029
+30. [ADR 0030 — A bounded formal-verification track for the finite D chain](0030-formal-verification-track.md) — extends ADR 0028
+31. [ADR 0031 — The portal is four surfaces, and its pages are articles](0031-portal-reduced-to-four-surfaces.md) — supersedes in part ADR 0019, 0020 and 0029

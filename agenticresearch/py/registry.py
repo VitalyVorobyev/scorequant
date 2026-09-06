@@ -186,6 +186,59 @@ def _check_artifacts(registry: dict, workspace: Path, out: list[str]) -> None:
                 out.append(f"{claim['id']}: {field} path {value} does not exist")
 
 
+_FORMAL_PROOF_FIELDS = {"system", "spec", "file", "declaration", "statement_audit"}
+
+# A machine-checked proof asserts the claim's own ``statement``. Statuses that do
+# not assert a proved statement therefore cannot carry one.
+_FORMAL_PROOF_FORBIDDEN_STATUSES = {"open", "conjecture", "measured", "counterexample"}
+
+
+def _check_formal_proofs(registry: dict, workspace: Path, out: list[str]) -> None:
+    """Optional machine-checked evidence must resolve and be uniquely owned."""
+    seen: dict[str, str] = {}
+    for claim in registry["claims"]:
+        formal = claim.get("formal_proof")
+        if formal is None:
+            continue
+        if not isinstance(formal, dict):
+            out.append(f"{claim['id']}: formal_proof must be an object")
+            continue
+        missing = sorted(_FORMAL_PROOF_FIELDS - set(formal))
+        extra = sorted(set(formal) - _FORMAL_PROOF_FIELDS)
+        if missing:
+            out.append(f"{claim['id']}: formal_proof is missing {', '.join(missing)}")
+        if extra:
+            out.append(f"{claim['id']}: formal_proof has unknown field(s) {', '.join(extra)}")
+        if claim["status"] in _FORMAL_PROOF_FORBIDDEN_STATUSES:
+            out.append(f"{claim['id']}: status {claim['status']} cannot carry formal_proof")
+        for field in ("spec", "file", "statement_audit"):
+            value = formal.get(field)
+            if not isinstance(value, str) or not value:
+                out.append(f"{claim['id']}: formal_proof.{field} must be a non-empty path")
+                continue
+            if ".." in Path(value).parts:
+                out.append(f"{claim['id']}: formal_proof.{field} escapes the workspace")
+                continue
+            if not (workspace / value).is_file():
+                out.append(f"{claim['id']}: formal_proof.{field} path {value} does not exist")
+        declaration = formal.get("declaration")
+        if not isinstance(declaration, str) or not declaration:
+            out.append(f"{claim['id']}: formal_proof.declaration must be a non-empty name")
+            continue
+        if declaration in seen:
+            out.append(
+                f"{claim['id']}: formal_proof.declaration {declaration} is already "
+                f"claimed by {seen[declaration]}"
+            )
+        seen[declaration] = claim["id"]
+        source = formal.get("file")
+        if isinstance(source, str) and (workspace / source).is_file():
+            local = declaration.rsplit(".", 1)[-1]
+            pattern = r"\btheorem\s+" + re.escape(local) + r"\b"
+            if not re.search(pattern, (workspace / source).read_text()):
+                out.append(f"{claim['id']}: {source} declares no theorem named {local}")
+
+
 def bibliography_anchors(workspace: Path) -> dict[str, tuple[str, str]]:
     """Bibliography key -> (file, heading) from the ``**Key:**`` lines."""
     anchors: dict[str, tuple[str, str]] = {}
@@ -385,6 +438,7 @@ def validate(workspace: Path = WORKSPACE) -> list[str]:
     _check_proof_locations(registry, workspace, out)
     _check_counterexamples(registry, workspace, out)
     _check_artifacts(registry, workspace, out)
+    _check_formal_proofs(registry, workspace, out)
     _check_bibliography(registry, workspace, out)
     _check_work_pointers(workspace, out)
     _check_evidence_ledger(index, workspace, out)
@@ -399,6 +453,15 @@ def validate(workspace: Path = WORKSPACE) -> list[str]:
 # --------------------------------------------------------------------------- #
 # index generation
 # --------------------------------------------------------------------------- #
+def _formal_marker(claim: dict) -> str:
+    """The generated-index suffix announcing machine-checked evidence."""
+    formal = claim.get("formal_proof")
+    if not isinstance(formal, dict):
+        return ""
+    declaration = formal.get("declaration")
+    return f" · machine-checked: `{declaration}`" if declaration else ""
+
+
 def render_index(registry: dict) -> str:
     """Render the browsable claim digest, grouped by programme then status."""
     programmes = registry.get("programmes", {})
@@ -421,7 +484,10 @@ def render_index(registry: dict) -> str:
         lines.append(f"## {name} — {meta['title']} (rank {meta['rank']}, {meta['readiness']})")
         lines.append("")
         for claim in members:
-            lines.append(f"- `{claim['id']}` — {claim['title']} · status: `{claim['status']}`")
+            lines.append(
+                f"- `{claim['id']}` — {claim['title']} · status: `{claim['status']}`"
+                f"{_formal_marker(claim)}"
+            )
         lines.append("")
     lines.append("## Settled claims by status")
     lines.append("")
@@ -434,7 +500,10 @@ def render_index(registry: dict) -> str:
         lines.append("")
         for claim in members:
             location = claim["proof_location"]
-            lines.append(f"- `{claim['id']}` — {claim['title']} · {location['file']}")
+            lines.append(
+                f"- `{claim['id']}` — {claim['title']} · {location['file']}"
+                f"{_formal_marker(claim)}"
+            )
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 

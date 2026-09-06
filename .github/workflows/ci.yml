@@ -91,6 +91,25 @@ jobs:
       - run: uv sync --dev --locked
       - run: uv run pytest tests/test_float32.py
 
+  # The Lean gate. It certifies statements, not the Python/JAX implementation
+  # of them: see ADR 0030. `lake build --wfail` rejects `sorry` and warnings,
+  # `leanchecker` re-checks the built environment, and the axiom audit fails on
+  # anything outside the allowlist. Independent of the Python legs.
+  formal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: agenticresearch/formal
+          auto-config: false
+          build: true
+          build-args: "--wfail"
+          leanchecker: true
+          axiom-audit: true
+          axiom-audit-root: ScoreQuantFormal
+          axiom-audit-allow: propext,Classical.choice,Quot.sound
+
   build:
     runs-on: ubuntu-latest
     env:

@@ -2830,3 +2830,99 @@ def test_o7_ellipsoid_law_has_zero_influence_variance_on_the_whole_circle() -> N
         n_bins=n_bins,
     )
     assert float(report.geometric_mean_retention) == pytest.approx(0.36, abs=1e-14)
+
+
+def test_o7_audit_unit_retention_singular_sample_fixture() -> None:
+    """CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001 (AUDIT-RETENTION-PLUGIN-VECTOR).
+
+    At eta_D = 1 (S = c_Z a.s., cell means (1, 0) and (0, 1)) the plug-in is 1
+    only on samples whose occupied cells span R^d: a sample confined to one
+    cell has V_hat singular, the estimator's own functional returns 0 by its
+    det V_hat = 0 convention, and the library projects the null direction out
+    and reports 1 on the retained subspace. Every composition with both cells
+    occupied gives the ratio exactly 1.
+    """
+    fixture_path = (
+        RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001.json"
+    )
+    assert fixture_path.is_file(), f"counterexample fixture missing at {fixture_path}"
+    fixture = json.loads(fixture_path.read_text())
+    law = fixture["population_law"]
+    atoms = [[Fraction(x) for x in s] for s in law["atoms"]]
+    weights = [Fraction(w) for w in law["weights"]]
+    ratio, psi_r, v, i_z = _o7_exact_plugin(atoms, list(law["labels"]), weights, fixture["K"])
+    assert ratio == 1 and v == i_z == [[Fraction(1, 2), 0], [0, Fraction(1, 2)]]
+    assert psi_r == [0, 0]
+    # the failing sample: both draws in cell 0
+    scores = [[Fraction(x) for x in s] for s in fixture["scores"]]
+    labels = list(fixture["labels_before"])
+    assert labels == [0, 0]
+    v_hat = [[sum(s[i] * s[j] for s in scores) / len(scores) for j in range(2)] for i in range(2)]
+    assert v_hat[0][0] * v_hat[1][1] - v_hat[0][1] * v_hat[1][0] == 0
+    report = sq.information_report(
+        np.array([[float(x) for x in s] for s in scores]), np.array(labels), n_bins=fixture["K"]
+    )
+    assert int(report.effective_rank) == 1
+    assert float(report.geometric_mean_retention) == pytest.approx(1.0, abs=1e-12)
+    # every composition with both cells occupied has plug-in exactly 1
+    for n in range(2, 7):
+        for n0 in range(1, n):
+            sample = [atoms[0]] * n0 + [atoms[1]] * (n - n0)
+            sample_labels = [0] * n0 + [1] * (n - n0)
+            r_s, _, _, _ = _o7_exact_plugin(
+                sample, sample_labels, [Fraction(1, n)] * n, fixture["K"]
+            )
+            assert r_s == 1
+
+
+def test_o7_audit_ellipsoid_identity_holds_on_an_anisotropic_rational_law() -> None:
+    """AUDIT-RETENTION-PLUGIN-VECTOR: the O7.4(a) zero set is the ellipsoid for general V.
+
+    psi_r(s) = -r [(s - V I_Z^{-1} c_b)^T V^{-1} (s - V I_Z^{-1} c_b)
+    - c_b^T I_Z^{-1} (V - I_Z) I_Z^{-1} c_b] as a polynomial identity in s, on a
+    d = 2 law whose V is not a multiple of the identity, checked at generic
+    rational points off the support for every cell.
+    """
+    rows = [(1, 2), (3, 0), (2, -1), (-2, 1), (0, 3), (-1, -3), (1, -1), (-3, 0), (2, 2)]
+    labels = [0, 0, 0, 1, 1, 2, 2, 2, 1]
+    n_bins = 3
+    scores = [[Fraction(a), Fraction(b)] for a, b in rows]
+    weights = [Fraction(w, 12) for w in (1, 2, 1, 2, 1, 1, 1, 2, 1)]
+    assert sum(weights) == 1
+    ratio, _, v, i_z = _o7_exact_plugin(scores, labels, weights, n_bins)
+    assert v[0][1] != 0 or v[0][0] != v[1][1]
+
+    def det(a: list[list[Fraction]]) -> Fraction:
+        return a[0][0] * a[1][1] - a[0][1] * a[1][0]
+
+    def inv(a: list[list[Fraction]]) -> list[list[Fraction]]:
+        dd = det(a)
+        return [[a[1][1] / dd, -a[0][1] / dd], [-a[1][0] / dd, a[0][0] / dd]]
+
+    def mv(a: list[list[Fraction]], x: list[Fraction]) -> list[Fraction]:
+        return [a[0][0] * x[0] + a[0][1] * x[1], a[1][0] * x[0] + a[1][1] * x[1]]
+
+    def quad(a: list[list[Fraction]], x: list[Fraction], y: list[Fraction]) -> Fraction:
+        return x[0] * (a[0][0] * y[0] + a[0][1] * y[1]) + x[1] * (a[1][0] * y[0] + a[1][1] * y[1])
+
+    iz_inv, v_inv = inv(i_z), inv(v)
+    p = [sum(w for w, z in zip(weights, labels, strict=True) if z == b) for b in range(n_bins)]
+    m = [
+        [
+            sum(w * s[i] for s, w, z in zip(scores, weights, labels, strict=True) if z == b)
+            for i in range(2)
+        ]
+        for b in range(n_bins)
+    ]
+    v_minus_i = [[v[i][j] - i_z[i][j] for j in range(2)] for i in range(2)]
+    for b in range(n_bins):
+        c = [x / p[b] for x in m[b]]
+        a = mv(iz_inv, c)
+        centre = mv(v, a)
+        rhs = quad(v_minus_i, a, a)
+        assert rhs >= 0
+        for k in range(-4, 5):
+            s = [Fraction(k, 3), Fraction(2 - k, 5)]
+            psi_r = ratio * (2 * quad(iz_inv, s, c) - quad(iz_inv, c, c) - quad(v_inv, s, s))
+            diff = [s[0] - centre[0], s[1] - centre[1]]
+            assert psi_r + ratio * (quad(v_inv, diff, diff) - rhs) == 0

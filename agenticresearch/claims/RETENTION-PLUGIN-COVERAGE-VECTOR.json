@@ -12,7 +12,9 @@
     "population quantities are closed-form (truncated-Gaussian moments) or deterministic quadrature with cut-aligned pieces; the reported integration error is the disagreement of independent routes, not a rigorous bound",
     "Monte Carlo coverage with deterministic seeds; measured, never theorem authority; nothing is claimed about coverage on heavy-tailed scores beyond the recorded numbers",
     "the library-fitted rule is frozen by its located x-cuts; the compiled rule's labels at 9600 quadrature nodes agree with the cut labelling (moments agree to 5.3e-15)",
-    "one partition per law; no statement about other cuts, other K, or refitted rules"
+    "one partition per law; no statement about other cuts, other K, or refitted rules",
+    "law parameters (absent from the packet record, patched by the audit): the bounded mixture is x ~ 0.35 N(-1.5, 0.8^2) + 0.25 N(1, 0.6^2) + 0.40 N(0, 2.5^2) with fraction scores s_k = (phi_k - phi_3)/lambda, cuts -2, -0.5, 1; the library rule is optimize_partition (D-exchange seed 7, 8 initializer restarts, K = 4) on 4000 draws of default_rng(11).standard_normal mapped to the d = 2 Hermite score, compiled, cuts -1.3918, 0.0138, 1.3753 with piece labels 3, 0, 2, 1",
+    "independently replicated 6 Sep 2026 (AUDIT-RETENTION-PLUGIN-VECTOR, SeedSequence([20260906, 1001, law, n]), 4000 replicates): mixture 0.9455, 0.953, 0.950, 0.9495; Hermite d = 2: 0.689, 0.816, 0.887, 0.925; library rule 0.819, 0.851, 0.900, 0.920; Hermite d = 3: 0.400, 0.5645, 0.731, 0.8465; arc law 0.996-0.999 with n*bias 1.4 and eta_hat_D >= eta_D in 85-87%; endpoints: coverage of 0 0.946-0.951 (d = 2) and 0.755-0.81 (d = 3) with the scaled plug-in matching the O7.4(b) limit law; population references by QUADPACK and cut-aligned Gauss-Legendre agree with the recorded values to rounding and with the packet artifact to <= 2e-15; the refitted library rule reproduces the recorded cuts bit for bit"
   ],
   "dependencies": [
     "RETENTION-PLUGIN-CLT-FROZEN-VECTOR",
@@ -27,7 +29,8 @@
   "role": "falsification experiment for O7.2-O7.4 and the endpoints, run before the proof was trusted; did not falsify, and exposed the heavy-tail second-order effect and the endpoint behaviour",
   "warning": "Measured coverage is not a proof (packet rule). The under-coverage on polynomial scores is a recorded second-order effect governed by E||S||^4, not a counterexample to the first-order theorem; the bounded-score law is the library's mixture-fraction use case and is nominal from n = 100.",
   "literature": [
-    "Sugiura-Fujikoshi-1969",
-    "Bhattacharya-Ghosh-1978"
-  ]
+    "Bhattacharya-Ghosh-1978",
+    "Sugiura-Fujikoshi-1969"
+  ],
+  "audit": "AUDITS/AUDIT-RETENTION-PLUGIN-VECTOR-001.md"
 }

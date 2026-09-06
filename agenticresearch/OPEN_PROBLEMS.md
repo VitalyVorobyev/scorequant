@@ -7,8 +7,9 @@ claim graph and `KNOWN_RESULTS/`; they are not restated here.
 
 ## Status (6 September 2026)
 
-- Active: nothing. O7 (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`) is proved on the draft-PR branch
-  `worktree-retention-plugin-vector` and awaits step 0 below.
+- Active: nothing. O7 (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`) is proved and independently
+  audited (`AUDITS/AUDIT-RETENTION-PLUGIN-VECTOR-001.md`, 6 September 2026; step 0 done).
+  Next: step 1 below.
 - Parked: OP31 and its packet `WORK/active/DS-TILT-DUAL-EXACT-COMPLEXITY.md`, until an explicit
   reopening decision; it is not part of the closure programme.
 - Closed programme P1 (deployment verdict, 1 September 2026): `KNOWN_RESULTS/05b-ds-bridge.md`.
@@ -94,7 +95,7 @@ Every retention number the library reports is a point estimate. Develop influenc
 bootstrap intervals for retention functionals, handling the non-smoothness of hard assignment
 at cell boundaries. Settled for a frozen rule on an iid oracle-score sample: scalar O6
 (`RETENTION-PLUGIN-CLT-FROZEN-SCALAR`, audited) and vector O7
-(`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, awaiting audit), both in `KNOWN_RESULTS/10-oracle.md`.
+(`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, audited 6 Sep 2026, `AUDIT-RETENTION-PLUGIN-VECTOR`), both in `KNOWN_RESULTS/10-oracle.md`.
 Remaining: rules refitted on the evaluation sample (closure step 2); weights; no oracle; the
 profiled \(D_s\) retention; the degenerate limits when \(\sigma^2=0\); a second-order-corrected
 interval for heavy-tailed scores. Target claim: `OPEN-RETENTION-UNCERTAINTY`.

@@ -269,6 +269,55 @@ test("the michelson article runs from the instrument to the experiment without l
   expect(heavyRequests).toEqual([]);
 });
 
+/**
+ * The two reading affordances of `src/theme/DocItem/Layout`, split by viewport.
+ *
+ * Both depend on layout, which jsdom does not perform, so they cannot be
+ * asserted from a component test; the arithmetic behind them is covered by
+ * `tests/readingProgress.test.ts` instead. `scaleX(0)` and `scaleX(1)` compute
+ * to the matrices below.
+ */
+const EMPTY_BAR = "matrix(0, 0, 0, 1, 0, 0)";
+const FULL_BAR = "matrix(1, 0, 0, 1, 0, 0)";
+
+test("the progress bar reports how much of the article is left, at every width", async ({page}) => {
+  await page.goto("./walkthroughs/michelson/");
+  const bar = page.locator(".reading-progress__fill");
+  await expect(bar).toHaveCSS("transform", EMPTY_BAR);
+  await page.evaluate(() => {
+    window.scrollTo(0, document.documentElement.scrollHeight);
+  });
+  // Full, not merely non-empty: the article ends above the footer, so reaching
+  // the end of the document means there is nothing of it left to scroll in.
+  await expect(bar).toHaveCSS("transform", FULL_BAR);
+});
+
+test("the contents panel marks the section the reader is in", async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "The contents panel is hidden below 1080px.");
+  await page.goto("./walkthroughs/michelson/");
+  const contents = page.getByRole("navigation", {name: "On this page"});
+  const target = contents.getByRole("link", {name: "9. Optimizing for phase"});
+  // Nothing is current above the first heading: the title belongs to no section.
+  await expect(contents.getByRole("link")).toHaveCount(13);
+  await expect(contents.locator("a[aria-current]")).toHaveCount(0);
+  await target.click();
+  await expect(target).toHaveAttribute("aria-current", "location");
+  await expect(contents.locator("a[aria-current]")).toHaveCount(1);
+  // The heading it jumped to clears the sticky header rather than parking under
+  // it, which is what `scroll-margin-top` on the headings buys. Polled because
+  // the scroll is smooth and `boundingBox` does not retry on its own.
+  await expect
+    .poll(async () => {
+      const heading = await page
+        .getByRole("heading", {name: /9\. Optimizing for phase/})
+        .boundingBox();
+      const header = await page.locator(".site-header").boundingBox();
+      if (heading === null || header === null) return -1;
+      return heading.y - (header.y + header.height);
+    })
+    .toBeGreaterThanOrEqual(0);
+});
+
 test("the michelson refit reproduces the committed profiled retention at the headline budget", async ({page}, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "One activation-gated runtime pass is sufficient.");
   test.setTimeout(240_000);

@@ -99,6 +99,12 @@
   --font-mono: "IBM Plex Mono", monospace;
   --page: min(100% - 48px, 1376px);
   --reading: 72ch;
+  /* The sticky header's height, and therefore the offset every fixed or
+     scrolled-to element under it has to clear. A token rather than a literal
+     because `responsive.css` shortens the header at 820px, and the reading
+     progress bar, the mobile nav drawer and the headings' `scroll-margin-top`
+     all have to follow it to the pixel. */
+  --header-height: 72px;
   /* The widest published code line, plus a little air. Code sets its own
      measure; see `.doc-article__body`. */
   --code: 800px;

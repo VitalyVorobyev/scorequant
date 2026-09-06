@@ -27,6 +27,29 @@
   .doc-article--with-toc { grid-template-columns: minmax(0, 1fr); }
   .doc-article__toc { display: none; }
 }
+
+/* Reading progress, pinned to the underside of the sticky header. It is fixed,
+   so it is not a grid item of `.doc-article--with-toc` despite being written
+   inside it; `z-index` sits one below the header's 50 so the open mobile nav
+   drawer covers it. The fill is scaled rather than resized because a transform
+   is composited: a `width` animated on every scroll frame relayouts the page it
+   is reporting on. Reduced motion is already handled globally in
+   `responsive.css`, which flattens every transition duration. */
+.reading-progress { position: fixed; z-index: 49; top: var(--header-height); right: 0; left: 0; height: 2px; }
+.reading-progress__fill { height: 100%; background: var(--accent); transform-origin: left center; transition: transform 90ms linear; }
+/* The reader's section, in the contents list. `--accent` on `--surface` is
+   already pinned at 4.5:1 by tests/contrast.test.ts, so this adds no colour and
+   no new contrast pair; the marker restates the same thing without colour, for
+   a reader who cannot separate the two blues. The offset lands it on the
+   panel's own left rule (22px of padding plus its 1px border). */
+.doc-article__toc li { position: relative; }
+.doc-article__toc a[aria-current] { color: var(--accent); font-weight: 550; }
+.doc-article__toc li:has(a[aria-current])::before { position: absolute; top: 0; bottom: 0; left: -23px; width: 2px; background: var(--accent); content: ""; }
+/* An anchor click lands a heading at the very top of the viewport, which the
+   sticky header covers. Clearing it is also what keeps the browser's landing
+   position and the scroll-spy's idea of the current section in step. */
+.doc-article .markdown :is(h1, h2, h3, h4) { scroll-margin-top: calc(var(--header-height) + 24px); }
+
 /* The reading measure belongs to the prose, not to the prose *plus* its table
    of contents. Capping this wrapper at --reading made `.doc-article--with-toc`
    share 72ch between the body and the 232px table of contents, so every docs

@@ -718,13 +718,22 @@ def run_study(
 
 
 def make_figure(study: Study) -> Figure:
-    """Render the two-panel Michelson-phase dashboard.
+    """Render the three-panel Michelson-phase dashboard.
 
-    Left: the score trajectory `(s_phi, s_epsilon)` -- a single curve, since
-    `u` is one-dimensional -- colored by the compiled six-bin rule's
-    prediction. Right: the same labels drawn back onto `u` over the four
-    fringes, above the equal-width segmentation for contrast, so the comb and
-    the aliasing are visible in one look.
+    Top row: the score trajectory `(s_phi, s_epsilon)` -- a single curve,
+    since `u` is one-dimensional -- drawn twice, colored once by the
+    `DOptimality` partition and once by the `ProfiledDOptimality` partition,
+    so the two criteria's cells can be compared cell for cell in the space
+    they were actually optimized in. Bottom row: the same two labelings drawn
+    back onto `u` over the four fringes, above the equal-width segmentation,
+    so the comb and the aliasing are visible in one look.
+
+    Every panel reads the headline `SweepRow`'s own labels on
+    `study.sample`, never a compiled rule predicted on a second grid: a
+    profiled partition has no compiled rule at all (that is what
+    `compile_bridge` records the refusal for), so drawing both criteria from
+    their finite partitions is the only way the two panels mean the same
+    thing.
 
     Parameters
     ----------
@@ -734,7 +743,7 @@ def make_figure(study: Study) -> Figure:
     Returns
     -------
     matplotlib.figure.Figure
-        The two-panel figure.
+        The three-panel figure.
     """
     colors = [
         "#38618c",
@@ -746,49 +755,61 @@ def make_figure(study: Study) -> Figure:
         "#a8577e",
         "#666666",
     ]
-    figure, (left, right) = plt.subplots(1, 2, figsize=(13.0, 5.2), constrained_layout=True)
 
-    u = study.comb_u
-    labels = study.comb_labels
-    s_phi = -V0 * np.sin(u) / (1.0 + V0 * np.cos(u))
-    s_eps = u * s_phi - V0
-    left.scatter(s_phi, s_eps, c=[colors[label % len(colors)] for label in labels], s=3)
-    left.set(
-        xlabel=r"$s_\varphi$",
-        ylabel=r"$s_\epsilon$",
-        title="Score trajectory, colored by the compiled six-bin rule",
-    )
+    def color_of(label: int) -> str:
+        return colors[int(label) % len(colors)]
 
     headline = next(row for row in study.sweep if row.n_bins == HEADLINE_BINS)
-    order = np.argsort(u, kind="stable")
-    sorted_u = u[order]
+    s_phi = study.sample.scores[:, 0]
+    s_eps = study.sample.scores[:, 1]
+
+    figure = plt.figure(figsize=(13.0, 8.4), constrained_layout=True)
+    grid = figure.add_gridspec(2, 2, height_ratios=[1.45, 1.0])
+    d_axes = figure.add_subplot(grid[0, 0])
+    profiled_axes = figure.add_subplot(grid[0, 1], sharex=d_axes, sharey=d_axes)
+    aperture_axes = figure.add_subplot(grid[1, :])
+
+    for axes, labels, title in (
+        (
+            d_axes,
+            headline.d_labels,
+            f"Plain D, retains {headline.d_optimal_retention:.1%}",
+        ),
+        (
+            profiled_axes,
+            headline.profiled_labels,
+            f"Profiled D_s, retains {headline.profiled_retention_value:.1%}",
+        ),
+    ):
+        axes.scatter(s_phi, s_eps, c=[color_of(label) for label in labels], s=3)
+        axes.axhline(0.0, color="#666666", linewidth=0.6)
+        axes.axvline(0.0, color="#666666", linewidth=0.6)
+        axes.set(xlabel=r"$s_\varphi$", ylabel=r"$s_\epsilon$", title=title)
 
     def bands(row_labels: np.ndarray, row: float) -> None:
-        sorted_labels = row_labels[order]
-        edges = np.flatnonzero(np.diff(sorted_labels) != 0)
-        starts = np.concatenate([[0], edges + 1])
-        stops = np.concatenate([edges + 1, [len(sorted_u)]])
-        for start, stop in zip(starts, stops, strict=True):
-            left_edge = float(sorted_u[start])
-            right_edge = float(sorted_u[stop - 1])
-            right.broken_barh(
-                [(left_edge, max(right_edge - left_edge, 1e-3))],
+        """Draw one labeling as a row of colored intervals along `u`."""
+        for start, stop, label in label_runs(study.sample.observations, row_labels, u_max=U_MAX):
+            aperture_axes.broken_barh(
+                [(start, max(stop - start, 1e-3))],
                 (row - 0.4, 0.8),
-                facecolors=colors[int(sorted_labels[start]) % len(colors)],
+                facecolors=color_of(label),
             )
 
-    equal_labels_on_grid = equal_width_labels(u[:, None], HEADLINE_BINS)
-    bands(equal_labels_on_grid, 0.0)
-    bands(labels, 1.0)
-    right.set(
+    bands(headline.equal_width_labels, 0.0)
+    bands(headline.d_labels, 1.0)
+    bands(headline.profiled_labels, 2.0)
+    aperture_axes.set(
         xlim=(0.0, U_MAX),
-        ylim=(-0.8, 1.8),
-        yticks=[0.0, 1.0],
-        yticklabels=["equal-width segments", "compiled D-optimal (comb)"],
+        ylim=(-0.8, 2.8),
+        yticks=[0.0, 1.0, 2.0],
+        yticklabels=["equal-width segments", "plain D", "profiled D_s"],
         xlabel="fringe phase $u$",
-        title=f"{headline.n_bins}-bin comb versus equal-width segmentation",
+        title=f"The same {headline.n_bins} counters laid back along the detector",
     )
-    figure.suptitle("Michelson interferometer phase, profiled against fringe frequency")
+    figure.suptitle(
+        "Michelson interferometer phase, profiled against fringe frequency: "
+        f"{headline.n_bins} counters, plain D against profiled D_s"
+    )
     return figure
 
 
@@ -863,9 +884,15 @@ def main() -> None:
     figure.savefig(FIGURE_PATH, dpi=160)
     plt.close(figure)
 
+    # These three SVGs are committed (ADR 0032), so they have to regenerate
+    # byte-for-byte or every rerun shows up as a diff of nothing. Matplotlib
+    # stamps a wall-clock `dc:date` and derives every `<defs>` element id from
+    # a random salt; a fixed salt and a suppressed date make the file a pure
+    # function of the data, the way the PNG already is.
+    plt.rcParams["svg.hashsalt"] = "scorequant-michelson-phase"
     SCORE_FIGURE_DIR.mkdir(parents=True, exist_ok=True)
     for path, panel in make_score_figures().items():
-        panel.savefig(path)
+        panel.savefig(path, metadata={"Date": None})
         plt.close(panel)
 
 

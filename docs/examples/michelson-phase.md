@@ -76,7 +76,9 @@ nodes — the closed forms are a check on the library, not merely a description 
 \(s_\epsilon\) — strong enough that profiling the phase against the frequency costs 76.0% of the
 phase information before any binning at all: \(0.2\to 0.047938\).
 
-![Score trajectory and the six-bin comb](assets/michelson-phase.png)
+![The six-bin partitions of both criteria: the score trajectory coloured by the plain-D
+partition and by the profiled-D_s partition, and the same two labelings laid back along the
+aperture above the equal-width segmentation](assets/michelson-phase.png)
 
 ## API walkthrough
 
@@ -217,8 +219,11 @@ assert n_runs == n_bins * 4  # one interval per fringe, per bin -- a comb, not 6
 ```
 
 No contiguous segmentation of the aperture can imitate an information-optimal detector
-segmentation shaped like that: it is the figure's whole point and the page's most transferable
-lesson.
+segmentation shaped like that, and it is the page's most transferable lesson. The figure above
+makes the same point without the compile bridge, from the two finite partitions themselves: both
+criteria comb the aperture into 25 runs at six counters, and neither resembles the six contiguous
+segments beneath them. The compiled rule is what turns that observation into something a new
+observation can be pushed through — and it exists for `DOptimality` only.
 
 ## Analysis
 

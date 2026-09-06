@@ -2,6 +2,7 @@ import {useState} from "react";
 
 import {ApertureStrip, runsFromLabels} from "./ApertureStrip";
 import {BinningComparison} from "./BinningComparison";
+import {ScoreSpaceRuns} from "./ScoreSpaceRuns";
 import {LiveFit} from "./liveFit/LiveFit";
 import type {LiveFitProblem, LiveFitResult} from "./liveFit/types";
 import {michelsonSweep} from "../data/michelsonSweep";
@@ -56,13 +57,22 @@ export function MichelsonBudgetExplorer(): React.JSX.Element {
   const renderResult = (result: LiveFitResult): React.ReactNode => {
     const runs = runsFromLabels(result.labels, michelsonSweep.uMax);
     return (
-      <ApertureStrip
-        bands={[{label: "Your browser's fit", runs}]}
-        description={`Your browser's own profiled fit on the same node table the study used, a comb of ${String(runs.length)} intervals at ${String(row.nBins)} counters.`}
-        fringes={michelsonSweep.fringes}
-        title={`Your browser's readout at ${String(row.nBins)} counters`}
-        uMax={michelsonSweep.uMax}
-      />
+      <>
+        <ApertureStrip
+          bands={[{label: "Your browser's fit", runs}]}
+          description={`Your browser's own profiled fit on the same node table the study used, a comb of ${String(runs.length)} intervals at ${String(row.nBins)} counters.`}
+          fringes={michelsonSweep.fringes}
+          title={`Your browser's readout at ${String(row.nBins)} counters`}
+          uMax={michelsonSweep.uMax}
+        />
+        <ScoreSpaceRuns
+          bands={[{label: "Your browser's fit", runs}]}
+          description={`Your browser's own profiled fit drawn in score space at ${String(row.nBins)} counters, each counter a colour along the score curve.`}
+          title={`Your browser's fit in score space at ${String(row.nBins)} counters`}
+          uMax={michelsonSweep.uMax}
+          visibility={michelsonSweep.visibility}
+        />
+      </>
     );
   };
 
@@ -98,18 +108,30 @@ export function MichelsonBudgetExplorer(): React.JSX.Element {
 
       <ApertureStrip
         bands={[
-          {label: "Equal segments", runs: row.runs.equalWidth},
-          {label: "Profiled Ds", runs: row.runs.profiled}
+          {label: "Profiled Ds", runs: row.runs.profiled},
+          {label: "Plain D", runs: row.runs.dOptimal},
+          {label: "Equal segments", runs: row.runs.equalWidth}
         ]}
-        description={`Equal segments are ${String(row.nBins)} contiguous intervals on the aperture; the profiled rule is a comb of ${String(row.runs.profiled.length)} intervals over the same aperture.`}
+        description={`The profiled rule is a comb of ${String(row.runs.profiled.length)} intervals over the aperture and plain D a comb of ${String(row.runs.dOptimal.length)}; equal segments are ${String(row.nBins)} contiguous intervals on the same aperture.`}
         fringes={michelsonSweep.fringes}
         title={`Aperture readout at ${String(row.nBins)} counters`}
         uMax={michelsonSweep.uMax}
       />
 
+      <ScoreSpaceRuns
+        bands={[
+          {label: "Profiled Ds", runs: row.runs.profiled},
+          {label: "Plain D", runs: row.runs.dOptimal}
+        ]}
+        description={`The same two labellings drawn in the space they were optimized in: the score curve, four loops of growing fringe-frequency score, with each counter a colour. Profiled Ds cuts across the loops to separate the phase score; plain D spends cells resolving the loops from one another.`}
+        title={`Score space at ${String(row.nBins)} counters, profiled Ds against plain D`}
+        uMax={michelsonSweep.uMax}
+        visibility={michelsonSweep.visibility}
+      />
+
       <BinningComparison
         axisLabel="Phase information retained, after profiling"
-        caption={`All four rows use ${String(row.nBins)} counters on the same node table. Higher is better.`}
+        caption={`All three partitions use ${String(row.nBins)} counters on the same node table; the dashed line is the certified ceiling, not a partition you could choose. Higher is better.`}
         rows={[
           {label: "Equal segments", text: row.text.equalWidth, value: row.equalWidth},
           {label: "Plain D", text: row.text.dOptimal, value: row.dOptimal},

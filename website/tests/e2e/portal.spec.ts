@@ -121,9 +121,23 @@ test("every route renders one main landmark and none of them loads a runtime", a
  * which is the least useful way for a suite to fail. Split, each route gets
  * its own budget and the projects' workers run them in parallel; the set of
  * assertions is unchanged.
+ *
+ * That budget is set here rather than left at the default 30s, because what a
+ * scan costs is set by the page and not by this suite: axe walks every node
+ * twice over, once per theme, and the atlas routes are generated from the
+ * registry, so they grow whenever the research graph does. `./research/literature/`
+ * is the largest of them — one annotated entry per source, 11.5k nodes, a
+ * quarter of them KaTeX spans — and its two analyses take ~10s on a developer
+ * machine and ~31s on a contended CI runner. Under the default it failed on
+ * main having passed its own pull request only by a retry that came in at 29.1s,
+ * which is the same as not being tested at all. 120s is the observed CI cost
+ * with room for a registry several times the present size; a scan that ever
+ * approaches it is reporting a page that has grown past what a reader can use,
+ * not a flaky test.
  */
 for (const route of SCANNED) {
   test(`${route} has no accessibility violations in either theme`, async ({page}) => {
+    test.setTimeout(120_000);
     await page.goto(route);
     for (const theme of ["light", "dark"] as const) {
       await setTheme(page, theme);

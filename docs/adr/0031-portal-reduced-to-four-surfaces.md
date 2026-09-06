@@ -71,3 +71,11 @@ require: the get-started refit and the Michelson budget explorer are unchanged.
 Keeping the removed pages one click further away keeps what the owner rejected. Keeping the
 numbered step headings keeps the procedure register; the checklist is for the author, and the
 reader is owed an article.
+
+## Amendment (6 September 2026)
+
+Walkthrough sections may carry ordinal numbers in their headings. The owner's revision of the
+Michelson article on 6 September 2026 numbers its sections because the page is read as a
+two-stage argument whose later steps refer back to earlier ones, and a number is the shortest
+such reference. The seven-step checklist of ADR 0028 still governs the order; the step *names*
+still do not become headings, and the register stays that of an article.

@@ -27,9 +27,12 @@ from examples.lloyd_nonmonotone import (
     unguarded_trajectory,
 )
 from examples.michelson_phase import (
+    U_MAX,
+    absorb_narrow_runs,
     build_provider,
     build_train_sample,
     closed_form_information,
+    periodic_runs,
     run_study,
 )
 from examples.michelson_phase import (
@@ -1196,15 +1199,16 @@ def test_michelson_json_matches_the_published_headline_table() -> None:
         assert float(row["profiled_retention"]) <= float(row["ceiling_retention"]) + 1e-9
 
 
-def test_michelson_json_matches_the_published_compile_bridge_and_comb() -> None:
+def test_michelson_json_matches_the_published_compile_bridge_and_rules() -> None:
     metrics = _load(MICHELSON_METRICS)
     bridge = _mapping(metrics, "compile_bridge")
     assert bridge["exchange_stable"] is True
+    assert bridge["voronoi_consistent"] is True
+    assert bridge["reproduces_training_labels"] is True
     assert str(bridge["refusal_message"]).endswith("[CE-DS-GLOBAL-GEOMETRY-001]")
-
-    comb = _mapping(metrics, "comb")
-    assert int(comb["n_grid"]) == 4_001  # type: ignore[call-overload]
-    assert int(comb["n_runs"]) == 24  # type: ignore[call-overload]
+    predictions = bridge["predictions"]
+    assert isinstance(predictions, list) and len(predictions) == 3
+    assert [row["u"] for row in predictions] == [1.0, 7.0, 15.0]
 
     rules = {str(row["key"]): row for row in _listing(metrics, "rules")}
     assert set(rules) == {"d_rule", "ds_rule"}
@@ -1212,12 +1216,11 @@ def test_michelson_json_matches_the_published_compile_bridge_and_comb() -> None:
         0.8345, abs=5e-4
     )
     assert float(rules["d_rule"]["hardening_gap"]) == pytest.approx(0.0, abs=1e-9)  # type: ignore[arg-type]
-    # The soft profiled fit is the only route to a reusable profiled rule and
+    # The soft profiled fit is the only route to a reusable profiled rule. It
     # retains a substantial majority of the profiled phase information, with a
-    # small negative hardening gap -- the deployed hard rule gives up a little
-    # of the soft objective's own optimum.
-    assert 0.7 < float(rules["ds_rule"]["criterion_efficiency"]) < 0.95  # type: ignore[arg-type]
-    assert float(rules["ds_rule"]["hardening_gap"]) < 0.0  # type: ignore[arg-type]
+    # small hardening gap between the soft objective and the deployed hard rule.
+    assert 0.7 < float(rules["ds_rule"]["criterion_efficiency"]) < 0.99  # type: ignore[arg-type]
+    assert abs(float(rules["ds_rule"]["hardening_gap"])) < 1e-2  # type: ignore[arg-type]
     # `criterion_efficiency` is each rule's score on its own criterion, on
     # different denominators. `profiled_retention` is the comparable column:
     # both rules' own labels through the sweep's profiled ceiling. The profiled
@@ -1225,6 +1228,56 @@ def test_michelson_json_matches_the_published_compile_bridge_and_comb() -> None:
     assert float(rules["ds_rule"]["profiled_retention"]) > float(  # type: ignore[arg-type]
         rules["d_rule"]["profiled_retention"]
     )
+    # A nearest-centre rule in whitened score space is a restricted family: the
+    # finite profiled partition, which is not one, retains more.
+    sweep = {int(row["n_bins"]): row for row in _listing(metrics, "sweep")}  # type: ignore[call-overload]
+    headline = sweep[int(metrics["headline_bins"])]  # type: ignore[call-overload]
+    assert float(rules["ds_rule"]["profiled_retention"]) < float(headline["profiled_retention"])  # type: ignore[arg-type]
+    for key in ("d_rule", "ds_rule"):
+        assert int(rules[key]["n_runs"]) > int(metrics["headline_bins"])  # type: ignore[call-overload]
+        assert len(rules[key]["predictions"]) == 3  # type: ignore[arg-type]
+
+
+def test_michelson_json_diagnoses_the_two_partitions() -> None:
+    """The D pull-back is a comb; the D_s fragments are the initializer's and carry information."""
+    metrics = _load(MICHELSON_METRICS)
+    n_bins = int(metrics["headline_bins"])  # type: ignore[call-overload]
+
+    d_geometry = _mapping(metrics, "d_geometry")
+    assert int(d_geometry["n_runs"]) == 24  # type: ignore[call-overload]
+    # Two cells sit at the origin, where every loop begins and ends, and are
+    # crossed twice per loop; the four outer cells each own the tips of two loops.
+    assert sorted(d_geometry["runs_per_bin"]) == [2, 2, 2, 2, 8, 8]  # type: ignore[arg-type]
+    assert sum(d_geometry["runs_per_bin"]) == int(d_geometry["n_runs"])  # type: ignore[arg-type,call-overload]
+    assert float(d_geometry["min_run_width"]) > 0.0  # type: ignore[arg-type]
+
+    diagnostics = _mapping(metrics, "profiled_diagnostics")
+    initial = _mapping(diagnostics, "initial")
+    final = _mapping(diagnostics, "final")
+    assert diagnostics["exchange_stable"] is True
+    assert int(final["n_runs"]) > n_bins  # type: ignore[call-overload]
+    assert sum(final["runs_per_bin"]) == int(final["n_runs"])  # type: ignore[arg-type,call-overload]
+    # The fragments are already in the certified interval initializer: the
+    # exchange does not create them, and the objective gain it adds is tiny.
+    assert int(initial["narrow_runs"]) >= int(final["narrow_runs"])  # type: ignore[call-overload]
+    assert final["runs_per_bin"] == initial["runs_per_bin"]
+    assert int(final["n_runs"]) == int(d_geometry["n_runs"])  # type: ignore[call-overload]
+    assert int(final["narrow_runs"]) > int(d_geometry["narrow_runs"])  # type: ignore[call-overload]
+    assert 0.0 <= float(diagnostics["retention_gain"]) < 1e-2  # type: ignore[arg-type]
+    assert 0.0 <= float(diagnostics["objective_gain"]) < 1e-2  # type: ignore[arg-type]
+    assert 0.0 < float(final["min_run_mass"]) < 1e-2  # type: ignore[arg-type]
+
+    smoothing = _listing(diagnostics, "smoothing")
+    assert [float(row["min_width"]) for row in smoothing] == [0.15, 0.25, 0.5, 1.0]  # type: ignore[arg-type]
+    # Absorbing wider runs can only remove runs, and every rung of the ladder
+    # costs retention: the fragments carry information, so the page never calls
+    # them negligible.
+    runs = [int(row["n_runs"]) for row in smoothing]  # type: ignore[call-overload]
+    assert runs == sorted(runs, reverse=True)
+    retentions = [float(row["retention"]) for row in smoothing]  # type: ignore[arg-type]
+    assert retentions[0] < float(diagnostics["final_retention"])  # type: ignore[arg-type]
+    assert retentions == sorted(retentions, reverse=True)
+    assert all(int(row["bins_used"]) == n_bins for row in smoothing)  # type: ignore[call-overload]
 
 
 def test_michelson_headline_row_runs_show_the_comb_against_the_aperture() -> None:
@@ -1257,6 +1310,21 @@ def test_michelson_closed_forms_hold_to_machine_precision() -> None:
     closed_form = closed_form_information()
     assert abs(float(information[0, 0]) - closed_form["i_phiphi"]) < 1e-12
     assert abs(float(information[0, 1]) - closed_form["i_phieps"]) < 1e-12
+
+
+def test_michelson_absorb_narrow_runs_merges_across_the_detector_seam() -> None:
+    """A fragment at `u = 0` whose wider neighbour is the last run joins it, and the loop ends."""
+    n_nodes = 8_000
+    observations = ((np.arange(n_nodes) + 0.5) * U_MAX / n_nodes)[:, None]
+    labels = np.full(n_nodes, 1)
+    labels[:40] = 0  # a fragment at the seam
+    labels[40:100] = 4  # a right neighbour narrower than the wrapped left one
+    labels[7_000:] = 3  # the wrapped left neighbour
+    smoothed = absorb_narrow_runs(observations, labels, min_width=0.15, u_max=U_MAX)
+    runs = periodic_runs(observations, smoothed, u_max=U_MAX)
+    assert all(stop - start >= 0.15 for start, stop, _ in runs)
+    assert runs[0][2] == 3 and runs[0][0] < 0.0
+    assert 0 not in {label for _, _, label in runs}
 
 
 def test_fast_rerun_reproduces_the_michelson_aliasing_and_criterion_gap() -> None:

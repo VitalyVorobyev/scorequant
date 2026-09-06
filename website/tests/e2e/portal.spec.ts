@@ -201,27 +201,41 @@ test("the michelson article runs from the instrument to the experiment without l
   await expect(page.getByRole("heading", {name: /Phase Estimation in a Michelson Interferometer/, level: 1})).toBeVisible();
 
   // The article order: the subject before the library, the experiment last.
-  const sections = ["1. The Michelson interferometer", "2. Why bin the measurement?", "3. Measurement model", "4. The analytic score", "5. Quantizing the score space", "6. Optimizing the finite partition", "7. Results", "8. Interpreting the partition", "9. From a finite partition to a quantizer", "10. What we learned", "Try it: the counter budget"];
+  const sections = [
+    "1. The Michelson interferometer",
+    "2. Why bin the measurement?",
+    "3. Measurement model",
+    "4. The analytic score",
+    "5. Quantization in score space",
+    "6. D-optimal partition",
+    "7. A reusable D-optimal readout",
+    "8. Treating fringe frequency as a nuisance",
+    "9. Optimizing for phase",
+    "10. What changes under profiling?",
+    "11. Reusable profiled quantizer",
+    "12. Interactive bin-budget sweep",
+    "13. Summary"
+  ];
   // Docusaurus appends a zero-width-space anchor to every heading; strip it.
   const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
   expect(headings).toEqual(sections);
 
-  // The bench diagram, the fringe law and the three analytic-score panels come
-  // before any code; the criterion that defines the objective is stated before
-  // the result. The score panels are served from `static/figures/`, so a
-  // reference into the gitignored `walkthrough-figures/` fails here too, not
-  // only in tests/figures.test.ts.
+  // The bench diagram, the fringe law and the two analytic-score panels come
+  // before any code; the two study figures -- the D geometry, then the
+  // profiled partition -- follow in that order. The score panels are served
+  // from `static/figures/` and the study figures from the generated
+  // `walkthrough-figures/`, so a wrong lane fails here too, not only in
+  // tests/figures.test.ts.
   await expect(page.getByRole("img", {name: /Michelson interferometer bench/})).toBeVisible();
   await expect(page.getByRole("img", {name: "Fringe intensity along the aperture"})).toBeVisible();
   await expect(page.getByRole("img", {name: /^Phase score along the detector/})).toBeVisible();
-  await expect(page.getByRole("img", {name: /^Fringe-frequency score along the detector/})).toBeVisible();
   await expect(page.getByRole("img", {name: /^The Michelson model in score space/})).toBeVisible();
-  // The objective is stated before any result is quoted. Asserted on prose that
+  await expect(page.getByRole("img", {name: /^Two panels\. Top: the score plane tinted by six convex cells/})).toBeVisible();
+  await expect(page.getByRole("img", {name: /^Three panels\. Top: the score trajectory's four loops coloured by the six profiled cells/})).toBeVisible();
+  // The question is stated before any result is quoted. Asserted on prose that
   // carries no math: KaTeX splits an expression across spans, so a regex over a
   // sentence containing $D_s$ would be matching the renderer, not the article.
-  await expect(
-    page.getByText("preserves the most Fisher information after profiling the nuisance parameters")
-  ).toBeVisible();
+  await expect(page.getByText("Different partitions preserve different amounts of information.")).toBeVisible();
   expect(await page.locator(".katex-display").count()).toBeGreaterThan(1);
 
   // The experiment: one control, keyboard-operable, with a reset and a static table.

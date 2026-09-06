@@ -11,7 +11,6 @@ import {MichelsonBench} from "@site/src/components/MichelsonBench";
 import {MichelsonBudgetExplorer} from "@site/src/components/MichelsonBudgetExplorer";
 import {ReferenceLink} from "@site/src/components/ReferenceLink";
 import {Tex} from "@site/src/components/Tex";
-import {michelsonSweep} from "@site/src/data/michelsonSweep";
 import {factValue, factsFor} from "@site/src/lib/facts";
 import {siteUrl} from "@site/src/lib/site";
 
@@ -19,49 +18,45 @@ export const f = factsFor("michelson");
 
 # Phase Estimation in a Michelson Interferometer
 
-*Given a continuous measurement, an analytically known score for the parameter of interest and nuisance parameters, and a fixed number of bins $K$, find a partition that preserves as much profiled Fisher information about the parameter of interest as possible.*
+*A continuous measurement with an analytically known score is to be reported through a fixed number of bins $K$. One parameter is of interest and the others are nuisances. The bins should preserve as much Fisher information as possible.*
 
 ## 1. The Michelson interferometer
 
-A [Michelson interferometer](https://en.wikipedia.org/wiki/Michelson_interferometer) splits a coherent beam of light into two perpendicular paths. Each beam is reflected by a mirror and returns to the beam splitter, where the two beams are recombined and directed toward a detector. Their relative phase depends on the difference in optical path length between the two arms.
+A [Michelson interferometer](https://en.wikipedia.org/wiki/Michelson_interferometer) splits a coherent beam of light into two perpendicular arms. Each beam is reflected by a mirror, returns to the beam splitter, and the two beams are recombined on a detector. Their relative phase is set by the difference in optical path length between the arms.
 
 <MichelsonBench
-  caption="Schematic optical layout. The segmented detector illustrates the equal-width baseline"
+  caption="Schematic optical layout. The segmented detector shows the equal-width baseline."
 />
 
-The beams have a finite transverse width, so after recombination they overlap over an area rather than at a single point. If their wavefronts are perfectly aligned, the relative phase is approximately constant across that area. If the wavefronts are slightly tilted relative to one another, the phase changes with position on the detector. The resulting alternating bright and dark bands are called **interference fringes**, or simply **fringes**.
+The beams have a finite transverse width, so they overlap over an area rather than at a point. If the two wavefronts are slightly tilted with respect to each other, the relative phase varies with position across the detector, and the intensity alternates between bright and dark bands. These are **interference fringes**, or simply **fringes**.
 
-For a nearly linear phase variation along one detector coordinate $u$, the intensity can be written in the simple form
+For a nearly linear phase variation along one detector coordinate $u$,
 
 $$
 I(u)\propto 1+V\cos(ku+\varphi),
 $$
 
-where $V$ is the fringe visibility, $k$ is the spatial fringe frequency, and $\varphi$ is the phase offset. Changing the optical path difference shifts $\varphi$, and therefore shifts the fringe pattern across the detector.
+where $V$ is the fringe visibility (the contrast of the pattern), $k$ is the spatial fringe frequency, and $\varphi$ is the phase offset. A change in the optical path difference shifts $\varphi$ and moves the whole pattern across the detector. The tilt is only what produces spatial fringes; it is not a parameter of the statistical model below.
 
-The interferometer was introduced by [Albert A. Michelson](https://en.wikipedia.org/wiki/Albert_A._Michelson) in the late nineteenth century and became a fundamental instrument for precision optical measurements. Modern gravitational-wave detectors such as [LIGO](https://www.ligo.caltech.edu/page/what-is-interferometer) use the same basic interference principle, although with much more elaborate optical and control systems.
-
-Here we use this simple one-dimensional fringe model as a controlled setting for studying information-preserving quantization.
+[Albert A. Michelson](https://en.wikipedia.org/wiki/Albert_A._Michelson) introduced the instrument in the late nineteenth century. Gravitational-wave detectors such as [LIGO](https://www.ligo.caltech.edu/page/what-is-interferometer) use the same interference principle with far more elaborate optics.
 
 ## 2. Why bin the measurement?
 
-A realistic interferometric measurement is more complicated than the ideal fringe model above. The observed pattern can be affected by spatial variations in illumination, detector efficiency, fringe visibility, background, optical aberrations, and calibration errors. Describing all of these effects at the full spatial resolution of the detector may require a large and difficult-to-validate nuisance model.
+A real interferometric detector is not the ideal model above. Illumination, detector efficiency, fringe visibility, background, optical aberrations and calibration errors all vary with position. Describing them at full detector resolution can require a large nuisance model that is hard to validate.
 
-Binning provides a controlled reduction of this complexity. Instead of modeling the detector response point by point, the analysis works with integrated response over a finite set of regions. The corresponding nuisance model can then be expressed in terms of a much smaller number of quantities that can be calibrated and profiled.
+Binning replaces point-by-point response modelling with the integrated response of a small number of regions. The nuisance model then has a few calibrated quantities instead of one per pixel.
 
-Once we choose to describe the measurement with $K$ bins, we still have to decide how to define them. Different choices preserve different amounts of information about the parameter of interest. Our goal is to find the partition that preserves the most Fisher information after profiling the nuisance parameters.
-
-In the model below, the phase $\varphi$ is the parameter of interest, while an uncertainty in the spatial fringe frequency, $\epsilon$, serves as a simple nuisance parameter.
+Once the measurement is described by $K$ bins, the bins still have to be defined. Different partitions preserve different amounts of information.
 
 ## 3. Measurement model
 
-We describe the detector by a one-dimensional coordinate $u$, scaled so that one fringe period has length $2\pi$. In this example the detector spans {f("fringes")} complete fringes, so
+The detector is described by a dimensionless coordinate $u$, scaled so that one fringe period has length $2\pi$. The detector spans {f("fringes")} fringes, so
 
 $$
 u\in[0,8\pi).
 $$
 
-The position of a detected photon is modeled by
+The position of one detected photon has density
 
 $$
 p(u\mid\varphi,\epsilon)
@@ -69,65 +64,42 @@ p(u\mid\varphi,\epsilon)
 1+V\cos\!\bigl((1+\epsilon)u+\varphi\bigr).
 $$
 
-The phase $\varphi$ is the parameter we want to measure. The visibility $V$ controls the contrast of the interference fringes: $V=1$ gives maximum contrast, while $V=0$ removes the fringe pattern entirely. We fix it at {f("visibility")}.
+Here $\varphi$ is the phase, ultimately the parameter of interest. The visibility is fixed at $V={}${f("visibility")}. The parameter $\epsilon$ is a small fractional error in the spatial fringe frequency: it changes the fringe spacing across the detector, so an unknown $\epsilon$ can partly imitate a phase shift.
 
-The parameter $\epsilon$ describes a small fractional uncertainty in the spatial fringe frequency. It changes the fringe spacing across the detector and can therefore partially mimic a phase shift. We treat $\epsilon$ as a nuisance parameter.
-
-All information calculations below are evaluated at the nominal model,
+All scores and information matrices are evaluated at the reference point
 
 $$
 (\varphi_0,\epsilon_0)=(0,0).
 $$
 
 <FringeCurve
-  caption={`Nominal photon density along the detector at visibility ${f("visibility")}. The detector covers ${f("fringes")} fringe periods; ${f("bins")} equal-width bins are shown for reference.`}
+  caption={`Photon density along the detector at visibility ${f("visibility")}, over ${f("fringes")} fringe periods. The ${f("bins")} equal-width bins are the baseline readout.`}
 />
 
 ## 4. The analytic score
 
-ScoreQuant works with the score of each observation. In this example the score is known analytically and can be computed directly from the interference model.
-
-At the nominal point $(\varphi,\epsilon)=(0,0)$, the two score components are
+ScoreQuant works with the score of each observation, the gradient of the log density with respect to the parameters. Here it is known in closed form. At the reference point,
 
 $$
 s_\varphi(u)
 =
-\frac{-V\sin u}{1+V\cos u},
-$$
-
-and
-
-$$
+-\frac{V\sin u}{1+V\cos u},
+\qquad
 s_\epsilon(u)
 =
 u\,s_\varphi(u)-V.
 $$
 
-The phase score $s_\varphi$ is largest in magnitude on the slopes of a fringe, where a small phase shift produces the largest relative change in intensity — precisely where $\cos u=-V$. It vanishes at the bright and dark extrema, where the intensity is locally insensitive to a shift.
+The phase score is largest in magnitude on the slopes of a fringe, where a small phase shift changes the intensity most, and vanishes at the bright and dark extrema. The frequency score is the same local sensitivity multiplied by $u$, because a frequency error accumulates across the detector. Its constant term $-V$ is the derivative of the normalization of the density with respect to $\epsilon$; without it the score would not have zero mean and the Fisher matrix would be wrong.
 
 <Figure
   src={siteUrl("figures/michelson-phase-score.svg")}
   alt="Phase score along the detector: a periodic curve over the four fringe periods, reaching about plus and minus 0.75 on the fringe slopes and crossing zero at every bright and dark extremum."
-  caption={<>Phase score <Tex>{"s_\\varphi(u)"}</Tex> along the detector. Its magnitude is largest on the slopes of the interference fringes and vanishes at their extrema.</>}
+  caption={<>Phase score <Tex>{"s_\\varphi(u)"}</Tex> along the detector.</>}
   paper
 />
 
-The frequency score $s_\epsilon$ contains the same local phase sensitivity multiplied by the position $u$. This reflects the fact that a small frequency error accumulates across the detector: its contribution vanishes at $u=0$ and grows with distance, which is why $s_\epsilon$ spans a range some twenty times wider than $s_\varphi$ does. The constant term $-V$ comes from the normalization of the probability density and ensures that the score has zero expectation.
-
-<Figure
-  src={siteUrl("figures/michelson-frequency-score.svg")}
-  alt="Fringe-frequency score along the detector: the same periodic shape as the phase score, but with an envelope growing linearly across the four fringe periods, from about plus and minus 2 in the first fringe to about plus and minus 16 in the last, and offset below zero by the visibility."
-  caption={<>Fringe-frequency score <Tex>{"s_\\epsilon(u) = u\\,s_\\varphi(u) - V"}</Tex> along the detector. The same local sensitivity as the phase score, with an envelope that grows across the aperture.</>}
-  paper
-/>
-
-Each detector position is thus represented by a two-dimensional score vector,
-
-$$
-s(u)=\bigl(s_\varphi(u),\,s_\epsilon(u)\bigr).
-$$
-
-Because the score is available analytically, we provide these functions directly to `ScoreQuant`.
+The score is supplied to ScoreQuant as a function of the observation. Fixed model constants are uppercase; computed arrays are lowercase.
 
 ```python
 import numpy as np
@@ -135,22 +107,22 @@ import scorequant as sq
 
 EXECUTION = sq.ExecutionConfig(backend="numpy", precision="float64", device="cpu")
 
-VISIBILITY = 0.6
-FRINGES = 4
-U_MAX = 2.0 * np.pi * FRINGES
+VISIBILITY = 0.60
+N_FRINGES = 4
+U_MAX = 2.0 * np.pi * N_FRINGES
 
 SCHEMA = sq.ScoreSchema(("phase", "fringe_frequency"))
 INTEREST = SCHEMA.select("phase")
 
 
 def fringe_density(observations):
-    """The normalized one-photon arrival law along the fringe coordinate."""
+    """Normalized photon density along the detector at the reference point."""
     u = np.asarray(observations)[:, 0]
     return (1.0 + VISIBILITY * np.cos(u)) / U_MAX
 
 
 def michelson_score(observations):
-    """Sensitivity to (phase, fringe_frequency) at the reference point, in closed form."""
+    """Score (s_phase, s_frequency) at the reference point, in closed form."""
     u = np.asarray(observations)[:, 0]
     s_phase = -VISIBILITY * np.sin(u) / (1.0 + VISIBILITY * np.cos(u))
     return np.column_stack([s_phase, u * s_phase - VISIBILITY])
@@ -163,7 +135,7 @@ provider = sq.ScoreFunction(
 )
 ```
 
-For the numerical optimization we represent the detector by a fine deterministic grid. Each grid point carries the probability mass of its small detector interval.
+For the finite optimization the detector is represented by a fine deterministic grid. Each node carries the probability mass of its small interval.
 
 ```python
 N_NODES = 8_000
@@ -171,43 +143,106 @@ step = U_MAX / N_NODES
 
 u = (np.arange(N_NODES) + 0.5) * step
 observations = u[:, None]
-
 weights = fringe_density(observations) * step
-scores = np.asarray(
-    provider.score(observations, execution=EXECUTION)
-)
+scores = provider.score(observations, execution=EXECUTION)
 ```
 
-The resulting arrays `scores` and `weights` form the finite weighted score table used throughout the rest of the example.
+The arrays `scores` and `weights` form the weighted score table used by every finite partition below.
 
-## 5. Quantizing the score space
+## 5. Quantization in score space
 
-The analytic score maps every detector position $u$ to a point
+The score maps every detector position to a point
 
 $$
-u \longmapsto s(u)=\bigl(s_\varphi(u),s_\epsilon(u)\bigr)
+u \longmapsto s(u)=\bigl(s_\varphi(u),\,s_\epsilon(u)\bigr)
 $$
 
-in a two-dimensional score space. Our goal is to divide this score distribution into $K$ bins while retaining as much profiled phase information as possible.
-
-Numerically, we approximate the continuous detector coordinate by the fine weighted table constructed above. The optimization therefore assigns the $N_{\mathrm{nodes}}$ weighted score points to $K$ bins. With a sufficiently fine grid, this finite partition provides a numerical approximation to the continuous quantization problem.
+in a two-dimensional score space. The image is a one-dimensional trajectory: one loop per fringe, each loop taller than the last because the frequency score grows with $u$.
 
 <Figure
   src={siteUrl("figures/michelson-score-space.svg")}
   alt="The Michelson model in score space: the phase score on the horizontal axis against the fringe-frequency score on the vertical, drawn as four narrow loops radiating from a common point near the origin, each successive loop longer and more steeply inclined."
-  caption={<>The detector mapped into score space. Each point on the curve corresponds to one position <Tex>{"u"}</Tex> on the detector.</>}
+  caption={<>The detector mapped into score space. Each point of the curve is one position <Tex>{"u"}</Tex>.</>}
   paper
 />
 
-For a partition with cell probabilities $W_b$ and mean scores $\mu_b$, the Fisher information retained by the $K$ bins is
+A partition into $K$ cells with probability masses $W_b$ and mean scores $\mu_b$ retains the Fisher information
 
 $$
 I_{\mathrm{bin}}
 =
-\sum_{b=1}^{K} W_b\,\mu_b\mu_b^\top .
+\sum_{b=1}^{K} W_b\,\mu_b\mu_b^\top ,
 $$
 
-In our two-parameter problem,
+a two-by-two matrix here. The first question is how to divide score space into $K$ cells if information about both parameters is to be preserved jointly. The standard answer is **D-optimality**:
+
+$$
+\max_{q}\ \log\det I_{\mathrm{bin}} .
+$$
+
+The determinant is the volume of information across all directions of score space, so maximizing it preserves information in every direction at once rather than favouring one.
+
+## 6. D-optimal partition
+
+With $K$ fixed, `optimize_partition` assigns the weighted score table to $K$ cells by exact single-point exchange: a node is moved between cells whenever the move increases the determinant, until no single move can.
+
+```python
+N_BINS = 6
+
+d_partition = sq.optimize_partition(
+    scores,
+    weights=weights,
+    n_bins=N_BINS,
+    criterion=sq.DOptimality(),
+    config=sq.DExchangeConfig(seed=4),
+    execution=EXECUTION,
+)
+d_labels = d_partition.labels
+```
+
+<Figure
+  src={siteUrl("walkthrough-figures/michelson-d-geometry.png")}
+  alt="Two panels. Top: the score plane tinted by six convex cells that meet along straight edges, with the trajectory's four loops coloured by cell and a marked mean point in each cell. Bottom: the same labels along the detector, a comb of twenty-four intervals above the six equal-width segments."
+  caption={<>Top: the score plane shaded by the six cells of the compiled D-optimal rule, the cell means, and the trajectory coloured by cell. Bottom: the same labels pulled back to the detector coordinate, above the equal-width segments.</>}
+  paper
+  wide
+/>
+
+In score space the cells are regular connected regions with straight edges. Along the detector the same labels form a comb of {f("dRunsAtSix")} separate intervals from {f("bins")} cells. There is no contradiction. The trajectory folds back on itself once per fringe, so a connected cell in score space meets it several times. The four outer cells each own the tips of a pair of loops; the two cells at the origin, where every loop begins and ends, are crossed twice per loop and pull back to the most intervals. A short detector interval appears wherever the trajectory only briefly crosses a cell: {f("dNarrowRuns")} of the intervals are narrower than {f("narrowRunWidth")} in $u$, the narrowest {f("dMinRunWidth")}.
+
+This is the geometrically clean case. An exchange-stable D-optimal partition with a nonsingular Fisher matrix is exactly a Mahalanobis–Voronoi partition of score space, with the inverse of the binned Fisher matrix as metric. The theorem and its proof are in <ReferenceLink to="book/ch08-d-optimality/">D-optimality and exact exchange</ReferenceLink>; the shading in the figure is that rule evaluated on a grid.
+
+## 7. A reusable D-optimal readout
+
+The finite partition labels the {f("nNodes")} nodes of the table and nothing else: `PartitionResult` deliberately has no predict method. Because of the theorem above, the D-optimal result can be compiled into the Voronoi rule it already is. That rule assigns any score vector, so any new observation.
+
+```python
+d_quantizer = d_partition.compile_quantizer(execution=EXECUTION)
+
+new_observations = np.array([[1.0], [7.0], [15.0]])
+new_scores = provider.score(new_observations, execution=EXECUTION)
+new_bins_d = d_quantizer.predict_scores(new_scores, execution=EXECUTION)
+```
+
+The deployment path is always explicit:
+
+$$
+u
+\;\longrightarrow\;
+s(u)
+\;\longrightarrow\;
+q\!\left(s(u)\right).
+$$
+
+The observation-to-score step is never hidden inside prediction. For the three positions above the compiled rule returns bins {f("dPredictionOne")}, {f("dPredictionTwo")} and {f("dPredictionThree")}, and on the training table it reproduces every one of the {f("nNodes")} finite labels.
+
+Two objects, two tasks. `optimize_partition` labels a fixed weighted table. A quantizer is an inductive rule on score space. The compile bridge connects them only for exchange-stable D-optimal partitions; the general route to a quantizer is `fit_quantizer`, used for the profiled readout below. The distinction is spelled out in <ReferenceLink to="book/ch06-two-tasks/">Two tasks and three optimization levels</ReferenceLink>.
+
+## 8. Treating fringe frequency as a nuisance
+
+The scientific question now changes. The phase $\varphi$ is the result to be reported. The frequency error $\epsilon$ is estimated only because uncertainty in it can imitate a phase shift.
+
+Partition the binned Fisher matrix,
 
 $$
 I_{\mathrm{bin}}
@@ -218,7 +253,7 @@ I_{\varphi\epsilon} & I_{\epsilon\epsilon}
 \end{pmatrix}.
 $$
 
-Because $\epsilon$ is a nuisance parameter, the information relevant for measuring $\varphi$ is the **profiled Fisher information**
+The information about $\varphi$ that survives estimating $\epsilon$ from the same data is the **profiled phase information**
 
 $$
 I_{\varphi\mid\epsilon}
@@ -228,28 +263,49 @@ I_{\varphi\varphi}
 \frac{I_{\varphi\epsilon}^2}{I_{\epsilon\epsilon}}.
 $$
 
-The second term is the information lost because a change in $\epsilon$ can imitate part of a phase shift. Our optimization problem is therefore simple: among all partitions into $K$ cells, find the one that maximizes $I_{\varphi\mid\epsilon}$.
+The subtracted term is the part of the phase sensitivity that a change in $\epsilon$ can reproduce. In this model the two scores are strongly correlated, {f("correlation")} at the reference point, and profiling removes {f("costOfProfiling")} of the unbinned phase information before any binning.
 
-In ScoreQuant this is the $D_s$-optimal criterion, with $\varphi$ selected as the parameter of interest.
+Ordinary D-optimality treats $\varphi$ and $\epsilon$ symmetrically: it spends cells on resolving $\epsilon$ as carefully as $\varphi$. The **profiled criterion** $D_s$ asks instead how the $K$ cells should be spent if only $\varphi$ will be reported,
 
-## 6. Optimizing the finite partition
+$$
+\max_{q}\ \log I_{\varphi\mid\epsilon}^{\mathrm{bin}} .
+$$
 
-For the main example we use $K=6$ bins. We optimize the assignment of the weighted score table to these bins using the profiled $D_s$ criterion, with $\varphi$ as the parameter of interest and $\epsilon$ as the nuisance parameter.
+## 9. Optimizing for phase
 
-Before running the optimizer, we compute an efficient-score bound. For this finite weighted problem, it provides an upper bound on the profiled information attainable with $K$ bins and also supplies an initial partition.
+Quality is measured by the fraction of the unbinned profiled phase information that a partition retains,
+
+$$
+R_\varphi
+=
+\frac{I_{\varphi\mid\epsilon}^{\mathrm{bin}}}
+     {I_{\varphi\mid\epsilon}^{\mathrm{full}}},
+$$
+
+with the profiled quantity in both numerator and denominator. `profiled_information_report` computes exactly that ratio for any labeling.
 
 ```python
-N_BINS = 6
+def phase_retention(labels):
+    """Profiled phase information retained, as a fraction of the unbinned value."""
+    report = sq.profiled_information_report(
+        scores, labels, interest=INTEREST, weights=weights, n_bins=N_BINS, execution=EXECUTION
+    )
+    return report.geometric_mean_retention
 
+
+equal_labels = np.digitize(u, np.linspace(0.0, U_MAX, N_BINS + 1)[1:-1])
+equal_width_retained = phase_retention(equal_labels)
+d_retained = phase_retention(d_labels)
+```
+
+For one parameter of interest ScoreQuant can also bound the best possible profiled objective at a given $K$: the efficient score $\hat s = s_\varphi - (I_{\varphi\epsilon}/I_{\epsilon\epsilon})\,s_\epsilon$ is scalar, the profiled information of any hard rule is dominated by the between-cell information of $\hat s$, and the best interval partition of a scalar is found exactly by dynamic programming. The result is a certified ceiling, and its interval labels are a good starting point for the exchange solver.
+
+```python
 bound = sq.efficient_score_bound(
-    scores,
-    interest=INTEREST,
-    weights=weights,
-    n_bins=N_BINS,
-    execution=EXECUTION,
+    scores, interest=INTEREST, weights=weights, n_bins=N_BINS, execution=EXECUTION
 )
 
-result = sq.optimize_partition(
+ds_partition = sq.optimize_partition(
     scores,
     weights=weights,
     n_bins=N_BINS,
@@ -258,36 +314,21 @@ result = sq.optimize_partition(
     initial_labels=bound.labels,
     execution=EXECUTION,
 )
+ds_labels = ds_partition.labels
+ds_retained = phase_retention(ds_labels)
 ```
-
-`DExchangeConfig` uses single-point exchanges: detector positions are moved between bins whenever the move increases the objective. The optimization stops when no further single-point improvement is possible.
-
-The resulting `result.labels` assigns one of the six bins to every position in the quadrature table. The next step is to compare the information retained by this partition with simpler alternatives.
-
-## 7. Results
-
-We measure the quality of a partition by the fraction of the original profiled phase information that it retains,
-
-$$
-R_\varphi
-=
-\frac{I_{\varphi\mid\epsilon}^{\mathrm{bin}}}
-     {I_{\varphi\mid\epsilon}^{\mathrm{full}}}.
-$$
-
-For $K=6$, we compare three partitions of the same measurement against the certified ceiling:
 
 <BinningComparison
   axisLabel="Phase information retained, after profiling"
-  caption={`All three partitions use ${f("bins")} counters on the same photon distribution; the dashed line is the certified ceiling, not a readout you could choose. Higher is better.`}
+  caption={`Three partitions of the same table into ${f("bins")} bins. The dashed line is the certified ceiling, not a readout.`}
   rows={[
     {
-      label: "Equal segments",
+      label: "Equal-width",
       text: f("equalWidthRetentionAtSix"),
       value: factValue("michelson", "equalWidthRetentionAtSix"),
     },
     {
-      label: "Plain D",
+      label: "D-optimal",
       text: f("dOptimalRetentionAtSix"),
       value: factValue("michelson", "dOptimalRetentionAtSix"),
     },
@@ -306,51 +347,33 @@ For $K=6$, we compare three partitions of the same measurement against the certi
   ]}
 />
 
-Equal-width binning retains {f("equalWidthRetentionAtSix")} of the available phase information. Optimizing the full $D$ criterion performs much better at {f("dOptimalRetentionAtSix")}, but its objective is to preserve information about $\varphi$ and $\epsilon$ jointly. Optimizing $D_s$ directly for the phase retains {f("profiledRetentionAtSix")}.
+Equal-width bins retain {f("equalWidthRetentionAtSix")} of the profiled phase information. The D-optimal partition retains {f("dOptimalRetentionAtSix")}: much better, but it was built to resolve both parameters. Optimizing the profiled criterion retains {f("profiledRetentionAtSix")}.
 
-That matches the certified ceiling to the four digits shown. The certificate bounds every six-bin partition of this weighted score table from above; what it leaves open is the slack between the ceiling and what the solver actually reached, and here that gap is {f("boundGapAtSix")} in log-objective units. So a better six-bin partition is not ruled out — it is bounded to a margin too small to matter.
+The certified ceiling at this budget is {f("ceilingRetentionAtSixFine")} and the partition reaches {f("profiledRetentionAtSixFine")}, a gap of {f("boundGapAtSix")} in the log objective. The ceiling was approached, not reached, and the exchange solver itself proves nothing about global optimality; the bound is what rules out a substantially better six-bin partition. The derivation is in <ReferenceLink to="book/ch10-profiled-ds/">Nuisance parameters and profiled Ds</ReferenceLink>.
 
-To see what these partitions actually do, we can plot the optimized labels in score space and map the same labels back to the detector coordinate $u$.
+## 10. What changes under profiling?
 
 <Figure
-  src={siteUrl("walkthrough-figures/michelson-phase.png")}
-  alt="Three panels. Top left and top right: the score trajectory, four narrow loops radiating from near the origin, coloured by counter — once for the plain-D partition and once for the profiled-Ds partition, which cut the loops differently. Bottom: the same two labelings laid back along the detector as combs of about twenty-five intervals each, above the six contiguous equal-width segments."
-  caption={<>Top: every position along the detector, plotted by its two score components and coloured by counter — the plain-<Tex>{"D"}</Tex> partition on the left, the profiled-<Tex>{"D_s"}</Tex> partition on the right. Both spend the same six counters on the same curve, and they spend them differently. Bottom: those same two labelings laid back along the detector, above the equal segments. Neither optimized readout is contiguous; both are combs.</>}
+  src={siteUrl("walkthrough-figures/michelson-profiled-ds.png")}
+  alt="Three panels. Top: the score trajectory's four loops coloured by the six profiled cells, cut across the loops rather than around them, with no shaded cells. Middle: the efficient score along the detector, a periodic curve whose steep zero crossings at the dark fringes are sliced into several thin colour changes. Bottom: three label strips along the detector: the efficient-score initializer, the exchange-stable profiled partition, and the soft-Voronoi rule, the first two carrying a few very narrow intervals near the dark fringes."
+  caption={<>Top: the trajectory coloured by the finite profiled-<Tex>{"D_s"}</Tex> labels. Middle: the efficient score <Tex>{"\\hat s(u)"}</Tex> along the detector, coloured the same way. Bottom: the labels along the detector, drawn at true width, for the efficient-score initializer, the profiled partition and the reusable rule of the next section.</>}
   paper
   wide
 />
 
-## 8. Interpreting the partition
+The profiled partition cuts across the loops instead of around them. The cells no longer separate the loops from one another, which is what resolving $\epsilon$ required; they separate values of the efficient score, the part of the phase sensitivity that the nuisance cannot reproduce.
 
-Neither optimized partition is six contiguous segments of the detector. In both, the same label appears in several separated regions of $u$, so {f("bins")} counters break the aperture into far more intervals than that.
+The finite profiled optimum does not, in general, obey the Mahalanobis–Voronoi geometry of the ordinary D case: a stable profiled partition can violate the nearest-cell rule of the very metric it induces, and even a global optimum can. This is why the top panel has no shaded cells and why the result refuses `compile_quantizer`. The counterexample is worked out in <ReferenceLink to="examples/ds-geometry-counterexample/">A profiled optimum outside its geometry</ReferenceLink>.
 
-This is a natural consequence of optimizing in score space. A bin represents a group of observations with a similar role in the inference, not necessarily a connected region of the original measurement coordinate. Positions that are far apart on the detector can therefore be assigned to the same bin.
+Along the detector the profiled partition is a comb of {f("dsRunsAtSix")} intervals, the same count as the D comb, but the pieces fall differently: {f("dsNarrowRuns")} intervals are narrower than {f("narrowRunWidth")} in $u$, against {f("dNarrowRuns")} for D, and the narrowest is {f("dsMinRunWidth")} wide and carries a probability mass of {f("dsMinRunMass")}. They sit at the dark fringes, where $\hat s$ crosses zero steeply, so a short stretch of detector covers a long stretch of efficient score. The middle panel shows the same slicing on the curve itself.
 
-Mapped back to $u$, both results have a comb-like structure across the fringe pattern. Equal-width binning cannot reproduce this structure because it groups observations only by spatial proximity.
+Where the fragments come from is a question the run can answer. The certified initializer is an interval partition of $\hat s$, and pulled back to the detector it already has {f("dsInitialNarrowRuns")} fragments among its {f("dsInitialRuns")} intervals, retaining {f("dsInitialRetention")}. The exchange then relabels {f("dsRelabelledFraction")} of the nodes in {f("dsAcceptedMoves")} accepted moves over {f("dsScans")} scans, gains {f("dsRetentionGain")} in retention, and leaves the number of intervals and their distribution over the cells unchanged. The fragmentation is the shape of the interval optimum in the efficient score, not an artefact of the exchange.
 
-What separates the two criteria is not *whether* they comb the aperture but *which* direction of the score they resolve. The two components are strongly correlated — {f("correlation")} at the reference point — so a frequency error really can imitate a phase shift, and profiling costs {f("costOfProfiling")} of the phase information before a single bin is drawn. What survives is the **efficient score**
+What the fragments are worth is a second question. Absorbing every interval narrower than {f("smoothingOneMinWidth")} into its wider neighbour leaves {f("smoothingOneRuns")} intervals and retains {f("smoothingOneRetention")}; at {f("smoothingTwoMinWidth")} the figures are {f("smoothingTwoRuns")} and {f("smoothingTwoRetention")}; at {f("smoothingThreeMinWidth")}, {f("smoothingThreeRuns")} and {f("smoothingThreeRetention")}; at {f("smoothingFourMinWidth")}, {f("smoothingFourRuns")} intervals still using all {f("smoothingFourBinsUsed")} bins and {f("smoothingFourRetention")}. The ladder is monotone. Every fragment removed costs retention, the cost grows with the width absorbed, and even the narrowest pieces are not free. The fragments are part of the optimum rather than noise, so no smoothing or regularization is applied to the committed partition. A simpler detector geometry is bought with retention; the next section shows what a rule with that simpler geometry retains.
 
-$$
-\hat s(u)
-=
-s_\varphi(u)
--
-\frac{I_{\varphi\epsilon}}{I_{\epsilon\epsilon}}\,s_\epsilon(u),
-$$
+## 11. Reusable profiled quantizer
 
-the part of the phase sensitivity that the nuisance cannot reproduce, and it is that residual — not $s_\varphi$ itself — the counters are competing for.
-
-Read the two panels with that in mind and they stop looking like variations on one picture. Plain $D$ keeps its cells compact in the raw plane, which is what maximizing a two-parameter volume asks for; profiled $D_s$ lets a cell run much further along $s_\varphi$, and buys with that slack a partition whose cells are markedly narrower in $\hat s$. Spending cells on the raw phase score is the intuitive move, and it is the wrong one.
-
-This is the main qualitative result of the example: **information-optimal bins need not resemble a conventional geometric segmentation of the measurement space.**
-
-## 9. From a finite partition to a quantizer
-
-So far we have optimized a finite table of $N_{\mathrm{nodes}}$ quadrature points. The resulting `result.labels` tells us how to classify those particular points, but a practical quantizer must also assign a bin to a new observation.
-
-For ordinary $D$-optimality, an exchange-stable finite partition whose Fisher information is nonsingular can be converted into a Mahalanobis–Voronoi rule. For profiled $D_s$, this is not true in general: a finite optimum does not necessarily define a canonical nearest-cell rule. The reason is discussed in more detail in <ReferenceLink to="book/ch10-profiled-ds/">Nuisance parameters and profiled Ds</ReferenceLink>.
-
-Instead, we fit a reusable profiled quantizer directly. We represent the continuous detector distribution with an integration source,
+The finite profiled labels have no canonical rule to compile into. A deployable profiled readout is therefore fitted directly as a rule, with `fit_quantizer`, from a reference measure and the same score function. The measure is the continuous detector density, integrated by Gauss–Legendre quadrature.
 
 ```python
 source = sq.IntegrationSource(
@@ -360,90 +383,37 @@ source = sq.IntegrationSource(
 )
 ```
 
-and optimize a rule in score space:
+`SoftVoronoiConfig` optimizes the positions of $K$ centres in whitened score space with smooth assignments, then hardens them into a nearest-centre rule.
 
 ```python
-quantizer = sq.fit_quantizer(
+ds_quantizer = sq.fit_quantizer(
     source,
     provider=provider,
     n_bins=N_BINS,
     criterion=sq.ProfiledDOptimality(interest=INTEREST),
-    config=sq.SoftVoronoiConfig(
-        seed=4,
-        initializer_restarts=8,
-        max_steps=300,
-    ),
+    config=sq.SoftVoronoiConfig(seed=4, initializer_restarts=8, max_steps=1000),
     execution=EXECUTION,
 )
+
+new_bins_ds = ds_quantizer.predict_scores(new_scores, execution=EXECUTION)
 ```
 
-During optimization, `SoftVoronoiConfig` uses smooth assignments so that the cell positions can be optimized continuously. The final result is hardened into a discrete $K$-bin rule.
+For the three new positions the profiled rule returns bins {f("dsRulePredictionOne")}, {f("dsRulePredictionTwo")} and {f("dsRulePredictionThree")}. Applied to the training table, it retains {f("dsRuleProfiledRetention")} of the profiled phase information against {f("profiledRetentionAtSix")} for the finite partition, and pulls back to {f("dsRuleRuns")} detector intervals against {f("dsRunsAtSix")}. Its hardening gap, the change in retention from the soft objective to the hard rule, is {f("dsRuleHardeningGap")}.
 
-The complete mapping for a new detector observation is then
+A nearest-centre rule is a restricted family. The finite optimum is not in it, so the reusable rule retains less; in exchange it is a rule, with a simpler detector geometry, that classifies any observation. Which of the two matters depends on whether the readout must be deployed or only studied.
 
-$$
-u
-\;\longrightarrow\;
-s(u)
-\;\longrightarrow\;
-q\!\left(s(u)\right).
-$$
+## 12. Interactive bin-budget sweep
 
-In code:
-
-```python
-new_observations = np.array([[1.0], [7.0], [15.0]])
-
-new_scores = provider.score(
-    new_observations,
-    execution=EXECUTION,
-)
-
-new_bins = quantizer.predict_scores(
-    new_scores,
-    execution=EXECUTION,
-)
-```
-
-Unlike the finite `result.labels`, this rule can be applied to arbitrary new observations.
-
-The finite partition and the fitted quantizer are therefore two related but distinct objects. The first provides a direct numerical study of the information-optimal assignment on a fine representation of the measurement. The second provides the inductive rule needed for actual use.
-
-## 10. What we learned
-
-This example started from a continuous interferometric measurement with one parameter of interest, one nuisance parameter, and an analytically known score. With only {f("bins")} bins, equal-width segmentation retains {f("equalWidthRetentionAtSix")} of the available profiled phase information, while an optimized profiled partition retains {f("profiledRetentionAtSix")}.
-
-The improvement does not come from placing {f("bins")} better boundaries along the detector. ScoreQuant groups observations according to the information they carry about the parameters, producing non-contiguous bins when that is advantageous.
-
-The workflow is general:
-
-$$
-\text{measurement model}
-\;\longrightarrow\;
-\text{score}
-\;\longrightarrow\;
-\text{information objective}
-\;\longrightarrow\;
-\text{optimized quantization}.
-$$
-
-The Michelson model makes every step explicit enough to see what is happening. In more complicated applications the score may come from a numerical model or an estimator rather than an analytic formula, but the quantization problem is the same.
-
-## Try it: the counter budget
-
-One control, one question: as the number of counters changes, what do equal segments retain,
-what does the fitted readout retain, and what do the two look like along the detector? The
-picture is the committed sweep. The button beneath it reruns the profiled fit at the chosen
-budget in your browser, on the same {f("nNodes")}-position table with the same seed, solver and
-starting point, and redraws the detector from the labels it gets back. Nothing loads until you
-ask.
+As the number of bins changes, how much profiled phase information do the equal-width, D-optimal and profiled-$D_s$ readouts retain, and what do their detector assignments look like? The picture below is the committed sweep. The button reruns the profiled fit at the chosen budget in your browser, on the same {f("nNodes")}-node table with the same seed, solver and efficient-score start, and draws the labels it returns. Nothing loads until you press it.
 
 <MichelsonBudgetExplorer />
 
-**Where the theory is.** The profiled criterion, its Schur-complement definition and the
-efficient-score ceiling are
-<ReferenceLink to="book/ch10-profiled-ds/">Nuisance parameters and profiled Ds</ReferenceLink>
-in the book; the compile bridge and its refusal are
-<ReferenceLink to="book/ch08-d-optimality/">D-optimality</ReferenceLink>; the two tasks and why
-a partition has no predict method are
-<ReferenceLink to="book/ch06-two-tasks/">Two tasks</ReferenceLink>.
+## 13. Summary
+
+1. The score turns the detector coordinate into the space that matters for inference: a folded trajectory in a two-dimensional score space.
+2. D-optimality gives a clean information-preserving quantizer when every parameter matters. Its finite partition is a Mahalanobis–Voronoi partition and compiles into a reusable rule; along the detector it is a comb.
+3. Profiling changes the objective when only a subset of parameters will be reported. The cells then separate values of the efficient score rather than resolving the nuisance.
+4. For this instrument at {f("bins")} bins, optimizing for phase raises the retained profiled phase information from {f("dOptimalRetentionAtSix")} to {f("profiledRetentionAtSix")}, against a certified ceiling of {f("ceilingRetentionAtSix")}.
+5. Partitioning a fixed table and fitting a reusable quantizer are related but distinct tasks. The D partition compiles into a quantizer; the profiled partition does not, and its deployable counterpart is fitted as a rule.
+
+**Where the theory is.** The exchange algorithm, the Voronoi theorem and the compile bridge: <ReferenceLink to="book/ch08-d-optimality/">D-optimality and exact exchange</ReferenceLink>. The profiled criterion, the efficient score and the certified ceiling: <ReferenceLink to="book/ch10-profiled-ds/">Nuisance parameters and profiled Ds</ReferenceLink>. The two tasks: <ReferenceLink to="book/ch06-two-tasks/">Two tasks and three optimization levels</ReferenceLink>.

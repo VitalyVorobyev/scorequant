@@ -300,10 +300,10 @@
         "text": "0.9483",
         "value": 0.9482831713778096
       },
-      "combRuns": {
-        "source": "docs/examples/assets/michelson-phase.json#/comb/n_runs",
-        "text": "24",
-        "value": 24
+      "ceilingRetentionAtSixFine": {
+        "source": "docs/examples/assets/michelson-phase.json#/sweep/1/ceiling_retention",
+        "text": "0.948283",
+        "value": 0.9482831713778096
       },
       "compiledTestRetention": {
         "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/compiled_test_retention",
@@ -320,6 +320,16 @@
         "text": "0.7603",
         "value": 0.7603112369701244
       },
+      "dMinRunWidth": {
+        "source": "docs/examples/assets/michelson-phase.json#/d_geometry/min_run_width",
+        "text": "0.16",
+        "value": 0.16022122533307837
+      },
+      "dNarrowRuns": {
+        "source": "docs/examples/assets/michelson-phase.json#/d_geometry/narrow_runs",
+        "text": "4",
+        "value": 4
+      },
       "dOptimalRetentionAtFour": {
         "source": "docs/examples/assets/michelson-phase.json#/sweep/0/d_optimal_retention",
         "text": "0.7227",
@@ -329,6 +339,21 @@
         "source": "docs/examples/assets/michelson-phase.json#/sweep/1/d_optimal_retention",
         "text": "0.7995",
         "value": 0.7994648908881136
+      },
+      "dPredictionOne": {
+        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/0/bin",
+        "text": "0",
+        "value": 0
+      },
+      "dPredictionThree": {
+        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/2/bin",
+        "text": "4",
+        "value": 4
+      },
+      "dPredictionTwo": {
+        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/1/bin",
+        "text": "1",
+        "value": 1
       },
       "dRuleOwnCriterion": {
         "source": "docs/examples/assets/michelson-phase.json#/rules/0/criterion_efficiency",
@@ -340,15 +365,100 @@
         "text": "0.7987",
         "value": 0.7986662738412926
       },
+      "dRunsAtSix": {
+        "source": "docs/examples/assets/michelson-phase.json#/d_geometry/n_runs",
+        "text": "24",
+        "value": 24
+      },
+      "dsAcceptedMoves": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/accepted_moves",
+        "text": "36",
+        "value": 36
+      },
+      "dsInitialNarrowRuns": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/initial/narrow_runs",
+        "text": "6",
+        "value": 6
+      },
+      "dsInitialRetention": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/initial_retention",
+        "text": "0.9481",
+        "value": 0.9480740872637142
+      },
+      "dsInitialRuns": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/initial/n_runs",
+        "text": "24",
+        "value": 24
+      },
+      "dsMinRunMass": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/final/min_run_mass",
+        "text": "1.9e-03",
+        "value": 0.0019021969129542483
+      },
+      "dsMinRunWidth": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/final/min_run_width",
+        "text": "0.119",
+        "value": 0.11938052083641182
+      },
+      "dsNarrowRuns": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/final/narrow_runs",
+        "text": "6",
+        "value": 6
+      },
+      "dsRelabelledFraction": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/relabelled_fraction",
+        "text": "0.4%",
+        "value": 0.00375
+      },
+      "dsRetentionGain": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/retention_gain",
+        "text": "1.9e-04",
+        "value": 0.0001851061397664111
+      },
+      "dsRuleHardeningGap": {
+        "source": "docs/examples/assets/michelson-phase.json#/rules/1/hardening_gap",
+        "text": "-1.2e-06",
+        "value": -1.2164391132163388e-06
+      },
       "dsRuleOwnCriterion": {
         "source": "docs/examples/assets/michelson-phase.json#/rules/1/criterion_efficiency",
-        "text": "0.8532",
-        "value": 0.8531706053884383
+        "text": "0.8805",
+        "value": 0.8804877699454614
+      },
+      "dsRulePredictionOne": {
+        "source": "docs/examples/assets/michelson-phase.json#/rules/1/predictions/0/bin",
+        "text": "0",
+        "value": 0
+      },
+      "dsRulePredictionThree": {
+        "source": "docs/examples/assets/michelson-phase.json#/rules/1/predictions/2/bin",
+        "text": "5",
+        "value": 5
+      },
+      "dsRulePredictionTwo": {
+        "source": "docs/examples/assets/michelson-phase.json#/rules/1/predictions/1/bin",
+        "text": "5",
+        "value": 5
       },
       "dsRuleProfiledRetention": {
         "source": "docs/examples/assets/michelson-phase.json#/rules/1/profiled_retention",
-        "text": "0.8518",
-        "value": 0.8518066363339105
+        "text": "0.8794",
+        "value": 0.8794067452623978
+      },
+      "dsRuleRuns": {
+        "source": "docs/examples/assets/michelson-phase.json#/rules/1/n_runs",
+        "text": "16",
+        "value": 16
+      },
+      "dsRunsAtSix": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/final/n_runs",
+        "text": "24",
+        "value": 24
+      },
+      "dsScans": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/scans",
+        "text": "12",
+        "value": 12
       },
       "equalWidthRetentionAtEight": {
         "source": "docs/examples/assets/michelson-phase.json#/sweep/2/equal_width_retention",
@@ -390,6 +500,26 @@
         "text": "8,000",
         "value": 8000
       },
+      "narrowRunWidth": {
+        "source": "docs/examples/assets/michelson-phase.json#/narrow_run_width",
+        "text": "0.25",
+        "value": 0.25
+      },
+      "predictionUOne": {
+        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/0/u",
+        "text": "1.0",
+        "value": 1.0
+      },
+      "predictionUThree": {
+        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/2/u",
+        "text": "15.0",
+        "value": 15.0
+      },
+      "predictionUTwo": {
+        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/1/u",
+        "text": "7.0",
+        "value": 7.0
+      },
       "profiledRetentionAtFour": {
         "source": "docs/examples/assets/michelson-phase.json#/sweep/0/profiled_retention",
         "text": "0.8629",
@@ -400,10 +530,95 @@
         "text": "0.9483",
         "value": 0.9482591934034806
       },
+      "profiledRetentionAtSixFine": {
+        "source": "docs/examples/assets/michelson-phase.json#/sweep/1/profiled_retention",
+        "text": "0.948259",
+        "value": 0.9482591934034806
+      },
       "refusalMessage": {
         "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/refusal_message",
         "text": "finite profiled-D labels have no canonical inductive compilation; fit an explicit quantizer instead [CE-DS-GLOBAL-GEOMETRY-001]",
         "value": "finite profiled-D labels have no canonical inductive compilation; fit an explicit quantizer instead [CE-DS-GLOBAL-GEOMETRY-001]"
+      },
+      "smoothingFourBinsUsed": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/3/bins_used",
+        "text": "6",
+        "value": 6
+      },
+      "smoothingFourMinWidth": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/3/min_width",
+        "text": "1.00",
+        "value": 1.0
+      },
+      "smoothingFourRetention": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/3/retention",
+        "text": "0.8178",
+        "value": 0.8178096178792226
+      },
+      "smoothingFourRuns": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/3/n_runs",
+        "text": "11",
+        "value": 11
+      },
+      "smoothingOneBinsUsed": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/0/bins_used",
+        "text": "6",
+        "value": 6
+      },
+      "smoothingOneMinWidth": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/0/min_width",
+        "text": "0.15",
+        "value": 0.15
+      },
+      "smoothingOneRetention": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/0/retention",
+        "text": "0.9435",
+        "value": 0.9435316298390771
+      },
+      "smoothingOneRuns": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/0/n_runs",
+        "text": "22",
+        "value": 22
+      },
+      "smoothingThreeBinsUsed": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/2/bins_used",
+        "text": "6",
+        "value": 6
+      },
+      "smoothingThreeMinWidth": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/2/min_width",
+        "text": "0.50",
+        "value": 0.5
+      },
+      "smoothingThreeRetention": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/2/retention",
+        "text": "0.8653",
+        "value": 0.8653248879132388
+      },
+      "smoothingThreeRuns": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/2/n_runs",
+        "text": "14",
+        "value": 14
+      },
+      "smoothingTwoBinsUsed": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/1/bins_used",
+        "text": "6",
+        "value": 6
+      },
+      "smoothingTwoMinWidth": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/1/min_width",
+        "text": "0.25",
+        "value": 0.25
+      },
+      "smoothingTwoRetention": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/1/retention",
+        "text": "0.9302",
+        "value": 0.9301887209838307
+      },
+      "smoothingTwoRuns": {
+        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/1/n_runs",
+        "text": "19",
+        "value": 19
       },
       "sweepBinsEight": {
         "source": "docs/examples/assets/michelson-phase.json#/sweep/2/n_bins",
@@ -426,7 +641,7 @@
         "value": 10
       },
       "visibility": {
-        "source": "docs/examples/assets/michelson-phase.json#/v0",
+        "source": "docs/examples/assets/michelson-phase.json#/visibility",
         "text": "0.60",
         "value": 0.6
       }

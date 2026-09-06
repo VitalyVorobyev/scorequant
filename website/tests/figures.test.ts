@@ -82,7 +82,10 @@ describe("the two figure directories keep their separate roles", () => {
 
   it("keeps hand-added files out of the generated directory", () => {
     const generated = new Set(generatedFigureNames());
-    const strays = readdirSync(join(staticRoot, "walkthrough-figures"))
+    // The directory is derived, so a checkout that has not run the generator
+    // (CI runs this suite before `pnpm generate`) has no directory and no strays.
+    const generatedDir = join(staticRoot, "walkthrough-figures");
+    const strays = (existsSync(generatedDir) ? readdirSync(generatedDir) : [])
       .filter((name) => !generated.has(name))
       .filter((name) => name !== ".DS_Store");
     expect(strays).toEqual([]);

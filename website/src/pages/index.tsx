@@ -176,8 +176,8 @@ export default function Home(): React.JSX.Element {
               real or generated data with every number traced to a committed run.
             </li>
             <li>
-              <Link to="/research">Research</Link>: what was known, what the library adds, what
-              cannot be certified, and what is open.
+              <Link to="/research">Research</Link>: an atlas of what is known, what the library
+              established, where it fails, and what is open, one page per result.
             </li>
           </ul>
         </section>

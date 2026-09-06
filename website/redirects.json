@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedFrom": "site/sitemap.xml, pre-cut mkdocs build of 2026-09-03 (S6); targets re-pointed from reference/ to docs/ when the landing page took the root (ADR 0027)",
-  "sourceSitemapCount": 53,
-  "note": "Paths are baseUrl-relative: a sitemap <loc> minus https://vitalyvorobyev.github.io/scorequant/. A 'from' of 'book/' means the assemble script writes <assembled>/book/index.html. Committed and hand-checked rather than regenerated on each build, because its purpose is to remember URLs the new build no longer knows about. Every target is under docs/, where the MkDocs documentation is mounted; the portal lives beside it at portal/ and owns none of these URLs. An entry moves to `unstubbed` only when real content occupies the same URL: the assemble script refuses to write a stub over real content, and the page that now serves the URL must link onward to what used to be there.",
+  "generatedFrom": "site/sitemap.xml, pre-cut mkdocs build of 2026-09-03 (S6); targets re-pointed from reference/ to docs/ when the landing page took the root (ADR 0027); nine portal/research/* essay URLs added on 6 September 2026 (ADR 0033)",
+  "sourceSitemapCount": 62,
+  "note": "Paths are baseUrl-relative: a sitemap <loc> minus https://vitalyvorobyev.github.io/scorequant/. A 'from' of 'book/' means the assemble script writes <assembled>/book/index.html. Committed and hand-checked rather than regenerated on each build, because its purpose is to remember URLs the new build no longer knows about. Every target is under docs/, where the MkDocs documentation is mounted; the portal lives beside it at portal/ and owns none of these URLs. An entry moves to `unstubbed` only when real content occupies the same URL: the assemble script refuses to write a stub over real content, and the page that now serves the URL must link onward to what used to be there. The portal/research/* entries are the ten essay pages retired by the Research Atlas (ADR 0033); each points at the atlas view that absorbed it.",
   "unstubbed": [
     {
       "path": "",
@@ -217,6 +217,42 @@
     {
       "from": "user-workflow/",
       "to": "docs/user-workflow/"
+    },
+    {
+      "from": "portal/research/the-problem/",
+      "to": "portal/research/"
+    },
+    {
+      "from": "portal/research/what-was-already-known/",
+      "to": "portal/research/literature/"
+    },
+    {
+      "from": "portal/research/what-scorequant-adds/",
+      "to": "portal/research/"
+    },
+    {
+      "from": "portal/research/what-cannot-be-certified/",
+      "to": "portal/research/counterexamples/"
+    },
+    {
+      "from": "portal/research/what-is-still-open/",
+      "to": "portal/research/frontier/"
+    },
+    {
+      "from": "portal/research/api-and-theorems/",
+      "to": "portal/research/library/"
+    },
+    {
+      "from": "portal/research/book-contents/",
+      "to": "docs/book/"
+    },
+    {
+      "from": "portal/research/reading-the-claim-record/",
+      "to": "portal/research/how-to-read/"
+    },
+    {
+      "from": "portal/research/claim-record/",
+      "to": "portal/research/claims/"
     }
   ]
 }

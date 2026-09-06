@@ -1,0 +1,126 @@
+/* Research Atlas views: landscape, frontier, machine-checked, library, indexes.
+
+   Every colour here is a token from tokens.css or the provenance palette at
+   the head of atlas.css, so both themes follow the same flip: nothing in this
+   file names a hex value, and nothing is defined only inside a dark block. */
+
+/* ------------------------------------------------------------------ Landscape
+
+   A criterion-by-level matrix built as a CSS grid, with `display: contents`
+   rows so that the ARIA table semantics survive the layout (the same pattern
+   as `.band-strip` in atlas.css). Each cell carries a transparent button
+   stretched over its whole area for selection, and the glyph links sit above
+   it in the stacking order so a click on a glyph navigates and a click on the
+   surrounding cell selects. */
+.landscape__controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; margin: 24px 0 10px; }
+.landscape__controls .atlas-legend { flex: 1 1 320px; margin: 0; }
+.landscape__colouring { display: inline-flex; align-items: center; gap: 14px; margin: 0; padding: 6px 14px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-raised); color: var(--text-muted); font-size: 13.5px; }
+.landscape__colouring legend { padding: 0 6px; color: var(--text-faint); font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; }
+.landscape__colouring label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+
+.landscape { display: grid; margin: 6px 0 4px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface-raised); font-size: 13px; }
+.landscape__row { display: contents; }
+.landscape__corner, .landscape__head { padding: 10px 8px; border-bottom: 1px solid var(--border); background: var(--surface); color: var(--text-faint); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.landscape__head { border-left: 1px solid var(--border); }
+.landscape__head--primary { background: var(--atlas-band-alt); color: var(--text-muted); }
+.landscape__criterion { padding: 12px; border-bottom: 1px solid var(--border); color: var(--text); font-weight: 560; }
+.landscape__cell { position: relative; display: flex; align-items: flex-start; min-height: 48px; padding: 8px; border-bottom: 1px solid var(--border); border-left: 1px solid var(--border); }
+.landscape__cell--primary { background: var(--atlas-band); }
+.landscape__cell.is-selected { box-shadow: inset 0 0 0 2px var(--atlas-focus-ring); }
+.landscape__row:last-child .landscape__criterion, .landscape__row:last-child .landscape__cell { border-bottom: 0; }
+.landscape__pick { position: absolute; inset: 0; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.landscape__pick:hover { background: var(--accent-quiet); }
+.landscape__pick:focus-visible { outline: 2px solid var(--atlas-focus-ring); outline-offset: -2px; }
+.landscape__glyphs { position: relative; display: flex; flex-wrap: wrap; gap: 4px; }
+.landscape .landscape__glyph { position: relative; display: inline-flex; line-height: 0; text-decoration: none; }
+.landscape__empty { position: relative; color: var(--text-faint); pointer-events: none; }
+
+/* Colour by verification: the shape still carries the provenance class, the
+   ink is repointed to the three-way mark. Hollow shapes stay hollow. */
+.landscape__glyph--checked .glyph { fill: var(--atlas-proved); stroke: var(--atlas-proved); }
+.landscape__glyph--audited .glyph { fill: var(--atlas-measured); stroke: var(--atlas-measured); }
+/* "Neither" is the quiet mark, but it still has to be legible against the
+   primary columns' tinted ground, so it takes the faint *text* ink rather than
+   the paler verification grey. */
+.landscape__glyph--none .glyph { fill: var(--text-faint); stroke: var(--text-faint); }
+:is(.landscape__glyph--checked, .landscape__glyph--audited, .landscape__glyph--none) :is(.glyph-open, .glyph-verification) { fill: transparent; }
+.landscape__marks { flex: 1 1 320px; margin: 0; }
+.landscape__marks .landscape__glyph { display: inline-flex; line-height: 0; }
+.landscape__detail { margin-top: 22px; min-height: 120px; }
+.landscape__detail h2 { margin-top: 0; }
+
+@media (max-width: 900px) {
+  .landscape { font-size: 12px; }
+  .landscape__corner, .landscape__head, .landscape__criterion, .landscape__cell { padding: 7px 5px; }
+}
+
+/* ------------------------------------------------------------------ Frontier */
+.frontier__question { margin: 24px 0 32px; padding-left: 18px; border-left: 2px solid var(--border); }
+.frontier__question h3 { margin-top: 0; font-size: 17.5px; }
+.frontier__question h3 a { color: var(--text); text-decoration: none; }
+.frontier__question h3 a:hover { color: var(--accent-strong); text-decoration: underline; text-underline-offset: 4px; }
+.frontier__parked { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; color: var(--text-muted); font-size: 13.5px; }
+.frontier__lists { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 14px; }
+.frontier__lists h4 { margin: 0 0 8px; font-family: var(--font-heading); font-size: 11.5px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; color: var(--text-faint); }
+.frontier__lists .entity-list { margin: 0; }
+
+/* ------------------------------------------------------------------ Machine-checked */
+.lean-chain { overflow-x: auto; }
+.lean-chain__figure { min-width: 620px; }
+.lean-chain__box { fill: var(--surface); stroke: var(--border-strong); stroke-width: 1.2; }
+.lean-chain__box--partial { stroke-dasharray: 5 3; }
+.lean-chain__figure .lean-chain__label { fill: var(--text); font-size: 13px; }
+.lean-chain__link { stroke: var(--atlas-edge-strong); stroke-width: 1.4; }
+.lean-chain__arrow { fill: var(--atlas-edge-strong); }
+.lean-chain__modules { margin: 18px 0 0; }
+.lean-chain__modules > div { display: grid; grid-template-columns: minmax(0, 200px) minmax(0, 1fr); gap: 6px 24px; padding: 14px 0; border-top: 1px solid var(--border); }
+.lean-chain__modules div:last-child { border-bottom: 1px solid var(--border); }
+.lean-chain__modules dt { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.lean-chain__modules dd { margin: 0; font-size: 14px; color: var(--text-muted); }
+.lean-chain__modules dd p { margin: 0 0 8px; }
+.lean-chain__modules dd .entity-list { margin: 0; }
+.formal-table code { font-size: 12px; overflow-wrap: anywhere; }
+.formal-table__files a { margin-right: 10px; white-space: nowrap; }
+
+/* ------------------------------------------------------------------ Library */
+.library-refusals { font-size: 13.5px; }
+.library-refusals p { margin: 0; }
+.library-refusals__reason { margin-top: 6px; color: var(--text-muted); font-size: 12.5px; }
+.library-refusals__claims { margin: 0; padding: 0; list-style: none; }
+.library-refusals__claims li { margin: 0 0 5px; }
+.library-relation { margin: 0 0 8px; }
+.library-relation div { display: grid; grid-template-columns: minmax(0, 250px) minmax(0, 1fr); gap: 4px 24px; padding: 14px 0; border-top: 1px solid var(--border); }
+.library-relation div:last-child { border-bottom: 1px solid var(--border); }
+.library-relation dt { grid-column: 1; grid-row: 1; margin: 0; }
+.library-relation__role { grid-column: 1; grid-row: 2; margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.55; }
+.library-relation__role p { margin: 0; }
+.library-relation__claims { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
+.library-relation__claims .entity-list { margin: 0; }
+@media (max-width: 720px) {
+  .library-relation div { grid-template-columns: minmax(0, 1fr); }
+  .library-relation__claims { grid-column: 1; grid-row: auto; margin-top: 8px; }
+}
+
+/* ------------------------------------------------------------------ How to read */
+.reading-key dt { display: flex; align-items: center; gap: 10px; }
+
+/* ------------------------------------------------------------------ Indexes */
+.atlas-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 22px 0 6px; font-size: 14px; }
+.atlas-filter label { color: var(--text-muted); }
+.atlas-filter input { min-width: 240px; padding: 7px 10px; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--surface-raised); color: var(--text); font: inherit; font-size: 14px; }
+.atlas-filter input:focus-visible { outline: 2px solid var(--atlas-focus-ring); outline-offset: 1px; }
+.atlas-filter p { margin: 0; }
+.claims-index__section { margin: 0 0 20px; }
+.claims-index__section h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-top: 20px; }
+.claims-index__label { color: var(--text-faint); font-family: var(--font-mono); font-size: 12.5px; font-weight: 400; }
+a.claims-index__source { margin-left: 12px; color: var(--text-faint); font-family: var(--font-body); font-size: 12.5px; font-weight: 400; text-decoration: none; }
+a.claims-index__source:hover { color: var(--accent); text-decoration: underline; }
+
+.atlas-scroll { overflow-x: auto; }
+.fixtures-index { min-width: 640px; font-size: 13.5px; }
+.fixtures-index th[scope="row"] { color: var(--text); font-size: 13px; font-weight: 400; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+.fixtures-index__number { text-align: right; font-variant-numeric: tabular-nums; }
+.fixtures-index__cited { margin: 0; padding: 0; list-style: none; }
+.fixtures-index__cited li { margin: 0 0 5px; }
+.fixtures-index__verb { color: var(--text-faint); font-size: 12px; }
+.fixtures-index .provenance-band__mark { margin-left: 8px; }

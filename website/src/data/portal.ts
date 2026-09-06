@@ -9,18 +9,8 @@ export interface ApiSymbol {
   summary: string;
 }
 
-export interface ResearchClaim {
-  dependencies: string[];
-  id: string;
-  level: string;
-  statement: string;
-  status: string;
-  title: string;
-}
-
 export interface PortalData {
   api: ApiSymbol[];
-  research: ResearchClaim[];
   schemaVersion: number;
 }
 

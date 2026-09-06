@@ -24,12 +24,27 @@ Two things that are not obvious and will stop a first run:
   Node, install it once with `npm install -g corepack@latest`, or the commands fail with
   `command not found: corepack`.
 - **`start` shells back into `uv`.** It runs `generate` first, which executes
-  `uv run python website/scripts/generate_data.py`, `generate_showcase.py`,
+  `uv run python website/scripts/generate_data.py`, `generate_atlas.py`, `generate_showcase.py`,
   `generate_walkthroughs.py` and `generate_snippets.py` from the repository root, and needs the
   `portal` dependency group. Run `uv sync --all-extras --all-groups --locked` at the root first.
 
 `corepack pnpm build` additionally downloads the pinned Pyodide release and builds the ScoreQuant
 wheel, so it needs network access.
+
+## The Research Atlas
+
+`/research/` is not a docs instance. `plugins/research-atlas/index.mjs` reads
+`src/generated/atlas.json` and registers one static route per view and per research entity
+(claims, counterexample fixtures, papers, authors), rendering the registry's Markdown and TeX to
+HTML at build time. The document is produced by `corepack pnpm generate:atlas`
+(`scripts/generate_atlas.py`), which projects `agenticresearch/py/registry.py export` through the
+website-side content under `content/atlas/`: `config.json` (public vocabulary, headline and
+frontier choices, theme and chapter names), `implementation.json` (library objects and refusals
+to claims), and `notes/<ID>.md` (one short editorial note per entity). `content/research-public.json`
+lists withheld claim ids; everything else is published. `tests/test_atlas_data.py` at the repository
+root keeps the committed JSON equal to a fresh run and rejects internal vocabulary in public strings
+(ADR 0033). Page components live in `src/atlas/`; `tests/atlasFixtures.ts` gives component tests
+the real graph.
 
 ## Where a figure file goes
 

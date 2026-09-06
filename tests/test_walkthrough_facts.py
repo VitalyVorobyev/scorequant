@@ -195,13 +195,10 @@ _GUARDED_CONTENT_ROOTS = ("walkthroughs", "get-started")
 #: Content roots deliberately outside the guard, each with the reason. The meta
 #: test below fails if a new docs instance appears in neither collection, so a
 #: route cannot be added without someone deciding which side it is on.
-_UNGUARDED_CONTENT_ROOTS: dict[str, str] = {
-    "research": (
-        "The research narrative cites claim ids, dates and counts from the novelty "
-        "ledger rather than from run evidence, so the fact contract is not the right "
-        "instrument for it; S6 gave it claim-id linking as its own check instead."
-    ),
-}
+_UNGUARDED_CONTENT_ROOTS: dict[str, str] = {}
+# The research section is no longer an MDX docs instance: the Research Atlas
+# (website/plugins/research-atlas) generates its routes from the registry export,
+# and tests/test_atlas_data.py is its own guard (ADR 0033).
 
 
 def _guarded_prose_pages() -> list[Path]:

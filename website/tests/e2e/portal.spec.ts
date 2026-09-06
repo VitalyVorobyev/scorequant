@@ -41,7 +41,21 @@ const ROUTES = [
   "./walkthroughs/hep/",
   "./walkthroughs/michelson/",
   "./walkthroughs/ratios/",
-  "./research/"
+  "./research/",
+  "./research/map/",
+  "./research/landscape/",
+  "./research/frontier/",
+  "./research/literature/",
+  "./research/machine-checked/",
+  "./research/library/",
+  "./research/how-to-read/",
+  "./research/claims/",
+  "./research/counterexamples/",
+  "./research/claims/d-exchange-implies-voronoi/",
+  "./research/claims/open-ds-margins-noncentered/",
+  "./research/counterexamples/ce-ds-global-geometry-001/",
+  "./research/literature/telgarsky-vattani-2010/",
+  "./research/authors/kiefer/"
 ];
 
 /**
@@ -58,7 +72,12 @@ const SCANNED = [
   "./walkthroughs/flowcyt/",
   "./walkthroughs/hep/",
   "./walkthroughs/michelson/",
-  "./walkthroughs/ratios/"
+  "./walkthroughs/ratios/",
+  "./research/map/",
+  "./research/landscape/",
+  "./research/literature/",
+  "./research/claims/d-exchange-implies-voronoi/",
+  "./research/counterexamples/ce-ds-global-geometry-001/"
 ];
 
 test("home defines the task and runs nothing", async ({page}) => {
@@ -280,4 +299,38 @@ test("the michelson refit reproduces the committed profiled retention at the hea
   const liveValue = await page.locator(".live-fit__result--live .live-fit__value").innerText();
   expect(liveValue).toBe(committedValue);
   await expect(page.getByRole("img", {name: /Your browser's readout at 6 counters/})).toBeVisible();
+});
+
+test("the research atlas opens on the problem and the map focuses from a deep link", async ({page}, testInfo) => {
+  await page.goto("./research/");
+  await expect(page.getByRole("heading", {name: "Research", level: 1})).toBeVisible();
+  const sections = ["The problem", "Established here", "The shape of the field", "Where the frontier is now", "Ways in"];
+  const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
+  expect(headings).toEqual(sections);
+  await expect(page.getByRole("table", {name: /Known, new here/})).toBeVisible();
+  await expect(page.locator(".result-card").first()).toBeVisible();
+
+  await page.goto("./research/map/?focus=D-EXCHANGE-IMPLIES-VORONOI");
+  await expect(page.getByRole("heading", {name: "Argument map", level: 1})).toBeVisible();
+  if (testInfo.project.name !== "desktop") {
+    // Below the map's width the drawing gives way to the list by problem level.
+    await expect(page.getByRole("heading", {name: "Every result by problem level"})).toBeVisible();
+    return;
+  }
+  const panel = page.locator(".argument-map__panel");
+  await expect(panel.getByRole("heading", {level: 2})).toHaveText(/exchange stability implies/i);
+  await panel.getByRole("button", {name: "Where does it stop?"}).click();
+  await expect(panel.getByRole("button", {name: "Where does it stop?"})).toHaveAttribute("aria-pressed", "true");
+  await expect(page).toHaveURL(/ask=stops/);
+});
+
+test("a claim page carries the reading grammar and links into the map", async ({page}) => {
+  await page.goto("./research/claims/d-exchange-implies-voronoi/");
+  await expect(page.getByRole("heading", {level: 1})).toHaveText(/exchange stability implies/i);
+  for (const section of ["Statement", "Rests on", "Where it stops", "Machine-checked", "Local map", "Proof"]) {
+    await expect(page.getByRole("heading", {name: section, level: 2})).toBeVisible();
+  }
+  await expect(page.locator(".proof .katex").first()).toBeAttached();
+  await expect(page.getByRole("link", {name: "Open in the map"})).toHaveAttribute("href", /\/research\/map\/\?focus=D-EXCHANGE-IMPLIES-VORONOI/);
+  await expect(page.getByRole("link", {name: /D-Voronoi fixed point does not imply/})).toBeVisible();
 });

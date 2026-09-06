@@ -36,9 +36,17 @@ namespace ScoreQuantFormal
 #guard_msgs in
 #print axioms fisher_relocate_sub
 
+/-- info: 'ScoreQuantFormal.rank_two_relocation' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms rank_two_relocation
+
 /-- info: 'ScoreQuantFormal.det_add_rank_two' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms det_add_rank_two
+
+/-- info: 'ScoreQuantFormal.det_relocation_gain' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms det_relocation_gain
 
 /-- info: 'ScoreQuantFormal.detRatio_eq_one_add_exchangeExcess' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
@@ -67,6 +75,10 @@ namespace ScoreQuantFormal
 /-- info: 'ScoreQuantFormal.centroid_leverage_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms centroid_leverage_bound
+
+/-- info: 'ScoreQuantFormal.leverage_inequality' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms leverage_inequality
 
 /-- info: 'ScoreQuantFormal.centroid_ne_of_stable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in

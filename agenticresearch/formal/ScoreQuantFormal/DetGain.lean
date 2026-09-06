@@ -1,4 +1,5 @@
 import ScoreQuantFormal.Relocation
+import ScoreQuantFormal.DetGainSpec
 import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
@@ -12,6 +13,7 @@ products `q_aa = u_aᵀ H u_a`, `q_bb = u_bᵀ H u_b`, `q_ab = u_aᵀ H u_b`,
 det(I + α u_a u_aᵀ − β u_b u_bᵀ) = det I · [(1 + α q_aa)(1 − β q_bb) + α β q_ab²].
 ```
 
+`qform`, `detRatio` and the identity itself are frozen in `DetGainSpec.lean`.
 The bracket is exactly `1 + exchangeExcess` for the `exchangeExcess` frozen in
 `ScalarExchangeSpec.lean`; `detRatio_eq_one_add_exchangeExcess` records that
 join, which is what lets the audited scalar bound be applied to the matrix
@@ -30,15 +32,6 @@ open Matrix
 noncomputable section
 
 variable {d : ℕ}
-
-/-- The quadratic form `uᵀ H v`. -/
-def qform (H : Matrix (Fin d) (Fin d) ℝ) (u v : Fin d → ℝ) : ℝ :=
-  u ⬝ᵥ H.mulVec v
-
-/-- The determinant ratio of a rank-two update, as a function of the two
-relocation coefficients and the three quadratic products. -/
-def detRatio (α β qaa qbb qab : ℝ) : ℝ :=
-  (1 + α * qaa) * (1 - β * qbb) + α * β * qab ^ 2
 
 @[simp]
 theorem qform_smul_left (H : Matrix (Fin d) (Fin d) ℝ) (c : ℝ) (u v : Fin d → ℝ) :
@@ -115,6 +108,16 @@ theorem detRatio_eq_one_add_exchangeExcess
     detRatio (alpha sourceWeight sourceMass) (beta sourceWeight destinationMass) qaa qbb qab
       = 1 + exchangeExcess sourceWeight sourceMass destinationMass qaa qbb qab := by
   unfold detRatio exchangeExcess
+  ring
+
+/-- **D3 discharges its frozen statement.** This is the declaration that
+`D-LOGDET-GAIN` carries as its `formal_proof`. -/
+theorem det_relocation_gain (I : Matrix (Fin d) (Fin d) ℝ) (α β : ℝ)
+    (ua ub : Fin d → ℝ) : DetGainConclusion I α β ua ub := by
+  rintro ⟨hsymm, hunit⟩
+  have hid := det_add_rank_two I hsymm hunit α β ua ub
+  refine ⟨hid, fun hdet hratio => ?_⟩
+  rw [hid, Real.log_mul (ne_of_gt hdet) (ne_of_gt hratio)]
   ring
 
 end

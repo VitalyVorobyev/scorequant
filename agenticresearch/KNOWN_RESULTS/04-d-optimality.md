@@ -52,9 +52,15 @@ Then
 }
 \]
 
-Machine-checked for arbitrary \(d\) as `ScoreQuantFormal.fisher_relocate_sub` in
-`formal/ScoreQuantFormal/Relocation.lean`. The statement is not separately
-frozen and audited, so `D-RANK2-MOVE` carries no `formal_proof` field yet.
+**Machine-checked.** Verified for arbitrary \(d\) in Lean 4.33.1 + Mathlib. The
+statement is frozen in `formal/ScoreQuantFormal/RelocationSpec.lean` and the
+proof is `ScoreQuantFormal.rank_two_relocation` in
+`formal/ScoreQuantFormal/Relocation.lean`, whose type *is* the frozen
+`RelocationConclusion`; the underlying identity is `fisher_relocate_sub`.
+Independent statement audit:
+`AUDITS/FORMALIZATION-D-RANK2-MOVE-001.md`, verdict `match after hardening`.
+That audit narrowed the claim node: the formalization requires the destination
+to be a distinct, nonempty cell, and the node's `assumptions` now record it.
 
 ## D3. Exact log-det relocation gain — [PROJECT-PROVED]
 
@@ -76,10 +82,23 @@ q_{ab}=u_a^\top Hu_b,
 }
 \]
 
-Machine-checked for arbitrary \(d\) as `ScoreQuantFormal.det_add_rank_two` in
-`formal/ScoreQuantFormal/DetGain.lean`, through the Weinstein-Aronszajn
-identity; `detRatio_eq_one_add_exchangeExcess` joins it to the frozen scalar
-core. Statement not separately frozen, so no `formal_proof` field yet.
+**Machine-checked.** Verified for arbitrary \(d\) in Lean 4.33.1 + Mathlib,
+through the Weinstein-Aronszajn identity. The statement is frozen in
+`formal/ScoreQuantFormal/DetGainSpec.lean` and the proof is
+`ScoreQuantFormal.det_relocation_gain` in `formal/ScoreQuantFormal/DetGain.lean`;
+the underlying determinant identity is `det_add_rank_two`, and
+`detRatio_eq_one_add_exchangeExcess` joins it to the frozen scalar core — that
+join lives in the editable proof module and is *not* itself audited. Independent
+statement audit: `AUDITS/FORMALIZATION-D-LOGDET-GAIN-002.md`, verdict `match
+after hardening`, superseding the first round.
+
+The frozen statement has two components, because this claim is named for a
+log-determinant gain: the determinant identity, which needs only that \(I\) is
+symmetric and nonsingular and nothing at all of the candidate, and the boxed
+\(\Delta F_D\) form above, which carries the positivity that taking a
+logarithm needs. The first round found the identity frozen alone, which left the
+claim covered only in part; the node's `assumptions` field, which had asked for
+positive definiteness the identity never uses, was corrected to match.
 
 This supports exact \(O(d^2)\)-type candidate evaluation with cached factorizations.
 
@@ -121,11 +140,20 @@ gives \(Av=\mu_a-\mu_b\), hence
 =v^\top Pv\le v^\top v=1/W_a+1/W_b.
 \]
 
-Both halves are machine-checked for arbitrary \(d\) as
-`ScoreQuantFormal.centroid_leverage_bound` and
-`ScoreQuantFormal.leverage_bound` in `formal/ScoreQuantFormal/Leverage.lean`,
-via the same projector argument. Statement not separately frozen, so no
-`formal_proof` field yet.
+**Machine-checked.** Both halves are verified for arbitrary \(d\) in Lean
+4.33.1 + Mathlib, via the same projector argument. The bundled statement is
+frozen in `formal/ScoreQuantFormal/LeverageSpec.lean` and the proof is
+`ScoreQuantFormal.leverage_inequality` in `formal/ScoreQuantFormal/Leverage.lean`,
+assembling `centroid_leverage_bound` and `leverage_bound`. Independent statement
+audit: `AUDITS/FORMALIZATION-D-LEVERAGE-001.md`, verdict `match after
+hardening`. Two things that audit established are worth keeping in view. The
+frozen inequality is true with *no* hypotheses, because Lean's \(0^{-1}=0\)
+collapses both sides together for an empty cell and a singular \(I\) — the
+hypotheses are fidelity conventions, not guards against falsity, and the proof
+uses positive definiteness genuinely. And nothing formal connects \(I\) to a
+statistical Fisher information: `fisher` is *defined* as
+\(\sum_c m_cm_c^\top/W_c\), and the identification is inherited from
+`FI-QUANT-IDENTITY`, not proved.
 
 ## D5. Exchange stability implies strict D-Voronoi geometry — [PROJECT-PROVED; audited]
 

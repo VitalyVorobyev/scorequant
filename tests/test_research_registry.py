@@ -122,11 +122,26 @@ def test_formal_proof_is_attached_only_where_a_spec_is_frozen(tool: ModuleType) 
     declarations = [formal["declaration"] for formal in marked.values()]
     assert len(declarations) == len(set(declarations)), "a Lean theorem is claimed twice"
 
-    assert (
-        marked["D-EXCHANGE-IMPLIES-VORONOI"]["declaration"] == "ScoreQuantFormal.exchange_voronoi"
-    )
+    expected = {
+        "D-EXCHANGE-IMPLIES-VORONOI": "ScoreQuantFormal.exchange_voronoi",
+        "D-RANK2-MOVE": "ScoreQuantFormal.rank_two_relocation",
+        "D-LOGDET-GAIN": "ScoreQuantFormal.det_relocation_gain",
+        "D-LEVERAGE": "ScoreQuantFormal.leverage_inequality",
+    }
+    for claim_id, declaration in expected.items():
+        assert marked[claim_id]["declaration"] == declaration, claim_id
+
+    # The marked declaration's *type* must be the frozen conclusion, not a
+    # restatement of it, or the mark can drift from the audited statement while
+    # still compiling.
+    for claim_id, declaration in expected.items():
+        source = (WORKSPACE / marked[claim_id]["file"]).read_text()
+        local = declaration.rsplit(".", 1)[-1]
+        body = source.split(f"theorem {local}", 1)[1].split(":= by", 1)[0]
+        assert "Conclusion" in body, f"{claim_id}: {local} does not name a frozen conclusion"
+
     # Claims whose statement is only partly formalized must stay unmarked.
-    for unmarked in ("D-GLOBAL-GEOMETRIC-REALIZABILITY", "D-EXCHANGE-TERMINATES", "D-LEVERAGE"):
+    for unmarked in ("D-GLOBAL-GEOMETRIC-REALIZABILITY", "D-EXCHANGE-TERMINATES"):
         assert index[unmarked].get("formal_proof") is None, unmarked
 
     rendered = tool.render_index(registry)

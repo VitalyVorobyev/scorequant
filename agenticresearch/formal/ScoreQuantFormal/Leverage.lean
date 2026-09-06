@@ -1,4 +1,5 @@
 import ScoreQuantFormal.DetGain
+import ScoreQuantFormal.LeverageSpec
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 
 /-!
@@ -22,6 +23,7 @@ Choosing `v` supported on the two cells `a, b` with entries `1/√W_a` and
 
 This is precisely the hypothesis `qDelta ≤ 1/sourceMass + 1/destinationMass`
 that `ScalarExchangeSpec.lean` assumes, so this file is what discharges it.
+Both halves of the claim are frozen in `LeverageSpec.lean`.
 
 Registry claim: `D-LEVERAGE`, `KNOWN_RESULTS/04-d-optimality.md` §D4.
 -/
@@ -203,6 +205,19 @@ theorem leverage_bound (S : Sample d N) (z : Fin N → Fin K)
     rw [hva, hvb, neg_mul_neg, inv_sqrt_sq hWa, inv_sqrt_sq hWb]
   rw [← hAv, ← hvv]
   exact qform_rootFactor_le S z hne hpd v
+
+/-- **D4 discharges its frozen statement,** both halves of the bundled claim.
+This is the declaration that `D-LEVERAGE` carries as its `formal_proof`. -/
+theorem leverage_inequality (S : Sample d N) (z : Fin N → Fin K) :
+    LeverageConclusion S z := by
+  rintro ⟨hne, hpd⟩
+  refine ⟨fun c => centroid_leverage_bound S z hne hpd c, fun a b => ?_⟩
+  rcases eq_or_ne a b with rfl | hab
+  · -- The registry statement puts no restriction on `a` and `b`; the coincident
+    -- case is `0 ≤ 2/W_a`, true but empty of content.
+    have hW : (0 : ℝ) ≤ (cellMass S z a)⁻¹ := le_of_lt (inv_pos.mpr (cellMass_pos (hne a)))
+    simpa [qform, sub_self] using add_nonneg hW hW
+  · exact leverage_bound S z hne hpd a b hab
 
 end
 

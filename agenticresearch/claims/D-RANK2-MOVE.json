@@ -7,10 +7,11 @@
   "level": "finite_assignment",
   "status": "project_proved",
   "publication_status": "internal",
-  "statement": "For a weighted point moved from non-singleton a to b, \u0394I=\u03b1u_a u_a^T-\u03b2u_b u_b^T with \u03b1=wW_a/(W_a-w), \u03b2=wW_b/(W_b+w).",
+  "statement": "For a weighted point moved from non-singleton a to b, ΔI=αu_a u_a^T-βu_b u_b^T with α=wW_a/(W_a-w), β=wW_b/(W_b+w).",
   "assumptions": [
     "positive weights",
-    "source remains nonempty"
+    "source remains nonempty",
+    "destination is a distinct, nonempty cell"
   ],
   "proof_location": {
     "file": "KNOWN_RESULTS/04-d-optimality.md",
@@ -24,5 +25,12 @@
     "DS-EXACT-MOVE-ORACLE",
     "GENERAL-SUPERGRADIENT-SCREENING",
     "OPEN-STRONGER-LOCAL-NEIGHBORHOODS"
-  ]
+  ],
+  "formal_proof": {
+    "system": "Lean 4.33.1 + Mathlib 4.33.1",
+    "spec": "formal/ScoreQuantFormal/RelocationSpec.lean",
+    "file": "formal/ScoreQuantFormal/Relocation.lean",
+    "declaration": "ScoreQuantFormal.rank_two_relocation",
+    "statement_audit": "AUDITS/FORMALIZATION-D-RANK2-MOVE-001.md"
+  }
 }

@@ -1,29 +1,23 @@
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Matrix.Mul
-import Mathlib.LinearAlgebra.Matrix.PosDef
-import Mathlib.Algebra.BigOperators.Fin
+import ScoreQuantFormal.ConfigSpec
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
 /-!
-# Finite weighted configurations and their retained information
+# Lemmas about finite weighted configurations
 
-This file sets up the finite objects the D chain talks about: a weighted score
-sample, a labeling into `K` cells, the per-cell mass and weighted sum, and the
-retained information matrix
-
-```
-I(z) = ∑ c, W_c • (μ_c μ_cᵀ)
-```
+The definitions themselves — sample, cells, masses, sums, centroids, retained
+information, Mahalanobis form — are frozen in `ConfigSpec.lean`, because the
+frozen statements of D2, D3, D4 and D5 are written in them. This file holds
+everything provable *about* them.
 
 Cells are represented by their *unnormalized* weighted sum `T_c` rather than by
 their centroid `μ_c = W_c⁻¹ • T_c`. The two descriptions agree — `cellBlock`
-below is `W⁻¹ • (T Tᵀ) = W • (μ μᵀ)` — but the unnormalized one turns the
-relocation algebra of `Relocation.lean` into a two-variable identity in
-`(W, T)` instead of centroid bookkeeping.
+is `W⁻¹ • (T Tᵀ) = W • (μ μᵀ)` — but the unnormalized one turns the relocation
+algebra of `Relocation.lean` into a two-variable identity in `(W, T)` instead of
+centroid bookkeeping.
 
-Nothing here is a theorem about ScoreQuant; these are definitions plus the two
-rank-one update identities that `Relocation.lean` assembles into D2.
+Nothing here is a theorem about ScoreQuant; these are the two rank-one update
+identities that `Relocation.lean` assembles into D2, plus bookkeeping.
 -/
 
 namespace ScoreQuantFormal
@@ -33,22 +27,6 @@ open Matrix
 noncomputable section
 
 variable {d N K : ℕ}
-
-/-- A finite weighted score sample: `N` rows of `d`-dimensional scores with
-strictly positive weights. -/
-structure Sample (d N : ℕ) where
-  /-- The score attached to each row. -/
-  score : Fin N → (Fin d → ℝ)
-  /-- The weight attached to each row. -/
-  weight : Fin N → ℝ
-  /-- Weights are strictly positive. -/
-  weight_pos : ∀ i, 0 < weight i
-
-/-- The contribution of one cell to the retained information, written through the
-cell's unnormalized weighted sum `T` and mass `W`. Equal to `W • (μ μᵀ)` for
-`μ = W⁻¹ • T`. -/
-def cellBlock (W : ℝ) (T : Fin d → ℝ) : Matrix (Fin d) (Fin d) ℝ :=
-  W⁻¹ • vecMulVec T T
 
 @[simp]
 theorem cellBlock_apply (W : ℝ) (T : Fin d → ℝ) (i j : Fin d) :
@@ -92,26 +70,10 @@ theorem cellBlock_insert (W w : ℝ) (hw : 0 < w) (hW : 0 < W) (T s : Fin d → 
   field_simp
   ring
 
-/-- The rows carrying label `c`. -/
-def cell (z : Fin N → Fin K) (c : Fin K) : Finset (Fin N) :=
-  Finset.univ.filter fun i => z i = c
-
 @[simp]
 theorem mem_cell {z : Fin N → Fin K} {c : Fin K} {i : Fin N} :
     i ∈ cell z c ↔ z i = c := by
   simp [cell]
-
-/-- Total weight carried by cell `c`. -/
-def cellMass (S : Sample d N) (z : Fin N → Fin K) (c : Fin K) : ℝ :=
-  ∑ i ∈ cell z c, S.weight i
-
-/-- Weighted sum of the scores in cell `c`. -/
-def cellSum (S : Sample d N) (z : Fin N → Fin K) (c : Fin K) : Fin d → ℝ :=
-  ∑ i ∈ cell z c, S.weight i • S.score i
-
-/-- The weighted mean score of cell `c`. -/
-def centroid (S : Sample d N) (z : Fin N → Fin K) (c : Fin K) : Fin d → ℝ :=
-  (cellMass S z c)⁻¹ • cellSum S z c
 
 /-- A cell with at least one row has strictly positive mass. -/
 theorem cellMass_pos {S : Sample d N} {z : Fin N → Fin K} {c : Fin K}
@@ -125,20 +87,12 @@ theorem cellMass_erase {S : Sample d N} {z : Fin N → Fin K} {i : Fin N} :
   have hi : i ∈ cell z (z i) := by simp
   rw [eq_sub_iff_add_eq, cellMass, ← Finset.sum_erase_add _ _ hi]
 
-/-- The retained information of a labeling: `∑ c, W_c • (μ_c μ_cᵀ)`. -/
-def fisher (S : Sample d N) (z : Fin N → Fin K) : Matrix (Fin d) (Fin d) ℝ :=
-  ∑ c, cellBlock (cellMass S z c) (cellSum S z c)
-
 /-- The retained information is symmetric: each cell block is. -/
 theorem fisher_isSymm (S : Sample d N) (z : Fin N → Fin K) :
     (fisher S z).IsSymm := by
   ext i j
   simp only [Matrix.transpose_apply, fisher, Matrix.sum_apply, cellBlock_apply]
   exact Finset.sum_congr rfl fun c _ => by ring
-
-/-- The Mahalanobis form `(s - μ)ᵀ H (s - μ)` used throughout the D chain. -/
-def mahalanobis (H : Matrix (Fin d) (Fin d) ℝ) (s μ : Fin d → ℝ) : ℝ :=
-  (s - μ) ⬝ᵥ H.mulVec (s - μ)
 
 end
 

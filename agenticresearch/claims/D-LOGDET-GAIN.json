@@ -7,9 +7,10 @@
   "level": "finite_assignment",
   "status": "project_proved",
   "publication_status": "internal",
-  "statement": "With H=I^{-1}, q_aa=u_a^T H u_a, q_bb=u_b^T H u_b, q_ab=u_a^T H u_b, the determinant ratio is (1+\u03b1q_aa)(1-\u03b2q_bb)+\u03b1\u03b2q_ab^2.",
+  "statement": "With H=I^{-1}, q_aa=u_a^T H u_a, q_bb=u_b^T H u_b, q_ab=u_a^T H u_b, the determinant ratio is (1+αq_aa)(1-βq_bb)+αβq_ab^2; equivalently ΔF_D=log of that ratio wherever both determinants are positive.",
   "assumptions": [
-    "current and candidate information positive definite"
+    "current information symmetric and nonsingular",
+    "positive current and candidate determinants for the log-determinant form"
   ],
   "dependencies": [
     "D-RANK2-MOVE"
@@ -25,5 +26,12 @@
     "D-EXCHANGE-TERMINATES",
     "D-EXCHANGE-VIOLATION-LOWER-BOUND",
     "D-GUARDED-LLOYD"
-  ]
+  ],
+  "formal_proof": {
+    "system": "Lean 4.33.1 + Mathlib 4.33.1",
+    "spec": "formal/ScoreQuantFormal/DetGainSpec.lean",
+    "file": "formal/ScoreQuantFormal/DetGain.lean",
+    "declaration": "ScoreQuantFormal.det_relocation_gain",
+    "statement_audit": "AUDITS/FORMALIZATION-D-LOGDET-GAIN-002.md"
+  }
 }

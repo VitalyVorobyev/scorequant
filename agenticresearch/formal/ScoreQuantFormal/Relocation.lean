@@ -1,5 +1,5 @@
 import ScoreQuantFormal.Config
-import ScoreQuantFormal.ScalarExchangeSpec
+import ScoreQuantFormal.RelocationSpec
 
 /-!
 # D2: the exact weighted rank-two relocation identity
@@ -13,7 +13,8 @@ destination cell changes the retained information by an exact rank-two term
 ```
 
 `alpha` and `beta` are the coefficients already frozen in
-`ScalarExchangeSpec.lean`; this file is where the matrix layer meets them.
+`ScalarExchangeSpec.lean`; `relocate` and the statement itself are frozen in
+`RelocationSpec.lean`. This file is where the matrix layer meets them.
 
 Registry claim: `D-RANK2-MOVE`, `KNOWN_RESULTS/04-d-optimality.md` §D2.
 -/
@@ -25,10 +26,6 @@ open Matrix
 noncomputable section
 
 variable {d N K : ℕ}
-
-/-- Relabel row `i` to cell `b`, leaving every other row alone. -/
-def relocate (z : Fin N → Fin K) (i : Fin N) (b : Fin K) : Fin N → Fin K :=
-  Function.update z i b
 
 @[simp]
 theorem relocate_self (z : Fin N → Fin K) (i : Fin N) (b : Fin K) :
@@ -142,6 +139,15 @@ theorem fisher_relocate_sub (S : Sample d N) (z : Fin N → Fin K) (i : Fin N) {
     show centroid S z b - S.score i = (cellMass S z b)⁻¹ • cellSum S z b - S.score i from rfl]
   unfold alpha beta
   abel
+
+/-- **D2 discharges its frozen statement.** This is the declaration that
+`D-RANK2-MOVE` carries as its `formal_proof`: it names the audited
+`RelocationConclusion`, so no hypothesis can be added or conclusion weakened
+here without changing an audited file. -/
+theorem rank_two_relocation (S : Sample d N) (z : Fin N → Fin K) (i : Fin N)
+    (b : Fin K) : RelocationConclusion S z i b := by
+  rintro ⟨hb, hsource, hdest⟩
+  exact fisher_relocate_sub S z i hb hsource hdest
 
 end
 

@@ -7,7 +7,11 @@
   "level": "finite_assignment",
   "status": "bridge",
   "publication_status": "derived_from_published",
-  "statement": "For every centroid \u03bc_c, \u03bc_c^T I^{-1}\u03bc_c<=1/W_c, and for \u03b4=\u03bc_a-\u03bc_b, \u03b4^T I^{-1}\u03b4<=1/W_a+1/W_b.",
+  "statement": "For every centroid μ_c, μ_c^T I^{-1}μ_c<=1/W_c, and for δ=μ_a-μ_b, δ^T I^{-1}δ<=1/W_a+1/W_b.",
+  "assumptions": [
+    "all K cells nonempty",
+    "retained information nonsingular, equivalently positive definite"
+  ],
   "dependencies": [
     "FI-QUANT-IDENTITY"
   ],
@@ -20,5 +24,12 @@
     "AUDIT-D-EXCHANGE-VORONOI",
     "D-EXCHANGE-IMPLIES-VORONOI",
     "D-EXCHANGE-VIOLATION-LOWER-BOUND"
-  ]
+  ],
+  "formal_proof": {
+    "system": "Lean 4.33.1 + Mathlib 4.33.1",
+    "spec": "formal/ScoreQuantFormal/LeverageSpec.lean",
+    "file": "formal/ScoreQuantFormal/Leverage.lean",
+    "declaration": "ScoreQuantFormal.leverage_inequality",
+    "statement_audit": "AUDITS/FORMALIZATION-D-LEVERAGE-001.md"
+  }
 }

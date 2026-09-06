@@ -24,12 +24,15 @@ reviewed change, keeping Lean and Mathlib on the same stable release.
 The finite D chain of `KNOWN_RESULTS/04-d-optimality.md`, in arbitrary
 dimension `d`:
 
+Frozen specification files are listed first in each pair; the proof module
+follows the slash.
+
 | Module | Result |
 | --- | --- |
-| `Config.lean` | weighted sample, cells, `I(z) = Σ_c W_c μ_c μ_cᵀ` |
-| `Relocation.lean` | D2, the exact rank-two relocation identity |
-| `DetGain.lean` | D3, the determinant ratio, via Weinstein–Aronszajn |
-| `Leverage.lean` | D4, both leverage inequalities |
+| `ConfigSpec.lean` / `Config.lean` | weighted sample, cells, `I(z) = Σ_c W_c μ_c μ_cᵀ`; the rank-one update identities |
+| `RelocationSpec.lean` / `Relocation.lean` | D2, the exact rank-two relocation identity |
+| `DetGainSpec.lean` / `DetGain.lean` | D3, the determinant ratio, via Weinstein–Aronszajn |
+| `LeverageSpec.lean` / `Leverage.lean` | D4, both leverage inequalities |
 | `ScalarExchangeSpec.lean` / `ScalarExchange.lean` | the frozen scalar core inside D5 |
 | `ExchangeVoronoiSpec.lean` / `ExchangeVoronoi.lean` | D5, exchange stability ⇒ strict `I⁻¹`-Voronoi |
 | `Corollaries.lean` | D7 realizability, D8 termination |
@@ -49,6 +52,15 @@ own non-coverage; ADR 0030 governs the scope.
   hypotheses, conclusion **and the implication between them**. A prover may edit
   the corresponding proof module but may not change the specification without a
   new statement audit.
+- The freeze is closed under definitional dependency: every definition a frozen
+  statement is written in lives in a frozen file too, which is what
+  `ConfigSpec.lean` exists for. A frozen conclusion mentioning `fisher` or
+  `relocate` guarantees nothing if those are editable — redefining `relocate` as
+  the identity would make `ExchangeStable` vacuous without touching an audited
+  file.
+- Each claim's `formal_proof.declaration` names a theorem whose *type is the
+  frozen conclusion*, not a restatement of it, so the mark cannot drift from the
+  audited statement.
 - Exported theorems have a `#guard_msgs` axiom audit. The current allowlist is
   Lean's standard `propext`, `Classical.choice`, and `Quot.sound`; `sorryAx` and
   project-defined axioms are forbidden.

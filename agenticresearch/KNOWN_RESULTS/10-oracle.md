@@ -335,7 +335,12 @@ from the vector delta method and the determinant differential; the vector
 special case of OP27 it settles is stated exactly below and
 `OPEN-RETENTION-UNCERTAINTY` stays open for refitted rules, weights and the
 no-oracle case. Instrument `py/retention_plugin_vector.py`; artifacts under
-`WORK/artifacts/RETENTION-PLUGIN-VECTOR/`. Not yet independently audited.*
+`WORK/artifacts/RETENTION-PLUGIN-VECTOR/`. **Independently audited 6 September 2026**
+(`AUDITS/AUDIT-RETENTION-PLUGIN-VECTOR-001.md`): verified with hardened assumptions —
+O7.1–O7.3, the Wald statement under (A4), the ellipsoid characterisation and the
+endpoint rate hold; H1 corrects the \(\eta_D=1\) sentence (singular \(\hat V\) samples,
+`CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001`), H2 reduces the Wald "iff" to "if", H3 marks
+the endpoint-coverage convergence as measured, H4 names the degenerate ellipsoid.*
 
 **Cite versus derive.** The literature-first pass of 5 September 2026
 (`LITERATURE/audits/RETENTION-PLUGIN-CLT-FROZEN-VECTOR-5-September-2026.md`)
@@ -539,7 +544,9 @@ Empty cells are a.s. transient by Borel–Cantelli under (A1). \(\square\)
 ### O7.4 Wald interval and its endpoints — [BRIDGE]
 
 Under (A1)–(A4), \(P\big(\eta_D\in\hat\eta_D\pm z_{1-\alpha/2}\hat\sigma/\sqrt n\big)\to1-\alpha\)
-(O7.2, O7.3, Slutsky). The endpoints are where the vector case differs from O6.
+(O7.2, O7.3, Slutsky). *Audit note (H2):* this is an "if"; when \(\sigma^2=0\) the
+first-order theory gives no level and the interval is unsupported (measured
+conservative, O7.7). The endpoints are where the vector case differs from O6.
 
 **(a) The \(\sigma^2=0\) set is an ellipsoid per cell.** Under (A1)–(A3′),
 \(\sigma^2=0\) iff for every cell \(b\) the conditional law of \(S\) given
@@ -552,7 +559,9 @@ Under (A1)–(A4), \(P\big(\eta_D\in\hat\eta_D\pm z_{1-\alpha/2}\hat\sigma/\sqrt
 \]
 
 an ellipsoid in the \(V^{-1}\) metric centred at \(VI_Z^{-1}c_b\) (the right-hand
-side is \(\ge0\) because \(V\succeq I_Z\)).
+side is \(\ge0\) because \(V\succeq I_Z\); when it is \(0\) the ellipsoid is that single
+point — audit note H4). The identity behind it holds for anisotropic \(V\):
+`test_o7_audit_ellipsoid_identity_holds_on_an_anisotropic_rational_law`.
 
 *Proof.* \(\psi=0\) a.s. iff \(s^\top V^{-1}s-2s^\top I_Z^{-1}c_b+c_b^\top I_Z^{-1}c_b=0\)
 on the support of each conditional law; completing the square in the
@@ -581,8 +590,13 @@ Consequences.
   two-point set \(\{c_b/(1\mp\sqrt{1-\eta})\}\) of O6.4, which is why O6's
   atomless remark was true there and only there.
 - *\(\eta_D=1\)* iff \(V=I_Z\) iff \(S=c_Z\) a.s. (zero within-cell scatter);
-  then \(\hat\eta_D=1\) for every sample and \(\psi\equiv0\) — the ellipsoid
-  degenerates to the point \(c_b\).
+  then \(\psi\equiv0\), the ellipsoid degenerates to the point \(c_b\), and
+  \(\hat\eta_D=1\) for every sample **with \(\hat V\succ0\)**, i.e. whenever the
+  occupied cells' means span \(\mathbb R^d\). *Audit hardening H1:* a sample confined
+  to fewer spanning cells has \(\hat V\) singular, \(\hat\eta_D=0\) by the estimator's
+  own convention, and library value \(1\) (projection) —
+  `CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001`; the event has probability \(\to0\)
+  exponentially under (A1).
 - Where (A4) fails the first-order limit is degenerate and the interval is
   unsupported; measured (O7.7) it is conservative on the arc law with width
   \(O(1/n)\). The quadratic-form limit of \(n(\hat\eta_D-\eta_D)\) is not derived.
@@ -624,9 +638,13 @@ matrices form a proper algebraic subvariety of that space, so
 Consequences. At \(d=1\) (\(r=0\)) this is O6's measured \(O(1/n)\) bias. At
 \(d\ge2\) with \(r=d-1\) the bias is \(n^{-1/d}\), *slower* than the CLT
 scale: the plug-in and its Wald half-width \(\hat\sigma/\sqrt n\) are then of the
-same order (measured, O7.7), so coverage of the true value \(0\) converges to a
-law-dependent constant, not to \(1-\alpha\); it happened to be \(\approx0.95\) on
-the \(d=2\), \(K=2\) law and \(\approx0.80\) on the \(d=3\), \(K=3\) law. This is the
+same order (measured, O7.7), so coverage of the true value \(0\) is *measured* to stabilise at a
+law-dependent constant, not at \(1-\alpha\); it happened to be \(\approx0.95\) on
+the \(d=2\), \(K=2\) law and \(\approx0.80\) on the \(d=3\), \(K=3\) law. *Audit note
+(H3):* the joint limit of \((n^{(d-r)/d}\hat\eta_D,\,n^{(d-r)/d}\hat\sigma/\sqrt n)\) is not
+derived, so neither the half-width order nor the coverage convergence is a theorem;
+the audit confirmed the limit law of \(n^{(d-r)/d}\hat\eta_D\) itself against its
+Gaussian ingredients (closed form \(E=2/\pi\) at \(d=2\), \(K=2\)). This is the
 classical dimensionality problem (Seo, Kanda & Fujikoshi 1995): the right
 tool at the singular endpoint is a rank test, not this interval. The
 reference-law instance is \(K=d\): U4 forces \(\eta_D=0\), the sample plug-in

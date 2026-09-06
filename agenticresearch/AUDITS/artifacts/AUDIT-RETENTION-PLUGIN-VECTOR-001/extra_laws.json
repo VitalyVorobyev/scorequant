@@ -1,0 +1,18 @@
+{
+ "note": "Parameters copied from the researcher's instrument py/retention_plugin_vector.py (MixtureLaw defaults and fit_library_rule) after the audit's own Hermite references existed; neither the claim node RETENTION-PLUGIN-COVERAGE-VECTOR nor WORK/artifacts/RETENTION-PLUGIN-VECTOR/popref.json records them.",
+ "mixture": {
+  "means": [-1.5, 1.0, 0.0],
+  "sds": [0.8, 0.6, 2.5],
+  "fractions": [0.35, 0.25],
+  "cuts": [-2.0, -0.5, 1.0],
+  "support": [-16.0, 16.0]
+ },
+ "library": {
+  "training_seed": 11,
+  "n_train": 4000,
+  "K": 4,
+  "solver_seed": 7,
+  "initializer_restarts": 8,
+  "recorded_cuts_in_x": [-1.391812018207487, 0.013803958605628417, 1.3752913307035324]
+ }
+}

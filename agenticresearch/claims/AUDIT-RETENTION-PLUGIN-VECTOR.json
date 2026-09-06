@@ -1,0 +1,52 @@
+{
+  "id": "AUDIT-RETENTION-PLUGIN-VECTOR",
+  "title": "Independent audit of the frozen-rule vector retention plug-in CLT (O7)",
+  "criterion": [
+    "general",
+    "D"
+  ],
+  "level": "information_accounting",
+  "status": "project_proved",
+  "publication_status": "internal",
+  "statement": "Independent adversarial audit of RETENTION-PLUGIN-CLT-FROZEN-VECTOR, RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE, RETENTION-PLUGIN-COVERAGE-VECTOR and CE-O7-ELLIPSOID-ZERO-VARIANCE-001 at worktree-retention-plugin-vector@b8a61ab. Verdict: verified with hardened assumptions. O7.1 (within-scatter identity, 0/0 := 0, library agreement and both rank_rtol caveats), O7.2 (delta-method CLT with psi = (eta_D/d)[2 S^T I_Z^{-1} c_Z - c_Z^T I_Z^{-1} c_Z - S^T V^{-1} S], the gradient reduction and the d = 1 reduction to O6) and O7.3 (sum psi_hat = 0 and a.s. consistency through within-cell moments of order <= 4) hold as stated; the ellipsoid characterisation of sigma^2 = 0 is an exact polynomial identity for anisotropic V, the fixture and its atomless arc law verify, and a d = 3 sphere law shows the atomless obstruction in every d >= 2. Hardening H1: 'at eta_D = 1 the plug-in is 1 on every sample' fails on samples whose occupied cells' means do not span R^d (V_hat singular: exact plug-in 0, library 1; CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001). H2: the Wald level is proved under A4 only; the recorded 'iff' is reduced to 'if', the sigma^2 = 0 case being unsupported and measured conservative. H3: the endpoint sentence 'coverage of 0 converges to a law-dependent constant' is measured, not derived. H4: the ellipsoid degenerates to the point V I_Z^{-1} c_b when its radius vanishes. Numerically: population references by QUADPACK and cut-aligned Gauss-Legendre reproduce every recorded value to rounding; fresh-seed coverage (4000 replicates) replicates O7.7 on all five laws; the O7.4(b) limit law simulated from its Gaussian ingredients matches the scaled plug-in in mean and quantiles, with the closed form E = 2/pi at d = 2; the refitted library rule reproduces the recorded cuts exactly. Registry hygiene: the coverage node's mixture and rule parameters were missing and are now recorded. Literature: the method is prior art (delta method, matrix differentials, canonical-correlation influence functions, fourth-moment eigenvalue asymptotics); the fixed-partition uncentred statement and the rank-deficient determinant limit are a search gap, not novelty; no re-attribution.",
+  "assumptions": [
+    "source frozen at worktree-retention-plugin-vector@b8a61ab (PR #59); the researcher's instrument, completed packet and transcript were not read before the audit's own numbers existed; afterwards popref.json and the two law definitions in the researcher's module (mixture parameters, rule-fitting recipe) were opened only to copy parameters the record lacked, and the 5 September literature audit only for comparison",
+    "the independent instrument py/audit_retention_plugin_vector.py does not import, extend or copy py/retention_plugin_vector.py; claim-level identities are fractions.Fraction with an own Gauss-Jordan inverse; population references are QUADPACK per cell and per moment against cut-aligned composite Gauss-Legendre; Monte Carlo seeds are fresh (SeedSequence([20260906, 1001 or 1002, law, n]))",
+    "the imported hypotheses of FI-QUANT-IDENTITY, PROXY-TRUE-RETAINED-FI and FI-RANK-CEILING were rechecked for the frozen map q o s_hat, not re-proved",
+    "scope is O7.1-O7.5 and the four nodes; refitted rules, weights, the no-oracle case, D_s, second-order corrections and any public API are flagged, not chased",
+    "no src/ or public API change is authorized by this audit; it clears closure step 1 of OPEN_PROBLEMS.md as an engineering step with its own tests and docs"
+  ],
+  "dependencies": [
+    "RETENTION-PLUGIN-CLT-FROZEN-VECTOR",
+    "RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE",
+    "RETENTION-PLUGIN-COVERAGE-VECTOR",
+    "OPEN-RETENTION-UNCERTAINTY",
+    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
+    "FI-QUANT-IDENTITY",
+    "FI-RANK-CEILING",
+    "PROXY-TRUE-RETAINED-FI"
+  ],
+  "boundary_counterexamples": [
+    "CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001"
+  ],
+  "literature": [
+    "vanderVaart-1998",
+    "Magnus-Neudecker-1999",
+    "Romanazzi-1992",
+    "Taskinen-Croux-Kankainen-Ollila-Oja-2006",
+    "Muirhead-Waternaux-1980",
+    "Fang-Krishnaiah-1982",
+    "Seo-Kanda-Fujikoshi-1995",
+    "Robin-Smith-2000",
+    "Anderson-2003",
+    "Kendall-Stuart-1961"
+  ],
+  "literature_search_status": "prior_art_found",
+  "proof_location": {
+    "file": "AUDITS/AUDIT-RETENTION-PLUGIN-VECTOR-001.md",
+    "section": "Publication-grade audit of the frozen-rule vector retention plug-in CLT"
+  },
+  "artifact": "py/audit_retention_plugin_vector.py",
+  "role": "independent publication-grade verification and hardening of O7; authorizes removal of the 'not independently audited' notes and clears closure step 1 (ship the error bar) as engineering, not as a research claim",
+  "warning": "Verified does not mean deployable: the interval is conditional on a frozen rule, needs an oracle-score evaluation sample from the reference law, has no finite-sample guarantee (liberal at every n <= 3000 on unbounded polynomial scores; nominal from n = 100 on bounded mixture scores), is unsupported when sigma^2 = 0 (measured conservative), and must not be used at rank-deficient I_hat_Z, singular V_hat or K <= d, where the plug-in is biased upward at a rate slower than n^{-1/2} for d >= 2. Nothing here covers refitted rules, weights, the no-oracle case or D_s."
+}

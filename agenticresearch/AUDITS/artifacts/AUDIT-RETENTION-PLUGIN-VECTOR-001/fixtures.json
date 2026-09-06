@@ -1,0 +1,125 @@
+{
+ "fixture": {
+  "id": "CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001",
+  "criterion": "D",
+  "level": "information_accounting",
+  "claim_falsified": "At eta_D = 1 (S = c_Z almost surely) the frozen-rule geometric-mean retention plug-in eta_hat_D = (det I_hat_Z / det V_hat)^(1/d) equals 1 on every sample.",
+  "scores": [
+   [
+    1,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "weights": [
+   "1/2",
+   "1/2"
+  ],
+  "K": 2,
+  "labels_before": [
+   0,
+   0
+  ],
+  "labels_after_or_optimum": null,
+  "poi_indices": [
+   0,
+   1
+  ],
+  "nuisance_indices": [],
+  "objective_before": "exact plug-in eta_hat_D = 0 (det V_hat = 0, phi := 0); library geometric_mean_retention = 1 on the retained rank-1 subspace",
+  "objective_after": null,
+  "population_law": {
+   "description": "d = 2, K = 2, S = c_Z a.s. with c_0 = (1, 0), c_1 = (0, 1), p_b = 1/2",
+   "atoms": [
+    [
+     "1",
+     "0"
+    ],
+    [
+     "0",
+     "1"
+    ]
+   ],
+   "labels": [
+    0,
+    1
+   ],
+   "weights": [
+    "1/2",
+    "1/2"
+   ],
+   "V": [
+    [
+     "1/2",
+     "0"
+    ],
+    [
+     "0",
+     "1/2"
+    ]
+   ],
+   "I_Z": [
+    [
+     "1/2",
+     "0"
+    ],
+    [
+     "0",
+     "1/2"
+    ]
+   ],
+   "det_ratio": "1",
+   "eta_D": "1",
+   "psi_values": [
+    "0",
+    "0"
+   ],
+   "sigma2": "0"
+  },
+  "exact_quantities": {
+   "sample": "n = 2, both draws in cell 0 (probability 2^{-n} per one-cell composition, so P(V_hat singular) = 2^{1-n} > 0 for every n)",
+   "V_hat": [
+    [
+     "1",
+     "0"
+    ],
+    [
+     "0",
+     "0"
+    ]
+   ],
+   "I_hat_Z": [
+    [
+     "1",
+     "0"
+    ],
+    [
+     "0",
+     "0"
+    ]
+   ],
+   "det_V_hat": "0",
+   "exact_plugin": "0",
+   "library_geometric_mean_retention": 1.0,
+   "library_effective_rank": 1,
+   "regular_samples": "every composition with both cells occupied has V_hat = I_hat_Z and plug-in exactly 1 (exhaustive to n = 6)"
+  },
+  "verification": {
+   "method": "exact_formula",
+   "notes": "V_hat = diag(1, 0) is singular, so the estimator's own everywhere-defined functional phi returns 0 by its det V_hat = 0 convention while the population value is 1; the library projects the null direction out (rank_rtol) and reports the ratio on the retained subspace, which is 1. Corrected statement: at eta_D = 1 the plug-in is 1 on every sample with V_hat positive definite, i.e. whenever the occupied cells' means span R^d; the singular event has probability at most sum_b (1 - p_b)^n ... P(fewer than d spanning cells occupied) -> 0 exponentially under A1, so the CLT statement is unaffected, only the 'every sample' sentence."
+  },
+  "source": "AUDIT-RETENTION-PLUGIN-VECTOR independent audit",
+  "date": "2026-09-06"
+ },
+ "provenance": {
+  "mode": "fixtures",
+  "parameters": {},
+  "git_revision": "b8a61ab4e0554eb7acf6cef12937cbea6c6b79b1",
+  "script_sha256": "e8a42839c070839a7c35f518975208b96bd742e80f9e3f6d78208042f256b916",
+  "python": "3.13.12",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+ }
+}

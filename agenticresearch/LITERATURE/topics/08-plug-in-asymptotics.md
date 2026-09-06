@@ -305,3 +305,38 @@ centred analogue of O6.1's RSS identity. Closes the O6 gap "Kendall &
 Stuart Vol. 2 Ch. 26 section".
 **Verification:** primary text (archive.org OCR of the 1961 volume), 5 Sep
 2026; Vol. 1 Chapter 10 (standard errors) not checked.
+
+## Robin & Smith (2000) — tests of rank
+
+**Key:** Robin-Smith-2000
+
+**Paper:** *Tests of rank*, Econometric Theory 16(2):151–175.
+**Result:** rank tests from the smallest estimated characteristic roots of a
+\(\sqrt n\)-consistent, asymptotically normal matrix estimate; under rank \(r\)
+the \(n\)-scaled smallest roots converge to a weighted sum of independent
+\(\chi^2\) variables.
+**Use:** the trace-form kin of O7.4(b): there the \(n^{d-r}\)-scaled determinant
+of the empirical binned information converges to \(\det A\,\det(WP^{-1}W^\top)/\det V\)
+with \(W\) a linear image of independent Gaussians — a determinant instead of a
+trace, an uncentred fixed-partition Gram matrix instead of a regression
+coefficient matrix, and no test is built.
+**Verification:** abstract verified (AUDIT-RETENTION-PLUGIN-VECTOR, 6 Sep 2026);
+theorem numbering not read.
+
+## Taskinen, Croux, Kankainen, Ollila & Oja (2006) — influence of canonical correlations
+
+**Key:** Taskinen-Croux-Kankainen-Ollila-Oja-2006
+
+**Paper:** *Influence functions and efficiencies of the canonical correlation
+and canonical vectors estimates*, Journal of Multivariate Analysis 97(2):359–384.
+**Result:** influence functions of canonical correlations and vectors for
+general scatter-matrix functionals; for the sample covariance the squared
+correlation has \(\operatorname{IF}(\rho_i^2)=2\rho_iu_iv_i-\rho_i^2(u_i^2+v_i^2)\)
+in the canonical variates \(u_i,v_i\).
+**Use:** the per-coefficient form whose average over \(i\), divided by
+\(\rho_i^2\), is O7.2's \(\psi\); confirms the canonical-correlation check of the
+determinant-route influence function. Centred scatter and a random second
+block; O7 is uncentred with a fixed partition indicator.
+**Verification:** formula seen through the citing restatement in
+arXiv:1705.04194 (Sinha et al. 2017) — the paper itself was not retrievable
+(AUDIT-RETENTION-PLUGIN-VECTOR, 6 Sep 2026).

@@ -635,3 +635,28 @@ cells are excluded, atomless singular laws are not. Theory:
 
 **Fixture:** `CE-O7-ELLIPSOID-ZERO-VARIANCE-001.json`.
 **Regression:** `tests/test_research_claims.py::test_o7_ellipsoid_law_has_zero_influence_variance_on_the_whole_circle`.
+
+## CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001 — at \(\eta_D=1\) the plug-in is not 1 on every sample
+
+**Status:** exact rational boundary counterexample (AUDIT-RETENTION-PLUGIN-VECTOR, 6 Sep 2026).
+
+**Claim falsified:**
+
+> At \(\eta_D=1\) (\(S=c_Z\) almost surely) the frozen-rule geometric-mean
+> retention plug-in \(\hat\eta_D=(\det\hat I_Z/\det\hat V)^{1/d}\) equals \(1\) on
+> every sample.
+
+\(d=2\), \(K=2\), \(S=c_Z\) a.s. with \(c_0=(1,0)\), \(c_1=(0,1)\), \(p_b=1/2\):
+\(V=I_Z=\tfrac12I\), \(\eta_D=1\), \(\psi\equiv0\). The sample of \(n=2\) draws both in
+cell 0 has \(\hat V=\operatorname{diag}(1,0)\), so the estimator's own everywhere-defined
+functional returns \(0\) by its \(\det\hat V=0\) convention, while the library
+projects the null direction out and reports \(1\) on the retained rank-1
+subspace. Every composition with both cells occupied has \(\hat V=\hat I_Z\) and
+ratio exactly \(1\) (exhaustive to \(n=6\)); the one-cell event has probability
+\(2^{1-n}\), so it is transient but never absent. Correct statement: at
+\(\eta_D=1\) the plug-in is \(1\) on every sample with \(\hat V\succ0\), i.e. whenever
+the occupied cells' means span \(\mathbb R^d\). Theory: `KNOWN_RESULTS/10-oracle.md`
+O7.4(a), audit note H1.
+
+**Fixture:** `CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001.json`.
+**Regression:** `tests/test_research_claims.py::test_o7_audit_unit_retention_singular_sample_fixture`.

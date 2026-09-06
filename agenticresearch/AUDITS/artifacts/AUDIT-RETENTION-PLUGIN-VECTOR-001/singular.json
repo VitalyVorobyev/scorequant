@@ -1,0 +1,152 @@
+{
+ "laws": {
+  "endpoint2": {
+   "d": 2,
+   "rank": 1,
+   "exponent": 0.5,
+   "limit_law": {
+    "mean": 0.6372657284274322,
+    "sd": 0.48170353480381073,
+    "quantiles_10_50_90": [
+     0.10001101864199535,
+     0.5385997783753138,
+     1.3144628846569313
+    ],
+    "closed_form_mean": 0.6366197723675814
+   },
+   "rows": [
+    {
+     "n": 300,
+     "coverage_of_zero": 0.943,
+     "scaled_mean": 0.6561381258180988,
+     "scaled_sd": 0.5185764180823921,
+     "scaled_quantiles_10_50_90": [
+      0.10323142399308921,
+      0.5393655139733312,
+      1.3636615471339641
+     ],
+     "scaled_half_width_median": 1.576639213678687,
+     "half_width_over_eta_hat_median": 2.904721748857672
+    },
+    {
+     "n": 1000,
+     "coverage_of_zero": 0.946,
+     "scaled_mean": 0.6333213290500996,
+     "scaled_sd": 0.49013137144075825,
+     "scaled_quantiles_10_50_90": [
+      0.10666533731129983,
+      0.5216103753667954,
+      1.3058467381730159
+     ],
+     "scaled_half_width_median": 1.5663002893260671,
+     "half_width_over_eta_hat_median": 3.0010243116304087
+    },
+    {
+     "n": 3000,
+     "coverage_of_zero": 0.9455,
+     "scaled_mean": 0.6496309351980846,
+     "scaled_sd": 0.489655988590075,
+     "scaled_quantiles_10_50_90": [
+      0.1059183705674691,
+      0.5493490485196639,
+      1.3434894867862948
+     ],
+     "scaled_half_width_median": 1.5645875177082165,
+     "half_width_over_eta_hat_median": 2.8474140354605124
+    },
+    {
+     "n": 10000,
+     "coverage_of_zero": 0.951,
+     "scaled_mean": 0.6363572917165461,
+     "scaled_sd": 0.4826523033646794,
+     "scaled_quantiles_10_50_90": [
+      0.10395676733398103,
+      0.5369356222923841,
+      1.313133315154243
+     ],
+     "scaled_half_width_median": 1.5639015163866212,
+     "half_width_over_eta_hat_median": 2.904418749483784
+    }
+   ]
+  },
+  "endpoint3": {
+   "d": 3,
+   "rank": 2,
+   "exponent": 0.3333333333333333,
+   "limit_law": {
+    "mean": 0.5241706622157792,
+    "sd": 0.2826405604039481,
+    "quantiles_10_50_90": [
+     0.16389606968662174,
+     0.5020133484507447,
+     0.910516693013834
+    ]
+   },
+   "rows": [
+    {
+     "n": 300,
+     "coverage_of_zero": 0.75525,
+     "scaled_mean": 0.5685262010895169,
+     "scaled_sd": 0.3126862159827961,
+     "scaled_quantiles_10_50_90": [
+      0.1799650746216393,
+      0.5348479728737197,
+      0.9994927140480927
+     ],
+     "scaled_half_width_median": 0.9726680744632642,
+     "half_width_over_eta_hat_median": 1.8002781200679583
+    },
+    {
+     "n": 1000,
+     "coverage_of_zero": 0.79375,
+     "scaled_mean": 0.5346114365420916,
+     "scaled_sd": 0.29147229689251136,
+     "scaled_quantiles_10_50_90": [
+      0.1652746472104734,
+      0.5153195239208913,
+      0.921547024205519
+     ],
+     "scaled_half_width_median": 0.9694762879843073,
+     "half_width_over_eta_hat_median": 1.861632009810422
+    },
+    {
+     "n": 3000,
+     "coverage_of_zero": 0.8095,
+     "scaled_mean": 0.5272134154994936,
+     "scaled_sd": 0.2813385886221476,
+     "scaled_quantiles_10_50_90": [
+      0.16500017650603388,
+      0.5109731164951878,
+      0.9045736221804107
+     ],
+     "scaled_half_width_median": 0.9711925438902622,
+     "half_width_over_eta_hat_median": 1.8980822666933967
+    },
+    {
+     "n": 10000,
+     "coverage_of_zero": 0.79825,
+     "scaled_mean": 0.5345360632751922,
+     "scaled_sd": 0.2865622547915421,
+     "scaled_quantiles_10_50_90": [
+      0.1698407866098813,
+      0.5169924652656588,
+      0.9194468341549616
+     ],
+     "scaled_half_width_median": 0.9634083302651724,
+     "half_width_over_eta_hat_median": 1.8624516512519942
+    }
+   ]
+  }
+ },
+ "provenance": {
+  "mode": "singular",
+  "parameters": {
+   "replicates": 4000,
+   "limit_draws": 1000000
+  },
+  "git_revision": "b8a61ab4e0554eb7acf6cef12937cbea6c6b79b1",
+  "script_sha256": "e8a42839c070839a7c35f518975208b96bd742e80f9e3f6d78208042f256b916",
+  "python": "3.13.12",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+ }
+}

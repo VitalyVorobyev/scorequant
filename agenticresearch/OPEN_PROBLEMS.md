@@ -160,7 +160,7 @@ the degenerate limit of \(n(\hat\eta-\eta)\) when \(\sigma^2=0\) (\(\eta\in\{0,1
 Audited 5 September 2026 (`AUDITS/AUDIT-SCORE-ORACLE-ROBUSTNESS-001.md`): verified with the (A4)
 wording hardened at \(\eta=0\).*
 
-*Vector case settled 6 September 2026 (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, O7; not yet audited):
+*Vector case settled 6 September 2026 (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, O7; independently audited the same day, `AUDIT-RETENTION-PLUGIN-VECTOR`):
 frozen rule, \(d\)-dimensional true score, the geometric-mean D-retention
 \((\det I_Z/\det V)^{1/d}\) — the library's reported number — with the matrix influence function
 \(\psi=(\eta_D/d)[2S^\top I_Z^{-1}c_Z-c_Z^\top I_Z^{-1}c_Z-S^\top V^{-1}S]\), a consistent plug-in

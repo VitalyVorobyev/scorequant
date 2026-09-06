@@ -1,7 +1,7 @@
 {
   "schema_version": "4.1",
   "project": "ScoreQuant",
-  "updated": "2026-09-05",
+  "updated": "2026-09-06",
   "canonical_problem_file": "PROBLEM.md",
   "human_readable_ledger": "KNOWN_RESULTS/",
   "open_problem_ledger": "OPEN_PROBLEMS.md",

@@ -38,7 +38,7 @@ The build is a required pull-request and release gate, alongside `leanchecker` a
 audit allowing exactly `propext`, `Classical.choice` and `Quot.sound`. It certifies the stated
 theorems, not that ScoreQuant's Python/JAX code implements them. Upgrading `lean-toolchain`, the
 Mathlib revision and `lake-manifest.json` is a dedicated reviewed change; they move together.
-See [ADR 0030](adr/0030-formal-verification-track.md).
+See [ADR 0030](decisions.md).
 
 X64 is an explicit application and CI choice. The package never changes global JAX configuration during import.
 

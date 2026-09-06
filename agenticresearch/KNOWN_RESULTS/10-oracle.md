@@ -77,7 +77,7 @@ This separates oracle/representation loss from hard-quantization loss whenever t
 **Claims:** RETENTION-PLUGIN-CLT-FROZEN-SCALAR, RETENTION-PLUGIN-COVERAGE-DOOR3
 
 *Recorded 5 September 2026 by the SCORE-ORACLE-ROBUSTNESS session (packet
-`WORK/completed/SCORE-ORACLE-ROBUSTNESS.md`). Verdict: **proved**, as a direct
+packet `SCORE-ORACLE-ROBUSTNESS` (git history)). Verdict: **proved**, as a direct
 corollary of the delta method; the special case of OP27 it settles is stated
 exactly below and the broad claim `OPEN-RETENTION-UNCERTAINTY` stays open.
 Instrument `py/score_oracle_retention_uncertainty.py`; artifacts under
@@ -330,7 +330,7 @@ statement without an oracle score.
 **Claims:** RETENTION-PLUGIN-CLT-FROZEN-VECTOR, RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE, RETENTION-PLUGIN-COVERAGE-VECTOR
 
 *Recorded 6 September 2026 by the RETENTION-PLUGIN-VECTOR session (packet
-`WORK/completed/RETENTION-PLUGIN-VECTOR.md`). Verdict: **proved**, as a bridge
+packet `RETENTION-PLUGIN-VECTOR` (git history)). Verdict: **proved**, as a bridge
 from the vector delta method and the determinant differential; the vector
 special case of OP27 it settles is stated exactly below and
 `OPEN-RETENTION-UNCERTAINTY` stays open for refitted rules, weights and the

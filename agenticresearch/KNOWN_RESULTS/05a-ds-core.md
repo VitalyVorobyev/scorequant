@@ -162,7 +162,7 @@ These are different statistical problems and must be exposed separately.
 
 ## DS10. Finite-to-population bridge: resolution map — [SUMMARY]
 
-The bridge programme (OP4/OP5, packet `WORK/completed/DS-POPULATION-BRIDGE.md`,
+The bridge programme (OP4/OP5, packet packet `DS-POPULATION-BRIDGE` (git history),
 28 Aug 2026) is resolved as follows:
 
 - DS11 — variational form of the profiled objective, \(\Phi\)-neutral splits,

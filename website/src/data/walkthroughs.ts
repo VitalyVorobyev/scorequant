@@ -44,7 +44,7 @@ const hep = factsFor("hep");
 export const WALKTHROUGHS: readonly WalkthroughCard[] = [
   {
     slug: "michelson",
-    title: "A Michelson interferometer read out through K counters",
+    title: "Phase Estimation in a Michelson Interferometer",
     href: "/walkthroughs/michelson",
     problem:
       "A fringe pattern is read out by a detector with a fixed number of counters, and the " +

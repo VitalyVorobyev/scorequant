@@ -31,6 +31,20 @@ Two things that are not obvious and will stop a first run:
 `corepack pnpm build` additionally downloads the pinned Pyodide release and builds the ScoreQuant
 wheel, so it needs network access.
 
+## Where a figure file goes
+
+Two directories under `static/`, with opposite rules (ADR 0032):
+
+- **`static/figures/` is committed.** Hand-added images live here and are referenced as
+  `<Figure src={siteUrl("figures/name.svg")} ... />`. The Michelson score panels are written here
+  by `examples/michelson_phase.py`, so they are regenerable *and* committed.
+- **`static/walkthrough-figures/` is generated and gitignored.** `scripts/generate_walkthroughs.py`
+  refills it on every build by copying each entry of its `FIGURES` map out of `docs/examples/assets/`.
+  A file merely placed there exists only on the machine that placed it and 404s everywhere else.
+
+`tests/figures.test.ts` resolves every `siteUrl("...")` in the MDX against the lane that owns it, so
+putting a file in the wrong one fails the suite instead of shipping a broken image.
+
 Full instructions, including the generated files you must not hand-edit and the checks CI runs, are
 in [`docs/playbook.md`](../docs/playbook.md). The design contract is
 [ADR 0019](../docs/adr/0019-react-learning-portal.md); the backend contract is

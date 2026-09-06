@@ -53,6 +53,14 @@ from examples._env import example_scale
 FIGURE_PATH = Path("docs/examples/assets/michelson-phase.png")
 METRICS_PATH = Path("docs/examples/assets/michelson-phase.json")
 
+#: Where the portal's committed figure files live. Unlike
+#: `website/static/walkthrough-figures/`, which `generate_walkthroughs.py`
+#: refills from `docs/examples/assets/` and `.gitignore` excludes, this
+#: directory is committed: the walkthrough reads these three panels straight
+#: from it, so a file written here has to be committed alongside the code that
+#: produced it.
+SCORE_FIGURE_DIR = Path("website/static/figures")
+
 #: Every call in this study runs on the portable NumPy backend at float64, the
 #: one combination `docs/examples` had no example for before this one.
 EXECUTION = sq.ExecutionConfig(backend="numpy", precision="float64", device="cpu")
@@ -784,8 +792,67 @@ def make_figure(study: Study) -> Figure:
     return figure
 
 
+def make_score_figures() -> dict[Path, Figure]:
+    """Return the walkthrough's three analytic-score panels, keyed by output path.
+
+    These illustrate the closed-form score of the fringe model, so none of them
+    depends on a fit: they are `s_phi` and `s_eps` at the reference point, drawn
+    once along the detector and once against each other. The walkthrough places
+    them beside the paragraphs that derive each expression.
+
+    They are written as SVG rather than PNG because they are line art, and they
+    go to `SCORE_FIGURE_DIR` rather than beside the study's own PNG because the
+    portal serves them directly.
+
+    Returns
+    -------
+    dict[pathlib.Path, matplotlib.figure.Figure]
+        Output path to figure, for the caller to write and close.
+    """
+    curve = "#38618c"
+    u = np.linspace(0.0, U_MAX, 2_001)
+    s_phi = -V0 * np.sin(u) / (1.0 + V0 * np.cos(u))
+    s_eps = u * s_phi - V0
+
+    along, along_axes = plt.subplots(figsize=(8.8, 3.6), constrained_layout=True)
+    along_axes.plot(u / np.pi, s_phi, color=curve, linewidth=1.4)
+    along_axes.axhline(0.0, color="#666666", linewidth=0.8)
+    along_axes.set(
+        xlim=(0.0, U_MAX / np.pi),
+        xlabel=r"Detector coordinate $u/\pi$",
+        ylabel=r"$s_\varphi(u)$",
+        title="Phase score along the detector",
+    )
+
+    growth, growth_axes = plt.subplots(figsize=(8.8, 3.6), constrained_layout=True)
+    growth_axes.plot(u / np.pi, s_eps, color=curve, linewidth=1.4)
+    growth_axes.axhline(0.0, color="#666666", linewidth=0.8)
+    growth_axes.set(
+        xlim=(0.0, U_MAX / np.pi),
+        xlabel=r"Detector coordinate $u/\pi$",
+        ylabel=r"$s_\epsilon(u)$",
+        title="Fringe-frequency score along the detector",
+    )
+
+    space, space_axes = plt.subplots(figsize=(6.1, 5.1), constrained_layout=True)
+    space_axes.plot(s_phi, s_eps, color=curve, linewidth=1.0)
+    space_axes.axhline(0.0, color="#666666", linewidth=0.8)
+    space_axes.axvline(0.0, color="#666666", linewidth=0.8)
+    space_axes.set(
+        xlabel=r"$s_\varphi$",
+        ylabel=r"$s_\epsilon$",
+        title="Michelson model in score space",
+    )
+
+    return {
+        SCORE_FIGURE_DIR / "michelson-phase-score.svg": along,
+        SCORE_FIGURE_DIR / "michelson-frequency-score.svg": growth,
+        SCORE_FIGURE_DIR / "michelson-score-space.svg": space,
+    }
+
+
 def main() -> None:
-    """Run the study, then write the committed JSON and figure."""
+    """Run the study, then write the committed JSON and every committed figure."""
     study = run_study()
     METRICS_PATH.parent.mkdir(parents=True, exist_ok=True)
     with METRICS_PATH.open("w", encoding="utf-8") as stream:
@@ -795,6 +862,11 @@ def main() -> None:
     FIGURE_PATH.parent.mkdir(parents=True, exist_ok=True)
     figure.savefig(FIGURE_PATH, dpi=160)
     plt.close(figure)
+
+    SCORE_FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+    for path, panel in make_score_figures().items():
+        panel.savefig(path)
+        plt.close(panel)
 
 
 if __name__ == "__main__":

@@ -198,19 +198,25 @@ test("the michelson article runs from the instrument to the experiment without l
     if (/pyodide|marimo|scorequant-.*\.whl|walkthrough-scores/.test(request.url())) heavyRequests.push(request.url());
   });
   await page.goto("./walkthroughs/michelson/");
-  await expect(page.getByRole("heading", {name: /A Michelson interferometer read out through K counters/, level: 1})).toBeVisible();
+  await expect(page.getByRole("heading", {name: /Phase Estimation in a Michelson Interferometer/, level: 1})).toBeVisible();
 
   // The article order: the subject before the library, the experiment last.
-  const sections = ["The instrument", "What is measured", "The readout", "What a photon tells you", "The objective", "The result", "Try it: the counter budget", "What it means"];
+  const sections = ["1. The Michelson interferometer", "2. Why bin the measurement?", "3. Measurement model", "4. The analytic score", "What a photon tells you", "The objective", "The result", "Try it: the counter budget", "What it means"];
   // Docusaurus appends a zero-width-space anchor to every heading; strip it.
   const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
   expect(headings).toEqual(sections);
 
-  // The bench diagram and the fringe law come before any code; the admissible
-  // labels (disjoint counters) are stated in the readout section, before the result.
+  // The bench diagram, the fringe law and the three analytic-score panels come
+  // before any code; the criterion that defines the objective is stated before
+  // the result. The score panels are served from `static/figures/`, so a
+  // reference into the gitignored `walkthrough-figures/` fails here too, not
+  // only in tests/figures.test.ts.
   await expect(page.getByRole("img", {name: /Michelson interferometer bench/})).toBeVisible();
   await expect(page.getByRole("img", {name: "Fringe intensity along the aperture"})).toBeVisible();
-  await expect(page.getByText(/disconnected regions grouped electronically/)).toBeVisible();
+  await expect(page.getByRole("img", {name: /^Phase score along the detector/})).toBeVisible();
+  await expect(page.getByRole("img", {name: /^Fringe-frequency score along the detector/})).toBeVisible();
+  await expect(page.getByRole("img", {name: /^The Michelson model in score space/})).toBeVisible();
+  await expect(page.getByText(/would optimise the information\s+about the pair/)).toBeVisible();
   expect(await page.locator(".katex-display").count()).toBeGreaterThan(1);
 
   // The experiment: one control, keyboard-operable, with a reset and a static table.

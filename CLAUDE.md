@@ -58,7 +58,7 @@ Module ownership (keep code in its owning module):
 - `criteria.py`, `config.py`, `result.py`, `api.py` — public contracts and orchestration
 - `agenticresearch/formal/` — isolated Lean 4 + Mathlib workspace; machine-checked proofs of
   frozen claim statements (ADR 0030), built with `(cd agenticresearch/formal && lake build --wfail)`
-- `examples/`, `tests/`, `benchmarks/`, `agenticresearch/` — datasets, tuning, exploration (agenticresearch is excluded from the Ruff gate; anything relied upon gets copied into a deterministic regression test)
+- `examples/`, `tests/`, `benchmarks/`, `agenticresearch/` — datasets, tuning, exploration (research sessions follow `agenticresearch/README.md`; agenticresearch is excluded from the Ruff gate; anything relied upon gets copied into a deterministic regression test)
 
 Public arrays are always `numpy.ndarray`. Every public entry point takes `execution=` (an `ExecutionConfig`, default JAX); a result records the execution it was fitted under and reuses it for prediction unless overridden.
 
@@ -73,7 +73,7 @@ Criterion/configuration pairs are a closed set (e.g. `DOptimality` + `DExchangeC
 - Judge optimizers by the final hardened partition, with deterministic seeds.
 - Avoid `O(N^2)` work; histories store aggregate metrics and center snapshots, never per-observation responsibilities.
 - JAX is the default runtime and Optax owns its gradient updates. NumPy is the approved portable
-  runtime (roadmap M9, [ADR 0018](docs/adr/0018-explicit-multi-backend-execution.md)) and must run the
+  runtime (roadmap M9, [ADR 0018](docs/decisions.md)) and must run the
   same shared mathematics, never a copied solver tree. No PyTorch; never mutate global JAX config.
   Backend primitives stay private — no public registry, no backend base class.
 
@@ -81,7 +81,7 @@ Criterion/configuration pairs are a closed set (e.g. `DOptimality` + `DExchangeC
 
 - `typing.Any` is banned in `src/` (Ruff `ANN401` + banned-import rule + `ty`); use explicit boundary types — public conversion boundaries take `numpy.typing.ArrayLike`.
 - NumPy-style docstrings on every public object; mkdocstrings collects them into the reference.
-- Public API changes must update docstrings, the handwritten `docs/api.md`, examples, and an ADR in `docs/adr/` when the decision is durable. Executable phase gates live in `docs/roadmap.md` — don't create parallel planning files.
+- Public API changes must update docstrings, the handwritten `docs/api.md`, examples, and an entry in `docs/decisions.md` when the decision is durable. Executable phase gates live in `docs/roadmap.md` — don't create parallel planning files.
 - Optional visualization deps (matplotlib) stay lazy imports outside numerical hot paths.
 - Don't commit caches, `site/`, build output, or local environments. Gallery images only when intentionally regenerated and inspected.
 

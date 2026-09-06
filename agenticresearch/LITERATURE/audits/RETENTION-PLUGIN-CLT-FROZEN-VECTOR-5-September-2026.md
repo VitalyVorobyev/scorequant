@@ -6,7 +6,7 @@ Run 5 September 2026, **before** the derivation, at the owner's request
 ("make a better literature search before spending time and compute in
 proving something well known"). Mode: novelty search of
 `protocols/literature.md` for the statement the packet
-`WORK/completed/RETENTION-PLUGIN-VECTOR.md` intends to prove (future claim id
+packet `RETENTION-PLUGIN-VECTOR` (git history) intends to prove (future claim id
 `RETENTION-PLUGIN-CLT-FROZEN-VECTOR`), plus a one-hop forward-citation round
 on the two nearest sources. Retrieval was done inline (OpenAlex, Crossref,
 Google Books search-inside, archive.org OCR, arXiv); no subagent. Labels:

@@ -392,5 +392,5 @@ Method prior art (delta method + determinant differential + the
 influence functions above + fourth-moment CCA asymptotics); the exact
 geometric-mean statement on a fixed partition with uncentred moments,
 \(0/0:=0\), the plug-in variance and the endpoint treatment is a search
-gap. The packet `WORK/completed/RETENTION-PLUGIN-VECTOR.md` was rewritten to
+gap. The packet packet `RETENTION-PLUGIN-VECTOR` (git history) was rewritten to
 cite the first and derive only the second.

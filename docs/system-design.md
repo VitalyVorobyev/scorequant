@@ -14,15 +14,15 @@ The provider side is layered: a score provider consumes one of three statistical
 representations — exact densities (`LinearComponentScore`), model density ratios
 (`DensityRatioScore`, `CentralLogRatioScore`), or scores directly (`ScoreFunction`). Density
 ratios are the minimal sufficient representation when absolute densities are unavailable; the
-optimizers themselves consume only score rows ([ADR 0001](adr/0001-score-contract.md),
-[ADR 0017](adr/0017-density-ratio-representation.md)). Importance ratios for reweighted samples
+optimizers themselves consume only score rows ([ADR 0001](decisions.md),
+[ADR 0017](decisions.md)). Importance ratios for reweighted samples
 are source weights, never provider inputs.
 
 `PartitionResult` owns one fixed assignment: labels, cell weights/moments/means, full and retained
 information, objective, rank diagnostics, accepted moves, exchange stability, remaining gain, and
 provenance. It has no prediction method. `compile_quantizer()` is available only for a stable,
 nonsingular D result whose geometry certificate is Voronoi-consistent at the tolerance the
-partition was optimized at ([ADR 0016](adr/0016-tolerance-consistent-geometry-verification.md)):
+partition was optimized at ([ADR 0016](decisions.md)):
 the compiled rule reproduces every training label except boundary rows whose relocation gain sits
 inside that tolerance.
 
@@ -53,12 +53,12 @@ task's own signature raises `TypeError`, and a config/criterion pair the task do
 raises `ValueError`. There is no generic criterion plugin until multiple implementations demonstrate
 a stable common contract. A profiled finite partition never compiles into a quantizer: no same-label
 profiled rule is canonical away from the training rows. See
-[ADR 0014](adr/0014-unified-exchange-and-certificates.md).
+[ADR 0014](decisions.md).
 
 ## Execution architecture and quality audit
 
 The browser lab is the approved second-runtime use case from
-[ADR 0018](adr/0018-explicit-multi-backend-execution.md). The target dependency direction is:
+[ADR 0018](decisions.md). The target dependency direction is:
 
 ```text
 domain contracts/config/results (canonical NumPy arrays)
@@ -143,7 +143,7 @@ into a deterministic regression test.
 
 ## Learning and reference sites
 
-Per [ADR 0019](adr/0019-react-learning-portal.md), MkDocs remains the exhaustive Python,
+Per [ADR 0019](decisions.md), MkDocs remains the exhaustive Python,
 developer, and ADR reference. `website/` is an isolated Docusaurus/React learning portal owning
 curated journeys, theory reading, examples, benchmark exploration, public research storytelling,
 and the browser Lab. Source adapters read canonical Markdown, Griffe API data, benchmark JSON, and
@@ -192,5 +192,5 @@ not a need for a generic facade:
 | reuse across processes | treat `to_dict()` as a schema | versioned non-pickle quantizer artifact | implemented as `Quantizer.save`/`Quantizer.load`, a zip of `manifest.json` plus `allow_pickle=False` arrays; loads and predicts with no JAX present |
 
 The revision deliberately does not add `predict`, a generic criterion plugin, classifier training,
-or a universal streaming optimizer. See [ADR 0013](adr/0013-complete-pre-1-api-boundaries.md) and
-[ADR 0014](adr/0014-unified-exchange-and-certificates.md) for the complete decisions.
+or a universal streaming optimizer. See [ADR 0013](decisions.md) and
+[ADR 0014](decisions.md) for the complete decisions.

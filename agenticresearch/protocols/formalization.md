@@ -4,7 +4,7 @@ Use this to machine-check a claim that is already stable. Formalization is a
 verification lane, not a way to settle open mathematics: a claim whose status is
 `open`, `conjecture`, `measured` or `counterexample` is not a target.
 
-Scope is set by [ADR 0030](../../docs/adr/0030-formal-verification-track.md):
+Scope is set by [ADR 0030](../../docs/decisions.md):
 the finite D chain in general dimension. Profiled \(D_s\), population measure
 theory and asymptotics need a new ADR, not a prover's discretion.
 

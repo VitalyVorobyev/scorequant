@@ -62,5 +62,5 @@ putting a file in the wrong one fails the suite instead of shipping a broken ima
 
 Full instructions, including the generated files you must not hand-edit and the checks CI runs, are
 in [`docs/playbook.md`](../docs/playbook.md). The design contract is
-[ADR 0019](../docs/adr/0019-react-learning-portal.md); the backend contract is
-[ADR 0018](../docs/adr/0018-explicit-multi-backend-execution.md).
+[ADR 0019](../docs/decisions.md); the backend contract is
+[ADR 0018](../docs/decisions.md).

@@ -14,7 +14,7 @@ exclude_docs: |
   roadmap.md
   system-design.md
   playbook.md
-  adr/**
+  decisions.md
   programme/**
 
 theme:

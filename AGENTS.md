@@ -49,7 +49,7 @@ public registry or provisional backend class.
 
 ## Research workflow
 
-- `agenticresearch/` is the mathematical scientific memory (claim registry, counterexample bank, open-problem queue). It governs itself through its own `agenticresearch/AGENT.md` and is excluded from the Ruff gate.
+- `agenticresearch/` is the mathematical scientific memory (claim registry, counterexample bank, open-problem queue). It governs itself through its own `agenticresearch/README.md` (operating contract, finite closure programme in `OPEN_PROBLEMS.md`) and is excluded from the Ruff gate.
 - The library crosses into it at exactly two points: `tests/test_research_claims.py` reads counterexample fixtures from `agenticresearch/COUNTEREXAMPLES/`, and `tests/test_research_registry.py` runs `agenticresearch/py/registry.py validate` plus the index-freshness check. Research results become library behavior only by being copied into deterministic regression tests or theorem-cited code paths.
 - Selected claims carry `formal_proof`: a machine-checked Lean proof of a *separately frozen and
   independently audited* statement, under `agenticresearch/formal/` and governed by
@@ -104,10 +104,10 @@ Use `uv add`, `uv remove`, and `uv lock` for dependency changes. Run commands th
 - Add deterministic tests for changed behavior and numerical edge cases. Use fixed seeds and measurable assertions; avoid brittle pixel snapshots.
 - Validate in proportion to risk: targeted tests while iterating, then the full commands above before handoff.
 - Update user guides when workflows change. Run MkDocs in strict mode so broken navigation, links, or reference collection fail CI.
-- Keep architecture decisions in `docs/adr/` and executable phase gates in `docs/roadmap.md`; do not create parallel planning files.
-- Completed programmes and session packets are deleted or archived when they close; git history is
-  their record. Only the current milestone, the ADRs and dated reviews under `docs/programme/`
-  are standing text.
+- Keep durable decisions in `docs/decisions.md` (one short entry each, never a narrative record) and executable phase gates in `docs/roadmap.md`; do not create parallel planning files.
+- Completed programmes and session packets are deleted when they close; git history is their
+  record. Only the current milestone, `docs/decisions.md` and dated reviews under
+  `docs/programme/` are standing text.
 - Do not commit caches, local environments, build output, or `site/`. Commit gallery images only when intentionally regenerated and visually inspected.
 - Do not push, merge, tag, publish, or deploy unless the user authorizes that action.
 

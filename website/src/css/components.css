@@ -49,6 +49,16 @@
 .provenance-note a { color: var(--accent-strong); text-decoration: underline; text-underline-offset: 2px; }
 .provenance-note a:hover { text-decoration-thickness: 2px; }
 
+/* A link out of the portal and into the MkDocs reference (ADR 0027). It leaves
+   the site, so it opens in a new tab and says so: the arrow is the visual cue,
+   the `.visually-hidden` suffix inside the anchor is the spoken one. The glyph
+   is baseline-nudged rather than vertically centred so it sits with the
+   x-height of the words it follows, and `white-space: nowrap` on the last word
+   is not attempted -- an arrow alone on a wrapped line is acceptable, a
+   mid-phrase break is not. */
+.reference-link__icon { margin-left: .25em; vertical-align: -.08em; opacity: .75; }
+a:hover > .reference-link__icon { opacity: 1; }
+
 /* Visually hidden but reachable: headings that only structure the page for
    assistive technology, and the text alternatives charts render beside their
    SVG. */

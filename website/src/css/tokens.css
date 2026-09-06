@@ -70,6 +70,13 @@
   --tint-good: #eef9f7;
   --tint-bad: #fdf1f1;
 
+  /* The one token that must NOT flip. A rendered plot carries its own white
+     ground baked into the file, so under the dark theme it lands as a bare
+     slab. `.chart-figure--paper` mats it on a card painted this colour, and
+     the card has to stay white in both themes or the mat stops matching the
+     image it is matting. Deliberately absent from the dark block below. */
+  --figure-paper: #ffffff;
+
   /* ------------------------------------------------------------------
      Tier 3 -- instrument. The dark palette already used, as literals, by
      the "machine" surfaces embedded in the light page: code blocks.

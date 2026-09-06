@@ -1,11 +1,12 @@
 {
   "problem": "michelson_phase",
-  "v0": 0.6,
+  "visibility": 0.6,
   "phi0": 0.0,
   "fringes": 4,
   "u_max": 25.132741228718345,
   "n_nodes": 8000,
   "headline_bins": 6,
+  "narrow_run_width": 0.25,
   "closed_form": {
     "i_phiphi": 0.1999999999999985,
     "i_phieps": 2.5132741228718345,
@@ -1292,10 +1293,104 @@
       ]
     }
   ],
+  "d_geometry": {
+    "n_runs": 24,
+    "runs_per_bin": [
+      2,
+      8,
+      2,
+      2,
+      2,
+      8
+    ],
+    "narrow_runs": 4,
+    "min_run_width": 0.16022122533307837,
+    "min_run_mass": 0.0025663426023818047
+  },
   "compile_bridge": {
-    "compiled_test_retention": 0.8346211523168009,
     "exchange_stable": true,
+    "voronoi_consistent": true,
+    "compiled_test_retention": 0.8346211523168009,
+    "reproduces_training_labels": true,
+    "predictions": [
+      {
+        "u": 1.0,
+        "bin": 0
+      },
+      {
+        "u": 7.0,
+        "bin": 1
+      },
+      {
+        "u": 15.0,
+        "bin": 4
+      }
+    ],
     "refusal_message": "finite profiled-D labels have no canonical inductive compilation; fit an explicit quantizer instead [CE-DS-GLOBAL-GEOMETRY-001]"
+  },
+  "profiled_diagnostics": {
+    "initial": {
+      "n_runs": 24,
+      "runs_per_bin": [
+        1,
+        4,
+        7,
+        7,
+        4,
+        1
+      ],
+      "narrow_runs": 6,
+      "min_run_width": 0.11938052083641182,
+      "min_run_mass": 0.0019021969129542483
+    },
+    "initial_retention": 0.9480740872637142,
+    "final": {
+      "n_runs": 24,
+      "runs_per_bin": [
+        1,
+        4,
+        7,
+        7,
+        4,
+        1
+      ],
+      "narrow_runs": 6,
+      "min_run_width": 0.11938052083641182,
+      "min_run_mass": 0.0019021969129542483
+    },
+    "final_retention": 0.9482591934034806,
+    "accepted_moves": 36,
+    "scans": 12,
+    "exchange_stable": true,
+    "objective_gain": 0.0001952253248314051,
+    "retention_gain": 0.0001851061397664111,
+    "relabelled_fraction": 0.00375,
+    "smoothing": [
+      {
+        "min_width": 0.15,
+        "n_runs": 22,
+        "bins_used": 6,
+        "retention": 0.9435316298390771
+      },
+      {
+        "min_width": 0.25,
+        "n_runs": 19,
+        "bins_used": 6,
+        "retention": 0.9301887209838307
+      },
+      {
+        "min_width": 0.5,
+        "n_runs": 14,
+        "bins_used": 6,
+        "retention": 0.8653248879132388
+      },
+      {
+        "min_width": 1.0,
+        "n_runs": 11,
+        "bins_used": 6,
+        "retention": 0.8178096178792226
+      }
+    ]
   },
   "rules": [
     {
@@ -1305,20 +1400,46 @@
       "solver": "DExchangeConfig",
       "profiled_retention": 0.7986662738412926,
       "criterion_efficiency": 0.8344795665479535,
-      "hardening_gap": 0.0
+      "hardening_gap": 0.0,
+      "n_runs": 24,
+      "predictions": [
+        {
+          "u": 1.0,
+          "bin": 0
+        },
+        {
+          "u": 7.0,
+          "bin": 5
+        },
+        {
+          "u": 15.0,
+          "bin": 3
+        }
+      ]
     },
     {
       "key": "ds_rule",
       "label": "Profiled D_s, soft Voronoi",
       "criterion": "ProfiledDOptimality",
       "solver": "SoftVoronoiConfig",
-      "profiled_retention": 0.8518066363339105,
-      "criterion_efficiency": 0.8531706053884383,
-      "hardening_gap": -7.587858743030029e-05
+      "profiled_retention": 0.8794067452623978,
+      "criterion_efficiency": 0.8804877699454614,
+      "hardening_gap": -1.2164391132163388e-06,
+      "n_runs": 16,
+      "predictions": [
+        {
+          "u": 1.0,
+          "bin": 0
+        },
+        {
+          "u": 7.0,
+          "bin": 5
+        },
+        {
+          "u": 15.0,
+          "bin": 5
+        }
+      ]
     }
-  ],
-  "comb": {
-    "n_grid": 4001,
-    "n_runs": 24
-  }
+  ]
 }

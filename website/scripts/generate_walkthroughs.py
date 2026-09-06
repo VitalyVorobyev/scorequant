@@ -415,7 +415,7 @@ FACTS: tuple[Fact, ...] = (
     # -------------------------------------------------------------- michelson
     Fact("michelson", "bins", f"{MICHELSON}#/headline_bins", _count),
     Fact("michelson", "fringes", f"{MICHELSON}#/fringes", _count),
-    Fact("michelson", "visibility", f"{MICHELSON}#/v0", _fixed(2)),
+    Fact("michelson", "visibility", f"{MICHELSON}#/visibility", _fixed(2)),
     Fact("michelson", "nNodes", f"{MICHELSON}#/n_nodes", _count),
     Fact("michelson", "iPhiPhi", f"{MICHELSON}#/closed_form/i_phiphi", _fixed(4)),
     Fact("michelson", "iPhiEps", f"{MICHELSON}#/closed_form/i_phieps", _fixed(4)),
@@ -482,7 +482,6 @@ FACTS: tuple[Fact, ...] = (
         f"{MICHELSON}#/compile_bridge/compiled_test_retention",
         _fixed(4),
     ),
-    Fact("michelson", "combRuns", f"{MICHELSON}#/comb/n_runs", _count),
     Fact(
         "michelson", "dRuleProfiledRetention", f"{MICHELSON}#/rules/0/profiled_retention", _fixed(4)
     ),
@@ -515,6 +514,103 @@ FACTS: tuple[Fact, ...] = (
         _fixed(4),
     ),
     Fact("michelson", "boundGapAtSix", f"{MICHELSON}#/sweep/1/bound_gap", _scientific(1)),
+    # The achieved profiled retention and its certified ceiling agree to four
+    # decimals, so both are also published at six: a page must be able to show
+    # that the ceiling was approached, not reached.
+    Fact(
+        "michelson",
+        "profiledRetentionAtSixFine",
+        f"{MICHELSON}#/sweep/1/profiled_retention",
+        _fixed(6),
+    ),
+    Fact(
+        "michelson",
+        "ceilingRetentionAtSixFine",
+        f"{MICHELSON}#/sweep/1/ceiling_retention",
+        _fixed(6),
+    ),
+    # Act one: the D-optimal partition's detector pull-back and compiled rule.
+    Fact("michelson", "narrowRunWidth", f"{MICHELSON}#/narrow_run_width", _fixed(2)),
+    Fact("michelson", "dRunsAtSix", f"{MICHELSON}#/d_geometry/n_runs", _count),
+    Fact("michelson", "dNarrowRuns", f"{MICHELSON}#/d_geometry/narrow_runs", _count),
+    Fact("michelson", "dMinRunWidth", f"{MICHELSON}#/d_geometry/min_run_width", _fixed(2)),
+    Fact("michelson", "predictionUOne", f"{MICHELSON}#/compile_bridge/predictions/0/u", _fixed(1)),
+    Fact("michelson", "predictionUTwo", f"{MICHELSON}#/compile_bridge/predictions/1/u", _fixed(1)),
+    Fact(
+        "michelson", "predictionUThree", f"{MICHELSON}#/compile_bridge/predictions/2/u", _fixed(1)
+    ),
+    Fact("michelson", "dPredictionOne", f"{MICHELSON}#/compile_bridge/predictions/0/bin", _count),
+    Fact("michelson", "dPredictionTwo", f"{MICHELSON}#/compile_bridge/predictions/1/bin", _count),
+    Fact("michelson", "dPredictionThree", f"{MICHELSON}#/compile_bridge/predictions/2/bin", _count),
+    # Act two: what the exchange did to the certified initializer, and what the
+    # fragments of the finite profiled partition are worth.
+    Fact("michelson", "dsInitialRuns", f"{MICHELSON}#/profiled_diagnostics/initial/n_runs", _count),
+    Fact(
+        "michelson",
+        "dsInitialNarrowRuns",
+        f"{MICHELSON}#/profiled_diagnostics/initial/narrow_runs",
+        _count,
+    ),
+    Fact(
+        "michelson",
+        "dsInitialRetention",
+        f"{MICHELSON}#/profiled_diagnostics/initial_retention",
+        _fixed(4),
+    ),
+    Fact("michelson", "dsRunsAtSix", f"{MICHELSON}#/profiled_diagnostics/final/n_runs", _count),
+    Fact(
+        "michelson", "dsNarrowRuns", f"{MICHELSON}#/profiled_diagnostics/final/narrow_runs", _count
+    ),
+    Fact(
+        "michelson",
+        "dsMinRunWidth",
+        f"{MICHELSON}#/profiled_diagnostics/final/min_run_width",
+        _fixed(3),
+    ),
+    Fact(
+        "michelson",
+        "dsMinRunMass",
+        f"{MICHELSON}#/profiled_diagnostics/final/min_run_mass",
+        _scientific(1),
+    ),
+    Fact(
+        "michelson", "dsAcceptedMoves", f"{MICHELSON}#/profiled_diagnostics/accepted_moves", _count
+    ),
+    Fact("michelson", "dsScans", f"{MICHELSON}#/profiled_diagnostics/scans", _count),
+    Fact(
+        "michelson",
+        "dsRetentionGain",
+        f"{MICHELSON}#/profiled_diagnostics/retention_gain",
+        _scientific(1),
+    ),
+    Fact(
+        "michelson",
+        "dsRelabelledFraction",
+        f"{MICHELSON}#/profiled_diagnostics/relabelled_fraction",
+        _percent(1),
+    ),
+    *(
+        Fact(
+            "michelson",
+            f"smoothing{name}{column}",
+            f"{MICHELSON}#/profiled_diagnostics/smoothing/{index}/{pointer}",
+            render,
+        )
+        for index, name in enumerate(("One", "Two", "Three", "Four"))
+        for column, pointer, render in (
+            ("MinWidth", "min_width", _fixed(2)),
+            ("Runs", "n_runs", _count),
+            ("BinsUsed", "bins_used", _count),
+            ("Retention", "retention", _fixed(4)),
+        )
+    ),
+    # The reusable profiled rule against the finite partition it cannot be
+    # compiled from.
+    Fact("michelson", "dsRuleRuns", f"{MICHELSON}#/rules/1/n_runs", _count),
+    Fact("michelson", "dsRuleHardeningGap", f"{MICHELSON}#/rules/1/hardening_gap", _scientific(1)),
+    Fact("michelson", "dsRulePredictionOne", f"{MICHELSON}#/rules/1/predictions/0/bin", _count),
+    Fact("michelson", "dsRulePredictionTwo", f"{MICHELSON}#/rules/1/predictions/1/bin", _count),
+    Fact("michelson", "dsRulePredictionThree", f"{MICHELSON}#/rules/1/predictions/2/bin", _count),
 )
 
 
@@ -576,7 +672,7 @@ def build_michelson_sweep() -> dict[str, object]:
         "uMax": evidence["u_max"],
         "fringes": evidence["fringes"],
         "headlineBins": evidence["headline_bins"],
-        "visibility": evidence["v0"],
+        "visibility": evidence["visibility"],
         "rows": rows,
     }
 
@@ -857,7 +953,8 @@ def write_walkthrough_score_tables() -> dict[str, int]:
 #: both run this generator, so the copies exist wherever the site is built.
 FIGURES = {
     "hep-classifier.png": "docs/examples/assets/hep-classifier.png",
-    "michelson-phase.png": "docs/examples/assets/michelson-phase.png",
+    "michelson-d-geometry.png": "docs/examples/assets/michelson-d-geometry.png",
+    "michelson-profiled-ds.png": "docs/examples/assets/michelson-profiled-ds.png",
     "door3-classifier.png": "docs/examples/assets/door3-classifier.png",
 }
 

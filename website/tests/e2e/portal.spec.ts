@@ -198,19 +198,44 @@ test("the michelson article runs from the instrument to the experiment without l
     if (/pyodide|marimo|scorequant-.*\.whl|walkthrough-scores/.test(request.url())) heavyRequests.push(request.url());
   });
   await page.goto("./walkthroughs/michelson/");
-  await expect(page.getByRole("heading", {name: /A Michelson interferometer read out through K counters/, level: 1})).toBeVisible();
+  await expect(page.getByRole("heading", {name: /Phase Estimation in a Michelson Interferometer/, level: 1})).toBeVisible();
 
   // The article order: the subject before the library, the experiment last.
-  const sections = ["The instrument", "What is measured", "The readout", "What a photon tells you", "The objective", "The result", "Try it: the counter budget", "What it means"];
+  const sections = [
+    "1. The Michelson interferometer",
+    "2. Why bin the measurement?",
+    "3. Measurement model",
+    "4. The analytic score",
+    "5. Quantization in score space",
+    "6. D-optimal partition",
+    "7. A reusable D-optimal readout",
+    "8. Treating fringe frequency as a nuisance",
+    "9. Optimizing for phase",
+    "10. What changes under profiling?",
+    "11. Reusable profiled quantizer",
+    "12. Interactive bin-budget sweep",
+    "13. Summary"
+  ];
   // Docusaurus appends a zero-width-space anchor to every heading; strip it.
   const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
   expect(headings).toEqual(sections);
 
-  // The bench diagram and the fringe law come before any code; the admissible
-  // labels (disjoint counters) are stated in the readout section, before the result.
+  // The bench diagram, the fringe law and the two analytic-score panels come
+  // before any code; the two study figures -- the D geometry, then the
+  // profiled partition -- follow in that order. The score panels are served
+  // from `static/figures/` and the study figures from the generated
+  // `walkthrough-figures/`, so a wrong lane fails here too, not only in
+  // tests/figures.test.ts.
   await expect(page.getByRole("img", {name: /Michelson interferometer bench/})).toBeVisible();
   await expect(page.getByRole("img", {name: "Fringe intensity along the aperture"})).toBeVisible();
-  await expect(page.getByText(/disconnected regions grouped electronically/)).toBeVisible();
+  await expect(page.getByRole("img", {name: /^Phase score along the detector/})).toBeVisible();
+  await expect(page.getByRole("img", {name: /^The Michelson model in score space/})).toBeVisible();
+  await expect(page.getByRole("img", {name: /^Two panels\. Top: the score plane tinted by six convex cells/})).toBeVisible();
+  await expect(page.getByRole("img", {name: /^Three panels\. Top: the score trajectory's four loops coloured by the six profiled cells/})).toBeVisible();
+  // The question is stated before any result is quoted. Asserted on prose that
+  // carries no math: KaTeX splits an expression across spans, so a regex over a
+  // sentence containing $D_s$ would be matching the renderer, not the article.
+  await expect(page.getByText("Different partitions preserve different amounts of information.")).toBeVisible();
   expect(await page.locator(".katex-display").count()).toBeGreaterThan(1);
 
   // The experiment: one control, keyboard-operable, with a reset and a static table.
@@ -218,17 +243,27 @@ test("the michelson article runs from the instrument to the experiment without l
   await expect(radios).toHaveCount(4);
   await expect(page.getByRole("radio", {name: "6"})).toBeChecked();
   await expect(page.getByRole("img", {name: /Aperture readout at 6 counters/})).toBeVisible();
+  // Both spaces, not only the aperture: the score space is where the criteria
+  // actually differ, and it follows the budget with the strip.
+  await expect(page.getByRole("img", {name: /Score space at 6 counters, profiled Ds against plain D/})).toBeVisible();
   const reset = page.getByRole("button", {name: "Reset to the headline budget"});
   await expect(reset).toBeDisabled();
   await page.getByRole("radio", {name: "6"}).focus();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("radio", {name: "8"})).toBeChecked();
   await expect(page.getByRole("img", {name: /Aperture readout at 8 counters/})).toBeVisible();
+  await expect(page.getByRole("img", {name: /Score space at 8 counters, profiled Ds against plain D/})).toBeVisible();
   await expect(reset).toBeEnabled();
   await reset.click();
   await expect(page.getByRole("radio", {name: "6"})).toBeChecked();
   await expect(page.getByRole("img", {name: /Aperture readout at 6 counters/})).toBeVisible();
-  await expect(page.getByRole("table", {name: /committed sweep/i})).toBeVisible();
+  // The static text alternative to the bars, which is what a reader who cannot
+  // see the chart actually gets. (This assertion used to name a "committed
+  // sweep" table that no page has rendered since the portal reduction; it was
+  // passing on nothing.)
+  await expect(
+    page.getByRole("table", {name: /Phase information retained, after profiling, compared across 3 binning methods/})
+  ).toHaveCount(2);
   await expect(page.getByRole("button", {name: "Refit this budget in your browser"})).toBeVisible();
 
   expect(heavyRequests).toEqual([]);

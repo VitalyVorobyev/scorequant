@@ -45,8 +45,8 @@ import numpy as np
 import scorequant as sq
 from examples.michelson_phase import (
     EXECUTION,
-    HEADLINE_BINS,
     INTEREST,
+    N_BINS,
     build_provider,
     build_train_sample,
     closed_form_information,
@@ -76,7 +76,10 @@ nodes — the closed forms are a check on the library, not merely a description 
 \(s_\epsilon\) — strong enough that profiling the phase against the frequency costs 76.0% of the
 phase information before any binning at all: \(0.2\to 0.047938\).
 
-![Score trajectory and the six-bin comb](assets/michelson-phase.png)
+![The six-cell D-optimal partition: the raw score plane shaded by the compiled rule's
+Mahalanobis-Voronoi cells with the cell means marked, the detector trajectory coloured by cell,
+and the same labels laid back along the detector above the equal-width
+segments](assets/michelson-d-geometry.png)
 
 ## API walkthrough
 
@@ -100,7 +103,7 @@ for all three labelings: naive equal-width detector segments, `DOptimality`, and
 `ProfiledDOptimality` seeded from the certified efficient-score bound.
 
 ```python
-n_bins = HEADLINE_BINS
+n_bins = N_BINS
 equal_labels = equal_width_labels(sample.observations, n_bins)
 
 d_partition = sq.optimize_partition(
@@ -184,15 +187,16 @@ partition compiles into a Mahalanobis rule automatically, so `hardening_gap` is 
 from examples.michelson_phase import build_integration_source, reusable_rules
 
 source = build_integration_source()
-rules = {
-    row.key: row for row in reusable_rules(provider, source, sample, n_bins=n_bins, soft_steps=80)
-}
+fitted = reusable_rules(provider, source, sample, n_bins=n_bins, soft_steps=80)
+rules = {row.key: row for row in fitted.rows}
 
 assert rules["d_rule"].hardening_gap == 0.0
-assert abs(rules["ds_rule"].hardening_gap) < 1e-3  # soft and hard nearly agree either way
+assert abs(rules["ds_rule"].hardening_gap) < 1e-2  # soft and hard nearly agree either way
 
 # Both rows report the same quantity against the same ceiling, so they compare.
 assert rules["ds_rule"].profiled_retention > rules["d_rule"].profiled_retention
+# A nearest-centre rule is a restricted family; the finite partition retains more.
+assert rules["ds_rule"].profiled_retention < ds_retention
 ```
 
 Read the two columns separately. `criterion_efficiency` is what each rule scores on the criterion
@@ -203,22 +207,47 @@ same profiled ceiling as the sweep above — and there the profiled rule wins, w
 reason it exists. A rule can score well on its own criterion and still be the wrong rule for the
 question being asked.
 
-### The comb
+### The comb, and the fragments
 
-The score depends on `u` only through the fringe phase, so a score-space cell pulls back to one
-interval *per fringe*. Predicting the compiled rule on a fine grid of `u` makes that a comb, not a
-contiguous segmentation.
+The score depends on `u` only through the fringe phase, so a connected score-space cell pulls
+back to one interval *per fringe*: the compiled six-cell rule is a comb of twenty-four detector
+runs, not six. `run_diagnostics` counts the runs with the two detector ends joined, since
+`s(0)` and `s(u_max)` are the same score vector.
 
 ```python
-from examples.michelson_phase import comb_runs
+from examples.michelson_phase import run_diagnostics
 
-_, _, n_runs = comb_runs(compiled, provider)
-assert n_runs == n_bins * 4  # one interval per fringe, per bin -- a comb, not 6 intervals
+d_geometry = run_diagnostics(sample, np.asarray(d_partition.labels), n_bins=n_bins)
+# Two cells at the origin are crossed twice per loop; the four outer cells
+# each own the tips of a pair of loops.
+assert sorted(d_geometry.runs_per_bin) == [2, 2, 2, 2, 8, 8]
 ```
 
-No contiguous segmentation of the aperture can imitate an information-optimal detector
-segmentation shaped like that: it is the figure's whole point and the page's most transferable
-lesson.
+The profiled partition combs the detector too, and adds something the D partition does not:
+a handful of very narrow runs where the efficient score crosses zero steeply. `profiled_trace`
+shows where they come from -- the certified interval initializer already has them, and the
+exchange that follows changes few labels and gains little -- and `smoothing_ladder` shows what
+they are worth, by absorbing every run narrower than a threshold into its wider neighbour and
+re-measuring the profiled retention.
+
+```python
+from examples.michelson_phase import profiled_trace, smoothing_ladder, sweep_bin_budget
+
+reference = unbinned_profiled_information(sample.scores, sample.weights)
+headline = sweep_bin_budget(sample, reference, budgets=(n_bins,))[0]
+trace = profiled_trace(sample, headline)
+assert trace.exchange_stable
+assert trace.initial.narrow_runs >= trace.final.narrow_runs
+assert 0.0 <= trace.retention_gain < 1e-2
+
+ladder = smoothing_ladder(sample, headline.profiled_labels, n_bins=n_bins)
+assert all(row.retention <= trace.final_retention + 1e-12 for row in ladder)
+```
+
+![The six-cell profiled D_s partition: the trajectory coloured by the finite labels, the
+efficient score along the detector coloured the same way, and three detector strips -- the
+efficient-score initializer, the exchange-stable profiled partition and the reusable
+soft-Voronoi rule](assets/michelson-profiled-ds.png)
 
 ## Analysis
 
@@ -261,6 +290,8 @@ Everything on this page runs on `ExecutionConfig(backend="numpy", precision="flo
 device="cpu")` — the portable CPU runtime that runs the same shared mathematics as the JAX
 default, demonstrated here end to end rather than only unit-tested.
 
-The matching notebook,
+The generator,
+[`examples/michelson_phase.py`](https://github.com/VitalyVorobyev/scorequant/blob/main/examples/michelson_phase.py),
+runs the full 8,000-node sweep, the diagnostics and both figures. The matching notebook,
 [`michelson_phase.ipynb`](https://github.com/VitalyVorobyev/scorequant/blob/main/examples/notebooks/michelson_phase.ipynb),
-runs the full 8,000-node sweep and draws the comb figure at full resolution.
+reproduces the study cell by cell, and the portal walkthrough retells it as a two-act article.

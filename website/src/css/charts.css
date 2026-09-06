@@ -45,6 +45,22 @@
 
 .chart-figure img { display: block; width: 100%; height: auto; }
 
+/* A rendered plot arrives with its own light ground baked into the file and
+   cannot follow the theme the way the hand-drawn charts above do. `paper` mats
+   it on a card that stays white in both themes (--figure-paper, tokens.css), so
+   in dark mode it reads as a deliberate print rather than a bare slab. The mat
+   is on the image alone: put it on the `figure` and the caption inherits it
+   too, and --text-muted on white is 2.41:1 in dark mode -- an axe failure the
+   e2e scan catches. The caption belongs to the page, not to the print. */
+.chart-figure--paper img { padding: 12px; border: 1px solid var(--border); border-radius: 3px; background: var(--figure-paper); }
+
+/* The score-space small multiples. A run is a stroked polyline rather than a
+   filled band, so the curve stays continuous across a counter boundary and the
+   boundary itself reads as a colour change; 2px is the thinnest weight that
+   still carries a hue reliably on a low-DPI screen. */
+.score-space-runs__run { stroke-width: 2; stroke-linecap: round; }
+.score-space-runs__label { fill: var(--text); font-size: 12px; font-weight: 600; }
+
 .diagnostics { margin: 20px 0; }
 .diagnostics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 0; padding: 0; }
 .diagnostics-item { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 18px 20px; border: 1px solid var(--border); background: var(--surface-raised); }

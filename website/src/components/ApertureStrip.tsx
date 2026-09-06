@@ -61,7 +61,7 @@ const COUNTER_COLORS: readonly string[] = [
 ] as const;
 
 /** The colour for one counter index, wrapping rather than returning undefined. */
-function counterColor(label: number): string {
+export function counterColor(label: number): string {
   return COUNTER_COLORS[label % COUNTER_COLORS.length] ?? "#8ea2ba";
 }
 

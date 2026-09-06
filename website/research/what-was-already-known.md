@@ -4,15 +4,16 @@ sidebar_label: What was already known
 sidebar_position: 3
 ---
 
+import {ReferenceLink} from "@site/src/components/ReferenceLink";
+
 # What was already known
 
 Choosing a quantizer so that it preserves Fisher information is not a new idea. It sits at the
 intersection of four traditions that developed largely independently, and most of the ingredients
 used here are established results in one of them. This page is a plain-English tour of that
 territory; the full survey, with citations and DOIs, is the
-<a href="pathname:///reference/related-work/" target="_self">related-work page in the
-reference</a>, and the sources behind the machinery used directly are in the
-<a href="pathname:///reference/bibliography/" target="_self">bibliography</a>.
+<ReferenceLink to="related-work/">related-work page in the reference</ReferenceLink>, and the sources behind the machinery used directly are in the
+<ReferenceLink to="bibliography/">bibliography</ReferenceLink>.
 
 ## Four traditions
 

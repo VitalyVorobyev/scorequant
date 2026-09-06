@@ -4,12 +4,14 @@ sidebar_label: API and theorems
 sidebar_position: 7
 ---
 
+import {ReferenceLink} from "@site/src/components/ReferenceLink";
+
 # How the API names each result
 
 The library is written so that the mathematics is visible in the object names rather than hidden
 behind one opaque `fit`. This page is the map in both directions: from a message or a class name to
 the result behind it, and from a result to the object that carries it. Field-level documentation
-lives in the <a href="pathname:///reference/api/" target="_self">API guide</a>; this page names the
+lives in the <ReferenceLink to="api/">API guide</ReferenceLink>; this page names the
 *reason* each object exists.
 
 ## Two kinds of error, and why the difference matters

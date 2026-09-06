@@ -34,3 +34,4 @@ Only decisions that materially constrain future implementation are recorded here
 30. [ADR 0030 — A bounded formal-verification track for the finite D chain](0030-formal-verification-track.md) — extends ADR 0028
 31. [ADR 0031 — The portal is four surfaces, and its pages are articles](0031-portal-reduced-to-four-surfaces.md) — supersedes in part ADR 0019, 0020 and 0029
 32. [ADR 0032 — Two directories for portal figures, one committed and one derived](0032-portal-figure-assets.md) — extends ADR 0019
+33. [ADR 0033 — The research section is an atlas generated from the registry](0033-research-atlas.md) — extends ADR 0031 and ADR 0030

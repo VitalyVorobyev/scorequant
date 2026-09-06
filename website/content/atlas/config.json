@@ -1,0 +1,417 @@
+{
+  "schemaVersion": 1,
+  "headline": [
+    "D-EXCHANGE-IMPLIES-VORONOI",
+    "D-LOGDET-GAIN",
+    "D-FINITE-INDUCTIVE-CLOSURE",
+    "D-BB-SINGLETON-BOUND",
+    "DS-GLOBAL-NONGEOMETRIC",
+    "DS-EFFICIENT-SCORE-DOMINATION",
+    "DS-TILT-DUAL-CERTIFICATE",
+    "CONSISTENCY-RESTRICTED-AFFINE",
+    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+  ],
+  "frontier": [
+    "OPEN-D-UNRESTRICTED-CONSISTENCY",
+    "OPEN-CRITERION-CHARACTERIZATION",
+    "OPEN-SCORE-PERTURBATION",
+    "OPEN-D-EFFICIENCY-VS-K",
+    "OPEN-DS-MARGINS-NONCENTERED"
+  ],
+  "themes": {
+    "P2": {
+      "slug": "estimated-scores",
+      "label": "Estimated scores and classifiers",
+      "summary": "What an estimated or classifier-derived score does to the guarantee, and how to estimate the loss it introduces."
+    },
+    "P3": {
+      "slug": "information-budget",
+      "label": "How many bins a target needs",
+      "summary": "Sharp efficiency versus cell count, high-rate asymptotics, and direction-wise guarantees from a determinant efficiency."
+    },
+    "P4": {
+      "slug": "deployment-robustness",
+      "label": "Away from the reference point",
+      "summary": "Degradation under parameter mismatch, robust and multi-reference quantization, and error bars on retention."
+    },
+    "P5": {
+      "slug": "template-fits",
+      "label": "Template fits made explicit",
+      "summary": "Canonical score parameterizations for linear mixtures, count plus shape information, and nuisance scalability."
+    },
+    "P6": {
+      "slug": "d-core",
+      "label": "Completing the D core",
+      "summary": "Unrestricted consistency for D and profiled Ds, and the vector-parameter margins dichotomy."
+    },
+    "P7": {
+      "slug": "foundations",
+      "label": "Foundations",
+      "summary": "Why D is special among matrix criteria, the complexity of the global problem, randomization, and stronger bounds."
+    },
+    "P8": {
+      "slug": "literature",
+      "label": "Literature coverage",
+      "summary": "Coverage of the prior art that can be defended claim by claim."
+    }
+  },
+  "levels": [
+    {
+      "id": "universal",
+      "label": "Universal identities",
+      "short": "Universal",
+      "description": "Facts about the information carried by any hard label, before any criterion or solver is chosen."
+    },
+    {
+      "id": "score_oracle",
+      "label": "Score access",
+      "short": "Score access",
+      "description": "How a score is obtained: exact densities, density ratios, or a calibrated classifier, and what each does to the information."
+    },
+    {
+      "id": "finite_assignment",
+      "label": "Finite assignment",
+      "short": "Finite",
+      "description": "Labels for a fixed weighted table of scores. The object is the partition itself, not a rule."
+    },
+    {
+      "id": "empirical_inductive_quantizer",
+      "label": "Inductive rule from a sample",
+      "short": "Inductive rule",
+      "description": "A rule on score space fitted on a sample and applied to observations not yet seen."
+    },
+    {
+      "id": "empirical_to_population",
+      "label": "Sample to population",
+      "short": "Sample → population",
+      "description": "Whether what is optimal on a sample converges to what is optimal under the population law."
+    },
+    {
+      "id": "population_quantizer",
+      "label": "Population design",
+      "short": "Population",
+      "description": "The quantizer that is optimal under the score law itself, with no sample in the way."
+    },
+    {
+      "id": "information_accounting",
+      "label": "Information accounting",
+      "short": "Accounting",
+      "description": "How retained information is reported: efficiencies, spectra and direction-resolved diagnostics."
+    },
+    {
+      "id": "application",
+      "label": "Application",
+      "short": "Application",
+      "description": "Results stated for a specific use, such as template fits."
+    }
+  ],
+  "criteria": [
+    {
+      "id": "general",
+      "label": "Criterion-independent",
+      "short": "General",
+      "lane": "general",
+      "description": "Results that hold for every matrix criterion, or that concern the information itself."
+    },
+    {
+      "id": "D",
+      "label": "D-optimality",
+      "short": "D",
+      "lane": "D",
+      "primary": true,
+      "description": "Maximises the determinant of the retained information on its informative subspace, weighing every parameter direction at once. The primary criterion of the library and of this research."
+    },
+    {
+      "id": "Ds",
+      "label": "Profiled Ds-optimality",
+      "short": "Ds",
+      "lane": "Ds",
+      "primary": true,
+      "description": "Maximises the determinant of the Schur complement for the parameters of interest after the nuisance parameters are profiled out. The second primary criterion; it lacks the D geometry, which is where most of the boundary results live."
+    },
+    {
+      "id": "trace",
+      "label": "Normalised trace",
+      "short": "Trace",
+      "lane": "controls",
+      "description": "Maximises the trace of the whitened retained information, which is the k-means objective in whitened score space. A control criterion."
+    },
+    {
+      "id": "A",
+      "label": "A-optimality",
+      "short": "A",
+      "lane": "controls",
+      "description": "Minimises the trace of the inverse information. A control criterion: studied to learn where D-style geometry stops."
+    },
+    {
+      "id": "E",
+      "label": "E-optimality",
+      "short": "E",
+      "lane": "controls",
+      "description": "Maximises the smallest eigenvalue. A control criterion: the finite geometry fails, which is why the library offers no E solver."
+    }
+  ],
+  "lanes": [
+    {
+      "id": "general",
+      "label": "Criterion-independent",
+      "description": "Results that hold for every criterion."
+    },
+    {
+      "id": "D",
+      "label": "D",
+      "description": "D-optimality: the determinant of the retained information."
+    },
+    {
+      "id": "Ds",
+      "label": "Profiled Ds",
+      "description": "Profiled Ds-optimality: the determinant after nuisance parameters are profiled out."
+    },
+    {
+      "id": "controls",
+      "label": "Trace, A, E",
+      "description": "The control criteria: normalised trace, A and E."
+    }
+  ],
+  "chapters": {
+    "KNOWN_RESULTS/01-universal.md": {
+      "slug": "universal",
+      "label": "Universal information structure"
+    },
+    "KNOWN_RESULTS/02-trace.md": {
+      "slug": "trace",
+      "label": "The trace criterion"
+    },
+    "KNOWN_RESULTS/03-screening.md": {
+      "slug": "screening",
+      "label": "First-order and finite screening"
+    },
+    "KNOWN_RESULTS/04-d-optimality.md": {
+      "slug": "d-optimality",
+      "label": "D-optimality"
+    },
+    "KNOWN_RESULTS/05a-ds-core.md": {
+      "slug": "ds-core",
+      "label": "Profiled Ds-optimality"
+    },
+    "KNOWN_RESULTS/05b-ds-bridge.md": {
+      "slug": "ds-bridge",
+      "label": "Profiled Ds: from a sample to the population"
+    },
+    "KNOWN_RESULTS/06-e-optimality.md": {
+      "slug": "e-optimality",
+      "label": "E-optimality"
+    },
+    "KNOWN_RESULTS/07-a-optimality.md": {
+      "slug": "a-optimality",
+      "label": "A-optimality"
+    },
+    "KNOWN_RESULTS/08-soft.md": {
+      "slug": "soft",
+      "label": "Randomized and soft quantizers"
+    },
+    "KNOWN_RESULTS/09-consistency.md": {
+      "slug": "consistency",
+      "label": "Sample-to-population consistency"
+    },
+    "KNOWN_RESULTS/10-oracle.md": {
+      "slug": "score-access",
+      "label": "Score, ratio and classifier access"
+    },
+    "KNOWN_RESULTS/11-efficiency.md": {
+      "slug": "efficiency",
+      "label": "Information-efficiency outputs"
+    }
+  },
+  "strips": [
+    {
+      "id": "universal",
+      "label": "Universal identities",
+      "chapters": [
+        "KNOWN_RESULTS/01-universal.md",
+        "KNOWN_RESULTS/11-efficiency.md"
+      ],
+      "criteria": [
+        "general"
+      ]
+    },
+    {
+      "id": "screening",
+      "label": "First-order screening",
+      "chapters": [
+        "KNOWN_RESULTS/03-screening.md"
+      ],
+      "criteria": []
+    },
+    {
+      "id": "d",
+      "label": "D-optimality",
+      "chapters": [
+        "KNOWN_RESULTS/04-d-optimality.md"
+      ],
+      "criteria": [
+        "D"
+      ]
+    },
+    {
+      "id": "ds",
+      "label": "Profiled Ds-optimality",
+      "chapters": [
+        "KNOWN_RESULTS/05a-ds-core.md",
+        "KNOWN_RESULTS/05b-ds-bridge.md"
+      ],
+      "criteria": [
+        "Ds"
+      ]
+    },
+    {
+      "id": "controls",
+      "label": "Trace, A and E",
+      "chapters": [
+        "KNOWN_RESULTS/02-trace.md",
+        "KNOWN_RESULTS/06-e-optimality.md",
+        "KNOWN_RESULTS/07-a-optimality.md"
+      ],
+      "criteria": [
+        "trace",
+        "A",
+        "E"
+      ]
+    },
+    {
+      "id": "soft",
+      "label": "Randomized and soft",
+      "chapters": [
+        "KNOWN_RESULTS/08-soft.md"
+      ],
+      "criteria": []
+    },
+    {
+      "id": "consistency",
+      "label": "Sample to population",
+      "chapters": [
+        "KNOWN_RESULTS/09-consistency.md"
+      ],
+      "criteria": []
+    },
+    {
+      "id": "access",
+      "label": "Score access",
+      "chapters": [
+        "KNOWN_RESULTS/10-oracle.md"
+      ],
+      "criteria": []
+    }
+  ],
+  "traditions": {
+    "LITERATURE/topics/01-optimal-design.md": {
+      "slug": "optimal-design",
+      "label": "Optimal experimental design"
+    },
+    "LITERATURE/topics/02-fisher-quantization.md": {
+      "slug": "fisher-quantization",
+      "label": "Quantization for estimation"
+    },
+    "LITERATURE/topics/03-determinant-clustering.md": {
+      "slug": "determinant-clustering",
+      "label": "Determinant clustering and exchange"
+    },
+    "LITERATURE/topics/04-vector-quantization.md": {
+      "slug": "vector-quantization",
+      "label": "Vector quantization and Voronoi theory"
+    },
+    "LITERATURE/topics/05-hep-inference-aware.md": {
+      "slug": "inference-aware",
+      "label": "Inference-aware summaries in particle physics"
+    },
+    "LITERATURE/topics/06-software-landscape.md": {
+      "slug": "software",
+      "label": "Software landscape"
+    },
+    "LITERATURE/topics/07-score-compression.md": {
+      "slug": "score-compression",
+      "label": "Score compression and ratio estimation"
+    },
+    "LITERATURE/topics/08-plug-in-asymptotics.md": {
+      "slug": "plug-in-asymptotics",
+      "label": "Plug-in asymptotics"
+    }
+  },
+  "authorNames": {
+    "Ozgur": "Özgür",
+    "Nather": "Näther",
+    "vanderVaart": "van der Vaart",
+    "deCastro": "de Castro",
+    "CMS": "CMS Collaboration",
+    "Spaeth": "Späth",
+    "Gronlund": "Grønlund",
+    "Dulek": "Dülek",
+    "Cramer": "Cramér"
+  },
+  "formalChain": [
+    {
+      "module": "Config",
+      "result": "Weighted sample, cells, the binned information and the rank-one update identities"
+    },
+    {
+      "module": "Relocation",
+      "result": "The exact rank-two relocation identity",
+      "claims": [
+        "D-RANK2-MOVE"
+      ]
+    },
+    {
+      "module": "DetGain",
+      "result": "The determinant ratio of a relocation, via Weinstein–Aronszajn",
+      "claims": [
+        "D-LOGDET-GAIN"
+      ]
+    },
+    {
+      "module": "Leverage",
+      "result": "Both leverage inequalities",
+      "claims": [
+        "D-LEVERAGE"
+      ]
+    },
+    {
+      "module": "ScalarExchange",
+      "result": "The frozen scalar core of the exchange theorem",
+      "claims": [
+        "D-EXCHANGE-SCALAR-CORE"
+      ]
+    },
+    {
+      "module": "ExchangeVoronoi",
+      "result": "Exchange stability implies strict Mahalanobis–Voronoi geometry",
+      "claims": [
+        "D-EXCHANGE-IMPLIES-VORONOI",
+        "D-EXCHANGE-VIOLATION-LOWER-BOUND"
+      ]
+    },
+    {
+      "module": "Corollaries",
+      "result": "Realizability of global optima and termination of exchange, in part",
+      "claims": [
+        "D-GLOBAL-GEOMETRIC-REALIZABILITY",
+        "D-EXCHANGE-TERMINATES"
+      ],
+      "partial": true
+    },
+    {
+      "module": "Counterexamples",
+      "result": "Two exact boundary witnesses for the exchange theorem"
+    }
+  ],
+  "formalOutside": [
+    "Profiled Ds-optimality, whose finite geometry fails and whose certificates are brackets.",
+    "Population measure theory and every sample-to-population limit.",
+    "Realizability and termination are covered only in part, so their claims carry no machine-checked mark.",
+    "The Python and JAX implementation: a Lean build certifies a statement, never the code that computes it."
+  ],
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ]
+}

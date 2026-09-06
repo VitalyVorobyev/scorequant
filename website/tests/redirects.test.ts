@@ -68,12 +68,19 @@ describe("website/redirects.json", () => {
     expect(offenders).toEqual([]);
   });
 
-  // Every stub points into the MkDocs documentation at docs/, because that is
-  // where every pre-cut page now lives (ADR 0027 restored the three narrative
-  // pages S8 and S10 had retired into portal routes). The portal owns none of
-  // the old URLs, so a `to` outside docs/ is a mistake rather than an exception.
-  it("every `to` starts with docs/", () => {
-    const offenders = manifest.redirects.filter((entry) => !entry.to.startsWith("docs/"));
+  // Every pre-cut stub points into the MkDocs documentation at docs/, because
+  // that is where every pre-cut page now lives (ADR 0027 restored the three
+  // narrative pages S8 and S10 had retired into portal routes). The one other
+  // family is the retired research essays (ADR 0033), whose stubs point at the
+  // atlas view under portal/research/ that absorbed each of them. A `to`
+  // outside those two roots is a mistake rather than an exception.
+  it("every `to` starts with docs/ or, for a retired research essay, portal/research/", () => {
+    const offenders = manifest.redirects.filter((entry) => {
+      if (entry.from.startsWith("portal/research/")) {
+        return !entry.to.startsWith("portal/research/") && !entry.to.startsWith("docs/");
+      }
+      return !entry.to.startsWith("docs/");
+    });
     expect(offenders).toEqual([]);
   });
 

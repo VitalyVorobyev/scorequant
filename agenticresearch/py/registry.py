@@ -12,6 +12,7 @@ Usage::
     python py/registry.py validate
     python py/registry.py reindex [--check]
     python py/registry.py show <CLAIM-ID> [--deps] [--proof]
+    python py/registry.py export [--out FILE]
 
 Pure standard library on purpose: bookkeeping sessions run on cheap models and
 must never need the library's numerical environment.
@@ -635,6 +636,258 @@ def show(claim_id: str, deps: bool, proof: bool, workspace: Path = WORKSPACE) ->
 
 
 # --------------------------------------------------------------------------- #
+# export
+# --------------------------------------------------------------------------- #
+#: ``## D5. Title — [TAG]`` in KNOWN_RESULTS, ``## OP29. Title`` in OPEN_PROBLEMS.
+_SECTION_HEADING = re.compile(
+    r"^(?P<label>[A-Z]+\d+)\.\s+(?P<title>.+?)(?:\s+[—-]+\s+\[(?P<tag>[^\]]+)\])?\s*$"
+)
+_CHAPTER_TITLE = re.compile(r"^#\s+(?P<number>\d+[a-z]?)\.\s+(?P<title>.+?)\s*$", re.MULTILINE)
+_FIELD_LINE = re.compile(r"^\*\*(?P<label>[^*:]+):\*\*\s*(?P<value>.*?)\s*$")
+_LINK_LINE = re.compile(r"^-\s+(?P<label>[A-Za-z][A-Za-z0-9 ]*):\s*(?P<url>https?://\S+)\s*$")
+_AUDIT_FILENAME = re.compile(r"^(?P<claim>.+?)-(?P<date>\d{1,2}-[A-Z][a-z]+-\d{4})$")
+_AUDIT_SOURCE = re.compile(r"^-\s+\*\*(?P<name>[^*]+?):?\*\*:?\s*(?P<text>.+?)\s*$")
+_VERDICT = re.compile(r"Verdict:\*?\*?\s*(?P<verdict>[^.*]+)")
+
+
+def _parse_section_heading(heading: str) -> dict:
+    match = _SECTION_HEADING.match(heading)
+    if match is None:
+        return {"heading": heading, "label": None, "title": heading, "tag": None}
+    return {
+        "heading": heading,
+        "label": match.group("label"),
+        "title": match.group("title"),
+        "tag": match.group("tag"),
+    }
+
+
+def _strip_claims_line(body: str) -> str:
+    return _CLAIMS_LINE.sub("", body).strip("\n")
+
+
+def _export_chapters(workspace: Path) -> list[dict]:
+    """Every KNOWN_RESULTS chapter with its result sections and their claims."""
+    chapters: list[dict] = []
+    for path in _known_results_files(workspace):
+        if path.name == "index.md":
+            continue
+        text = path.read_text()
+        title = _CHAPTER_TITLE.search(text)
+        sections = []
+        for heading, body in _sections(text).items():
+            parsed = _parse_section_heading(heading)
+            match = _CLAIMS_LINE.search(body)
+            claims = (
+                [token.strip() for token in match.group(1).split(",") if token.strip()]
+                if match
+                else []
+            )
+            sections.append({**parsed, "claims": claims})
+        chapters.append(
+            {
+                "file": str(path.relative_to(workspace)),
+                "number": title.group("number") if title else path.stem,
+                "title": title.group("title") if title else path.stem,
+                "sections": sections,
+            }
+        )
+    return chapters
+
+
+def _export_proof(claim: dict, workspace: Path) -> dict | None:
+    """The prose section behind ``proof_location``, split into heading and body."""
+    location = claim["proof_location"]
+    path = workspace / location["file"]
+    if not path.is_file():
+        return None
+    for heading, body in _sections(path.read_text()).items():
+        if heading.startswith(location["section"]):
+            return {
+                **_parse_section_heading(heading),
+                "file": location["file"],
+                "body": _strip_claims_line(body),
+            }
+    return None
+
+
+def _export_topics(workspace: Path) -> list[dict]:
+    """The curated literature chapters: one record per annotated heading."""
+    topics: list[dict] = []
+    root = workspace / "LITERATURE" / "topics"
+    if not root.is_dir():
+        return topics
+    for path in sorted(root.glob("*.md")):
+        text = path.read_text()
+        title = _CHAPTER_TITLE.search(text)
+        entries = []
+        for heading, body in _sections(text).items():
+            keys: list[str] = []
+            fields: dict[str, str] = {}
+            links: list[dict] = []
+            prose: list[str] = []
+            current: str | None = None  # the field a wrapped line continues
+            for line in body.splitlines():
+                stripped = line.strip()
+                field = _FIELD_LINE.match(stripped)
+                link = _LINK_LINE.match(stripped)
+                if not stripped:
+                    current = None
+                elif field and field.group("label") == "Key":
+                    keys.extend(k.strip() for k in field.group("value").split(",") if k.strip())
+                    current = None
+                elif field:
+                    current = field.group("label")
+                    fields[current] = field.group("value")
+                elif link:
+                    links.append({"label": link.group("label"), "url": link.group("url")})
+                    current = None
+                elif current is not None:
+                    fields[current] = f"{fields[current]} {stripped}".strip()
+                else:
+                    prose.append(stripped)
+            entries.append(
+                {
+                    "heading": heading,
+                    "keys": keys,
+                    "fields": fields,
+                    "links": links,
+                    "prose": "\n".join(prose),
+                }
+            )
+        topics.append(
+            {
+                "file": str(path.relative_to(workspace)),
+                "title": title.group("title") if title else path.stem,
+                "entries": entries,
+            }
+        )
+    return topics
+
+
+def _export_literature_audits(workspace: Path) -> list[dict]:
+    """Per-theorem prior-art audits: claim, date, nearest sources, full body."""
+    audits: list[dict] = []
+    root = workspace / "LITERATURE" / "audits"
+    if not root.is_dir():
+        return audits
+    for path in sorted(root.glob("*.md")):
+        match = _AUDIT_FILENAME.match(path.stem)
+        text = path.read_text()
+        sources: list[dict] = []
+        for line in text.splitlines():
+            match_source = _AUDIT_SOURCE.match(line)
+            if match_source:
+                sources.append(
+                    {
+                        "name": match_source.group("name").strip().replace("--", "–"),
+                        "text": match_source.group("text"),
+                    }
+                )
+            elif sources and line.startswith("  ") and line.strip():
+                sources[-1]["text"] = f"{sources[-1]['text']} {line.strip()}"
+            elif not line.strip():
+                # A blank line closes the bullet list; later bullets are not sources.
+                if sources:
+                    break
+        audits.append(
+            {
+                "file": str(path.relative_to(workspace)),
+                "claim": match.group("claim") if match else None,
+                "date": match.group("date").replace("-", " ") if match else None,
+                "sources": sources,
+                "body": text,
+            }
+        )
+    return audits
+
+
+def _export_reports(workspace: Path) -> list[dict]:
+    """AUDITS/ reports: publication-grade audits and Lean statement audits."""
+    reports: list[dict] = []
+    root = workspace / "AUDITS"
+    if not root.is_dir():
+        return reports
+    for path in sorted(root.glob("*.md")):
+        text = path.read_text()
+        verdict = _VERDICT.search(text)
+        reports.append(
+            {
+                "file": str(path.relative_to(workspace)),
+                "kind": "formalization" if path.name.startswith("FORMALIZATION-") else "audit",
+                "title": text.splitlines()[0].lstrip("# ").strip() if text else path.stem,
+                "verdict": verdict.group("verdict").strip() if verdict else None,
+            }
+        )
+    return reports
+
+
+def _export_literature_graph(workspace: Path) -> list[dict]:
+    path = workspace / "LITERATURE" / "graph.json"
+    if not path.is_file():
+        return []
+    graph = json.loads(path.read_text())
+    keep = (
+        "id",
+        "title",
+        "year",
+        "authors",
+        "bibliography_key",
+        "research_area",
+        "relevant_claims",
+        "status",
+        "note",
+    )
+    return [{k: paper[k] for k in keep if k in paper} for paper in graph.get("papers", [])]
+
+
+def export_graph(workspace: Path = WORKSPACE) -> dict:
+    """Return the whole research graph as one JSON-serialisable document.
+
+    This is the read seam for anything outside the workspace (the public
+    research atlas): claims with their proof prose, the counterexample fixtures,
+    the bibliography with its curated annotations, the prior-art audits, the
+    proof chapters, the audit reports and the programme titles. It applies no
+    publication policy — every claim is exported — and derives nothing; the
+    consumer owns both.
+    """
+    registry = load(workspace)
+    vocab_keys = (
+        "status_definitions",
+        "publication_status_definitions",
+        "literature_search_status_definitions",
+        "formal_proof_contract",
+        "levels",
+        "criteria",
+        "primary_objectives",
+        "primary_problem_levels",
+        "score_oracle_regimes",
+    )
+    claims = [
+        {**claim, "proof": _export_proof(claim, workspace)} for claim in registry["claims"]
+    ]
+    fixtures = [
+        json.loads(path.read_text())
+        for path in sorted((workspace / "COUNTEREXAMPLES").glob("CE-*.json"))
+    ]
+    return {
+        "schemaVersion": 1,
+        "vocabularies": {key: registry[key] for key in vocab_keys if key in registry},
+        "programmes": registry.get("programmes", {}),
+        "claims": claims,
+        "counterexamples": fixtures,
+        "bibliography": registry["bibliography"],
+        "literature": {
+            "topics": _export_topics(workspace),
+            "audits": _export_literature_audits(workspace),
+            "graph": _export_literature_graph(workspace),
+        },
+        "chapters": _export_chapters(workspace),
+        "reports": _export_reports(workspace),
+    }
+
+
+# --------------------------------------------------------------------------- #
 # cli
 # --------------------------------------------------------------------------- #
 def main(argv: list[str] | None = None) -> int:
@@ -648,7 +901,18 @@ def main(argv: list[str] | None = None) -> int:
     show_parser.add_argument("claim_id")
     show_parser.add_argument("--deps", action="store_true")
     show_parser.add_argument("--proof", action="store_true")
+    export_parser = sub.add_parser("export", help="write the whole research graph as JSON")
+    export_parser.add_argument("--out", type=Path, default=None, help="file to write; default stdout")
     args = parser.parse_args(argv)
+
+    if args.command == "export":
+        document = json.dumps(export_graph(), indent=2, ensure_ascii=False) + "\n"
+        if args.out is None:
+            sys.stdout.write(document)
+        else:
+            args.out.write_text(document)
+            print(f"wrote {args.out}")
+        return 0
 
     if args.command == "validate":
         violations = validate()

@@ -1,4 +1,7 @@
-"""Generate the portal's API, research, and solver-matrix data."""
+"""Generate the portal's API and solver-matrix data.
+
+The research projection moved to ``generate_atlas.py`` (the Research Atlas).
+"""
 
 from __future__ import annotations
 
@@ -106,34 +109,6 @@ def _api_data() -> list[dict[str, object]]:
     return entries
 
 
-def _research_data() -> list[dict[str, object]]:
-    allowlist = json.loads((WEBSITE / "content" / "research-public.json").read_text())["claims"]
-    claims: dict[str, dict[str, object]] = {}
-    for claim_id in allowlist:
-        claim_path = ROOT / "agenticresearch" / "claims" / f"{claim_id}.json"
-        if not claim_path.exists():
-            raise RuntimeError(f"public research allowlist contains unknown claim: {claim_id}")
-        claim = json.loads(claim_path.read_text())
-        if claim.get("id") != claim_id:
-            raise RuntimeError(f"research claim file does not match its allowlisted id: {claim_id}")
-        claims[claim_id] = claim
-    return [
-        {
-            "id": claim_id,
-            "title": claims[claim_id]["title"],
-            "statement": claims[claim_id]["statement"],
-            "status": claims[claim_id]["status"],
-            "level": claims[claim_id]["level"],
-            "dependencies": [
-                dependency
-                for dependency in claims[claim_id].get("dependencies", [])
-                if dependency in allowlist
-            ],
-        }
-        for claim_id in allowlist
-    ]
-
-
 def _solver_matrix() -> list[dict[str, object]]:
     """Read the criterion/solver compatibility matrix from ``scorequant.api._SOLVER_TABLE``.
 
@@ -208,9 +183,8 @@ def main() -> None:
     """Generate every committed portal data projection."""
     solver_matrix = _solver_matrix()
     payload = {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "api": _api_data(),
-        "research": _research_data(),
         "solverMatrix": solver_matrix,
     }
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)

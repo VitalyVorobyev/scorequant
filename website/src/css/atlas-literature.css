@@ -1,0 +1,164 @@
+/* Research Atlas literature landscape, paper and author pages, counterexample fixtures. */
+
+/* ------------------------------------------------------------------
+   Tradition colours. One muted hue per literature tradition, used only
+   by the year strip, where a mark is too small to carry a shape and the
+   lane it sits in already names the tradition in words. Light values
+   first; the dark block lightens each hue the way atlas.css repoints the
+   provenance palette. `--tradition-other` also serves any tradition that
+   arrives without a colour of its own.
+   ------------------------------------------------------------------ */
+:root {
+  --tradition-optimal-design: #3d6ea8;
+  --tradition-fisher-quantization: #2f8c7d;
+  --tradition-determinant-clustering: #8a5fa8;
+  --tradition-vector-quantization: #a9662c;
+  --tradition-inference-aware: #a8455c;
+  --tradition-software: #5e7085;
+  --tradition-score-compression: #4a8a3d;
+  --tradition-plug-in-asymptotics: #85761f;
+  --tradition-other: #6b7787;
+
+  /* Cell colours for the counterexample figures. A fixture has at most a
+     handful of cells, and the cell index is the only thing the colour
+     encodes, so the ramp is categorical and stops at eight. */
+  --cell-1: #276be8;
+  --cell-2: #bb3d3d;
+  --cell-3: #1a9e90;
+  --cell-4: #b8700f;
+  --cell-5: #7a4fbf;
+  --cell-6: #2f7d3a;
+  --cell-7: #b03a86;
+  --cell-8: #4d6478;
+}
+:root[data-theme="dark"] {
+  --tradition-optimal-design: #8fb6e8;
+  --tradition-fisher-quantization: #6fcbb9;
+  --tradition-determinant-clustering: #c0a0dd;
+  --tradition-vector-quantization: #e0a468;
+  --tradition-inference-aware: #e894a6;
+  --tradition-software: #a3b3c6;
+  --tradition-score-compression: #94c883;
+  --tradition-plug-in-asymptotics: #ccb95e;
+  --tradition-other: #a5b0be;
+
+  --cell-1: #7fb0ff;
+  --cell-2: #ff9ea8;
+  --cell-3: #6fd6c9;
+  --cell-4: #e6a94a;
+  --cell-5: #bda2f0;
+  --cell-6: #7fca86;
+  --cell-7: #f0a0cf;
+  --cell-8: #a7b6c8;
+}
+
+/* ------------------------------------------------------------------ Year strip */
+.year-strip { display: block; }
+.year-strip__lane-label { font-size: 11.5px; fill: var(--text); }
+.year-strip__lane-rule { stroke: var(--border); stroke-width: 1; }
+.year-strip__axis { stroke: var(--border-strong); stroke-width: 1; }
+.year-strip__tick { fill: var(--text-muted); font-family: var(--font-mono); font-size: 10px; }
+.year-strip__mark { fill: var(--tradition-other); stroke: var(--surface-raised); stroke-width: .6; }
+.year-strip__mark:hover { stroke: var(--text); stroke-width: 1.1; }
+.tradition-optimal-design { fill: var(--tradition-optimal-design); }
+.tradition-fisher-quantization { fill: var(--tradition-fisher-quantization); }
+.tradition-determinant-clustering { fill: var(--tradition-determinant-clustering); }
+.tradition-vector-quantization { fill: var(--tradition-vector-quantization); }
+.tradition-inference-aware { fill: var(--tradition-inference-aware); }
+.tradition-software { fill: var(--tradition-software); }
+.tradition-score-compression { fill: var(--tradition-score-compression); }
+.tradition-plug-in-asymptotics { fill: var(--tradition-plug-in-asymptotics); }
+.tradition-other { fill: var(--tradition-other); }
+
+/* Under the strip's own breaking point the lanes stop being readable, so the
+   same papers are listed instead. Exactly one of the two is in the tree at any
+   width, which keeps a screen reader from meeting both. */
+.year-strip__lists { display: none; margin: 0; }
+.year-strip__lists > div { display: grid; grid-template-columns: 1fr; gap: 2px; padding: 10px 0; border-top: 1px solid var(--border); }
+.year-strip__lists dt { margin: 0; font-weight: 600; color: var(--text); font-size: 13.5px; }
+.year-strip__lists dd { margin: 0; }
+.year-strip__lists ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 13px; }
+@media (max-width: 640px) {
+  .atlas-figure .year-strip, .atlas-figure .year-strip__alt { display: none; }
+  .year-strip__lists { display: block; }
+}
+
+/* ------------------------------------------------------------------ Literature entries */
+.literature-tradition + .literature-tradition { margin-top: 40px; }
+.literature-entry { padding: 14px 0; border-top: 1px solid var(--border); }
+.literature-entry:last-child { border-bottom: 1px solid var(--border); }
+.literature-entry__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.literature-entry__year { color: var(--text-faint); font-family: var(--font-mono); font-size: 12.5px; }
+.literature-note { margin: 18px 0 0; padding: 14px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+.literature-note h4 { margin: 0 0 8px; font-family: var(--font-heading); font-size: 15px; font-weight: 600; color: var(--text); }
+.literature-note p:last-child { margin-bottom: 0; }
+
+/* Annotation fields: a compact definition list, term and text on one line. */
+.annotation-fields { margin: 8px 0 6px; padding: 0; font-size: 14.5px; }
+.annotation-fields > div { display: grid; grid-template-columns: 172px minmax(0, 1fr); gap: 4px 14px; padding: 3px 0; }
+.annotation-fields dt { margin: 0; color: var(--text-muted); font-weight: 560; }
+.annotation-fields dd { margin: 0; color: var(--ink-700); }
+.annotation-fields dd p { margin: 0 0 6px; }
+.annotation-fields dd p:last-child { margin: 0; }
+.annotation-fields dd ul { margin: 0; padding-left: 1.1em; }
+@media (max-width: 720px) { .annotation-fields > div { grid-template-columns: 1fr; gap: 0; } }
+
+.cited-by-label { margin: 8px 0 4px; color: var(--text-faint); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+
+/* Prior-art aside: one headline result, then the sources its audit named. */
+.prior-art { margin: 0 0 20px; padding: 0; list-style: none; }
+.prior-art > li { margin: 0 0 14px; }
+.prior-art__sources { margin: 4px 0 0; padding: 0; list-style: none; color: var(--text-muted); font-size: 13px; }
+.prior-art__sources li { margin: 3px 0; }
+.prior-art__sources li div, .prior-art__sources p { display: inline; margin: 0; }
+.prior-art__name { color: var(--text); font-weight: 560; }
+
+/* ------------------------------------------------------------------ Paper and author pages */
+.paper-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin: 0 0 18px; color: var(--text-muted); font-size: 14px; }
+.paper-meta__authors a { color: var(--text); }
+.paper-links { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 22px; font-size: 14px; }
+.paper-annotation { margin: 0 0 20px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-raised); }
+.paper-annotation h2 { margin: 0 0 8px; font-size: 16px; }
+.author-papers { margin: 0 0 12px; padding: 0; list-style: none; }
+.author-papers li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 10px; padding: 0 0 10px; border-bottom: 1px solid var(--border); }
+.author-papers li:last-child { border-bottom: 0; }
+
+/* ------------------------------------------------------------------ Counterexample fixtures */
+.fixture-id { font-family: var(--font-mono); font-size: .82em; font-weight: 500; letter-spacing: -.01em; }
+.fixture-figure { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px 20px; margin: 0 0 8px; }
+.fixture-panel { margin: 0; padding: 12px 12px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-raised); }
+.fixture-figure svg { display: block; width: 100%; height: auto; }
+.fixture-figure figcaption { margin-top: 6px; color: var(--text-muted); font-size: 12.5px; }
+.fixture-panel__frame { stroke: var(--border-strong); stroke-width: 1; fill: none; }
+.fixture-panel__axis-label { fill: var(--text-muted); font-size: 11px; }
+.fixture-panel__tick { fill: var(--text-muted); font-family: var(--font-mono); font-size: 9.5px; }
+.fixture-panel__strip { stroke: var(--border); stroke-width: 1; }
+.fixture-panel__point { stroke: var(--surface-raised); stroke-width: .8; }
+.fixture-panel__hull { fill-opacity: .14; stroke-width: 1.2; stroke-opacity: .7; }
+.fixture-panel__hull--line { fill: none; stroke-width: 1.6; stroke-opacity: .55; }
+.cell-1 { fill: var(--cell-1); stroke: var(--cell-1); }
+.cell-2 { fill: var(--cell-2); stroke: var(--cell-2); }
+.cell-3 { fill: var(--cell-3); stroke: var(--cell-3); }
+.cell-4 { fill: var(--cell-4); stroke: var(--cell-4); }
+.cell-5 { fill: var(--cell-5); stroke: var(--cell-5); }
+.cell-6 { fill: var(--cell-6); stroke: var(--cell-6); }
+.cell-7 { fill: var(--cell-7); stroke: var(--cell-7); }
+.cell-8 { fill: var(--cell-8); stroke: var(--cell-8); }
+.fixture-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0 0; padding: 0; list-style: none; color: var(--text-muted); font-size: 12.5px; }
+.fixture-legend li { display: flex; align-items: center; gap: 7px; }
+.fixture-legend svg { width: 11px; height: 11px; flex: none; }
+.fixture-coords td, .fixture-coords th { font-variant-numeric: tabular-nums; }
+.fixture-coords code { font-size: .84em; }
+.fixture-refusal { margin: 0 0 18px; padding: 14px 18px; border: 1px solid var(--border); border-left: 3px solid var(--atlas-counter); border-radius: 0 6px 6px 0; background: var(--surface-raised); font-size: 14.5px; }
+.fixture-refusal > div { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 4px 14px; padding: 4px 0; }
+.fixture-refusal dt { margin: 0; color: var(--text-muted); font-weight: 560; }
+.fixture-refusal dd { margin: 0; }
+.fixture-refusal dd p { margin: 0; }
+@media (max-width: 720px) { .fixture-refusal > div { grid-template-columns: 1fr; gap: 0; } }
+.fixture-source { color: var(--text-muted); font-size: 13.5px; }
+
+/* Cited-by lists inside a literature entry run inline: a paper cited by thirty
+   results is a paragraph of names, not a column thirty rows tall. */
+.literature-entry .entity-list--compact { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.literature-entry .entity-list--compact li { margin: 0; }
+.literature-entry .entity-list--compact .entity-link__id { display: none; }

@@ -92,15 +92,9 @@ const config: Config = {
         rehypePlugins: [rehypeKatex]
       }
     ],
-    [
-      "@docusaurus/plugin-content-docs",
-      {
-        id: "research",
-        path: "research",
-        routeBasePath: "research",
-        sidebarPath: false
-      }
-    ],
+    // The Research Atlas: one static route per view and per research entity,
+    // generated from src/generated/atlas.json (ADR 0033). It owns /research.
+    "./plugins/research-atlas/index.mjs",
     [
       "@docusaurus/plugin-content-docs",
       {
@@ -170,6 +164,9 @@ const config: Config = {
             "./src/css/responsive.css",
             "./src/css/prose.css",
             "./src/css/charts.css",
+            "./src/css/atlas.css",
+            "./src/css/atlas-views.css",
+            "./src/css/atlas-literature.css",
             "./src/css/live-fit.css"
           ]
         }

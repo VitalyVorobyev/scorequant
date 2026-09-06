@@ -201,7 +201,7 @@ test("the michelson article runs from the instrument to the experiment without l
   await expect(page.getByRole("heading", {name: /Phase Estimation in a Michelson Interferometer/, level: 1})).toBeVisible();
 
   // The article order: the subject before the library, the experiment last.
-  const sections = ["1. The Michelson interferometer", "2. Why bin the measurement?", "3. Measurement model", "4. The analytic score", "What a photon tells you", "The objective", "The result", "Try it: the counter budget", "What it means"];
+  const sections = ["1. The Michelson interferometer", "2. Why bin the measurement?", "3. Measurement model", "4. The analytic score", "5. Quantizing the score space", "6. Optimizing the finite partition", "7. Results", "8. Interpreting the partition", "9. From a finite partition to a quantizer", "10. What we learned", "Try it: the counter budget"];
   // Docusaurus appends a zero-width-space anchor to every heading; strip it.
   const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
   expect(headings).toEqual(sections);
@@ -216,7 +216,12 @@ test("the michelson article runs from the instrument to the experiment without l
   await expect(page.getByRole("img", {name: /^Phase score along the detector/})).toBeVisible();
   await expect(page.getByRole("img", {name: /^Fringe-frequency score along the detector/})).toBeVisible();
   await expect(page.getByRole("img", {name: /^The Michelson model in score space/})).toBeVisible();
-  await expect(page.getByText(/would optimise the information\s+about the pair/)).toBeVisible();
+  // The objective is stated before any result is quoted. Asserted on prose that
+  // carries no math: KaTeX splits an expression across spans, so a regex over a
+  // sentence containing $D_s$ would be matching the renderer, not the article.
+  await expect(
+    page.getByText("preserves the most Fisher information after profiling the nuisance parameters")
+  ).toBeVisible();
   expect(await page.locator(".katex-display").count()).toBeGreaterThan(1);
 
   // The experiment: one control, keyboard-operable, with a reset and a static table.
@@ -224,17 +229,27 @@ test("the michelson article runs from the instrument to the experiment without l
   await expect(radios).toHaveCount(4);
   await expect(page.getByRole("radio", {name: "6"})).toBeChecked();
   await expect(page.getByRole("img", {name: /Aperture readout at 6 counters/})).toBeVisible();
+  // Both spaces, not only the aperture: the score space is where the criteria
+  // actually differ, and it follows the budget with the strip.
+  await expect(page.getByRole("img", {name: /Score space at 6 counters, profiled Ds against plain D/})).toBeVisible();
   const reset = page.getByRole("button", {name: "Reset to the headline budget"});
   await expect(reset).toBeDisabled();
   await page.getByRole("radio", {name: "6"}).focus();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("radio", {name: "8"})).toBeChecked();
   await expect(page.getByRole("img", {name: /Aperture readout at 8 counters/})).toBeVisible();
+  await expect(page.getByRole("img", {name: /Score space at 8 counters, profiled Ds against plain D/})).toBeVisible();
   await expect(reset).toBeEnabled();
   await reset.click();
   await expect(page.getByRole("radio", {name: "6"})).toBeChecked();
   await expect(page.getByRole("img", {name: /Aperture readout at 6 counters/})).toBeVisible();
-  await expect(page.getByRole("table", {name: /committed sweep/i})).toBeVisible();
+  // The static text alternative to the bars, which is what a reader who cannot
+  // see the chart actually gets. (This assertion used to name a "committed
+  // sweep" table that no page has rendered since the portal reduction; it was
+  // passing on nothing.)
+  await expect(
+    page.getByRole("table", {name: /Phase information retained, after profiling, compared across 3 binning methods/})
+  ).toHaveCount(2);
   await expect(page.getByRole("button", {name: "Refit this budget in your browser"})).toBeVisible();
 
   expect(heavyRequests).toEqual([]);

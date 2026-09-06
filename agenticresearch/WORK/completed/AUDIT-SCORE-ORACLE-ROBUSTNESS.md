@@ -222,5 +222,5 @@ and `tests/test_research_registry.py` green; `ruff check` and `ruff format
 
 ## Next dependency-blocking question
 
-The vector case: `WORK/active/RETENTION-PLUGIN-VECTOR.md`.
+The vector case: `WORK/completed/RETENTION-PLUGIN-VECTOR.md`.
 

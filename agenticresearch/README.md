@@ -94,10 +94,11 @@ branched from origin/main. Follow agenticresearch/README.md. Close with a plain-
 ```
 
 ```text
-Independent audit of <CLAIM-ID> (and companions <IDS>) per agenticresearch/protocols/audit.md,
-source frozen at <branch>@<commit>, in a worktree. You have not seen the derivation; do not ask
-for it. Deliverable: AUDITS/AUDIT-<NAME>-001.md, the audit pointer and hardened assumptions on
-the claim nodes, fixtures for any boundary failure, then the verification block of
+Independent audit of <CLAIM-ID> (and companions <IDS>) per agenticresearch/protocols/audit.md.
+The work under audit is branch <branch> at <commit> (PR #<N>): check it out as a new worktree
+under .claude/worktrees/ and stay there. You have not seen the derivation; do not ask for it.
+Deliverable: AUDITS/AUDIT-<NAME>-001.md, the audit pointer and hardened assumptions on the claim
+nodes, fixtures for any boundary failure, then the verification block of
 agenticresearch/README.md. Push to the same branch; do not merge.
 ```
 

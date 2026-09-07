@@ -6,7 +6,7 @@ export default defineConfig({
   retries: process.env.CI === undefined ? 0 : 1,
   reporter: "list",
   use: {
-    baseURL: "http://127.0.0.1:4173/scorequant/portal/",
+    baseURL: "http://127.0.0.1:4173/scorequant/",
     trace: "retain-on-failure"
   },
   webServer: {

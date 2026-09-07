@@ -28,3 +28,6 @@ setenv.sh
 
 # Lean build artifacts (agenticresearch/formal)
 agenticresearch/formal/.lake/
+
+# Claude Code session state: local worktrees and transcripts, never committed.
+.claude/

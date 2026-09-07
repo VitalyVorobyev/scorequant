@@ -4,14 +4,14 @@ A Docusaurus site with an in-browser ScoreQuant runtime (Pyodide + the NumPy bac
 deliberately isolated from Python packaging: Node and pnpm are pinned here, `uv` owns everything
 Python.
 
-The portal is served at `/scorequant/portal/`, beside the MkDocs documentation at
-`/scorequant/docs/`; a hand-written landing page in `landing/` owns the site root and links to
-both (ADR 0027). `website/src/lib/site.ts` is the one place those bases are written down, and
-`baseUrl` in `docusaurus.config.ts` must match `SITE_BASE` there.
+The portal owns the site root, `/scorequant/`, with the MkDocs documentation mounted beneath it
+at `/scorequant/docs/` (ADR 0033, which retired the hand-written landing page ADR 0027 had put at
+the root). `website/src/lib/site.ts` is the one place those bases are written down, and `baseUrl`
+in `docusaurus.config.ts` must match `SITE_BASE` there.
 
 ```bash
 corepack pnpm install --frozen-lockfile
-corepack pnpm start        # http://localhost:3000/scorequant/portal/
+corepack pnpm start        # http://localhost:3000/scorequant/
 ```
 
 Two things that are not obvious and will stop a first run:

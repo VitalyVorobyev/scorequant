@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedFrom": "site/sitemap.xml, pre-cut mkdocs build of 2026-09-03 (S6); targets re-pointed from reference/ to docs/ when the landing page took the root (ADR 0027)",
+  "generatedFrom": "site/sitemap.xml, pre-cut mkdocs build of 2026-09-03 (S6); targets re-pointed from reference/ to docs/ when the landing page took the root (ADR 0027), and unchanged when the portal took it back from the landing page (ADR 0033)",
   "sourceSitemapCount": 53,
-  "note": "Paths are baseUrl-relative: a sitemap <loc> minus https://vitalyvorobyev.github.io/scorequant/. A 'from' of 'book/' means the assemble script writes <assembled>/book/index.html. Committed and hand-checked rather than regenerated on each build, because its purpose is to remember URLs the new build no longer knows about. Every target is under docs/, where the MkDocs documentation is mounted; the portal lives beside it at portal/ and owns none of these URLs. An entry moves to `unstubbed` only when real content occupies the same URL: the assemble script refuses to write a stub over real content, and the page that now serves the URL must link onward to what used to be there.",
+  "note": "Paths are baseUrl-relative: a sitemap <loc> minus https://vitalyvorobyev.github.io/scorequant/. A 'from' of 'book/' means the assemble script writes <assembled>/book/index.html. Committed and hand-checked rather than regenerated on each build, because its purpose is to remember URLs the new build no longer knows about. Every target is under docs/, where the MkDocs documentation is mounted; the portal, which owns the site root since ADR 0033, owns none of these URLs. The portal's own two days at portal/ are deliberately not stubbed, for the reason ADR 0027 gave for not stubbing its one day at the root: the only links to those URLs were in mkdocs.yml, README.md and docs/, which ADR 0033 re-points. An entry moves to `unstubbed` only when real content occupies the same URL: the assemble script refuses to write a stub over real content, and the page that now serves the URL must link onward to what used to be there.",
   "unstubbed": [
     {
       "path": "",
-      "reason": "The site root serves the landing page, which links to the documentation at docs/ (where this index went) and to the portal. It is the URL the published package advertises as Homepage."
+      "reason": "The site root serves the portal's home page (ADR 0033), which links to Get started, the walkthroughs and the research narrative, and whose primary navigation carries a Reference entry into the documentation at docs/ (where this index went). It is the URL the published package advertises as Homepage."
     }
   ],
   "redirects": [

@@ -256,11 +256,12 @@ def test_walkthrough_prose_contains_no_hand_typed_numbers(path: Path) -> None:
 
 #: The home page is TSX, so it gets its own allowlist rather than widening the
 #: shared one: a digit that is defensible inside a display equation is not
-#: defensible in a walkthrough's prose.
-_HOME_LITERAL_ALLOWLIST: dict[str, str] = {
-    "1": "the indicator function in the displayed loss identity",
-    "0": "the zero matrix the loss identity is bounded below by",
-}
+#: defensible in a walkthrough's prose. Empty since ADR 0033 replaced the home
+#: page's displayed loss identity with prose -- the two entries this held were
+#: the indicator function and the zero matrix of that identity. Anything added
+#: back here needs the same kind of reason: a structural constant of an
+#: equation, never a number a run produced.
+_HOME_LITERAL_ALLOWLIST: dict[str, str] = {}
 
 _TS_BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 _TS_LINE_COMMENT = re.compile(r"//[^\n]*")

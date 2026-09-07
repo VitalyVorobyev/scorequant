@@ -871,63 +871,18 @@ def _build_michelson_score_table() -> dict[str, object]:
     }
 
 
-def _build_ratios_score_table() -> dict[str, object]:
-    """Build the density-ratio-ladder walkthrough's score table.
-
-    Reuses ``examples/door3_classifier.py``'s own classifier training and
-    reference-mixture draw (`train_classifier`, `classifier_provider`,
-    `draw_reference_mixture`) rather than reimplementing them: the estimated
-    ratio provider at the ladder's largest training size, scored on the
-    reference-mixture test draw, at the same full-scale sizes the committed
-    study runs unless ``SCOREQUANT_EXAMPLE_FAST`` is set.
-
-    Returns
-    -------
-    dict
-        ``{"schema", "label", "detail", "scores", "weights"}``.
-    """
-    sys.path.insert(0, str(ROOT))
-    from examples._env import example_scale
-    from examples.door3_classifier import (
-        CLASSIFIER_SEED_BASE,
-        N_PER_CLASS_VALUES,
-        N_TEST,
-        TEST_SEED,
-        classifier_provider,
-        draw_reference_mixture,
-        train_classifier,
-    )
-
-    n_per_class_values = example_scale(N_PER_CLASS_VALUES, (5, 15, 40))
-    n_test = example_scale(N_TEST, 200)
-    n_per_class = n_per_class_values[-1]
-    model = train_classifier(CLASSIFIER_SEED_BASE + len(n_per_class_values) - 1, n_per_class)
-    provider = classifier_provider(
-        model, description=f"logistic regression, {n_per_class} events per class"
-    )
-    test_observations = draw_reference_mixture(TEST_SEED, n_test)
-    scores = np.asarray(provider.score(test_observations))
-    rows, columns = scores.shape
-    return {
-        "schema": ["signal_log_ratio"],
-        "label": "Density-ratio classifier scores",
-        "detail": (
-            f"{rows:,} reference-mixture events × {columns} score dimension · "
-            f"logistic-regression classifier, {n_per_class} events/class"
-        ),
-        "scores": _round(scores),
-        "weights": _round(np.ones(rows)),
-    }
-
-
 def write_walkthrough_score_tables() -> dict[str, int]:
     """Write each walkthrough's deterministic score table to committed JSON.
 
-    Each walkthrough's ``LiveFit`` experiment needs one small, deterministic
-    score table, in exactly the shape a ``LiveFit`` problem
-    (``website/src/components/liveFit/types.ts``) needs. FlowCyt is excluded:
-    it already has an on-demand table at
-    ``website/static/showcase-data/flowcyt-scores.json``.
+    A walkthrough that carries a ``LiveFit`` experiment needs one small,
+    deterministic score table, in exactly the shape a ``LiveFit`` problem
+    (``website/src/components/liveFit/types.ts``) needs. Two walkthroughs are
+    absent from the table below for different reasons. FlowCyt already has an
+    on-demand table at ``website/static/showcase-data/flowcyt-scores.json``.
+    The density-ratio page carries no experiment at all: its argument is the
+    gap between a reported and an achieved retention, which a refit of the
+    estimated score cannot show, so it makes its point with a comparison and a
+    figure instead (ADR 0033).
 
     Returns
     -------
@@ -937,7 +892,6 @@ def write_walkthrough_score_tables() -> dict[str, int]:
     builders: dict[str, Callable[[], dict[str, object]]] = {
         "hep": _build_hep_score_table,
         "michelson": _build_michelson_score_table,
-        "ratios": _build_ratios_score_table,
     }
     SCORE_TABLES_OUTPUT.mkdir(parents=True, exist_ok=True)
     sizes: dict[str, int] = {}

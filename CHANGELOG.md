@@ -13,6 +13,25 @@ once already, which retroactively asserted that unshipped work had shipped.
 
 ### Site
 
+- The learning portal takes the site root and the hand-written landing page is retired
+  (ADR 0033, superseding ADR 0027). Two surfaces remain: the portal at `/`, the MkDocs
+  documentation at `/docs/`. `landing/` and its guard test are deleted, `baseUrl` and `SITE_BASE`
+  move together, and the assemble script's landing-link parity check becomes a check that every
+  `/docs/` link the built portal carries resolves in the assembled tree. The portal's two days at
+  `portal/` are not stubbed, for the reason ADR 0027 gave for not stubbing its one day at the root.
+- The portal home page is rewritten to the shape ADR 0033 amends into ADR 0031: what the library
+  is for, why score space, the two tasks, where scores come from and what is optimised. The
+  displayed binning-cost identity and the list of derivations move off it; the primary
+  navigation's *Reference* entry is the home page's route into the documentation.
+- `/get-started` is shortened to one arc — a table, a reusable quantizer, its prediction, and the
+  finite partition of the same table — with the compile bridge, the theorem-backed refusal,
+  profiled `D_s`, the scalar dynamic programme and global certification left to the reference
+  documentation. Its cells still come from `website/scripts/get_started_program.py` and its output
+  is still captured rather than typed.
+- The density-ratio walkthrough is retitled *From a classifier to Fisher-preserving bins* and
+  reopens on a schematic of its two lanes: the workflow a real analysis runs, and the oracle check
+  the synthetic model affords. Its browser refit is removed — the page's argument is the gap
+  between a reported and an achieved retention, which refitting the estimated score cannot show.
 - The site topology is reversed after the owner's review of the portal front door (ADR 0027,
   superseding ADR 0025). A hand-written landing page owns the site root and links to both
   surfaces; the MkDocs documentation is mounted at `docs/` with *Why ScoreQuant*, *Three doors*

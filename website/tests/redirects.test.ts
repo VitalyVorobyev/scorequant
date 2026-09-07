@@ -70,8 +70,9 @@ describe("website/redirects.json", () => {
 
   // Every stub points into the MkDocs documentation at docs/, because that is
   // where every pre-cut page now lives (ADR 0027 restored the three narrative
-  // pages S8 and S10 had retired into portal routes). The portal owns none of
-  // the old URLs, so a `to` outside docs/ is a mistake rather than an exception.
+  // pages S8 and S10 had retired into portal routes). The portal owns the site
+  // root since ADR 0033 but still owns none of the *old* URLs, so a `to`
+  // outside docs/ is a mistake rather than an exception.
   it("every `to` starts with docs/", () => {
     const offenders = manifest.redirects.filter((entry) => !entry.to.startsWith("docs/"));
     expect(offenders).toEqual([]);

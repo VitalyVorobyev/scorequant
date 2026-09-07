@@ -67,7 +67,7 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
   },
   {
     slug: "ratios",
-    title: "A classifier instead of a likelihood",
+    title: "From a classifier to Fisher-preserving bins",
     href: "/walkthroughs/ratios",
     problem:
       "A two-component mixture whose signal fraction is to be estimated, with the component " +

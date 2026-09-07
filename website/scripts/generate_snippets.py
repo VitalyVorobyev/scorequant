@@ -9,12 +9,14 @@ captures each cell's stdout. The result is written to
 ``website/src/lib/snippets.ts`` is the only typed reader of and
 ``website/src/components/Snippet.tsx`` renders one cell of.
 
-The ``first-fit`` cell's score table is not otherwise reachable from outside
+The ``partition`` cell's score table is not otherwise reachable from outside
 the program's own namespace, and the portal's `LiveFit` demo beside that
 snippet (`website/src/components/GetStartedFirstFitLiveFit.tsx`) needs it to
 refit the same points, at the same bin budget and seed, in the reader's
-browser. This script also writes that table -- read straight out of the same
-executed namespace, never retyped -- to
+browser. That component, and the ``firstFit`` key it reads, keep the name the
+cell had when the finite fit opened the page; the cell it reads is now
+``partition``, which the page reaches last. This script also writes that table
+-- read straight out of the same executed namespace, never retyped -- to
 ``website/static/walkthrough-scores/get-started.json``, the same convention
 `generate_walkthroughs.py`'s ``write_walkthrough_score_tables`` uses for the
 other three walkthroughs' on-demand score tables.
@@ -127,7 +129,7 @@ def run_program(source: str) -> tuple[dict[str, CellRecord], dict[str, object]]:
         file order), and the shared namespace every cell executed into -- the
         same namespace a reader running the file top to bottom would end up
         with. ``build_first_fit_score_table`` reads ``scores``, ``weights``
-        and ``partition`` straight out of it, so the "first-fit" cell's score
+        and ``partition`` straight out of it, so the ``partition`` cell's score
         table can never drift from what the cell actually ran.
     """
     namespace: dict[str, object] = {"__name__": "__snippet_program__"}
@@ -152,7 +154,7 @@ def build_payload() -> dict[str, object]:
         "cells": cells,
         # The retention `LiveFit` shows as this page's committed result, before
         # the reader ever clicks anything -- read from the same `partition`
-        # the "first-fit" cell already printed `geometric_mean_retention`
+        # the `partition` cell already printed `geometric_mean_retention`
         # from, not recomputed or reparsed from that cell's captured stdout.
         "firstFit": {"retention": partition.train_report.geometric_mean_retention},
     }
@@ -161,7 +163,7 @@ def build_payload() -> dict[str, object]:
 def build_first_fit_score_table() -> dict[str, object]:
     """Run the program and build the `/get-started` first-fit score table.
 
-    Reads the exact objects the "first-fit" cell bound in the shared
+    Reads the exact objects the ``partition`` cell bound in the shared
     namespace -- ``scores``, ``weights`` and the fitted ``partition`` -- so
     the bin count, seed and solver a browser rerun is asked to use can never
     drift from what the cell actually ran, even if ``get_started_program.py``

@@ -97,6 +97,8 @@
   --font-heading: "Space Grotesk Variable", "Space Grotesk", sans-serif;
   --font-body: "Inter Variable", Inter, sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
+  /* Research headings only: a system serif so the atlas reads as a paper, no font download. */
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
   --page: min(100% - 48px, 1376px);
   --reading: 72ch;
   /* The sticky header's height, and therefore the offset every fixed or

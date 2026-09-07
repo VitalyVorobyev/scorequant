@@ -1,4 +1,4 @@
-import {render, screen, within} from "@testing-library/react";
+import {fireEvent, render, screen, within} from "@testing-library/react";
 import {describe, expect, it} from "vitest";
 
 import type {LibraryData} from "../../src/atlas/pages/LibraryPage";
@@ -46,8 +46,11 @@ describe("LibraryPage", () => {
   it("relates every public object to the results it rests on, group by group", () => {
     const {container} = render(<LibraryPage core={core} data={data} />);
     const groups = ["Criteria", "Solver configurations", "Results and certificates", "Information reports", "Sources and score providers"];
-    const headings = Array.from(container.querySelectorAll("h3")).map((heading) => heading.textContent);
-    expect(headings).toEqual(groups);
+    const article = container.querySelector("article.atlas__wide, article.atlas__measure");
+    if (!article) throw new Error("no page article");
+    const summaries = Array.from(article.querySelectorAll("details > summary"));
+    expect(summaries.map((heading) => heading.textContent)).toEqual(groups);
+    for (const summary of summaries) fireEvent.click(summary);
 
     for (const object of atlas.library.objects) {
       const name = screen.getAllByText(object.name);

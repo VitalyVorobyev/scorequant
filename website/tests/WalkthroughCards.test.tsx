@@ -29,6 +29,20 @@ describe("WalkthroughCards", () => {
     }
   });
 
+  it("leads with the question, then badges the task in the front page's words", () => {
+    render(<WalkthroughCards />);
+    const badges: Record<string, string> = {fit_quantizer: "Fits a reusable rule", optimize_partition: "Labels a fixed sample"};
+    for (const card of WALKTHROUGHS) {
+      const article = screen.getByRole("article", {name: card.title});
+      const text = article.textContent;
+      expect(text.indexOf(card.lead)).toBeGreaterThan(-1);
+      expect(text.indexOf(card.lead)).toBeLessThan(text.indexOf(card.problem));
+      const expected = card.tags.filter((tag) => tag.kind === "task").map((tag) => badges[tag.label]);
+      expect(within(article).getAllByText(/Fits a reusable rule|Labels a fixed sample/).map((node) => node.textContent)).toEqual(expected);
+      expect(article.querySelector("svg.walkthrough-card__vignette")).not.toBeNull();
+    }
+  });
+
   it("names its task on every card, and only real public symbols or a task in its tags", () => {
     const symbols = new Set(portalData.api.map((symbol) => symbol.name));
     for (const card of WALKTHROUGHS) {
@@ -45,7 +59,7 @@ describe("WalkthroughCards", () => {
     // budgets are small integers, so strip one- or two-digit numbers that a
     // fact resolved and require nothing else.
     for (const card of WALKTHROUGHS) {
-      for (const summary of [card.problem, card.data]) {
+      for (const summary of [card.lead, card.problem, card.data]) {
         const residue = summary.replace(/\b\d{1,2}\b/g, "");
         expect(residue).not.toMatch(/\d/);
       }

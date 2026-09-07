@@ -1,3 +1,4 @@
+import {atlas} from "../../src/data/atlas";
 import AxeBuilder from "@axe-core/playwright";
 import type {Page} from "@playwright/test";
 import {expect, test} from "@playwright/test";
@@ -55,7 +56,7 @@ const ROUTES = [
   "./research/claims/open-ds-margins-noncentered/",
   "./research/counterexamples/ce-ds-global-geometry-001/",
   "./research/literature/telgarsky-vattani-2010/",
-  "./research/authors/kiefer/"
+  "./research/authors/kiefer/",
 ];
 
 /**
@@ -77,7 +78,7 @@ const SCANNED = [
   "./research/landscape/",
   "./research/literature/",
   "./research/claims/d-exchange-implies-voronoi/",
-  "./research/counterexamples/ce-ds-global-geometry-001/"
+  "./research/counterexamples/ce-ds-global-geometry-001/",
 ];
 
 test("home states the task and runs nothing", async ({page}) => {
@@ -210,11 +211,7 @@ test("the flowcyt walkthrough tells the study end to end without loading a runti
   await page.goto("./walkthroughs/flowcyt/");
 
   await expect(page.getByRole("heading", {name: /Bone-marrow cell populations/})).toBeVisible();
-  for (const section of [
-    "The cells, their labels, and a patient's fractions",
-    "The data and its licence",
-    "The numbers"
-  ]) {
+  for (const section of ["The cells, their labels, and a patient's fractions", "The data and its licence", "The numbers"]) {
     await expect(page.getByRole("heading", {name: section})).toBeVisible();
   }
 
@@ -255,7 +252,7 @@ test("the michelson article runs from the instrument to the experiment without l
     "10. What changes under profiling?",
     "11. Reusable profiled quantizer",
     "12. Interactive bin-budget sweep",
-    "13. Summary"
+    "13. Summary",
   ];
   // Docusaurus appends a zero-width-space anchor to every heading; strip it.
   const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
@@ -302,9 +299,7 @@ test("the michelson article runs from the instrument to the experiment without l
   // see the chart actually gets. (This assertion used to name a "committed
   // sweep" table that no page has rendered since the portal reduction; it was
   // passing on nothing.)
-  await expect(
-    page.getByRole("table", {name: /Phase information retained, after profiling, compared across 3 binning methods/})
-  ).toHaveCount(2);
+  await expect(page.getByRole("table", {name: /Phase information retained, after profiling, compared across 3 binning methods/})).toHaveCount(2);
   await expect(page.getByRole("button", {name: "Refit this budget in your browser"})).toBeVisible();
 
   expect(heavyRequests).toEqual([]);
@@ -349,9 +344,7 @@ test("the contents panel marks the section the reader is in", async ({page}, tes
   // the scroll is smooth and `boundingBox` does not retry on its own.
   await expect
     .poll(async () => {
-      const heading = await page
-        .getByRole("heading", {name: /9\. Optimizing for phase/})
-        .boundingBox();
+      const heading = await page.getByRole("heading", {name: /9\. Optimizing for phase/}).boundingBox();
       const header = await page.locator(".site-header").boundingBox();
       if (heading === null || header === null) return -1;
       return heading.y - (header.y + header.height);
@@ -372,36 +365,88 @@ test("the michelson refit reproduces the committed profiled retention at the hea
   await expect(page.getByRole("img", {name: /Your browser's readout at 6 counters/})).toBeVisible();
 });
 
-test("the research atlas opens on the problem and the map focuses from a deep link", async ({page}, testInfo) => {
+test("research tells the story and graph navigation follows URL history", async ({page}) => {
   await page.goto("./research/");
   await expect(page.getByRole("heading", {name: "Research", level: 1})).toBeVisible();
-  const sections = ["The problem", "Established here", "The shape of the field", "Where the frontier is now", "Ways in"];
-  const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
-  expect(headings).toEqual(sections);
-  await expect(page.getByRole("table", {name: /Known, new here/})).toBeVisible();
-  await expect(page.locator(".result-card").first()).toBeVisible();
-
+  const sections = ["Stable D-optimal partitions have a geometric rule.", "What we established", "Where it breaks", "Open frontier", "Explore further"];
+  expect(await page.getByRole("heading", {level: 2}).allInnerTexts()).toEqual(sections);
+  await expect(page.locator(".result-card, .band-strip, .atlas-legend")).toHaveCount(0);
+  await expect(page.locator(".research-finding--central .research-trust")).toHaveText("Proved here · machine-checked in Lean · independently audited");
   await page.goto("./research/map/?focus=D-EXCHANGE-IMPLIES-VORONOI");
-  await expect(page.getByRole("heading", {name: "Argument map", level: 1})).toBeVisible();
-  if (testInfo.project.name !== "desktop") {
-    // Below the map's width the drawing gives way to the list by problem level.
-    await expect(page.getByRole("heading", {name: "Every result by problem level"})).toBeVisible();
-    return;
-  }
+  await expect(page.getByRole("heading", {name: "Research graph", level: 1})).toBeVisible();
   const panel = page.locator(".argument-map__panel");
   await expect(panel.getByRole("heading", {level: 2})).toHaveText(/exchange stability implies/i);
   await panel.getByRole("button", {name: "Where does it stop?"}).click();
-  await expect(panel.getByRole("button", {name: "Where does it stop?"})).toHaveAttribute("aria-pressed", "true");
   await expect(page).toHaveURL(/ask=stops/);
+  await page.goBack();
+  await expect(panel.getByRole("button", {name: "Where does it stop?"})).toHaveAttribute("aria-pressed", "false");
+  await page.goForward();
+  await expect(panel.getByRole("button", {name: "Where does it stop?"})).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", {name: "Show full graph"}).click();
+  await expect(page.locator(".argument-map .node")).toHaveCount(Object.keys(atlas.layout.positions).length);
+  await page.getByRole("button", {name: "Show neighbourhood"}).click();
+  expect(await page.locator(".argument-map .node").count()).toBeLessThan(30);
 });
 
-test("a claim page carries the reading grammar and links into the map", async ({page}) => {
+test("claim evidence disclosures open from permanent fragments", async ({page}) => {
   await page.goto("./research/claims/d-exchange-implies-voronoi/");
-  await expect(page.getByRole("heading", {level: 1})).toHaveText(/exchange stability implies/i);
-  for (const section of ["Statement", "Rests on", "Where it stops", "Machine-checked", "Local map", "Proof"]) {
-    await expect(page.getByRole("heading", {name: section, level: 2})).toBeVisible();
+  await expect(page.getByRole("heading", {level: 1})).toHaveText("Stable D partitions have a geometric rule");
+  for (const section of ["Statement", "Where it stops", "Proof"]) await expect(page.getByRole("heading", {name: section, level: 2})).toBeVisible();
+  await expect(page.locator("#relationships")).not.toHaveAttribute("open");
+  await page.goto("./research/claims/d-exchange-implies-voronoi/#rests-on");
+  await expect(page.locator("#relationships")).toHaveAttribute("open");
+  await expect(page.getByRole("heading", {name: "Rests on", exact: true})).toBeVisible();
+  await page.goto("./research/claims/d-exchange-implies-voronoi/#machine-checked");
+  await expect(page.getByRole("link", {name: "Frozen specification"})).toBeVisible();
+  await page.goto("./research/claims/d-exchange-implies-voronoi/#proof");
+  await expect(page.locator(".proof")).toHaveAttribute("open");
+  await expect(page.locator(".proof .katex").first()).toBeVisible();
+  await page.goto("./research/claims/d-exchange-implies-voronoi/#local-map");
+  await expect(page.getByRole("link", {name: "Open in the map"})).toBeVisible();
+});
+
+test("explore filters and literature links preserve the research trail", async ({page}) => {
+  await page.goto("./research/landscape/");
+  await page.getByRole("button", {name: /^D-optimality/}).click();
+  await expect(page).toHaveURL(/theme=d/);
+  await page.getByRole("link", {name: "Stable D partitions have a geometric rule"}).click();
+  await page.locator("#prior-work a").first().click();
+  await expect(page.locator(".paper-meta__authors a").first()).toBeVisible();
+  await page.locator(".paper-meta__authors a").first().click();
+  await expect(page).toHaveURL(/research\/authors\//);
+  await expect(page.getByRole("heading", {name: "Claims that cite this work"})).toBeVisible();
+  await page.goto("./research/literature/");
+  await page.getByText("View the publication timeline", {exact: true}).click();
+  const marks = page.locator(".year-strip circle");
+  expect(await marks.count()).toBeGreaterThan(20);
+  const cy = await marks.evaluateAll((nodes) => nodes.map((node) => Number(node.getAttribute("cy"))));
+  expect(cy.every(Number.isFinite)).toBe(true);
+  expect(new Set(cy.map((value) => Math.round(value / 20))).size).toBeGreaterThan(3);
+  await page.getByRole("searchbox").fill("Nuisance Hardened");
+  await expect(page.locator(".research-paper-row")).toHaveCount(1);
+  await page.getByRole("button", {name: "Clear filters"}).click();
+  await page.getByRole("combobox").selectOption({label: "Kiefer"});
+  await expect(page.getByRole("link", {name: /View Kiefer/})).toBeVisible();
+});
+
+test("research navigation exposes its tools and collapses on mobile", async ({page}, testInfo) => {
+  await page.goto("./research/");
+  const nav = page.getByRole("navigation", {name: "Research atlas"});
+  if (testInfo.project.name === "mobile") {
+    const toggle = nav.getByRole("button", {name: "Research navigation"});
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(nav.getByRole("link", {name: "Explore"})).toBeHidden();
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
   }
-  await expect(page.locator(".proof .katex").first()).toBeAttached();
-  await expect(page.getByRole("link", {name: "Open in the map"})).toHaveAttribute("href", /\/research\/map\/\?focus=D-EXCHANGE-IMPLIES-VORONOI/);
-  await expect(page.getByRole("link", {name: /D-Voronoi fixed point does not imply/})).toBeVisible();
+  await expect(nav.getByRole("link", {name: "Graph"})).toBeHidden();
+  await nav.getByText("Research tools", {exact: true}).click();
+  await nav.getByRole("link", {name: "Graph"}).click();
+  await expect(page).toHaveURL(/research\/map\//);
+  await expect(page.getByRole("heading", {name: "Research graph", level: 1})).toBeVisible();
+  await page.goBack();
+  if (testInfo.project.name === "mobile") await nav.getByRole("button", {name: "Research navigation"}).click();
+  await nav.getByRole("link", {name: "Explore"}).click();
+  await expect(page).toHaveURL(/research\/landscape\//);
+  await expect(page.getByRole("button", {name: /^D-optimality/})).toContainText("Start here");
 });

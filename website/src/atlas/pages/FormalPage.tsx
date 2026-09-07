@@ -40,46 +40,17 @@ export default function FormalPage({core, data}: AtlasPageProps<FormalData>): Re
     >
       <h1>Machine-checked statements</h1>
       <p className="atlas__lead">
-        A machine-checked mark says that the <em>statement</em> of a result has been written in Lean 4 against Mathlib and proved there. It
-        says nothing about the Python implementation: a Lean build certifies a proposition, never the code that computes with it.
+        A machine-checked mark says that the <em>statement</em> of a result has been written in Lean 4 against Mathlib and proved there. It says nothing about
+        the Python implementation: a Lean build certifies a proposition, never the code that computes with it.
       </p>
       <p>
-        The specification file is frozen before the proof is attempted and audited on its own, so the question the audit answers is whether the
-        Lean proposition is the registry statement, and only then does the proof have to go through. The workspace, its build instructions and
-        its conventions are in the{" "}
+        The specification file is frozen before the proof is attempted and audited on its own, so the question the audit answers is whether the Lean proposition
+        is the registry statement, and only then does the proof have to go through. The workspace, its build instructions and its conventions are in the{" "}
         <a href={data.readme} rel="noopener">
           formal workspace README
         </a>
         .
       </p>
-
-      <h2>The chain</h2>
-      <p>
-        Each module is proved on the modules before it, so the last statement in the chain rests on every definition that precedes it. A dashed
-        box is a module that is only partly done, and the claims it touches carry no mark.
-      </p>
-      <figure className="atlas-figure lean-chain">
-        <LeanChain modules={data.chain} />
-        <figcaption className="atlas-figure__caption">The Lean modules in build order.</figcaption>
-      </figure>
-      <dl className="lean-chain__modules">
-        {data.chain.map((module) => (
-          <div key={module.module}>
-            <dt>
-              <code>{module.module}</code>
-              {module.partial === true ? <span className="provenance-band__mark">in part</span> : null}
-            </dt>
-            <dd>
-              <p>{module.result}.</p>
-              {module.claims.length > 0 ? (
-                <EntityList compact core={core} ids={module.claims} />
-              ) : (
-                <p className="atlas__muted">Supporting definitions; it certifies no statement of its own.</p>
-              )}
-            </dd>
-          </div>
-        ))}
-      </dl>
 
       <h2>What is certified</h2>
       <table className="formal-table">
@@ -127,6 +98,35 @@ export default function FormalPage({core, data}: AtlasPageProps<FormalData>): Re
         ))}
       </ul>
 
+      <details className="research-disclosure">
+        <summary>The proof chain and supporting modules</summary>
+        <p>
+          Each module is proved on the modules before it, so the last statement in the chain rests on every definition that precedes it. A dashed box is a
+          module that is only partly done, and the claims it touches carry no mark.
+        </p>
+        <figure className="atlas-figure lean-chain">
+          <LeanChain modules={data.chain} />
+          <figcaption className="atlas-figure__caption">The Lean modules in build order.</figcaption>
+        </figure>
+        <dl className="lean-chain__modules">
+          {data.chain.map((module) => (
+            <div key={module.module}>
+              <dt>
+                <code>{module.module}</code>
+                {module.partial === true ? <span className="provenance-band__mark">in part</span> : null}
+              </dt>
+              <dd>
+                <p>{module.result}.</p>
+                {module.claims.length > 0 ? (
+                  <EntityList compact core={core} ids={module.claims} />
+                ) : (
+                  <p className="atlas__muted">Supporting definitions; it certifies no statement of its own.</p>
+                )}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </details>
       <h2>The axioms it is allowed</h2>
       <p>
         Every certified declaration is checked to depend on no axiom beyond{" "}

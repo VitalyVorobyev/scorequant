@@ -42,7 +42,7 @@ export function localLayout(core: Core, id: string, options: {colGap?: number; r
   const below = claimRole([...stop.converse, ...stop.refuted, ...stop.bounded], cap);
   const downstream = claimRole([...enables(adj, id), ...raises(adj, id)], cap);
   const tall = Math.max(upstream.length, downstream.length, 1);
-  const centreY = 16 + (above.length > 0 ? rowGap : 0) + ((tall - 1) * rowGap) / 2;
+  const centreY = 16 + above.length * rowGap + ((tall - 1) * rowGap) / 2;
   const positions: Record<string, Placed> = {};
   const column = (ids: string[], x: number): void => {
     const top = centreY - ((ids.length - 1) * rowGap) / 2;
@@ -54,17 +54,17 @@ export function localLayout(core: Core, id: string, options: {colGap?: number; r
   column(downstream, 16 + 2 * colGap);
   positions[id] = {x: 16 + colGap, y: centreY};
   above.forEach((other, i) => {
-    positions[other] = {x: 16 + colGap + (i - (above.length - 1) / 2) * colGap * 0.6, y: 12};
+    positions[other] = {x: 16 + colGap, y: 12 + i * rowGap};
   });
   const belowY = centreY + ((tall - 1) * rowGap) / 2 + rowGap + 6;
   below.forEach((other, i) => {
-    positions[other] = {x: 16 + colGap + (i - (below.length - 1) / 2) * colGap * 0.6, y: belowY};
+    positions[other] = {x: 16 + colGap, y: belowY + i * rowGap};
   });
   const nodes = new Set(Object.keys(positions));
   const edges = core.edges.filter(
-    (edge) => edge.type !== "cites" && nodes.has(edge.source) && nodes.has(edge.target) && (edge.source === id || edge.target === id)
+    (edge) => edge.type !== "cites" && nodes.has(edge.source) && nodes.has(edge.target) && (edge.source === id || edge.target === id),
   );
-  const height = (below.length > 0 ? belowY : centreY + ((tall - 1) * rowGap) / 2) + 18;
+  const height = (below.length > 0 ? belowY + (below.length - 1) * rowGap : centreY + ((tall - 1) * rowGap) / 2) + 18;
   return {positions, edges, width: 32 + 2 * colGap, height, columns: {upstream, downstream, below, above}};
 }
 

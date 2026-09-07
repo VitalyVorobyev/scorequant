@@ -33,7 +33,7 @@ export function longDate(iso: string): string {
 
 const EDGE_WORDS: Record<"bounded_by" | "refuted_by", string> = {
   bounded_by: "bounded by this fixture",
-  refuted_by: "refuted by this fixture"
+  refuted_by: "refuted by this fixture",
 };
 
 /**
@@ -47,7 +47,7 @@ const EDGE_WORDS: Record<"bounded_by" | "refuted_by", string> = {
 export default function FixturePage({core, data}: AtlasPageProps<FixtureData>): React.JSX.Element {
   const objectives = [
     {label: "Labels before", value: data.objectiveBefore},
-    {label: "Labels after", value: data.objectiveAfter}
+    {label: "Labels after", value: data.objectiveAfter},
   ].filter((row) => row.value !== null);
   const citing = data.citedBy.map((entry) => entry.claim);
   const edgeOf = new Map(data.citedBy.map((entry) => [entry.claim, entry.type]));
@@ -61,6 +61,11 @@ export default function FixturePage({core, data}: AtlasPageProps<FixtureData>): 
       <h1>
         Counterexample <code className="fixture-id">{data.id}</code>
       </h1>
+
+      <section className="atlas__section">
+        <h2>What it falsifies</h2>
+        <Html className="statement statement--counter" html={data.falsifiesHtml} />
+      </section>
 
       {data.noteHtml === null ? null : <Html className="atlas__lead" html={data.noteHtml} />}
 
@@ -97,11 +102,6 @@ export default function FixturePage({core, data}: AtlasPageProps<FixtureData>): 
           </table>
         </section>
       )}
-
-      <section className="atlas__section">
-        <h2>What it falsifies</h2>
-        <Html className="statement statement--counter" html={data.falsifiesHtml} />
-      </section>
 
       {consequences.length === 0 ? null : (
         <section className="atlas__section">

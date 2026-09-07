@@ -22,6 +22,8 @@ export interface WalkthroughCard {
   title: string;
   /** Route within the portal. */
   href: string;
+  /** The question the page answers, in one sentence; shown first. */
+  lead: string;
   /** What is measured and what is to be estimated, and what the page finds. */
   problem: string;
   /** Where the data comes from and what kind of evidence it is. */
@@ -46,6 +48,9 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
     slug: "michelson",
     title: "Phase Estimation in a Michelson Interferometer",
     href: "/walkthroughs/michelson",
+    lead:
+      `Which detector positions should ${michelson("bins")} counters collect from, so the fringe ` +
+      "phase survives while its frequency floats?",
     problem:
       "A fringe pattern is read out by a detector with a fixed number of counters, and the " +
       "fringe phase is to be estimated while the fringe frequency floats beside it. The page " +
@@ -69,6 +74,9 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
     slug: "ratios",
     title: "From a classifier to Fisher-preserving bins",
     href: "/walkthroughs/ratios",
+    lead:
+      "Can a calibrated classifier stand in for the likelihood, and is the retention it reports " +
+      "about the data or about the classifier?",
     problem:
       "A two-component mixture whose signal fraction is to be estimated, with the component " +
       "densities standing in for a likelihood nobody has. A classifier's calibrated posteriors, " +
@@ -89,6 +97,9 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
     slug: "hep",
     title: "A Higgs search with a floating energy scale",
     href: "/walkthroughs/hep",
+    lead:
+      `Keep only ${hep("bins")} counts of simulated collisions and still measure the signal ` +
+      "strength while the tau energy scale floats.",
     problem:
       "Simulated collision events, a signal strength to estimate, and a tau energy scale that " +
       `floats in the fit as a nuisance. Only ${hep("bins")} counts are kept. The page chooses ` +
@@ -109,6 +120,9 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
     slug: "flowcyt",
     title: "Bone-marrow cell populations",
     href: "/walkthroughs/flowcyt",
+    lead:
+      `Fit ${flowcyt("bins")} categories on reference patients, apply them to held-out patients, ` +
+      "and measure what the reduction costs.",
     problem:
       "Each cell carries marker intensities and an expert label; the quantity to estimate is a " +
       `patient's population fractions. The page fits ${flowcyt("bins")} categories on reference ` +

@@ -1,4 +1,4 @@
-import {render, screen, within} from "@testing-library/react";
+import {fireEvent, render, screen, within} from "@testing-library/react";
 import {describe, expect, it} from "vitest";
 
 import type {CoreClaim} from "../../src/atlas/core";
@@ -18,9 +18,9 @@ const data: FrontierData = {
     claims: theme.claims.map((id) => ({
       ...claimOf(id),
       statementHtml: `<p>Statement of ${id}.</p>`,
-      noteHtml: `<p>What ${id} would settle.</p>`
-    }))
-  }))
+      noteHtml: `<p>What ${id} would settle.</p>`,
+    })),
+  })),
 };
 
 function section(name: string | RegExp): HTMLElement {
@@ -49,22 +49,30 @@ describe("FrontierPage", () => {
     const titles = within(block)
       .getAllByRole("heading", {level: 3})
       .map((heading) => heading.textContent);
-    expect(titles).toEqual(foundations.claims.map((id) => claimOf(id).title));
+    const rank = (id: string): number => (core.frontier.includes(id) ? core.frontier.indexOf(id) : core.frontier.length);
+    const ordered = [...foundations.claims].sort(
+      (a, b) => rank(a) - rank(b) || (claimOf(a).editorial?.title ?? "").localeCompare(claimOf(b).editorial?.title ?? ""),
+    );
+    expect(titles).toEqual(ordered.map((id) => claimOf(id).editorial?.title));
     for (const id of foundations.claims) {
       expect(within(block).getByText(`Statement of ${id}.`)).toBeInTheDocument();
-      expect(within(block).getByRole("link", {name: claimOf(id).title})).toHaveAttribute("href", `/research/claims/${claimOf(id).slug}/`);
+      expect(within(block).getByRole("link", {name: claimOf(id).editorial?.title ?? claimOf(id).title})).toHaveAttribute(
+        "href",
+        `/research/claims/${claimOf(id).slug}/`,
+      );
     }
   });
 
   it("surrounds a question with what bounds it, what is settled beside it and what it would unlock", () => {
     render(<FrontierPage core={core} data={data} />);
-    const question = screen.getByRole("heading", {name: claimOf("OPEN-DS-MARGINS-NONCENTERED").title}).closest("section");
+    const question = screen.getByRole("heading", {name: claimOf("OPEN-DS-MARGINS-NONCENTERED").editorial?.title ?? ""}).closest("section");
     if (!question) throw new Error("no question block");
 
-    expect(within(question).getByRole("heading", {name: "Already excluded"})).toBeInTheDocument();
+    fireEvent.click(within(question).getByText("Statement and research context", {selector: "summary"}));
+    expect(within(question).getByRole("heading", {name: "Ruled out by"})).toBeInTheDocument();
     expect(within(question).getByText("CE-DS-MARGINS-RANK-VACUITY-001")).toBeInTheDocument();
-    expect(within(question).getByRole("heading", {name: "Settled next to it"})).toBeInTheDocument();
-    expect(within(question).getByRole("heading", {name: "Would unlock"})).toBeInTheDocument();
+    expect(within(question).getByRole("heading", {name: "Related settled results"})).toBeInTheDocument();
+    expect(within(question).getByRole("heading", {name: "Raised by"})).toBeInTheDocument();
 
     const settled = atlas.edges.filter((edge) => edge.source === "OPEN-DS-MARGINS-NONCENTERED" && edge.type === "rests_on");
     for (const edge of settled) expect(within(question).getAllByText(edge.target).length).toBeGreaterThan(0);
@@ -78,7 +86,7 @@ describe("FrontierPage", () => {
     expect(marks).toHaveLength(parked.length);
     expect(screen.getByText(/set aside until an explicit decision reopens it/)).toBeInTheDocument();
 
-    const block = parked[0] ? screen.getByRole("heading", {name: claimOf(parked[0].id).title}).closest("section") : null;
+    const block = parked[0] ? screen.getByRole("heading", {name: claimOf(parked[0].id).editorial?.title ?? ""}).closest("section") : null;
     expect(block?.querySelector(".provenance-band__mark")).not.toBeNull();
   });
 });

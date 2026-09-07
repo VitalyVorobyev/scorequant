@@ -183,6 +183,19 @@ The research programme is finite: the closure table in `OPEN_PROBLEMS.md` names 
 steps and the end state, one session per step, no retries, and the backlog is worked only if
 the owner moves an item into that table.
 
+## ADR 0036 · Research presentation has three levels
+
+Home tells, Atlas explores, Registry proves provenance. The research home is a bounded editorial
+argument, with four central results including its lead theorem, two boundaries, and three open
+questions. `website/content/atlas/home.json` and `summaries.json` add validated presentation text
+keyed to registry claims; exact statements and provenance remain authoritative upstream. Explore
+is theme-first, graphs are neighbourhood-first, and detailed evidence uses fragment-aware
+disclosure. All entity routes and typed edges survive. Literature coverage is independent of home
+selection; proof, publication, and priority-search status remain distinct. Proof and audit status
+may appear beside a featured result only as marks derived from the registry, never as editorial
+text. Listing titles state a claim, not an instruction. Reader acceptance is a human gate, not
+inferred from passing automated checks.
+
 ## Absorbed and superseded records
 
 | Record | Where it lives now |

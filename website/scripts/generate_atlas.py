@@ -755,10 +755,13 @@ def build() -> dict:
             }
         )
 
-    # ---- headline sanity -------------------------------------------------- #
-    for cid in config["headline"] + config["frontier"]:
-        if cid not in public_claims:
-            raise RuntimeError(f"config.json names unpublished claim {cid}")
+    home = _read_json(ATLAS_CONTENT / "home.json")
+    summaries = _read_json(ATLAS_CONTENT / "summaries.json")
+    validate_editorial(home, summaries, public_claims)
+    for cid, entry in summaries.items():
+        public_claims[cid]["editorial"] = entry
+    for claim in public_claims.values():
+        claim.setdefault("editorial", None)
 
     return {
         "schemaVersion": SCHEMA_VERSION,
@@ -773,8 +776,9 @@ def build() -> dict:
             "criteria": config["criteria"],
             "lanes": config["lanes"],
         },
-        "headline": config["headline"],
-        "frontier": config["frontier"],
+        "home": home,
+        "headline": [home["central"]["id"], *[entry["id"] for entry in home["results"]]],
+        "frontier": [entry["id"] for entry in home["questions"]],
         "claims": public_claims,
         "fixtures": public_fixtures,
         "papers": papers,
@@ -793,6 +797,47 @@ def build() -> dict:
             "readme": GITHUB + "formal/README.md",
         },
     }
+
+
+def validate_editorial(home: dict, summaries: dict, claims: dict) -> None:
+    """Reject stale editorial selections rather than substituting registry prose."""
+    required = {cid for cid, claim in claims.items() if claim["kind"] != "audit"}
+    if set(summaries) != required:
+        raise RuntimeError("summaries.json must cover exactly every non-audit claim")
+    for cid, entry in summaries.items():
+        for field in ("title", "summary"):
+            if not isinstance(entry.get(field), str) or not entry[field].strip():
+                raise RuntimeError(f"{cid}: missing editorial {field}")
+    if not isinstance(home.get("intro"), str) or not home["intro"].strip():
+        raise RuntimeError("home.json requires an introduction")
+    seen = set()
+    for section, count, kind in (
+        ("central", 1, "result"),
+        ("results", 3, "result"),
+        ("boundaries", 2, "counterexample"),
+        ("questions", 3, "question"),
+    ):
+        entries = [home.get(section)] if section == "central" else home.get(section, [])
+        if not isinstance(entries, list) or len(entries) != count:
+            raise RuntimeError(f"home.json: {section} requires {count} entries")
+        for entry in entries:
+            if not isinstance(entry, dict):
+                raise RuntimeError(f"home.json: invalid {section} entry")
+            cid = entry.get("id")
+            if cid not in claims or cid in seen:
+                raise RuntimeError(f"home.json: missing or duplicate claim {cid}")
+            seen.add(cid)
+            claim = claims[cid]
+            allowed = (
+                {"established", "derived", "proved", "proved_new"}
+                if kind == "result"
+                else {"counterexample" if kind == "counterexample" else "open"}
+            )
+            if claim["kind"] != kind or claim["provenance"] not in allowed:
+                raise RuntimeError(f"home.json: invalid kind/status for {cid}")
+            for field in ("title", "summary", "significance", "qualification"):
+                if not isinstance(entry.get(field), str) or not entry[field].strip():
+                    raise RuntimeError(f"home.json: {cid} requires {field}")
 
 
 def render() -> str:

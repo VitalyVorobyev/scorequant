@@ -24,7 +24,7 @@ export function LeanChain({modules}: {modules: readonly FormalModule[]}): React.
   const width = modules.length * BOX_WIDTH + Math.max(modules.length - 1, 0) * GAP;
   const midline = TOP + BOX_HEIGHT / 2;
   return (
-    <svg className="lean-chain__figure" role="img" viewBox={`0 0 ${width} ${BOX_HEIGHT + TOP * 2}`}>
+    <svg className="lean-chain__figure" role="img" viewBox={`0 0 ${width} ${BOX_HEIGHT + TOP * 2}`} width={width} height={BOX_HEIGHT + TOP * 2}>
       <title>
         {`The Lean modules in build order: ${modules.map((module) => module.module).join(", ")}. Each rests on the modules before it.`}
       </title>

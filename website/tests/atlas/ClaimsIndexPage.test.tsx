@@ -7,7 +7,7 @@ import {atlas, core} from "../atlasFixtures";
 const EMPTY: Record<string, never> = {};
 
 function renderedIds(container: HTMLElement): string[] {
-  return Array.from(container.querySelectorAll(".entity-link__id")).map((node) => node.textContent);
+  return Array.from(container.querySelectorAll(".entity-link__id, .claims-index__section > div > .atlas__id")).map((node) => node.textContent);
 }
 
 describe("ClaimsIndexPage", () => {

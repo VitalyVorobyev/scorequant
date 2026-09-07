@@ -69,7 +69,9 @@ function laneHeight(papers: CorePaper[]): number {
     const year = paper.year ?? 0;
     counts.set(year, (counts.get(year) ?? 0) + 1);
   }
-  const deepest = Math.max(1, ...counts.values());
+  // `Array.from`, not a spread: the production bundle lowers a spread of a Map
+  // iterator to `concat`, which hands Math.max the iterator object and yields NaN.
+  const deepest = Math.max(1, ...Array.from(counts.values()));
   return Math.max(24, deepest * STACK + 10);
 }
 
@@ -104,7 +106,7 @@ export function YearStrip({core}: {core: Core}): React.JSX.Element | null {
   return (
     <figure className="atlas-figure">
       <div className="year-strip">
-        <svg viewBox={`0 0 ${String(WIDTH)} ${String(height)}`} role="group" aria-label="Publication years of the cited literature, one lane per tradition">
+        <svg viewBox={`0 0 ${String(WIDTH)} ${String(height)}`} width={WIDTH} height={height} role="group" aria-label="Publication years of the cited literature, one lane per tradition">
           <title>Publication years of the cited literature, one lane per tradition</title>
           {placed.map(({lane, centre, bottom}) => (
             <g key={lane.slug}>

@@ -1,10 +1,9 @@
-import {render, screen, within} from "@testing-library/react";
+import {fireEvent, render, screen} from "@testing-library/react";
 import {describe, expect, it} from "vitest";
 
-import {BandStrip} from "../../src/atlas/BandStrip";
 import {localLayout} from "../../src/atlas/LocalMap";
 import AtlasHome from "../../src/atlas/pages/AtlasHome";
-import type {HomeCard} from "../../src/atlas/pages/AtlasHome";
+import {homeData} from "./renderData";
 import ClaimPage from "../../src/atlas/pages/ClaimPage";
 import type {ClaimData} from "../../src/atlas/pages/ClaimPage";
 import MapPage from "../../src/atlas/pages/MapPage";
@@ -23,25 +22,23 @@ function claimData(id: string): ClaimData {
     scopeHtml: claim.scope === null ? null : `<p>${claim.scope}</p>`,
     roleHtml: claim.role === null ? null : `<p>${claim.role}</p>`,
     proofHtml: claim.proof === null ? null : `<p>${claim.proof.markdown.slice(0, 80)}</p>`,
-    priorArt: claim.priorArt.map((audit) => ({...audit, sources: audit.sources.map((s) => ({name: s.name, html: `<span>${s.text}</span>`}))}))
+    priorArt: claim.priorArt.map((audit) => ({...audit, sources: audit.sources.map((s) => ({name: s.name, html: `<span>${s.text}</span>`}))})),
   };
-}
-
-function card(id: string): HomeCard {
-  const claim = core.claims[id];
-  const full = atlas.claims[id];
-  if (!claim || !full) throw new Error(`no claim ${id}`);
-  return {...claim, noteHtml: full.note === null ? null : `<p>${full.note}</p>`, scopeHtml: null};
 }
 
 describe("ClaimPage", () => {
   it("renders the reading grammar for the central theorem", () => {
     render(<ClaimPage core={core} data={claimData(D5)} />);
-    expect(screen.getByRole("heading", {level: 1}).textContent).toBe(core.claims[D5]?.title);
+    expect(screen.getByRole("heading", {level: 1}).textContent).toBe(core.claims[D5]?.editorial?.title);
     const headings = screen.getAllByRole("heading", {level: 2}).map((h) => h.textContent);
-    expect(headings).toEqual(expect.arrayContaining(["Meaning", "Statement", "Rests on", "Enables", "Where it stops", "Machine-checked", "In the library", "Local map", "Proof"]));
+    expect(headings).toEqual(expect.arrayContaining(["Meaning", "Statement", "Where it stops", "Proof"]));
     expect(screen.getByText("machine-checked statement")).toBeInTheDocument();
+    const priorWork = document.getElementById("prior-work");
+    expect(priorWork?.querySelector("a")?.getAttribute("href")).toMatch(/^\/research\/literature\//);
+    expect(priorWork?.textContent).toContain("Nearest prior work");
+    fireEvent.click(screen.getByText("Machine-checked statement", {selector: "summary"}));
     expect(screen.getByRole("link", {name: /Frozen specification/})).toHaveAttribute("href", expect.stringContaining("ExchangeVoronoiSpec.lean"));
+    fireEvent.click(screen.getByText("Local graph", {selector: "summary"}));
     expect(screen.getByRole("img", {name: /Local map of/})).toBeInTheDocument();
     expect(screen.getByRole("link", {name: "Open in the map"})).toHaveAttribute("href", `/research/map/?focus=${D5}`);
   });
@@ -49,7 +46,7 @@ describe("ClaimPage", () => {
   it("reorders the sections for an open question", () => {
     render(<ClaimPage core={core} data={claimData("OPEN-DS-MARGINS-NONCENTERED")} />);
     const headings = screen.getAllByRole("heading", {level: 2}).map((h) => h.textContent);
-    expect(headings).toContain("Already excluded");
+    expect(headings).toContain("Ruled out by");
     expect(headings).toContain("The question in full");
     expect(headings).not.toContain("Proof");
     expect(screen.getByText("Open question · OPEN-DS-MARGINS-NONCENTERED")).toBeInTheDocument();
@@ -65,39 +62,42 @@ describe("ClaimPage", () => {
 });
 
 describe("AtlasHome", () => {
-  it("opens with the problem, then the headline results, the strip, the frontier and the ways in", () => {
-    render(<AtlasHome core={core} data={{headline: core.headline.map(card), frontier: core.frontier.map(card)}} />);
-    const headings = screen.getAllByRole("heading", {level: 2}).map((h) => h.textContent);
-    expect(headings).toEqual(["The problem", "Established here", "The shape of the field", "Where the frontier is now", "Ways in"]);
-    expect(document.querySelectorAll(".result-card")).toHaveLength(core.headline.length);
-    const strip = screen.getByRole("table", {name: /Known, new here/});
-    expect(within(strip).getAllByRole("row").length).toBeGreaterThan(5);
-    expect(within(strip).getAllByRole("columnheader").map((h) => h.textContent)).toEqual(["Theme", "Known", "New here", "Boundary", "Open"]);
-    expect(document.querySelector(".katex-display")).not.toBeNull();
-    expect(screen.queryByText(/who this is for/i)).toBeNull();
-  });
-});
-
-describe("BandStrip", () => {
-  it("links every glyph to a claim page and leaves empty cells marked", () => {
-    render(<BandStrip core={core} />);
-    const links = screen.getAllByRole("link");
-    expect(links.length).toBeGreaterThan(100);
-    expect(links.every((link) => link.getAttribute("href")?.startsWith("/research/claims/"))).toBe(true);
-    expect(screen.getAllByLabelText("none").length).toBeGreaterThan(0);
+  it("tells a bounded story without registry projections", () => {
+    const {container} = render(<AtlasHome core={core} data={homeData()} />);
+    expect(screen.getAllByRole("heading", {level: 2}).map((h) => h.textContent)).toEqual([
+      atlas.home.central.title,
+      "What we established",
+      "Where it breaks",
+      "Open frontier",
+      "Explore further",
+    ]);
+    expect(container.querySelectorAll(".research-finding")).toHaveLength(9);
+    expect(container.querySelectorAll("svg, .glyph, .atlas-legend, table, input")).toHaveLength(0);
+    const article = container.querySelector("article.atlas__wide");
+    expect(article?.textContent).not.toMatch(/D-EXCHANGE|DS-TILT|OPEN-/);
+    expect(article?.textContent).toContain("merged duplicate atoms");
+    // The trust line under each finding is registry status, not editorial copy,
+    // so it sits outside the word budget.
+    const trust = container.querySelector(".research-finding--central .research-trust");
+    expect(trust?.textContent).toMatch(/^Proved here · machine-checked in Lean · independently audited$/);
+    container.querySelectorAll(".research-trust").forEach((line) => line.remove());
+    const words = article?.textContent.split(/\s+/).length ?? 0;
+    expect(words).toBeGreaterThanOrEqual(450);
+    expect(words).toBeLessThanOrEqual(550);
   });
 });
 
 describe("MapPage", () => {
-  it("draws every non-audit claim and fixture as a node and exposes the mobile list", () => {
+  it("starts with a neighbourhood and draws the full graph only on demand", () => {
     render(<MapPage core={core} data={{}} />);
+    const neighbourhood = screen.getByRole("group", {name: "Neighbourhood of the selected result"});
+    expect(neighbourhood.querySelectorAll(".node").length).toBeLessThan(30);
+    expect(screen.queryByRole("group", {name: "Argument map of the research"})).toBeNull();
+    fireEvent.click(screen.getByRole("button", {name: "Show full graph"}));
     const figure = screen.getByRole("group", {name: "Argument map of the research"});
-    const nodes = figure.querySelectorAll(".node");
-    const expected = Object.values(core.claims).filter((c) => c.kind !== "audit").length + Object.keys(core.fixtures).length;
-    expect(nodes).toHaveLength(expected);
-    expect(figure.querySelectorAll(".edge--rests_on").length).toBeGreaterThan(100);
-    expect(screen.getByRole("heading", {name: "Every result by problem level"})).toBeInTheDocument();
-    expect(screen.getByRole("group", {name: "Zoom"})).toBeInTheDocument();
+    expect(figure.querySelectorAll(".node")).toHaveLength(
+      Object.values(core.claims).filter((c) => c.kind !== "audit").length + Object.keys(core.fixtures).length,
+    );
   });
 });
 

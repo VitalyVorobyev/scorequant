@@ -64,3 +64,20 @@ Full instructions, including the generated files you must not hand-edit and the 
 in [`docs/playbook.md`](../docs/playbook.md). The design contract is
 [ADR 0019](../docs/decisions.md); the backend contract is
 [ADR 0018](../docs/decisions.md).
+
+### Research editorial layer
+
+Research uses three levels: **Home tells. Atlas explores. Registry proves provenance.**
+The generator reads `content/atlas/home.json` for the bounded home story and
+`content/atlas/summaries.json` for concise non-audit listing titles and summaries. Both reference
+registry claims; neither changes statements, statuses, edges, or evidence. Missing summaries,
+invalid featured kinds/statuses, duplicate IDs, and incorrect selection counts fail generation.
+Keep essential qualifications in home copy, and put full statements and provenance on claim pages.
+The line under each featured result ("Proved here · machine-checked in Lean · independently
+audited") is built from the registry at render time; editorial files never carry proof status.
+
+Explore defaults to themes; its matrix is an advanced view. Graph defaults to a neighbourhood,
+with the full graph on demand. Literature coverage never depends on home selections. Existing
+entity and fragment links remain valid, including content inside disclosures. After editing,
+regenerate the atlas and run the website checks. A human research reader must separately assess
+whether the introduction communicates the problem, contribution, boundary, and frontier.

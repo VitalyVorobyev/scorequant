@@ -33,6 +33,9 @@ describe("ClaimPage", () => {
     const headings = screen.getAllByRole("heading", {level: 2}).map((h) => h.textContent);
     expect(headings).toEqual(expect.arrayContaining(["Meaning", "Statement", "Where it stops", "Proof"]));
     expect(screen.getByText("machine-checked statement")).toBeInTheDocument();
+    const priorWork = document.getElementById("prior-work");
+    expect(priorWork?.querySelector("a")?.getAttribute("href")).toMatch(/^\/research\/literature\//);
+    expect(priorWork?.textContent).toContain("Nearest prior work");
     fireEvent.click(screen.getByText("Machine-checked statement", {selector: "summary"}));
     expect(screen.getByRole("link", {name: /Frozen specification/})).toHaveAttribute("href", expect.stringContaining("ExchangeVoronoiSpec.lean"));
     fireEvent.click(screen.getByText("Local graph", {selector: "summary"}));

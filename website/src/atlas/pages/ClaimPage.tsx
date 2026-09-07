@@ -45,13 +45,19 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
   const stop = boundary(adj, id);
   const nextDoor = openNextDoor(core, adj, id).filter((other) => other !== id);
   const motivatedBy = raisedBy(adj, id);
+  // Papers the registry marks as relevant to this claim, beyond the ones it cites:
+  // for a theorem with no citations these are its nearest prior work.
+  const related = Object.values(core.papers)
+    .filter((paper) => paper.relevantTo.includes(id) && !data.literature.includes(paper.key))
+    .sort((a, b) => (a.year ?? 0) - (b.year ?? 0) || a.key.localeCompare(b.key))
+    .map((paper) => paper.key);
   const isQuestion = data.kind === "question";
   const isCounter = data.kind === "counterexample";
   const sections = [
     {id: "meaning", label: "Meaning", show: data.noteHtml !== null || data.editorial !== null},
     {id: "statement", label: "Statement & assumptions", show: true},
     {id: "stops", label: "Limitations", show: stop.converse.length + stop.refuted.length + stop.bounded.length > 0 || data.scopeHtml !== null},
-    {id: "prior-work", label: "Attribution", show: data.literature.length + data.priorArt.length > 0},
+    {id: "prior-work", label: "Attribution", show: data.literature.length + related.length + data.priorArt.length > 0},
     {id: "proof", label: isQuestion ? "Full question" : "Proof & evidence", show: data.proofHtml !== null || data.audit !== null},
     {id: "relationships", label: "Relationships", show: true},
   ];
@@ -128,7 +134,7 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
             </section>
           ) : null}
 
-          {data.literature.length > 0 || data.priorArt.length > 0 ? (
+          {data.literature.length + related.length + data.priorArt.length > 0 ? (
             <section id="prior-work" className="atlas__section">
               <h2>Closest prior work</h2>
               {data.provenance === "proved_new" ? (
@@ -145,6 +151,18 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
                     </li>
                   ))}
                 </ul>
+              ) : null}
+              {related.length > 0 ? (
+                <>
+                  <h3>Nearest prior work</h3>
+                  <ul className="entity-list">
+                    {related.map((key) => (
+                      <li key={key}>
+                        <PaperLink core={core} id={key} />
+                      </li>
+                    ))}
+                  </ul>
+                </>
               ) : null}
               {data.priorArt.length > 0 ? (
                 <details className="research-disclosure">

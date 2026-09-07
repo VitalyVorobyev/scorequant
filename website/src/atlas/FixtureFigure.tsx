@@ -161,7 +161,7 @@ export function FixtureFigure({dimension, id, labelsAfter, labelsBefore, scores,
       <div className="fixture-figure">
         {panels.map((panel) => (
           <figure className="fixture-panel" key={panel.key}>
-            <svg viewBox={`0 0 ${String(PANEL_W)} ${String(height)}`} role="img">
+            <svg viewBox={`0 0 ${String(PANEL_W)} ${String(height)}`} width={PANEL_W} height={height} role="img">
               <title>{`${id}: ${panel.caption.toLowerCase()}, ${String(rows.length)} atoms in ${String(new Set(panel.labels).size)} cells`}</title>
               <rect className="fixture-panel__frame" x={area.left} y={area.top} width={area.right - area.left} height={area.bottom - area.top} />
               {flat ? (

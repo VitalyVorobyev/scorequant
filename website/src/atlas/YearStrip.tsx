@@ -104,7 +104,7 @@ export function YearStrip({core}: {core: Core}): React.JSX.Element | null {
   return (
     <figure className="atlas-figure">
       <div className="year-strip">
-        <svg viewBox={`0 0 ${String(WIDTH)} ${String(height)}`} role="group" aria-label="Publication years of the cited literature, one lane per tradition">
+        <svg viewBox={`0 0 ${String(WIDTH)} ${String(height)}`} width={WIDTH} height={height} role="group" aria-label="Publication years of the cited literature, one lane per tradition">
           <title>Publication years of the cited literature, one lane per tradition</title>
           {placed.map(({lane, centre, bottom}) => (
             <g key={lane.slug}>

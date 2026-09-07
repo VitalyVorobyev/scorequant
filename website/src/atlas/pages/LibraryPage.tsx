@@ -18,7 +18,7 @@ const GROUPS: readonly {id: string; label: string}[] = [
   {id: "configurations", label: "Solver configurations"},
   {id: "results", label: "Results and certificates"},
   {id: "information", label: "Information reports"},
-  {id: "providers", label: "Sources and score providers"}
+  {id: "providers", label: "Sources and score providers"},
 ];
 
 function FixtureCode({code, core}: {code: string; core: Core}): React.JSX.Element {
@@ -39,20 +39,16 @@ function FixtureCode({code, core}: {code: string; core: Core}): React.JSX.Elemen
  */
 export default function LibraryPage({core, data}: AtlasPageProps<LibraryData>): React.JSX.Element {
   return (
-    <AtlasShell
-      description="The refusals the library raises, and every public object beside the results it rests on."
-      title="In the library"
-    >
+    <AtlasShell description="The refusals the library raises, and every public object beside the results it rests on." title="In the library">
       <h1>In the library</h1>
       <p className="atlas__lead">
-        The library raises two different kinds of error. A contract error means the call was malformed: mismatched shapes, a negative weight, a
-        criterion paired with a configuration that cannot serve it. A refusal is not that. The arguments are well formed and the computation
-        would run; the library declines because what the call asks it to assert is false in general, and it names the exact counterexample that
-        makes it false.
+        The library raises two different kinds of error. A contract error means the call was malformed: mismatched shapes, a negative weight, a criterion paired
+        with a configuration that cannot serve it. A refusal is not that. The arguments are well formed and the computation would run; the library declines
+        because what the call asks it to assert is false in general, and it names the exact counterexample that makes it false.
       </p>
       <p>
-        Each refusal below therefore comes with a fixture: a small table of exact rational scores on which the asserted property demonstrably
-        fails. A reader who doubts a refusal can read the fixture instead of taking the refusal on trust.
+        Each refusal below therefore comes with a fixture: a small table of exact rational scores on which the asserted property demonstrably fails. A reader
+        who doubts a refusal can read the fixture instead of taking the refusal on trust.
       </p>
 
       <h2>The refusals</h2>
@@ -94,15 +90,15 @@ export default function LibraryPage({core, data}: AtlasPageProps<LibraryData>): 
 
       <h2>What each object rests on</h2>
       <p>
-        Every public object below is listed with the results that justify it. Where the list is empty the object is bookkeeping: it reports or
-        carries what another object established, and adds no claim of its own.
+        Every public object below is listed with the results that justify it. Where the list is empty the object is bookkeeping: it reports or carries what
+        another object established, and adds no claim of its own.
       </p>
       {GROUPS.map((group) => {
         const objects = data.objects.filter((object) => object.group === group.id);
         if (objects.length === 0) return null;
         return (
-          <section key={group.id} aria-labelledby={`group-${group.id}`} className="atlas__section">
-            <h3 id={`group-${group.id}`}>{group.label}</h3>
+          <details key={group.id} aria-labelledby={`group-${group.id}`} className="atlas__section">
+            <summary id={`group-${group.id}`}>{group.label}</summary>
             <dl className="library-relation">
               {objects.map((object) => (
                 <div key={`${object.group}-${object.name}`}>
@@ -115,16 +111,12 @@ export default function LibraryPage({core, data}: AtlasPageProps<LibraryData>): 
                     <Html html={object.roleHtml} />
                   </dd>
                   <dd className="library-relation__claims">
-                    {object.claims.length > 0 ? (
-                      <EntityList compact core={core} ids={object.claims} />
-                    ) : (
-                      <p className="atlas__muted">No result of its own.</p>
-                    )}
+                    {object.claims.length > 0 ? <EntityList compact core={core} ids={object.claims} /> : <p className="atlas__muted">No result of its own.</p>}
                   </dd>
                 </div>
               ))}
             </dl>
-          </section>
+          </details>
         );
       })}
     </AtlasShell>

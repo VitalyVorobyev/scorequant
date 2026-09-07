@@ -145,3 +145,50 @@ def test_provenance_is_derived_from_status(committed: dict) -> None:
             assert provenance == status, cid
         if claim["machineChecked"] is not None:
             assert status not in {"open", "conjecture", "measured", "counterexample"}, cid
+
+
+def test_editorial_coverage_and_home_contract(generator: ModuleType, committed: dict) -> None:
+    summaries = {
+        cid: claim["editorial"]
+        for cid, claim in committed["claims"].items()
+        if claim["kind"] != "audit"
+    }
+    generator.validate_editorial(committed["home"], summaries, committed["claims"])
+    assert len(summaries) == sum(c["kind"] != "audit" for c in committed["claims"].values())
+    for entry in summaries.values():
+        assert len(entry["title"].split()) <= 15
+        assert len(entry["summary"].split()) <= 65
+
+
+@pytest.mark.parametrize("failure", ["missing", "duplicate", "count", "kind", "status", "copy"])
+def test_editorial_rejects_invalid_featured_content(
+    generator: ModuleType, committed: dict, failure: str
+) -> None:
+    import copy
+
+    home = copy.deepcopy(committed["home"])
+    claims = copy.deepcopy(committed["claims"])
+    summaries = {cid: c["editorial"] for cid, c in claims.items() if c["kind"] != "audit"}
+    if failure == "missing":
+        home["central"]["id"] = "NONEXISTENT"
+    elif failure == "duplicate":
+        home["results"][0]["id"] = home["central"]["id"]
+    elif failure == "count":
+        home["questions"].pop()
+    elif failure == "kind":
+        home["results"][0]["id"] = home["questions"][0]["id"]
+    elif failure == "status":
+        claims[home["central"]["id"]]["provenance"] = "measured"
+    else:
+        home["central"]["qualification"] = ""
+    with pytest.raises(RuntimeError):
+        generator.validate_editorial(home, summaries, claims)
+
+
+def test_editorial_rejects_missing_summary(generator: ModuleType, committed: dict) -> None:
+    summaries = {
+        cid: c["editorial"] for cid, c in committed["claims"].items() if c["kind"] != "audit"
+    }
+    summaries.pop(committed["home"]["central"]["id"])
+    with pytest.raises(RuntimeError, match="every non-audit"):
+        generator.validate_editorial(committed["home"], summaries, committed["claims"])

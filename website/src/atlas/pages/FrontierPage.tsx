@@ -38,35 +38,39 @@ function Question({adj, core, question}: {adj: Adjacency; core: Core; question: 
   return (
     <section aria-labelledby={question.slug} className="frontier__question">
       <h3 id={question.slug}>
-        <Link to={claimHref(question.slug)}>{question.title}</Link>
+        <Link to={claimHref(question.slug)}>{question.editorial?.title ?? question.title}</Link>
       </h3>
       {question.parked ? (
         <p className="frontier__parked">
           <span className="provenance-band__mark">parked</span> set aside until an explicit decision reopens it.
         </p>
       ) : null}
-      <Html className="statement statement--question" html={question.statementHtml} />
-      <Html html={question.noteHtml} />
-      <div className="frontier__lists">
-        {alreadyExcluded.length > 0 ? (
-          <div>
-            <h4>Already excluded</h4>
-            <EntityList compact core={core} ids={alreadyExcluded} />
-          </div>
-        ) : null}
-        {nextTo.length > 0 ? (
-          <div>
-            <h4>Settled next to it</h4>
-            <EntityList compact core={core} ids={nextTo} />
-          </div>
-        ) : null}
-        {wouldUnlock.length > 0 ? (
-          <div>
-            <h4>Would unlock</h4>
-            <EntityList compact core={core} ids={wouldUnlock} />
-          </div>
-        ) : null}
-      </div>
+      {question.editorial ? <p>{question.editorial.summary}</p> : null}
+      <details className="research-disclosure">
+        <summary>Statement and research context</summary>
+        <Html className="statement statement--question" html={question.statementHtml} />
+        <Html html={question.noteHtml} />
+        <div className="frontier__lists">
+          {alreadyExcluded.length > 0 ? (
+            <div>
+              <h4>Already excluded</h4>
+              <EntityList compact core={core} ids={alreadyExcluded} />
+            </div>
+          ) : null}
+          {nextTo.length > 0 ? (
+            <div>
+              <h4>Settled next to it</h4>
+              <EntityList compact core={core} ids={nextTo} />
+            </div>
+          ) : null}
+          {wouldUnlock.length > 0 ? (
+            <div>
+              <h4>Raised by</h4>
+              <EntityList compact core={core} ids={wouldUnlock} />
+            </div>
+          ) : null}
+        </div>
+      </details>
     </section>
   );
 }
@@ -78,7 +82,16 @@ function Question({adj, core, question}: {adj: Adjacency; core: Core; question: 
  */
 export default function FrontierPage({core, data}: AtlasPageProps<FrontierData>): React.JSX.Element {
   const adj = useMemo(() => adjacency(core.edges), [core.edges]);
-  const themes = data.themes.filter((theme) => theme.claims.length > 0);
+  const rank = (id: string): number => {
+    const i = core.frontier.indexOf(id);
+    return i < 0 ? core.frontier.length : i;
+  };
+  const themes = data.themes
+    .filter((theme) => theme.claims.length > 0)
+    .map((theme) => ({
+      ...theme,
+      claims: [...theme.claims].sort((a, b) => rank(a.id) - rank(b.id) || (a.editorial?.title ?? a.title).localeCompare(b.editorial?.title ?? b.title)),
+    }));
   useRegisteredAnchors(themes.flatMap((theme) => [theme.slug, ...theme.claims.map((question) => question.slug)]));
 
   return (
@@ -88,14 +101,15 @@ export default function FrontierPage({core, data}: AtlasPageProps<FrontierData>)
     >
       <h1>The frontier</h1>
       <p className="atlas__lead">
-        An open question here is a statement nobody in the record has settled, written precisely enough that an answer would be recognisable
-        as one. Each is followed by three short lists: what an answer must already get past, what is settled beside it, and the results an
-        answer would extend.
+        Questions that remain unresolved in this research record. Open a question for its precise statement, settled neighbours, and known obstructions.
       </p>
-      <p>
-        Within a theme the questions are ordered by how many settled results raise them, so the question at the top of a theme is the one the
-        rest of the record leans on hardest.
-      </p>
+      <nav className="research-theme-links" aria-label="Frontier themes">
+        {themes.map((theme) => (
+          <a key={theme.slug} href={`#${theme.slug}`}>
+            {theme.label}
+          </a>
+        ))}
+      </nav>
 
       {themes.map((theme) => (
         <section key={theme.slug} aria-labelledby={theme.slug} className="atlas__section">

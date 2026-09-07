@@ -1620,6 +1620,10 @@
       "criterion": [
         "A"
       ],
+      "editorial": {
+        "summary": "Relocation updates give an exact objective comparison for the A criterion under its feasibility conditions.",
+        "title": "Evaluate finite A moves exactly"
+      },
       "enforcedBy": [],
       "id": "A-EXACT-MOVE-ORACLE",
       "implementedBy": [],
@@ -1662,6 +1666,10 @@
       "criterion": [
         "A"
       ],
+      "editorial": {
+        "summary": "Strictly improving feasible moves cannot cycle through the finite set of assignments.",
+        "title": "Finite A exchange terminates"
+      },
       "enforcedBy": [],
       "id": "A-EXCHANGE-TERMINATES",
       "implementedBy": [],
@@ -1707,6 +1715,10 @@
       "criterion": [
         "A"
       ],
+      "editorial": {
+        "summary": "A counterexample prevents transferring the finite D exchange-to-geometry theorem to A.",
+        "title": "A stability does not force geometry"
+      },
       "enforcedBy": [],
       "id": "A-FINITE-GEOMETRY-FAILS",
       "implementedBy": [],
@@ -1749,6 +1761,10 @@
       "criterion": [
         "A"
       ],
+      "editorial": {
+        "summary": "A tangent bound can reject moves that cannot improve the exact A objective.",
+        "title": "Screen A moves safely"
+      },
       "enforcedBy": [],
       "id": "A-TANGENT-SCREENING",
       "implementedBy": [],
@@ -1789,6 +1805,7 @@
       "criterion": [
         "D"
       ],
+      "editorial": null,
       "enforcedBy": [],
       "id": "AUDIT-D-EXCHANGE-VORONOI",
       "implementedBy": [],
@@ -1823,6 +1840,7 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": null,
       "enforcedBy": [],
       "id": "AUDIT-DS-MARGINS-AT-OPTIMA",
       "implementedBy": [],
@@ -1903,6 +1921,7 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": null,
       "enforcedBy": [],
       "id": "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
       "implementedBy": [],
@@ -1950,6 +1969,7 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": null,
       "enforcedBy": [],
       "id": "AUDIT-DS-POPULATION-BRIDGE",
       "implementedBy": [],
@@ -1992,6 +2012,7 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": null,
       "enforcedBy": [],
       "id": "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
       "implementedBy": [],
@@ -2049,6 +2070,7 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": null,
       "enforcedBy": [],
       "id": "AUDIT-DS-STABLE-BASINS",
       "implementedBy": [],
@@ -2117,6 +2139,7 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": null,
       "enforcedBy": [],
       "id": "AUDIT-DS-STABLE-MARGINS-COMPILE",
       "implementedBy": [],
@@ -2170,6 +2193,7 @@
         "general",
         "D"
       ],
+      "editorial": null,
       "enforcedBy": [],
       "id": "AUDIT-RETENTION-PLUGIN-VECTOR",
       "implementedBy": [],
@@ -2245,6 +2269,7 @@
         "general",
         "D"
       ],
+      "editorial": null,
       "enforcedBy": [],
       "id": "AUDIT-SCORE-ORACLE-ROBUSTNESS",
       "implementedBy": [],
@@ -2314,6 +2339,10 @@
       "criterion": [
         "general"
       ],
+      "editorial": {
+        "summary": "Classifier posteriors yield explicit mixture score coordinates under the stated model and calibration assumptions.",
+        "title": "From class probabilities to mixture scores"
+      },
       "enforcedBy": [],
       "id": "CLASSIFIER-MIXTURE-SCORE-FORMULA",
       "implementedBy": [],
@@ -2359,6 +2388,10 @@
       "criterion": [
         "general"
       ],
+      "editorial": {
+        "summary": "Calibrated posterior odds recover component density ratios after correcting for class priors.",
+        "title": "Recover ratios from posterior odds"
+      },
       "enforcedBy": [],
       "id": "CLASSIFIER-RATIO-ORACLE",
       "implementedBy": [
@@ -2412,6 +2445,10 @@
         "Ds",
         "E"
       ],
+      "editorial": {
+        "summary": "Uniform convergence supports value consistency in a compact finite-capacity family with mass and conditioning margins.",
+        "title": "Consistency within a restricted rule family"
+      },
       "enforcedBy": [],
       "id": "CONSISTENCY-RESTRICTED-AFFINE",
       "implementedBy": [],
@@ -2454,6 +2491,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Singleton refinement supplies an upper bound for branch-and-bound certification on small finite problems.",
+        "title": "Bound unfinished D assignments"
+      },
       "enforcedBy": [],
       "id": "D-BB-SINGLETON-BOUND",
       "implementedBy": [
@@ -2510,6 +2551,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Under the theorem’s hypotheses, exact exchange stability forces strict self-consistent nearest-centre geometry.",
+        "title": "Stable D partitions have a geometric rule"
+      },
       "enforcedBy": [],
       "id": "D-EXCHANGE-IMPLIES-VORONOI",
       "implementedBy": [
@@ -2605,6 +2650,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "A scalar inequality supplies the core step of the quantitative exchange-to-geometry argument.",
+        "title": "The scalar exchange inequality"
+      },
       "enforcedBy": [],
       "id": "D-EXCHANGE-SCALAR-CORE",
       "implementedBy": [],
@@ -2664,6 +2713,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Accepting only strictly positive exact gains yields monotone search on finitely many assignments.",
+        "title": "Finite D exchange terminates"
+      },
       "enforcedBy": [],
       "id": "D-EXCHANGE-TERMINATES",
       "implementedBy": [
@@ -2708,6 +2761,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "A wrongly assigned atom supplies a strictly improving relocation with an explicit lower bound under the stated hypotheses.",
+        "title": "Geometry violations have a measurable gain"
+      },
       "enforcedBy": [],
       "id": "D-EXCHANGE-VIOLATION-LOWER-BOUND",
       "implementedBy": [],
@@ -2767,6 +2824,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "The terminal centres and information metric define a rule reproducing the assignment under the exact theorem’s conditions.",
+        "title": "Compile a stable D assignment"
+      },
       "enforcedBy": [],
       "id": "D-FINITE-INDUCTIVE-CLOSURE",
       "implementedBy": [
@@ -2811,6 +2872,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Global optimality implies exchange stability, and hence geometric realizability under the structural theorem’s hypotheses.",
+        "title": "Global D optima are geometric"
+      },
       "enforcedBy": [],
       "id": "D-GLOBAL-GEOMETRIC-REALIZABILITY",
       "implementedBy": [],
@@ -2853,6 +2918,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "The geometric structure yields an XP complexity bound; the polynomial exponent depends on dimension and bin count.",
+        "title": "Exact D search at fixed dimension and bin count"
+      },
       "enforcedBy": [],
       "id": "D-GLOBAL-XP",
       "implementedBy": [],
@@ -2895,6 +2964,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Accepting a Lloyd proposal only after an exact objective check preserves monotonicity.",
+        "title": "Guard Lloyd proposals with exact gains"
+      },
       "enforcedBy": [],
       "id": "D-GUARDED-LLOYD",
       "implementedBy": [
@@ -2942,6 +3015,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "The leverage inequality constrains cell centres in the inverse retained-information metric.",
+        "title": "Bound the D leverage of a cell"
+      },
       "enforcedBy": [],
       "id": "D-LEVERAGE",
       "implementedBy": [
@@ -3006,6 +3083,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Updating the Mahalanobis metric and reassigning all observations need not increase the determinant objective.",
+        "title": "Lloyd reassignment can reduce D"
+      },
       "enforcedBy": [],
       "id": "D-LLOYD-NONMONOTONE",
       "implementedBy": [
@@ -3053,6 +3134,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "A classical determinant identity gives a closed-form gain for the coupled cell-centroid update.",
+        "title": "Score each D relocation exactly"
+      },
       "enforcedBy": [],
       "id": "D-LOGDET-GAIN",
       "implementedBy": [
@@ -3118,6 +3203,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "The population first-order condition gives nearest-centre geometry under its measure and regularity assumptions.",
+        "title": "Stationary D geometry in the population"
+      },
       "enforcedBy": [],
       "id": "D-POP-VORONOI",
       "implementedBy": [],
@@ -3164,6 +3253,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Moving one weighted observation changes the two affected cell contributions through an exact rank-two identity.",
+        "title": "Relocation changes information by rank two"
+      },
       "enforcedBy": [],
       "id": "D-RANK2-MOVE",
       "implementedBy": [
@@ -3225,6 +3318,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "An invertible change of parameter coordinates preserves the D-optimal partition.",
+        "title": "D partitions survive reparameterization"
+      },
       "enforcedBy": [],
       "id": "D-REPARAM-INVARIANCE",
       "implementedBy": [
@@ -3269,6 +3366,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "A tangent upper bound can exclude unprofitable moves before exact gain evaluation.",
+        "title": "Screen D moves safely"
+      },
       "enforcedBy": [],
       "id": "D-TANGENT-SCREENING",
       "implementedBy": [],
@@ -3309,6 +3410,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Coincident score rows assigned separately can defeat strict Voronoi closure, explaining the merged-atom hypothesis.",
+        "title": "Splitting duplicates breaks strict geometry"
+      },
       "enforcedBy": [
         "CE-D-UNMERGED-DUPLICATES-001"
       ],
@@ -3356,6 +3461,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "A self-consistent D-Voronoi partition can still admit a profitable exact relocation.",
+        "title": "Nearest-centre consistency is not enough"
+      },
       "enforcedBy": [
         "CE-D-VORONOI-CONVERSE-001"
       ],
@@ -3400,6 +3509,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Established optimal-design theory supplies the background for profiled determinant criteria.",
+        "title": "Classical design with nuisance parameters"
+      },
       "enforcedBy": [],
       "id": "DS-CLASSICAL-DESIGN-THEORY",
       "implementedBy": [],
@@ -3450,6 +3563,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Between-cell information of the full-data efficient score dominates the profiled information for the same rule.",
+        "title": "Efficient scores bound profiled information"
+      },
       "enforcedBy": [],
       "id": "DS-EFFICIENT-SCORE-DOMINATION",
       "implementedBy": [
@@ -3494,6 +3611,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Optimizing efficient-score information over the same bin budget bounds the global profiled optimum.",
+        "title": "An upper problem for profiled optimization"
+      },
       "enforcedBy": [],
       "id": "DS-EFFICIENT-SCORE-GLOBAL-UPPER",
       "implementedBy": [],
@@ -3536,6 +3657,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "An exact one-point objective oracle compares feasible finite assignments with nuisance profiling.",
+        "title": "Evaluate profiled moves exactly"
+      },
       "enforcedBy": [],
       "id": "DS-EXACT-MOVE-ORACLE",
       "implementedBy": [],
@@ -3587,6 +3712,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "An exact bound quantifies what one-point profiled exchange stability says about first-order geometry.",
+        "title": "A leverage bound for profiled stability"
+      },
       "enforcedBy": [],
       "id": "DS-EXCHANGE-LEVERAGE-BOUND",
       "implementedBy": [],
@@ -3629,6 +3758,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Strictly improving feasible profiled moves terminate on a finite assignment space.",
+        "title": "Finite profiled exchange terminates"
+      },
       "enforcedBy": [],
       "id": "DS-EXCHANGE-TERMINATES",
       "implementedBy": [],
@@ -3671,6 +3804,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Finite profiled exchange stability does not imply the strict geometric conclusion available for D.",
+        "title": "Profiled stability does not force geometry"
+      },
       "enforcedBy": [],
       "id": "DS-FINITE-GEOMETRY-FAILS",
       "implementedBy": [
@@ -3715,6 +3852,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "The rank ceiling obstructs full in-bin profiling when the cell budget is too small for the full score dimension.",
+        "title": "Too few cells make full profiling singular"
+      },
       "enforcedBy": [],
       "id": "DS-FULL-PROFILE-K-LE-D-SINGULAR",
       "implementedBy": [],
@@ -3760,6 +3901,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "An exhaustive exact witness has a global optimum that violates its own first-order rule.",
+        "title": "A profiled global optimum can violate geometry"
+      },
       "enforcedBy": [
         "CE-DS-GLOBAL-GEOMETRY-001"
       ],
@@ -3807,6 +3952,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "An exact witness exposes a tie class at a global optimum, limiting geometric conclusions.",
+        "title": "Global profiled optima can have degenerate ties"
+      },
       "enforcedBy": [],
       "id": "DS-GLOBAL-TIE-DEGENERACY",
       "implementedBy": [],
@@ -3849,6 +3998,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "First-order profiled geometry acts through an efficient projection rather than a full positive-definite score metric.",
+        "title": "The profiled gradient defines a semimetric"
+      },
       "enforcedBy": [],
       "id": "DS-GRADIENT-EFFICIENT-SEMIMETRIC",
       "implementedBy": [],
@@ -3903,6 +4056,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "With multiple parameters of interest, the outer tilt ceiling can fail quasiconvexity.",
+        "title": "Matrix tilts need not be quasiconvex"
+      },
       "enforcedBy": [],
       "id": "DS-MATRIX-TILT-NONQUASICONVEX",
       "implementedBy": [],
@@ -3965,6 +4122,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "An explicit atomless law has a unique isolated population optimum approached by exact finite global optima; practical ascent selection is not claimed.",
+        "title": "A law with convergent global profiled optima"
+      },
       "enforcedBy": [],
       "id": "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
       "implementedBy": [],
@@ -4020,6 +4181,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "The first-order violation bound scales with observation weight relative to the affected cell masses.",
+        "title": "Approximate profiled geometry at stability"
+      },
       "enforcedBy": [],
       "id": "DS-OKN-BOUND",
       "implementedBy": [],
@@ -4065,6 +4230,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Degenerate projected centres allow stationary profiled partitions that no efficient-semimetric rule reproduces.",
+        "title": "Population stationarity can defeat a geometric rule"
+      },
       "enforcedBy": [],
       "id": "DS-POP-WASTED-CELLS",
       "implementedBy": [],
@@ -4119,6 +4288,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Observable certificate conditions separate justified profiled conclusions from cases requiring refusal.",
+        "title": "Let the certificate decide compilation"
+      },
       "enforcedBy": [],
       "id": "DS-PROFILED-COMPILE-CERTIFICATE",
       "implementedBy": [],
@@ -4177,6 +4350,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Minimization over nuisance tilts expresses the profiled objective through a classical variational identity.",
+        "title": "A variational form of profiling"
+      },
       "enforcedBy": [],
       "id": "DS-PROFILED-VARIATIONAL",
       "implementedBy": [],
@@ -4221,6 +4398,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Efficient-score projection reduces the relevant rank requirement to the number of parameters of interest.",
+        "title": "The projected problem needs fewer cells"
+      },
       "enforcedBy": [],
       "id": "DS-PROJECTED-K-REQUIREMENT",
       "implementedBy": [],
@@ -4263,6 +4444,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Interval dynamic programming optimizes the scalar efficient-score upper problem within the finite capacity limit.",
+        "title": "Solve the scalar upper problem exactly"
+      },
       "enforcedBy": [],
       "id": "DS-SCALAR-EFFICIENT-DP",
       "implementedBy": [
@@ -4309,6 +4494,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "The profiled determinant measures efficient information for the parameters of interest after nuisance adjustment.",
+        "title": "Profiling uses Schur information"
+      },
       "enforcedBy": [],
       "id": "DS-SCHUR",
       "implementedBy": [
@@ -4370,6 +4559,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "In the stated class of laws, the margin-certified stable branch is empty under the audited sequence assumptions.",
+        "title": "Conditional centering obstructs stable margins"
+      },
       "enforcedBy": [],
       "id": "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
       "implementedBy": [],
@@ -4431,6 +4624,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "A scalar tilt equation is necessary for the stated empirical inhabitation problem; no converse or basin-transfer result follows.",
+        "title": "A root equation for regular self-consistency"
+      },
       "enforcedBy": [],
       "id": "DS-STABLE-BASINS-FIXED-POINT-GATE",
       "implementedBy": [],
@@ -4490,6 +4687,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Finite searches compare empty and inhabited regimes on specified laws; they are measured probes, not existence decisions in general.",
+        "title": "Numerical probes of the margin gate"
+      },
       "enforcedBy": [],
       "id": "DS-STABLE-BASINS-GATE-SCANS",
       "implementedBy": [],
@@ -4546,6 +4747,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Under linear conditional means, merging coincident projected centres collapses the relevant rank; constrained-value attainment remains unresolved.",
+        "title": "Wasted cells carry the remaining margins"
+      },
       "enforcedBy": [],
       "id": "DS-STABLE-BASINS-LCM-CLASSIFICATION",
       "implementedBy": [],
@@ -4606,6 +4811,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "For the stated scalar conditionally centred class, maintaining nuisance information separates achievable value from the unrestricted ceiling.",
+        "title": "Regularity margins have an information price"
+      },
       "enforcedBy": [],
       "id": "DS-STABLE-MARGINS-PRICE",
       "implementedBy": [],
@@ -4670,6 +4879,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Experiments find both margin regimes and examine which states ascent selects at increasing sample sizes.",
+        "title": "Measured selection of profiled stable states"
+      },
       "enforcedBy": [],
       "id": "DS-STABLE-STATE-SELECTION",
       "implementedBy": [],
@@ -4729,6 +4942,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "The zero-tilt interval dynamic program approaches the profiled value on the audited law without implying exchange stability or compilation authority.",
+        "title": "A consistent interval rule on an explicit law"
+      },
       "enforcedBy": [],
       "id": "DS-STRIP-DP-DELTA-CONSISTENCY",
       "implementedBy": [],
@@ -4776,6 +4993,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "A first-order upper bound excludes moves unable to improve the exact profiled objective.",
+        "title": "Screen profiled moves safely"
+      },
       "enforcedBy": [],
       "id": "DS-TANGENT-SCREENING",
       "implementedBy": [],
@@ -4834,6 +5055,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Scalar-interest tilt dynamic programming gives two-sided bounds, with exact closure when an exhibited labelling satisfies the saddle condition.",
+        "title": "Bracket the profiled optimum"
+      },
       "enforcedBy": [],
       "id": "DS-TILT-DUAL-CERTIFICATE",
       "implementedBy": [],
@@ -4898,6 +5123,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Exact finite witnesses show a genuine primal–dual gap; a nonclosing reported bracket alone does not prove such a gap.",
+        "title": "The profiled certificate need not close"
+      },
       "enforcedBy": [],
       "id": "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
       "implementedBy": [],
@@ -4945,6 +5174,10 @@
       "criterion": [
         "general"
       ],
+      "editorial": {
+        "summary": "Classical purification preserves the cell masses and first moments that determine the information objective.",
+        "title": "Purify randomized assignments on atomless laws"
+      },
       "enforcedBy": [],
       "id": "DWW-PURIFICATION-MOMENTS",
       "implementedBy": [],
@@ -4987,6 +5220,10 @@
       "criterion": [
         "E"
       ],
+      "editorial": {
+        "summary": "Information monotonicity under refinement supplies a branch-and-bound upper bound for the smallest-eigenvalue criterion.",
+        "title": "Refinement bounds also apply to E"
+      },
       "enforcedBy": [],
       "id": "E-BB-APPLIES",
       "implementedBy": [],
@@ -5029,6 +5266,10 @@
       "criterion": [
         "E"
       ],
+      "editorial": {
+        "summary": "An exact counterexample separates infinitesimal screening information from the gain of a whole-observation relocation.",
+        "title": "A positive E margin need not improve a finite move"
+      },
       "enforcedBy": [],
       "id": "E-FIRSTORDER-NOT-FINITE",
       "implementedBy": [],
@@ -5074,6 +5315,10 @@
       "criterion": [
         "E"
       ],
+      "editorial": {
+        "summary": "An exact finite optimum need not satisfy its rank-one nearest-cell rule.",
+        "title": "Global E optima can violate their own rule"
+      },
       "enforcedBy": [],
       "id": "E-GLOBAL-GEOMETRY-FAILS",
       "implementedBy": [],
@@ -5116,6 +5361,10 @@
       "criterion": [
         "E"
       ],
+      "editorial": {
+        "summary": "A repeated minimum eigenvalue makes one-transfer first-order geometry non-identifying.",
+        "title": "Repeated eigenvalues weaken E geometry"
+      },
       "enforcedBy": [],
       "id": "E-REPEATED-EIGEN-DEGENERACY",
       "implementedBy": [],
@@ -5158,6 +5407,10 @@
       "criterion": [
         "E"
       ],
+      "editorial": {
+        "summary": "Classical spectral analysis describes the supergradient when the smallest eigenvalue is simple or repeated.",
+        "title": "Supergradients for the E criterion"
+      },
       "enforcedBy": [],
       "id": "E-SUPERGRADIENT",
       "implementedBy": [],
@@ -5200,6 +5453,10 @@
       "criterion": [
         "E"
       ],
+      "editorial": {
+        "summary": "A valid supergradient gives a safe bound for rejecting finite moves.",
+        "title": "Screen E moves with supergradients"
+      },
       "enforcedBy": [],
       "id": "E-TANGENT-SCREENING",
       "implementedBy": [],
@@ -5242,6 +5499,10 @@
       "criterion": [
         "general"
       ],
+      "editorial": {
+        "summary": "The difference between full and retained Fisher information equals the within-cell second-moment loss.",
+        "title": "Binning loss is within-cell score scatter"
+      },
       "enforcedBy": [],
       "id": "FI-LOSS-DECOMPOSITION",
       "implementedBy": [],
@@ -5284,6 +5545,10 @@
       "criterion": [
         "general"
       ],
+      "editorial": {
+        "summary": "Fisher information is preserved exactly when the score is measurable from the label under the stated model assumptions.",
+        "title": "When is a hard label locally lossless?"
+      },
       "enforcedBy": [],
       "id": "FI-LOSSLESS-IFF-SCORE-MEASURABLE",
       "implementedBy": [],
@@ -5329,6 +5594,10 @@
       "criterion": [
         "general"
       ],
+      "editorial": {
+        "summary": "Cell masses and conditional score means determine the retained Fisher information of a fixed rule in a regular model.",
+        "title": "Information carried by a hard label"
+      },
       "enforcedBy": [],
       "id": "FI-QUANT-IDENTITY",
       "implementedBy": [
@@ -5377,6 +5646,10 @@
       "criterion": [
         "general"
       ],
+      "editorial": {
+        "summary": "A regular score model with K categories has retained-information rank at most K minus one.",
+        "title": "A bin budget limits information rank"
+      },
       "enforcedBy": [
         "CE-DS-MARGINS-RANK-VACUITY-001"
       ],
@@ -5425,6 +5698,10 @@
       "criterion": [
         "general"
       ],
+      "editorial": {
+        "summary": "Splitting cells increases retained information in the positive-semidefinite order.",
+        "title": "Refining cells cannot lose information"
+      },
       "enforcedBy": [],
       "id": "FI-REFINEMENT-MONOTONICITY",
       "implementedBy": [],
@@ -5467,6 +5744,10 @@
       "criterion": [
         "general"
       ],
+      "editorial": {
+        "summary": "The first variation connects changes in cell moments to the information criterion’s local geometry.",
+        "title": "The infinitesimal effect of a cell transfer"
+      },
       "enforcedBy": [],
       "id": "GENERAL-FIRST-VARIATION",
       "implementedBy": [],
@@ -5512,6 +5793,10 @@
         "E",
         "general"
       ],
+      "editorial": {
+        "summary": "A refinement upper-bounds coarser assignments for any criterion monotone in the information matrix.",
+        "title": "Refinement bounds for monotone criteria"
+      },
       "enforcedBy": [],
       "id": "GENERAL-REFINEMENT-BB",
       "implementedBy": [],
@@ -5557,6 +5842,10 @@
         "A",
         "E"
       ],
+      "editorial": {
+        "summary": "Concavity turns supergradients into upper bounds for finite objective changes.",
+        "title": "A common safe-screening principle"
+      },
       "enforcedBy": [],
       "id": "GENERAL-SUPERGRADIENT-SCREENING",
       "implementedBy": [],
@@ -5602,6 +5891,10 @@
         "A",
         "E"
       ],
+      "editorial": {
+        "summary": "The stated weighted tangent conditions exclude profitable exact relocations.",
+        "title": "Tangent stability can certify exchange stability"
+      },
       "enforcedBy": [],
       "id": "GENERAL-WEIGHTED-TANGENT-STABILITY",
       "implementedBy": [],
@@ -5647,6 +5940,10 @@
         "A",
         "E"
       ],
+      "editorial": {
+        "summary": "Moving a boundary without crossing a sample point leaves its labels and hard objective unchanged.",
+        "title": "Hard empirical objectives have flat regions"
+      },
       "enforcedBy": [],
       "id": "HARD-GEOMETRIC-EMPIRICAL-PIECEWISE-CONSTANT",
       "implementedBy": [
@@ -5691,6 +5988,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "D-efficiency compares binned and unbinned information through a dimension-normalized determinant ratio.",
+        "title": "Measure determinant retention"
+      },
       "enforcedBy": [],
       "id": "INFO-D-EFFICIENCY",
       "implementedBy": [
@@ -5738,6 +6039,10 @@
         "D",
         "Ds"
       ],
+      "editorial": {
+        "summary": "Directional diagnostics reveal information losses hidden by a single aggregate efficiency.",
+        "title": "Inspect retention by direction"
+      },
       "enforcedBy": [],
       "id": "INFO-DIRECTIONAL-DIAGNOSTICS",
       "implementedBy": [
@@ -5782,6 +6087,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "The profiled efficiency compares information for parameters of interest after nuisance adjustment.",
+        "title": "Measure profiled determinant retention"
+      },
       "enforcedBy": [],
       "id": "INFO-DS-EFFICIENCY",
       "implementedBy": [
@@ -5828,6 +6137,10 @@
         "Ds",
         "general"
       ],
+      "editorial": {
+        "summary": "Whitening against the full information reveals the retained fraction in each information direction.",
+        "title": "The spectrum of retained information"
+      },
       "enforcedBy": [],
       "id": "INFO-RETENTION-SPECTRUM",
       "implementedBy": [
@@ -5872,6 +6185,10 @@
       "criterion": [
         "general"
       ],
+      "editorial": {
+        "summary": "Component density ratios suffice for explicit score construction in a linear-mixture model.",
+        "title": "Construct mixture scores from ratios"
+      },
       "enforcedBy": [],
       "id": "MIXTURE-RATIO-SCORE",
       "implementedBy": [
@@ -5911,6 +6228,10 @@
       "criterion": [
         "A"
       ],
+      "editorial": {
+        "summary": "Seek a quantitative necessity bound despite the failure of an exact exchange-to-geometry theorem.",
+        "title": "How far can stable A geometry deviate?"
+      },
       "enforcedBy": [],
       "id": "OPEN-A-QUANTITATIVE-BOUND",
       "implementedBy": [],
@@ -5950,6 +6271,10 @@
         "Ds",
         "E"
       ],
+      "editorial": {
+        "summary": "Determine the possible advantage of randomized labels when atomless purification is unavailable.",
+        "title": "Can randomization help on atomic laws?"
+      },
       "enforcedBy": [],
       "id": "OPEN-ATOMIC-RANDOMIZATION-GAP",
       "implementedBy": [],
@@ -5988,6 +6313,10 @@
         "D",
         "Ds"
       ],
+      "editorial": {
+        "summary": "A general propagation bound from classifier calibration error to retained Fisher information remains open.",
+        "title": "Translate calibration error into information loss"
+      },
       "enforcedBy": [],
       "id": "OPEN-CLASSIFIER-CALIBRATION-FI",
       "implementedBy": [],
@@ -6028,6 +6357,10 @@
         "A",
         "E"
       ],
+      "editorial": {
+        "summary": "Characterize matrix criteria for which finite exchange stability implies first-order geometric consistency.",
+        "title": "Which criteria force geometry?"
+      },
       "enforcedBy": [],
       "id": "OPEN-CRITERION-CHARACTERIZATION",
       "implementedBy": [],
@@ -6065,6 +6398,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Seek directional retention guarantees from a determinant-based aggregate.",
+        "title": "What does determinant efficiency guarantee by direction?"
+      },
       "enforcedBy": [],
       "id": "OPEN-D-DIRECTIONAL-BOUND",
       "implementedBy": [],
@@ -6102,6 +6439,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Sharp efficiency bounds as a function of bin count remain unresolved.",
+        "title": "How many bins meet an information target?"
+      },
       "enforcedBy": [],
       "id": "OPEN-D-EFFICIENCY-VS-K",
       "implementedBy": [],
@@ -6139,6 +6480,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Study population limits for local exchange-stable D solutions, rather than only global optima.",
+        "title": "Do exchange-stable solutions converge?"
+      },
       "enforcedBy": [],
       "id": "OPEN-D-EXCHANGE-CONSISTENCY",
       "implementedBy": [],
@@ -6176,6 +6521,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Develop high-rate asymptotics for determinant-preserving quantization.",
+        "title": "What happens with many D-optimal bins?"
+      },
       "enforcedBy": [],
       "id": "OPEN-D-HIGH-RATE",
       "implementedBy": [],
@@ -6218,6 +6567,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Resolve the parameterized complexity of global finite quantization in dimension and bin count.",
+        "title": "Can exact D search improve beyond XP?"
+      },
       "enforcedBy": [],
       "id": "OPEN-D-PARAMETERIZED-COMPLEXITY",
       "implementedBy": [],
@@ -6255,6 +6608,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Establish unrestricted global D consistency beyond compact rule families with imposed margins.",
+        "title": "Does finite optimality survive the population limit?"
+      },
       "enforcedBy": [],
       "id": "OPEN-D-UNRESTRICTED-CONSISTENCY",
       "implementedBy": [],
@@ -6297,6 +6654,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "The exact gap and equality conditions identify when the efficient-score upper bound is attained.",
+        "title": "When is efficient-score domination tight?"
+      },
       "enforcedBy": [],
       "id": "OPEN-DS-DOMINATION-EQUALITY",
       "implementedBy": [],
@@ -6335,6 +6696,10 @@
         "Ds",
         "E"
       ],
+      "editorial": {
+        "summary": "Determine when finite optimal assignments converge without the restricted theory’s assumptions.",
+        "title": "Unrestricted population limits for profiled D and E"
+      },
       "enforcedBy": [],
       "id": "OPEN-DS-E-UNRESTRICTED-CONSISTENCY",
       "implementedBy": [],
@@ -6390,6 +6755,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "The proved bridge requires the stated regularity and margin hypotheses; it is not unrestricted consistency.",
+        "title": "A conditional profiled population bridge"
+      },
       "enforcedBy": [],
       "id": "OPEN-DS-FINITE-POP-BRIDGE",
       "implementedBy": [],
@@ -6445,6 +6814,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "In the audited scalar conditionally centred class, optimal value converges while binned nuisance information vanishes.",
+        "title": "Global profiled optima can lose conditioning"
+      },
       "enforcedBy": [
         "CE-DS-MARGINS-RANK-VACUITY-001"
       ],
@@ -6511,6 +6884,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "The corresponding geometry and margin behaviour beyond the audited scalar class remain open.",
+        "title": "Extend the scalar margins dichotomy"
+      },
       "enforcedBy": [],
       "id": "OPEN-DS-MARGINS-NONCENTERED",
       "implementedBy": [],
@@ -6570,6 +6947,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "An efficient projection describes stationarity under regularity assumptions, but stationarity alone does not force distinct projected centres.",
+        "title": "Stationary profiled population geometry"
+      },
       "enforcedBy": [],
       "id": "OPEN-DS-POP-COMMON-METRIC",
       "implementedBy": [],
@@ -6626,6 +7007,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "The settled reduction distinguishes an exhibited saddle, an open bracket, conditional geometry, and refusal; broader exact complexity remains open.",
+        "title": "A certificate-based profiled solver conclusion"
+      },
       "enforcedBy": [],
       "id": "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
       "implementedBy": [],
@@ -6678,6 +7063,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Wasted-cell tracking and constrained-value attainment remain unresolved beyond the established obstructions.",
+        "title": "Can constrained profiled values be attained?"
+      },
       "enforcedBy": [],
       "id": "OPEN-DS-STABLE-BASINS",
       "implementedBy": [],
@@ -6720,6 +7109,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Resolve remaining exact-complexity questions as nuisance dimension and cell count vary.",
+        "title": "The exact bit complexity of tilt optimization"
+      },
       "enforcedBy": [],
       "id": "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY",
       "implementedBy": [],
@@ -6768,6 +7161,10 @@
       "criterion": [
         "E"
       ],
+      "editorial": {
+        "summary": "Seek a common geometric description under the smallest-eigenvalue criterion.",
+        "title": "Can one supergradient describe population E geometry?"
+      },
       "enforcedBy": [],
       "id": "OPEN-E-COMMON-SUPERGRADIENT",
       "implementedBy": [],
@@ -6805,6 +7202,10 @@
       "criterion": [
         "E"
       ],
+      "editorial": {
+        "summary": "Seek a quantitative finite necessity bound under eigenvalue separation.",
+        "title": "Does a spectral gap control E geometry?"
+      },
       "enforcedBy": [],
       "id": "OPEN-E-SPECTRAL-GAP-BOUND",
       "implementedBy": [],
@@ -6843,6 +7244,10 @@
         "D",
         "Ds"
       ],
+      "editorial": {
+        "summary": "Make the quantization problem explicit for extended template fits using both event count and event shape.",
+        "title": "Combine count and shape information"
+      },
       "enforcedBy": [],
       "id": "OPEN-EXTENDED-COUNT-SHAPE",
       "implementedBy": [],
@@ -6880,6 +7285,10 @@
       "criterion": [
         "Ds"
       ],
+      "editorial": {
+        "summary": "Understand systematic template morphing and the cost of larger nuisance models.",
+        "title": "Scale template fits with nuisance parameters"
+      },
       "enforcedBy": [],
       "id": "OPEN-HEP-NUISANCE-SCALING",
       "implementedBy": [],
@@ -6918,6 +7327,10 @@
         "D",
         "Ds"
       ],
+      "editorial": {
+        "summary": "A canonical parameterization for linear-mixture score construction remains to be developed.",
+        "title": "Choose mixture score coordinates systematically"
+      },
       "enforcedBy": [],
       "id": "OPEN-MIXTURE-PARAMETERIZATION",
       "implementedBy": [],
@@ -6956,6 +7369,10 @@
         "D",
         "Ds"
       ],
+      "editorial": {
+        "summary": "Study robust quantization across multiple parameter reference points.",
+        "title": "Design bins for several reference models"
+      },
       "enforcedBy": [],
       "id": "OPEN-MULTIREFERENCE-ROBUST",
       "implementedBy": [],
@@ -6994,6 +7411,10 @@
         "D",
         "Ds"
       ],
+      "editorial": {
+        "summary": "Bound the degradation when the operating parameter differs from the design reference.",
+        "title": "What is lost away from the reference point?"
+      },
       "enforcedBy": [],
       "id": "OPEN-PARAMETER-MISMATCH",
       "implementedBy": [],
@@ -7032,6 +7453,10 @@
         "D",
         "Ds"
       ],
+      "editorial": {
+        "summary": "Determine how to estimate both contributions rather than only their combined effect.",
+        "title": "Separate representation and binning loss in estimates"
+      },
       "enforcedBy": [],
       "id": "OPEN-REPRESENTATION-LOSS-ESTIMATION",
       "implementedBy": [],
@@ -7070,6 +7495,10 @@
         "D",
         "Ds"
       ],
+      "editorial": {
+        "summary": "Beyond frozen-rule asymptotics, finite-sample guarantees for retention estimates remain open.",
+        "title": "Finite-sample uncertainty for retention"
+      },
       "enforcedBy": [],
       "id": "OPEN-RETENTION-UNCERTAINTY",
       "implementedBy": [],
@@ -7118,6 +7547,10 @@
         "D",
         "Ds"
       ],
+      "editorial": {
+        "summary": "Relate score estimation error to changes in cell moments, boundaries, and retained information.",
+        "title": "How robust is the rule to estimated scores?"
+      },
       "enforcedBy": [],
       "id": "OPEN-SCORE-PERTURBATION",
       "implementedBy": [],
@@ -7158,6 +7591,10 @@
         "A",
         "E"
       ],
+      "editorial": {
+        "summary": "Understand the zero-temperature limit and what survives hardening.",
+        "title": "Does soft optimization approach the hard problem?"
+      },
       "enforcedBy": [],
       "id": "OPEN-SOFT-HARD-ZEROTEMP",
       "implementedBy": [],
@@ -7195,6 +7632,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Improve branch-and-bound ceilings beyond singleton refinement.",
+        "title": "Tighter bounds for exact search"
+      },
       "enforcedBy": [],
       "id": "OPEN-STRONGER-BB",
       "implementedBy": [],
@@ -7233,6 +7674,10 @@
         "D",
         "Ds"
       ],
+      "editorial": {
+        "summary": "Study stronger neighbourhoods beyond single-observation relocation.",
+        "title": "Can larger local moves improve the search?"
+      },
       "enforcedBy": [],
       "id": "OPEN-STRONGER-LOCAL-NEIGHBORHOODS",
       "implementedBy": [],
@@ -7277,6 +7722,10 @@
         "Ds",
         "general"
       ],
+      "editorial": {
+        "summary": "The true score, conditioned on proxy-derived labels, determines achieved Fisher information; proxy moments measure a different quantity.",
+        "title": "True information when labels use a proxy"
+      },
       "enforcedBy": [],
       "id": "PROXY-TRUE-RETAINED-FI",
       "implementedBy": [
@@ -7321,6 +7770,10 @@
       "criterion": [
         "general"
       ],
+      "editorial": {
+        "summary": "Differentiating a local model density ratio yields the local score under the stated regularity conditions.",
+        "title": "Recover local scores from density ratios"
+      },
       "enforcedBy": [],
       "id": "RATIO-LOCAL-SCORE",
       "implementedBy": [
@@ -7367,6 +7820,10 @@
         "Ds",
         "general"
       ],
+      "editorial": {
+        "summary": "Conditional projection decomposes information lost in the representation and in its subsequent hard labels.",
+        "title": "Separate representation loss from binning loss"
+      },
       "enforcedBy": [],
       "id": "REPRESENTATION-QUANTIZATION-LOSS",
       "implementedBy": [],
@@ -7428,6 +7885,10 @@
         "general",
         "D"
       ],
+      "editorial": {
+        "summary": "A plug-in central limit theorem gives a consistent influence-function variance for independent evaluation under the stated nondegeneracy assumptions.",
+        "title": "Uncertainty for a frozen scalar rule"
+      },
       "enforcedBy": [],
       "id": "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
       "implementedBy": [],
@@ -7504,6 +7965,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "A plug-in central limit theorem describes geometric-mean determinant retention under its regularity and nonsingularity conditions.",
+        "title": "Uncertainty for a frozen vector rule"
+      },
       "enforcedBy": [],
       "id": "RETENTION-PLUGIN-CLT-FROZEN-VECTOR",
       "implementedBy": [],
@@ -7585,6 +8050,10 @@
         "general",
         "D"
       ],
+      "editorial": {
+        "summary": "A classifier-based experiment tests the frozen-rule interval’s coverage; the evidence is numerical.",
+        "title": "Measured coverage for scalar retention"
+      },
       "enforcedBy": [],
       "id": "RETENTION-PLUGIN-COVERAGE-DOOR3",
       "implementedBy": [],
@@ -7645,6 +8114,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "Closed-form laws test the vector interval’s coverage and its limitations numerically.",
+        "title": "Measured coverage for vector retention"
+      },
       "enforcedBy": [],
       "id": "RETENTION-PLUGIN-COVERAGE-VECTOR",
       "implementedBy": [],
@@ -7705,6 +8178,10 @@
       "criterion": [
         "D"
       ],
+      "editorial": {
+        "summary": "At singular retained information, geometric-mean retention has an upward plug-in bias with a rank-dependent rate.",
+        "title": "Singularity changes the plug-in retention rate"
+      },
       "enforcedBy": [],
       "id": "RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE",
       "implementedBy": [],
@@ -7753,6 +8230,10 @@
         "Ds",
         "A"
       ],
+      "editorial": {
+        "summary": "An exact gradient supports optimization of the randomized-assignment information objective.",
+        "title": "Differentiate soft assignments exactly"
+      },
       "enforcedBy": [],
       "id": "SOFT-ASSIGNMENT-GRADIENT",
       "implementedBy": [],
@@ -7797,6 +8278,10 @@
         "Ds",
         "A"
       ],
+      "editorial": {
+        "summary": "Standard nonconvex optimization theory supplies stationary guarantees at a fixed temperature, not global hard optimality.",
+        "title": "Fixed-temperature stationary guarantees"
+      },
       "enforcedBy": [],
       "id": "SOFT-FIXED-TEMP-STATIONARY",
       "implementedBy": [
@@ -7844,6 +8329,10 @@
         "A",
         "E"
       ],
+      "editorial": {
+        "summary": "Atomless purification equates optimal values for criteria depending on the preserved cell moments.",
+        "title": "Randomized and hard population values can coincide"
+      },
       "enforcedBy": [],
       "id": "SOFT-HARD-ATOMLESS-EQUIVALENCE",
       "implementedBy": [],
@@ -7893,6 +8382,10 @@
         "A",
         "E"
       ],
+      "editorial": {
+        "summary": "The soft information objective corresponds to an actual randomized labelling mechanism.",
+        "title": "Soft assignments define a randomized quantizer"
+      },
       "enforcedBy": [],
       "id": "SOFT-RANDOMIZED-FIM",
       "implementedBy": [
@@ -7937,6 +8430,10 @@
       "criterion": [
         "trace"
       ],
+      "editorial": {
+        "summary": "Maximizing normalized trace is equivalent to minimizing within-cell scatter in Fisher-whitened score space.",
+        "title": "Trace retention is whitened k-means"
+      },
       "enforcedBy": [],
       "id": "TRACE-WHITENED-KMEANS",
       "implementedBy": [
@@ -13545,21 +14042,86 @@
   "frontier": [
     "OPEN-D-UNRESTRICTED-CONSISTENCY",
     "OPEN-CRITERION-CHARACTERIZATION",
-    "OPEN-SCORE-PERTURBATION",
-    "OPEN-D-EFFICIENCY-VS-K",
-    "OPEN-DS-MARGINS-NONCENTERED"
+    "OPEN-SCORE-PERTURBATION"
   ],
   "headline": [
     "D-EXCHANGE-IMPLIES-VORONOI",
     "D-LOGDET-GAIN",
-    "D-FINITE-INDUCTIVE-CLOSURE",
-    "D-BB-SINGLETON-BOUND",
-    "DS-GLOBAL-NONGEOMETRIC",
-    "DS-EFFICIENT-SCORE-DOMINATION",
-    "DS-TILT-DUAL-CERTIFICATE",
-    "CONSISTENCY-RESTRICTED-AFFINE",
-    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR"
+    "D-GLOBAL-GEOMETRIC-REALIZABILITY",
+    "DS-TILT-DUAL-CERTIFICATE"
   ],
+  "home": {
+    "boundaries": [
+      {
+        "id": "DS-GLOBAL-NONGEOMETRIC",
+        "qualification": "A finite optimum alone does not authorize that geometric compilation.",
+        "significance": "The D theorem cannot simply be transferred to nuisance-adjusted information.",
+        "summary": "An exact finite example has a global profiled optimum that violates its own first-order geometric rule.",
+        "title": "Nuisance profiling can break the rule"
+      },
+      {
+        "id": "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
+        "qualification": "The contribution is the explicit witnesses; minimax failure on a finite nonconvex problem is not itself new.",
+        "significance": "A useful upper bound can remain strictly above the best attainable partition.",
+        "summary": "Exact examples show a genuine gap between the profiled primal optimum and its tilt dual.",
+        "title": "The certificate need not close"
+      }
+    ],
+    "central": {
+      "id": "D-EXCHANGE-IMPLIES-VORONOI",
+      "qualification": "The theorem requires merged duplicate atoms, positive-definite retained information, exactly K nonempty cells, and exact exchange stability over every move that keeps cells nonempty. Numerical stopping tolerances need their own certification.",
+      "significance": "A finite assignment therefore determines a reusable nearest-centre rule without another fit. This is the main structural bridge between optimizing labels and constructing a quantizer; it does not say that every stable partition is globally optimal.",
+      "summary": "If no allowed single-atom move improves the determinant of the retained information, every atom lies strictly nearest to its own cell centre in the metric defined by that information.",
+      "title": "Stable D-optimal partitions have a geometric rule."
+    },
+    "intro": "How can we reduce an observation to one of a few hard labels while retaining information about model parameters? We study this problem in score space—the space of local log-likelihood gradients—distinguishing labels for a fixed sample from a rule that can label future observations.",
+    "questions": [
+      {
+        "id": "OPEN-D-UNRESTRICTED-CONSISTENCY",
+        "qualification": "The unrestricted result remains open.",
+        "significance": "This would connect exact finite optimization to population design.",
+        "summary": "Restricted consistency is known. Can unrestricted empirical global D optima converge without the imposed margins?",
+        "title": "Does finite optimality survive the population limit?"
+      },
+      {
+        "id": "OPEN-CRITERION-CHARACTERIZATION",
+        "qualification": "Uniqueness of the determinant is not established.",
+        "significance": "A characterization would explain the structural distinction.",
+        "summary": "D admits an exchange-to-geometry theorem; other familiar criteria have counterexamples.",
+        "title": "Which criteria force geometry?"
+      },
+      {
+        "id": "OPEN-SCORE-PERTURBATION",
+        "qualification": "Proxy information is not automatically true Fisher information.",
+        "significance": "This would connect learned representations to quantization guarantees.",
+        "summary": "Can score error control changes in retained information and cell boundaries?",
+        "title": "How robust is the rule to estimated scores?"
+      }
+    ],
+    "results": [
+      {
+        "id": "D-LOGDET-GAIN",
+        "qualification": "The determinant identity is classical; its application to the coupled cell-centroid update is the adaptation here.",
+        "significance": "Accepting only strictly improving moves gives a monotone search that terminates on a finite sample.",
+        "summary": "A closed-form determinant gain makes individual relocations comparable without refactorizing the information matrix.",
+        "title": "Score each move exactly"
+      },
+      {
+        "id": "D-GLOBAL-GEOMETRIC-REALIZABILITY",
+        "qualification": "This is a consequence of the stability theorem, not an efficient algorithm for finding that optimum.",
+        "significance": "Searching for geometric rules need not lose the finite global optimum in this setting.",
+        "summary": "Every finite global D optimum satisfies the same nearest-centre geometry under the structural theorem’s hypotheses.",
+        "title": "Global D optima are geometric"
+      },
+      {
+        "id": "DS-TILT-DUAL-CERTIFICATE",
+        "qualification": "Closure requires the stated saddle condition; a reported bracket alone is not an optimality certificate.",
+        "significance": "An exhibited closing labelling certifies a finite global profiled optimum.",
+        "summary": "For one parameter of interest, dynamic programming on a tilted scalar score supplies an achieved value and an upper bound.",
+        "title": "Bracket the profiled optimum"
+      }
+    ]
+  },
   "layout": {
     "bands": [
       {

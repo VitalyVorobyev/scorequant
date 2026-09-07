@@ -60,7 +60,7 @@ export default function researchAtlasPlugin(context) {
           path: route(baseUrl, ...segments),
           component: pages(component),
           exact: true,
-          modules: {core: corePath, data: dataPath}
+          modules: {core: corePath, data: dataPath},
         });
       };
 
@@ -74,8 +74,8 @@ export default function researchAtlasPlugin(context) {
         proofHtml: claim.proof ? render(claim.proof.markdown) : null,
         priorArt: claim.priorArt.map((audit) => ({
           ...audit,
-          sources: audit.sources.map((s) => ({name: s.name, html: render(s.text)}))
-        }))
+          sources: audit.sources.map((s) => ({name: s.name, html: render(s.text)})),
+        })),
       });
       // A fixture's refusal trigger, reason and remedy are Markdown with
       // backticked symbol names, exactly like the library's own refusal table,
@@ -90,9 +90,9 @@ export default function researchAtlasPlugin(context) {
           ? {
               triggerHtml: render(fixture.refusal.trigger),
               reasonHtml: render(fixture.refusal.reason),
-              remedyHtml: render(fixture.refusal.remedy)
+              remedyHtml: render(fixture.refusal.remedy),
             }
-          : null
+          : null,
       });
       const renderedPaper = (paper) => ({
         ...paper,
@@ -101,19 +101,24 @@ export default function researchAtlasPlugin(context) {
           ? {
               ...paper.annotation,
               fieldsHtml: Object.fromEntries(Object.entries(paper.annotation.fields).map(([k, v]) => [k, render(v)])),
-              proseHtml: render(paper.annotation.prose)
+              proseHtml: render(paper.annotation.prose),
             }
-          : null
+          : null,
       });
 
       // Views.
-      const card = (id) => {
-        const claim = atlas.claims[id];
-        return {...coreClaim(claim), noteHtml: render(claim.note), scopeHtml: render(claim.scope)};
-      };
+      const homeEntry = (entry) => ({
+        ...entry,
+        summaryHtml: render(entry.summary),
+        significanceHtml: render(entry.significance),
+        qualificationHtml: render(entry.qualification),
+      });
       await add([], "AtlasHome", "atlas-home", {
-        headline: atlas.headline.map(card),
-        frontier: atlas.frontier.map(card)
+        introHtml: render(atlas.home.intro),
+        central: homeEntry(atlas.home.central),
+        results: atlas.home.results.map(homeEntry),
+        boundaries: atlas.home.boundaries.map(homeEntry),
+        questions: atlas.home.questions.map(homeEntry),
       });
       await add(["map"], "MapPage", "atlas-map", {});
       await add(["landscape"], "LandscapePage", "atlas-landscape", {});
@@ -123,9 +128,9 @@ export default function researchAtlasPlugin(context) {
           claims: theme.claims.map((id) => ({
             ...coreClaim(atlas.claims[id]),
             statementHtml: render(atlas.claims[id].statement),
-            noteHtml: render(atlas.claims[id].note)
-          }))
-        }))
+            noteHtml: render(atlas.claims[id].note),
+          })),
+        })),
       });
       await add(["literature"], "LiteraturePage", "atlas-literature", {
         traditions: atlas.traditions.map((t) => ({
@@ -133,8 +138,8 @@ export default function researchAtlasPlugin(context) {
           notes: t.notes.map((n) => ({
             ...n,
             fieldsHtml: Object.fromEntries(Object.entries(n.fields).map(([k, v]) => [k, render(v)])),
-            proseHtml: render(n.prose)
-          }))
+            proseHtml: render(n.prose),
+          })),
         })),
         papers: Object.fromEntries(Object.values(atlas.papers).map((p) => [p.key, renderedPaper(p)])),
         // The nearest published sources a headline result's prior-art audit
@@ -145,14 +150,12 @@ export default function researchAtlasPlugin(context) {
         // sentence that followed it, so a source's text keeps the conjunction
         // that led to the next name; a list is not a sentence, and the
         // conjunction is dropped. Names carry the LaTeX double hyphen.
-        priorArt: atlas.headline
+        priorArt: Object.keys(atlas.claims)
           .filter((id) => atlas.claims[id].priorArt.length > 0)
           .map((id) => ({
             id,
-            sources: atlas.claims[id].priorArt.flatMap((audit) =>
-              audit.sources.map((s) => ({name: s.name, html: render(s.text)}))
-            )
-          }))
+            sources: atlas.claims[id].priorArt.flatMap((audit) => audit.sources.map((s) => ({name: s.name, html: render(s.text)}))),
+          })),
       });
       // The Lean chain, plus the full machine-checked record of every claim it
       // certifies: the declaration, the two files and the statement audit live
@@ -161,7 +164,7 @@ export default function researchAtlasPlugin(context) {
         ...atlas.formal,
         certified: Object.values(atlas.claims)
           .filter((claim) => claim.machineChecked !== null)
-          .map((claim) => ({id: claim.id, machineChecked: claim.machineChecked}))
+          .map((claim) => ({id: claim.id, machineChecked: claim.machineChecked})),
       });
       // Library roles, refusal triggers, reasons and remedies are Markdown with
       // backticked symbol names, so they are rendered here like every other
@@ -172,14 +175,14 @@ export default function researchAtlasPlugin(context) {
           ...refusal,
           reasonHtml: render(refusal.reason),
           remedyHtml: render(refusal.remedy),
-          triggerHtml: render(refusal.trigger)
-        }))
+          triggerHtml: render(refusal.trigger),
+        })),
       });
       await add(["how-to-read"], "HowToReadPage", "atlas-how-to-read", {});
       await add(["claims"], "ClaimsIndexPage", "atlas-claims-index", {});
       // Row counts are the one fixture fact the shared core does not carry.
       await add(["counterexamples"], "FixturesIndexPage", "atlas-fixtures-index", {
-        sampleSize: Object.fromEntries(Object.values(atlas.fixtures).map((fixture) => [fixture.id, fixture.weights.length]))
+        sampleSize: Object.fromEntries(Object.values(atlas.fixtures).map((fixture) => [fixture.id, fixture.weights.length])),
       });
 
       // Entities.
@@ -195,6 +198,6 @@ export default function researchAtlasPlugin(context) {
       for (const author of Object.values(atlas.authors)) {
         await add(["authors", author.slug], "AuthorPage", `author-${author.slug}`, author);
       }
-    }
+    },
   };
 }

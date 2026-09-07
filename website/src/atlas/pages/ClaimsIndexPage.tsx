@@ -3,6 +3,7 @@ import {useMemo, useState} from "react";
 import {useRegisteredAnchors} from "../anchors";
 import {AtlasShell} from "../AtlasShell";
 import type {AtlasPageProps, Core, CoreClaim} from "../core";
+import {ResultRow} from "../ResultRow";
 import {EntityList} from "../Entity";
 
 /** The three TeX macros the chapter section titles use, as plain characters. */
@@ -35,9 +36,11 @@ function groupsOf(core: Core): Group[] {
     const sections = chapter.sections.map((section) => ({
       label: section.label,
       title: plainMath(section.title),
-      ids: claims.filter((claim) => claim.chapter?.slug === chapter.slug && claim.chapter.section === section.label).map((claim) => claim.id)
+      ids: claims.filter((claim) => claim.chapter?.slug === chapter.slug && claim.chapter.section === section.label).map((claim) => claim.id),
     }));
-    const loose = claims.filter((claim) => claim.chapter?.slug === chapter.slug && !chapter.sections.some((section) => section.label === claim.chapter?.section));
+    const loose = claims.filter(
+      (claim) => claim.chapter?.slug === chapter.slug && !chapter.sections.some((section) => section.label === claim.chapter?.section),
+    );
     if (loose.length > 0) sections.push({label: null, title: "Elsewhere in the chapter", ids: loose.map((claim) => claim.id)});
     if (sections.some((section) => section.ids.length > 0)) {
       groups.push({key: chapter.slug, label: chapter.label, source: chapter.url, sections: sections.filter((section) => section.ids.length > 0)});
@@ -49,7 +52,7 @@ function groupsOf(core: Core): Group[] {
     .map((theme) => ({
       label: null,
       title: theme.label,
-      ids: open.filter((claim) => claim.theme === theme.slug).map((claim) => claim.id)
+      ids: open.filter((claim) => claim.theme === theme.slug).map((claim) => claim.id),
     }))
     .filter((section) => section.ids.length > 0);
   const unthemed = open.filter((claim) => !core.themes.some((theme) => theme.slug === claim.theme));
@@ -78,15 +81,19 @@ export default function ClaimsIndexPage({core}: AtlasPageProps<Record<string, ne
         .filter((claim) => claim.kind === "audit")
         .map((claim) => claim.id)
         .sort((a, b) => a.localeCompare(b)),
-    [core]
+    [core],
   );
   const [query, setQuery] = useState("");
 
-  const keep = (ids: string[]): string[] => ids.filter((id) => {
-    const claim = core.claims[id];
-    return claim ? matches(claim, query) : false;
-  });
-  const shown = groups.map((group) => ({...group, sections: group.sections.map((section) => ({...section, ids: keep(section.ids)})).filter((section) => section.ids.length > 0)}));
+  const keep = (ids: string[]): string[] =>
+    ids.filter((id) => {
+      const claim = core.claims[id];
+      return claim ? matches(claim, query) : false;
+    });
+  const shown = groups.map((group) => ({
+    ...group,
+    sections: group.sections.map((section) => ({...section, ids: keep(section.ids)})).filter((section) => section.ids.length > 0),
+  }));
   const auditsShown = keep(audits);
   const total = shown.reduce((sum, group) => sum + group.sections.reduce((count, section) => count + section.ids.length, 0), 0) + auditsShown.length;
 
@@ -97,8 +104,8 @@ export default function ClaimsIndexPage({core}: AtlasPageProps<Record<string, ne
     >
       <h1>The claims</h1>
       <p className="atlas__lead">
-        The whole record, in the order it is written up: each chapter derives its results in sections, and a claim sits in the section that
-        proves it. The open questions follow, grouped by the theme they belong to, and the verification records last.
+        The whole record, in the order it is written up: each chapter derives its results in sections, and a claim sits in the section that proves it. The open
+        questions follow, grouped by the theme they belong to, and the verification records last.
       </p>
 
       <div className="atlas-filter">
@@ -132,7 +139,15 @@ export default function ClaimsIndexPage({core}: AtlasPageProps<Record<string, ne
                   {section.title}
                 </h3>
               )}
-              <EntityList compact core={core} ids={section.ids} />
+              {section.ids.map((id) => {
+                const claim = core.claims[id];
+                return claim ? (
+                  <div key={id}>
+                    <ResultRow core={core} claim={claim} />
+                    <p className="atlas__id">{id}</p>
+                  </div>
+                ) : null;
+              })}
             </div>
           ))}
         </section>
@@ -142,8 +157,8 @@ export default function ClaimsIndexPage({core}: AtlasPageProps<Record<string, ne
         <section aria-labelledby="group-audits" className="atlas__section">
           <h2 id="group-audits">Verification records</h2>
           <p>
-            An independent re-derivation of a result already in the record. A verification record carries no result of its own; it says that
-            someone went through the argument again and what they found.
+            An independent re-derivation of a result already in the record. A verification record carries no result of its own; it says that someone went
+            through the argument again and what they found.
           </p>
           <EntityList compact core={core} ids={auditsShown} />
         </section>

@@ -9,6 +9,7 @@
  */
 import type {
   Author,
+  EditorialSummary,
   Chapter,
   CriterionEntry,
   Edge,
@@ -18,10 +19,11 @@ import type {
   Provenance,
   Strip,
   Theme,
-  VocabularyEntry
+  VocabularyEntry,
 } from "../data/atlas";
 
 export interface CoreClaim {
+  editorial: EditorialSummary | null;
   audited: boolean;
   chapter: {file: string; label: string; section: string | null; slug: string} | null;
   criterion: string[];

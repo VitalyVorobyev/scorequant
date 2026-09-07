@@ -7,6 +7,7 @@
 
 export function coreClaim(claim) {
   return {
+    editorial: claim.editorial,
     id: claim.id,
     slug: claim.slug,
     kind: claim.kind,
@@ -24,7 +25,7 @@ export function coreClaim(claim) {
     chapter: claim.chapter,
     literature: claim.literature,
     implementedBy: claim.implementedBy,
-    enforcedBy: claim.enforcedBy
+    enforcedBy: claim.enforcedBy,
   };
 }
 
@@ -38,7 +39,7 @@ export function coreFixture(fixture) {
     K: fixture.K,
     falsifies: fixture.falsifies,
     citedBy: fixture.citedBy,
-    refusal: fixture.refusal !== null
+    refusal: fixture.refusal !== null,
   };
 }
 
@@ -52,7 +53,7 @@ export function corePaper(paper) {
     tradition: paper.tradition,
     citedBy: paper.citedBy,
     relevantTo: paper.relevantTo,
-    doi: paper.doi
+    doi: paper.doi,
   };
 }
 
@@ -71,6 +72,6 @@ export function buildCore(atlas) {
     themes: atlas.themes,
     strips: atlas.strips,
     edges: atlas.edges,
-    layout: atlas.layout
+    layout: atlas.layout,
   };
 }

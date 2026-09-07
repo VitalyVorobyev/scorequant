@@ -7,7 +7,6 @@ import {AtlasShell} from "../AtlasShell";
 import type {AtlasPageProps, Core} from "../core";
 import {criterionLabel, levelLabel, provenanceLabel} from "../core";
 import {EntityList, FixtureLink, Html, PaperLink} from "../Entity";
-import {Glyph} from "../Glyph";
 import {adjacency, boundary, closure, enables, openNextDoor, raises, raisedBy, restsOn, verifiedBy} from "../graph";
 import {LocalMap} from "../LocalMap";
 
@@ -26,7 +25,7 @@ const KIND_WORD: Record<Claim["kind"], string> = {
   question: "Open question",
   counterexample: "Counterexample",
   evidence: "Measured evidence",
-  audit: "Verification record"
+  audit: "Verification record",
 };
 
 /**
@@ -48,18 +47,13 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
   const motivatedBy = raisedBy(adj, id);
   const isQuestion = data.kind === "question";
   const isCounter = data.kind === "counterexample";
-  const sections: {id: string; label: string; show: boolean}[] = [
-    {id: "meaning", label: "Meaning", show: data.noteHtml !== null},
-    {id: "statement", label: "Statement", show: true},
-    {id: "rests-on", label: isQuestion ? "Settled next to it" : "Rests on", show: rests.length > 0},
-    {id: "enables", label: isQuestion ? "Would unlock" : "Enables", show: enabled.length + raised.length + verifiers.length + (isQuestion ? motivatedBy.length : 0) > 0},
-    {id: "stops", label: isQuestion ? "Already excluded" : "Where it stops", show: stop.converse.length + stop.refuted.length + stop.bounded.length > 0 || data.scopeHtml !== null},
-    {id: "open", label: "Open next door", show: nextDoor.length > 0 && !isQuestion},
-    {id: "prior-work", label: "Closest prior work", show: data.literature.length > 0 || data.priorArt.length > 0},
-    {id: "machine-checked", label: "Machine-checked", show: data.machineChecked !== null},
-    {id: "library", label: "In the library", show: data.implementedBy.length + data.enforcedBy.length > 0},
-    {id: "local-map", label: "Local map", show: data.kind !== "audit"},
-    {id: "proof", label: isQuestion ? "The question in full" : isCounter ? "The example" : "Proof", show: data.proofHtml !== null || data.audit !== null}
+  const sections = [
+    {id: "meaning", label: "Meaning", show: data.noteHtml !== null || data.editorial !== null},
+    {id: "statement", label: "Statement & assumptions", show: true},
+    {id: "stops", label: "Limitations", show: stop.converse.length + stop.refuted.length + stop.bounded.length > 0 || data.scopeHtml !== null},
+    {id: "prior-work", label: "Attribution", show: data.literature.length + data.priorArt.length > 0},
+    {id: "proof", label: isQuestion ? "Full question" : "Proof & evidence", show: data.proofHtml !== null || data.audit !== null},
+    {id: "relationships", label: "Relationships", show: true},
   ];
   const description = data.statement.length > 200 ? `${data.statement.slice(0, 197)}…` : data.statement;
 
@@ -70,13 +64,25 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
           <p className="atlas__id">
             {KIND_WORD[data.kind]} · {data.id}
           </p>
-          <h1>{data.title}</h1>
+          <h1>{data.editorial?.title ?? data.title}</h1>
           <ProvenanceBand core={core} data={data} />
+          <p className="research-attribution">Publication status: {data.publicationStatus.replaceAll("_", " ")}</p>
+          {data.proofHtml !== null ? (
+            <p>
+              <a href="#proof">{isQuestion ? "Read the full question" : "Read the proof and evidence"} →</a>
+            </p>
+          ) : null}
 
-          {data.noteHtml !== null ? (
+          {data.noteHtml !== null || data.editorial !== null ? (
             <section id="meaning" className="atlas__section">
               <h2>Meaning</h2>
-              <Html html={data.noteHtml} />
+              {data.editorial ? <p className="atlas__lead">{data.editorial.summary}</p> : null}
+              {data.noteHtml ? (
+                <details>
+                  <summary>Scientific context</summary>
+                  <Html html={data.noteHtml} />
+                </details>
+              ) : null}
             </section>
           ) : null}
 
@@ -97,44 +103,6 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
             ) : null}
             {data.roleHtml !== null ? <Html html={data.roleHtml} className="atlas__muted" /> : null}
           </section>
-
-          {rests.length > 0 ? (
-            <section id="rests-on" className="atlas__section">
-              <h2>{isQuestion ? "Settled next to it" : "Rests on"}</h2>
-              <EntityList core={core} ids={rests} />
-              {chain.length > 0 ? (
-                <details className="chain">
-                  <summary>The full chain beneath it</summary>
-                  <EntityList core={core} ids={chain.map((entry) => entry.id)} compact meta={(other) => `depth ${chain.find((entry) => entry.id === other)?.depth ?? ""}`} />
-                </details>
-              ) : null}
-            </section>
-          ) : null}
-
-          {enabled.length + raised.length + verifiers.length + (isQuestion ? motivatedBy.length : 0) > 0 ? (
-            <section id="enables" className="atlas__section">
-              <h2>{isQuestion ? "Would unlock" : "Enables"}</h2>
-              {isQuestion && motivatedBy.length > 0 ? (
-                <>
-                  <h3>Raised by</h3>
-                  <EntityList core={core} ids={motivatedBy} />
-                </>
-              ) : null}
-              {enabled.length > 0 ? <EntityList core={core} ids={enabled} /> : null}
-              {raised.length > 0 ? (
-                <>
-                  <h3>Raises</h3>
-                  <EntityList core={core} ids={raised} />
-                </>
-              ) : null}
-              {verifiers.length > 0 ? (
-                <>
-                  <h3>Verified by</h3>
-                  <EntityList core={core} ids={verifiers} />
-                </>
-              ) : null}
-            </section>
-          ) : null}
 
           {stop.converse.length + stop.refuted.length + stop.bounded.length > 0 || data.scopeHtml !== null ? (
             <section id="stops" className="atlas__section">
@@ -161,20 +129,13 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
             </section>
           ) : null}
 
-          {nextDoor.length > 0 && !isQuestion ? (
-            <section id="open" className="atlas__section">
-              <h2>Open next door</h2>
-              <EntityList core={core} ids={nextDoor} />
-            </section>
-          ) : null}
-
           {data.literature.length > 0 || data.priorArt.length > 0 ? (
             <section id="prior-work" className="atlas__section">
               <h2>Closest prior work</h2>
               {data.provenance === "proved_new" ? (
                 <p>
-                  A targeted search of the literature found no direct precedent for this statement. That records a search gap, not a novelty claim; the nearest sources are
-                  named below.
+                  A targeted search of the literature found no direct precedent for this statement. That records a search gap, not a novelty claim; the nearest
+                  sources are named below.
                 </p>
               ) : null}
               {data.literature.length > 0 ? (
@@ -186,39 +147,96 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
                   ))}
                 </ul>
               ) : null}
-              {data.priorArt.map((audit) => (
-                <div key={audit.url} className="prior-art">
-                  <h3>Nearest sources{audit.date ? `, checked ${audit.date}` : ""}</h3>
-                  {audit.sources.length > 0 ? (
-                    <dl className="prior-art__sources">
-                      {audit.sources.map((source) => (
-                        <div key={source.name}>
-                          <dt>{source.name}</dt>
-                          <dd>
-                            <Html html={source.html} as="span" />
-                          </dd>
-                        </div>
-                      ))}
-                    </dl>
-                  ) : null}
-                  <p className="atlas__muted">
-                    <a href={audit.url} rel="noopener noreferrer">
-                      The full search record
-                    </a>
-                  </p>
-                </div>
-              ))}
+              {data.priorArt.length > 0 ? (
+                <details className="research-disclosure">
+                  <summary>Detailed prior-art searches</summary>
+                  {data.priorArt.map((audit) => (
+                    <div key={audit.url} className="prior-art">
+                      <h3>Nearest sources{audit.date ? `, checked ${audit.date}` : ""}</h3>
+                      {audit.sources.length > 0 ? (
+                        <dl className="prior-art__sources">
+                          {audit.sources.map((source) => (
+                            <div key={source.name}>
+                              <dt>{source.name}</dt>
+                              <dd>
+                                <Html html={source.html} as="span" />
+                              </dd>
+                            </div>
+                          ))}
+                        </dl>
+                      ) : null}
+                      <p className="atlas__muted">
+                        <a href={audit.url} rel="noopener noreferrer">
+                          The full search record
+                        </a>
+                      </p>
+                    </div>
+                  ))}
+                </details>
+              ) : null}
             </section>
           ) : null}
 
+          <details className="research-disclosure" id="relationships">
+            <summary>Relationships</summary>
+            {rests.length > 0 ? (
+              <section id="rests-on" className="atlas__section">
+                <h2>{isQuestion ? "Settled next to it" : "Rests on"}</h2>
+                <EntityList core={core} ids={rests} />
+                {chain.length > 0 ? (
+                  <details className="chain">
+                    <summary>The full chain beneath it</summary>
+                    <EntityList
+                      core={core}
+                      ids={chain.map((entry) => entry.id)}
+                      compact
+                      meta={(other) => `depth ${chain.find((entry) => entry.id === other)?.depth ?? ""}`}
+                    />
+                  </details>
+                ) : null}
+              </section>
+            ) : null}
+
+            {enabled.length + raised.length + verifiers.length + (isQuestion ? motivatedBy.length : 0) > 0 ? (
+              <section id="enables" className="atlas__section">
+                <h2>{isQuestion ? "Would unlock" : "Enables"}</h2>
+                {isQuestion && motivatedBy.length > 0 ? (
+                  <>
+                    <h3>Raised by</h3>
+                    <EntityList core={core} ids={motivatedBy} />
+                  </>
+                ) : null}
+                {enabled.length > 0 ? <EntityList core={core} ids={enabled} /> : null}
+                {raised.length > 0 ? (
+                  <>
+                    <h3>Raises</h3>
+                    <EntityList core={core} ids={raised} />
+                  </>
+                ) : null}
+                {verifiers.length > 0 ? (
+                  <>
+                    <h3>Verified by</h3>
+                    <EntityList core={core} ids={verifiers} />
+                  </>
+                ) : null}
+              </section>
+            ) : null}
+
+            {nextDoor.length > 0 && !isQuestion ? (
+              <section id="open" className="atlas__section">
+                <h2>Open next door</h2>
+                <EntityList core={core} ids={nextDoor} />
+              </section>
+            ) : null}
+          </details>
           {data.machineChecked !== null ? (
-            <section id="machine-checked" className="atlas__section">
-              <h2>Machine-checked</h2>
+            <details id="machine-checked" className="atlas__section">
+              <summary>Machine-checked statement</summary>
               <p>
-                The statement is proved in {data.machineChecked.system} as <code>{data.machineChecked.declaration}</code>. Its hypotheses and conclusion are frozen in a
-                specification file that was audited against this page's statement before the proof was written
-                {data.machineChecked.statementAudit?.verdict ? ` (verdict: ${data.machineChecked.statementAudit.verdict})` : ""}. A Lean build certifies the theorem, not the
-                Python and JAX code that implements it.
+                The statement is proved in {data.machineChecked.system} as <code>{data.machineChecked.declaration}</code>. Its hypotheses and conclusion are
+                frozen in a specification file that was audited against this page's statement before the proof was written
+                {data.machineChecked.statementAudit?.verdict ? ` (verdict: ${data.machineChecked.statementAudit.verdict})` : ""}. A Lean build certifies the
+                theorem, not the Python and JAX code that implements it.
               </p>
               <ul>
                 <li>
@@ -244,12 +262,12 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
                   <Link to="/research/machine-checked/">The whole machine-checked chain</Link>
                 </li>
               </ul>
-            </section>
+            </details>
           ) : null}
 
           {data.implementedBy.length + data.enforcedBy.length > 0 ? (
-            <section id="library" className="atlas__section">
-              <h2>In the library</h2>
+            <details id="library" className="atlas__section">
+              <summary>In the library</summary>
               {data.implementedBy.length > 0 ? (
                 <p>
                   Carried by{" "}
@@ -277,12 +295,12 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
               <p>
                 <Link to="/research/library/">Every object and refusal</Link>
               </p>
-            </section>
+            </details>
           ) : null}
 
           {data.kind !== "audit" ? (
-            <section id="local-map" className="atlas__section">
-              <h2>Local map</h2>
+            <details id="local-map" className="atlas__section">
+              <summary>Local graph</summary>
               <figure className="atlas-figure">
                 <LocalMap core={core} id={id} />
                 <figcaption className="atlas-figure__caption">
@@ -290,7 +308,7 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
                   <Link to={`/research/map/?focus=${encodeURIComponent(id)}`}>Open in the map</Link>.
                 </figcaption>
               </figure>
-            </section>
+            </details>
           ) : null}
 
           {data.proofHtml !== null || data.audit !== null ? (
@@ -378,9 +396,7 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
 function ProvenanceBand({core, data}: {core: Core; data: ClaimData}): React.JSX.Element {
   return (
     <p className="provenance-band">
-      <span className="provenance-band__class">
-        <Glyph kind={data.provenance} checked={data.machineChecked !== null} size="lg" /> {provenanceLabel(core, data.provenance)}
-      </span>
+      <span className="provenance-band__class">{provenanceLabel(core, data.provenance)}</span>
       {data.machineChecked !== null ? <span className="provenance-band__mark">machine-checked statement</span> : null}
       {data.audit !== null ? <span className="provenance-band__mark">independently audited</span> : null}
       {data.searchStatus === "search_gap" && data.provenance !== "proved_new" ? <span className="provenance-band__mark">no direct precedent found</span> : null}
@@ -390,9 +406,6 @@ function ProvenanceBand({core, data}: {core: Core; data: ClaimData}): React.JSX.
           parked
         </span>
       ) : null}
-      <span className="provenance-band__tag">{data.criterion.map((c) => criterionLabel(core, c)).join(", ")}</span>
-      <span className="provenance-band__tag">{levelLabel(core, data.level)}</span>
-      {data.chapter ? <span className="provenance-band__tag">{data.chapter.label}</span> : null}
     </p>
   );
 }

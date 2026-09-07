@@ -1,7 +1,7 @@
 import {fireEvent, render, screen, within} from "@testing-library/react";
 import {describe, expect, it} from "vitest";
 
-import LandscapePage from "../../src/atlas/pages/LandscapePage";
+import LandscapePage from "../../src/atlas/pages/LandscapeMatrix";
 import {atlas, core} from "../atlasFixtures";
 
 const EMPTY: Record<string, never> = {};
@@ -56,7 +56,9 @@ describe("LandscapePage", () => {
     expect(screen.getByText(/Select a cell/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", {name: /^E-optimality at Finite assignment:/}));
-    const expected = Object.values(atlas.claims).filter((claim) => claim.kind !== "audit" && claim.level === "finite_assignment" && claim.criterion.includes("E"));
+    const expected = Object.values(atlas.claims).filter(
+      (claim) => claim.kind !== "audit" && claim.level === "finite_assignment" && claim.criterion.includes("E"),
+    );
     const heading = screen.getByRole("heading", {name: /E-optimality, finite assignment/i});
     expect(heading).toBeInTheDocument();
     for (const claim of expected) expect(screen.getAllByText(claim.title).length).toBeGreaterThan(0);

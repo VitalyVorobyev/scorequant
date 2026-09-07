@@ -1,12 +1,13 @@
 import Link from "@docusaurus/Link";
-import {useHistory, useLocation} from "@docusaurus/router";
-import {useEffect, useMemo, useState} from "react";
+import {useMemo, useState} from "react";
 
 import type {Edge, EdgeType, Provenance} from "../data/atlas";
 import type {Core} from "./core";
 import {claimHref, criterionLabel, entityHref, fixtureHref, levelLabel, provenanceLabel} from "./core";
 import {ClaimLink, EntityList, FixtureLink, Legend} from "./Entity";
 import {Glyph} from "./Glyph";
+import {localLayout} from "./LocalMap";
+import {useAtlasQuery} from "./useAtlasQuery";
 import type {Question} from "./graph";
 import {adjacency, askQuestion, boundary, egoGraph, enables, raises, restsOn, verifiedBy} from "./graph";
 import type {Placed} from "./GraphFigure";
@@ -21,7 +22,7 @@ const QUESTIONS: {id: Question; label: string}[] = [
   {id: "enables", label: "What does it enable?"},
   {id: "stops", label: "Where does it stop?"},
   {id: "prior-work", label: "Closest prior work"},
-  {id: "open", label: "What is open next door?"}
+  {id: "open", label: "What is open next door?"},
 ];
 const SCALES = [0.6, 0.8, 1, 1.25];
 
@@ -39,42 +40,24 @@ export interface ArgumentMapProps {
  * the map on itself.
  */
 export function ArgumentMap({core}: ArgumentMapProps): React.JSX.Element {
-  const {search} = useLocation();
-  const history = useHistory();
+  const {params, update} = useAtlasQuery();
+  const requested = params.get("focus") ?? "D-EXCHANGE-IMPLIES-VORONOI";
+  const valid = requested in core.claims || requested in core.fixtures;
+  const focus = valid ? requested : "D-EXCHANGE-IMPLIES-VORONOI";
+  const ask = params.get("ask");
+  const question = QUESTIONS.find((q) => q.id === ask)?.id ?? null;
+  const setQuestion = (q: Question | null): void => update({ask: q ?? ""});
+  const full = params.get("view") === "full";
   const adj = useMemo(() => adjacency(core.edges), [core.edges]);
-  const [focus, setFocus] = useState<string | null>(null);
-  const [question, setQuestion] = useState<Question | null>(null);
   const [scale, setScale] = useState(1);
   const [hiddenClasses, setHiddenClasses] = useState<Set<Provenance>>(new Set());
   const [hiddenLanes, setHiddenLanes] = useState<Set<string>>(new Set());
   const [showFixtures, setShowFixtures] = useState(true);
 
-  // Deep link: read once on the client, write on every change.
-  useEffect(() => {
-    const params = new URLSearchParams(search);
-    const wanted = params.get("focus");
-    if (wanted && (wanted in core.claims || wanted in core.fixtures)) {
-      setFocus(wanted);
-      const ask = params.get("ask") as Question | null;
-      if (ask && QUESTIONS.some((q) => q.id === ask)) setQuestion(ask);
-    }
-    // Only the initial URL matters; later changes are written by this component.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    if (focus) params.set("focus", focus);
-    else params.delete("focus");
-    if (question && focus) params.set("ask", question);
-    else params.delete("ask");
-    const query = params.toString();
-    const next = `${window.location.pathname}${query ? `?${query}` : ""}`;
-    if (next !== `${window.location.pathname}${window.location.search}`) history.replace(next);
-  }, [focus, question, history]);
-
   const layout = core.layout;
+  const neighbourhood = useMemo(() => localLayout(core, focus, {colGap: 230, rowGap: 38, maxPerColumn: Number.POSITIVE_INFINITY}), [core, focus]);
   const visible = useMemo(() => {
+    if (!full) return neighbourhood.positions;
     const out: Record<string, Placed> = {};
     for (const [id, at] of Object.entries(layout.positions)) {
       const claim = core.claims[id];
@@ -85,10 +68,10 @@ export function ArgumentMap({core}: ArgumentMapProps): React.JSX.Element {
       out[id] = {x: LEFT + at.x * COL_WIDTH + 18, y: TOP + at.y * ROW_HEIGHT + 12};
     }
     return out;
-  }, [layout.positions, core.claims, hiddenClasses, hiddenLanes, showFixtures]);
+  }, [full, neighbourhood.positions, layout.positions, core.claims, hiddenClasses, hiddenLanes, showFixtures]);
 
-  const width = LEFT + layout.columns.length * COL_WIDTH;
-  const height = TOP + (layout.height + 1) * ROW_HEIGHT + 16;
+  const width = full ? LEFT + layout.columns.length * COL_WIDTH : neighbourhood.width + 210;
+  const height = full ? TOP + (layout.height + 1) * ROW_HEIGHT + 16 : neighbourhood.height;
 
   const {highlight, highlightEdges, edges} = useMemo(() => {
     const baseline = core.edges.filter((edge) => edge.type === "rests_on" && edge.source in visible && edge.target in visible);
@@ -107,7 +90,8 @@ export function ArgumentMap({core}: ArgumentMapProps): React.JSX.Element {
     }
     const set = new Set(nodes.filter((id) => id in visible));
     const shown: Edge[] = core.edges.filter(
-      (edge) => types.includes(edge.type) && set.has(edge.source) && set.has(edge.target) && (question !== null || edge.source === focus || edge.target === focus)
+      (edge) =>
+        types.includes(edge.type) && set.has(edge.source) && set.has(edge.target) && (question !== null || edge.source === focus || edge.target === focus),
     );
     const keys = new Set(shown.map((edge) => `${edge.source}|${edge.target}|${edge.type}`));
     for (const edge of baseline) {
@@ -118,8 +102,7 @@ export function ArgumentMap({core}: ArgumentMapProps): React.JSX.Element {
   }, [core, adj, focus, question, visible]);
 
   const select = (id: string): void => {
-    setFocus((current) => (current === id ? null : id));
-    setQuestion(null);
+    update({focus: id, ask: ""});
   };
   const toggle = <T,>(set: Set<T>, value: T, update: (next: Set<T>) => void): void => {
     const next = new Set(set);
@@ -128,11 +111,17 @@ export function ArgumentMap({core}: ArgumentMapProps): React.JSX.Element {
     update(next);
   };
 
-  const background = (
+  const background = full ? (
     <g className="map-background">
       {layout.bands.map((band, i) => (
         <g key={band.id}>
-          <rect className={i % 2 === 0 ? "band" : "band band--alt"} x={0} y={TOP + band.y0 * ROW_HEIGHT} width={width} height={(band.y1 - band.y0) * ROW_HEIGHT + 8} />
+          <rect
+            className={i % 2 === 0 ? "band" : "band band--alt"}
+            x={0}
+            y={TOP + band.y0 * ROW_HEIGHT}
+            width={width}
+            height={(band.y1 - band.y0) * ROW_HEIGHT + 8}
+          />
           <text className="label label--strong" x={12} y={TOP + band.y0 * ROW_HEIGHT + 16}>
             {core.vocabulary.lanes.find((lane) => lane.id === band.id)?.label ?? band.id}
           </text>
@@ -147,16 +136,27 @@ export function ArgumentMap({core}: ArgumentMapProps): React.JSX.Element {
         </g>
       ))}
     </g>
-  );
+  ) : undefined;
 
-  const options = Object.values(visible)
-    .map((_, i) => Object.keys(visible)[i])
-    .filter((id): id is string => id !== undefined)
+  const options = Object.keys(core.layout.positions)
     .map((id) => ({id, title: nodeTitle(core, id)}))
     .sort((a, b) => a.title.localeCompare(b.title));
 
   return (
     <div className="argument-map">
+      {!valid ? (
+        <p role="status">
+          The requested entity is not in this atlas. Showing the central theorem.{" "}
+          <button type="button" onClick={() => update({focus: "", ask: ""})}>
+            Reset selection
+          </button>
+        </p>
+      ) : null}
+      <div className="research-view-switch">
+        <button type="button" onClick={() => update({view: full ? "" : "full"})}>
+          {full ? "Show neighbourhood" : "Show full graph"}
+        </button>
+      </div>
       <div className="argument-map__controls">
         <label className="argument-map__search">
           <span>Find a result</span>
@@ -167,8 +167,7 @@ export function ArgumentMap({core}: ArgumentMapProps): React.JSX.Element {
               const value = event.target.value.trim();
               const hit = options.find((o) => o.id === value || o.title === value || value.endsWith(`(${o.id})`));
               if (hit) {
-                setFocus(hit.id);
-                setQuestion(null);
+                update({focus: hit.id, ask: ""});
               }
             }}
           />
@@ -178,29 +177,38 @@ export function ArgumentMap({core}: ArgumentMapProps): React.JSX.Element {
             ))}
           </datalist>
         </label>
-        <fieldset className="argument-map__filter">
-          <legend>Show</legend>
-          {core.vocabulary.provenance
-            .filter((entry) => entry.id !== "verification")
-            .map((entry) => (
-              <label key={entry.id}>
-                <input type="checkbox" checked={!hiddenClasses.has(entry.id as Provenance)} onChange={() => toggle(hiddenClasses, entry.id as Provenance, setHiddenClasses)} />
-                <Glyph kind={entry.id as Provenance} /> {entry.label}
+        {full ? (
+          <details className="research-disclosure">
+            <summary>Advanced graph filters</summary>
+            <fieldset className="argument-map__filter">
+              <legend>Show</legend>
+              {core.vocabulary.provenance
+                .filter((entry) => entry.id !== "verification")
+                .map((entry) => (
+                  <label key={entry.id}>
+                    <input
+                      type="checkbox"
+                      checked={!hiddenClasses.has(entry.id as Provenance)}
+                      onChange={() => toggle(hiddenClasses, entry.id as Provenance, setHiddenClasses)}
+                    />
+                    <Glyph kind={entry.id as Provenance} /> {entry.label}
+                  </label>
+                ))}
+              <label>
+                <input type="checkbox" checked={showFixtures} onChange={() => setShowFixtures((v) => !v)} />
+                <Glyph kind="fixture" /> fixtures
               </label>
-            ))}
-          <label>
-            <input type="checkbox" checked={showFixtures} onChange={() => setShowFixtures((v) => !v)} />
-            <Glyph kind="fixture" /> fixtures
-          </label>
-        </fieldset>
-        <fieldset className="argument-map__filter">
-          <legend>Criteria</legend>
-          {core.vocabulary.lanes.map((lane) => (
-            <label key={lane.id}>
-              <input type="checkbox" checked={!hiddenLanes.has(lane.id)} onChange={() => toggle(hiddenLanes, lane.id, setHiddenLanes)} /> {lane.label}
-            </label>
-          ))}
-        </fieldset>
+            </fieldset>
+            <fieldset className="argument-map__filter">
+              <legend>Criteria</legend>
+              {core.vocabulary.lanes.map((lane) => (
+                <label key={lane.id}>
+                  <input type="checkbox" checked={!hiddenLanes.has(lane.id)} onChange={() => toggle(hiddenLanes, lane.id, setHiddenLanes)} /> {lane.label}
+                </label>
+              ))}
+            </fieldset>
+          </details>
+        ) : null}
         <div className="argument-map__zoom" role="group" aria-label="Zoom">
           {SCALES.map((value) => (
             <button key={value} type="button" aria-pressed={scale === value} onClick={() => setScale(value)}>
@@ -226,7 +234,7 @@ export function ArgumentMap({core}: ArgumentMapProps): React.JSX.Element {
             labelChars={26}
             onSelect={select}
             background={background}
-            title="Argument map of the research"
+            title={full ? "Argument map of the research" : "Neighbourhood of the selected result"}
             description="Columns are problem levels from universal identities to application; bands are criteria. Lines are proof prerequisites; the focused result shows its typed neighbourhood."
           />
         </div>
@@ -235,19 +243,27 @@ export function ArgumentMap({core}: ArgumentMapProps): React.JSX.Element {
         </div>
       </div>
 
-      <div className="argument-map__list">
-        <h2>Every result by problem level</h2>
-        {layout.columns.map((column) => {
-          const ids = Object.keys(layout.positions).filter((id) => layout.positions[id]?.x === column.x && id in core.claims);
-          return (
-            <section key={column.level}>
-              <h3>{levelLabel(core, column.level)}</h3>
-              <EntityList core={core} ids={ids.sort()} compact />
-            </section>
-          );
-        })}
-      </div>
-      <Legend core={core} fixtures />
+      {full ? (
+        <details className="research-disclosure">
+          <summary>Every result by problem level</summary>
+          <div className="argument-map__list">
+            <h2>Every result by problem level</h2>
+            {layout.columns.map((column) => {
+              const ids = Object.keys(layout.positions).filter((id) => layout.positions[id]?.x === column.x && id in core.claims);
+              return (
+                <section key={column.level}>
+                  <h3>{levelLabel(core, column.level)}</h3>
+                  <EntityList core={core} ids={ids.sort()} compact />
+                </section>
+              );
+            })}
+          </div>
+        </details>
+      ) : null}
+      <details className="research-disclosure">
+        <summary>Graph notation</summary>
+        <Legend core={core} fixtures />
+      </details>
     </div>
   );
 }
@@ -256,18 +272,28 @@ function IdlePanel({core}: {core: Core}): React.JSX.Element {
   return (
     <div className="focus-panel">
       <p>
-        Select a result to bring its neighbourhood forward. Columns run from what is true of any hard label, on the left, to results stated for one application, on the right; bands
-        separate the criteria. Solid lines are proof prerequisites.
+        Select a result to bring its neighbourhood forward. Columns run from what is true of any hard label, on the left, to results stated for one application,
+        on the right; bands separate the criteria. Solid lines are proof prerequisites.
       </p>
-      <p>
-        Start with the headline results:
-      </p>
+      <p>Start with the headline results:</p>
       <EntityList core={core} ids={core.headline.slice(0, 4)} compact />
     </div>
   );
 }
 
-function FocusPanel({core, adj, id, question, onQuestion}: {core: Core; adj: ReturnType<typeof adjacency>; id: string; question: Question | null; onQuestion: (q: Question | null) => void}): React.JSX.Element {
+function FocusPanel({
+  core,
+  adj,
+  id,
+  question,
+  onQuestion,
+}: {
+  core: Core;
+  adj: ReturnType<typeof adjacency>;
+  id: string;
+  question: Question | null;
+  onQuestion: (q: Question | null) => void;
+}): React.JSX.Element {
   const claim = core.claims[id];
   if (!claim) {
     const fixture = core.fixtures[id];
@@ -282,7 +308,12 @@ function FocusPanel({core, adj, id, question, onQuestion}: {core: Core; adj: Ret
         </h2>
         <p>{fixture.falsifies}</p>
         <h3>Cited by</h3>
-        <EntityList core={core} ids={fixture.citedBy.map((c) => c.claim)} compact meta={(cid) => (fixture.citedBy.find((c) => c.claim === cid)?.type === "refuted_by" ? "refuted" : "bounded")} />
+        <EntityList
+          core={core}
+          ids={fixture.citedBy.map((c) => c.claim)}
+          compact
+          meta={(cid) => (fixture.citedBy.find((c) => c.claim === cid)?.type === "refuted_by" ? "refuted" : "bounded")}
+        />
       </div>
     );
   }
@@ -301,7 +332,7 @@ function FocusPanel({core, adj, id, question, onQuestion}: {core: Core; adj: Ret
       <p className="focus-panel__meta">
         {claim.criterion.map((c) => criterionLabel(core, c)).join(", ")} · {levelLabel(core, claim.level)}
       </p>
-      <p className="focus-panel__statement">{claim.statement}</p>
+      <p className="focus-panel__statement">{claim.editorial?.summary ?? claim.statement}</p>
       <div className="focus-panel__questions" role="group" aria-label="Ask of this result">
         {QUESTIONS.map((q) => (
           <button key={q.id} type="button" aria-pressed={question === q.id} onClick={() => onQuestion(question === q.id ? null : q.id)}>
@@ -322,7 +353,9 @@ function FocusPanel({core, adj, id, question, onQuestion}: {core: Core; adj: Ret
               const href = entityHref(core, key);
               const paper = core.papers[key];
               return (
-                <li key={key}>{href && paper ? <Link to={href}>{`${paper.authors.map((a) => a.name).join(", ")}${paper.year ? ` (${paper.year})` : ""}`}</Link> : key}</li>
+                <li key={key}>
+                  {href && paper ? <Link to={href}>{`${paper.authors.map((a) => a.name).join(", ")}${paper.year ? ` (${paper.year})` : ""}`}</Link> : key}
+                </li>
               );
             })}
           </ul>

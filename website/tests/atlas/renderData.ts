@@ -10,6 +10,8 @@
  */
 import {atlas, core} from "../atlasFixtures";
 import type {LiteratureData, RenderedTradition} from "../../src/atlas/pages/LiteraturePage";
+import type {HomeData} from "../../src/atlas/pages/AtlasHome";
+import type {HomeEntry} from "../../src/data/atlas";
 import type {FixtureData} from "../../src/atlas/pages/FixturePage";
 import type {RenderedPaper} from "../../src/atlas/pages/PaperPage";
 
@@ -32,12 +34,10 @@ export function renderedPaper(key: string): RenderedPaper {
     annotation: paper.annotation
       ? {
           ...paper.annotation,
-          fieldsHtml: Object.fromEntries(
-            Object.entries(paper.annotation.fields).map(([name, value]) => [name, html(value) ?? ""])
-          ),
-          proseHtml: html(paper.annotation.prose)
+          fieldsHtml: Object.fromEntries(Object.entries(paper.annotation.fields).map(([name, value]) => [name, html(value) ?? ""])),
+          proseHtml: html(paper.annotation.prose),
         }
-      : null
+      : null,
   };
 }
 
@@ -49,8 +49,8 @@ export function renderedTradition(slug: string): RenderedTradition {
     notes: tradition.notes.map((note) => ({
       ...note,
       fieldsHtml: Object.fromEntries(Object.entries(note.fields).map(([name, value]) => [name, html(value) ?? ""])),
-      proseHtml: html(note.prose)
-    }))
+      proseHtml: html(note.prose),
+    })),
   };
 }
 
@@ -58,17 +58,17 @@ export function literatureData(): LiteratureData {
   return {
     traditions: atlas.traditions.map((tradition) => renderedTradition(tradition.slug)),
     papers: Object.fromEntries(Object.keys(atlas.papers).map((key) => [key, renderedPaper(key)])),
-    priorArt: atlas.headline
+    priorArt: Object.keys(atlas.claims)
       .filter((id) => (atlas.claims[id]?.priorArt.length ?? 0) > 0)
       .map((id) => ({
         id,
         sources: (atlas.claims[id]?.priorArt ?? []).flatMap((audit) =>
           audit.sources.map((source) => ({
             name: source.name.replace(/--/g, "–"),
-            html: html(source.text.replace(/[\s,]+(and|plus|with)\s*$/i, ""))
-          }))
-        )
-      }))
+            html: html(source.text.replace(/[\s,]+(and|plus|with)\s*$/i, "")),
+          })),
+        ),
+      })),
   };
 }
 
@@ -85,8 +85,24 @@ export function fixtureData(id: string): FixtureData {
       ? {
           triggerHtml: html(fixture.refusal.trigger),
           reasonHtml: html(fixture.refusal.reason),
-          remedyHtml: html(fixture.refusal.remedy)
+          remedyHtml: html(fixture.refusal.remedy),
         }
-      : null
+      : null,
+  };
+}
+
+export function homeData(): HomeData {
+  const entry = (item: HomeEntry) => ({
+    ...item,
+    summaryHtml: html(item.summary),
+    significanceHtml: html(item.significance),
+    qualificationHtml: html(item.qualification),
+  });
+  return {
+    introHtml: html(atlas.home.intro),
+    central: entry(atlas.home.central),
+    results: atlas.home.results.map(entry),
+    boundaries: atlas.home.boundaries.map(entry),
+    questions: atlas.home.questions.map(entry),
   };
 }

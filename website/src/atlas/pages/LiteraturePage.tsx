@@ -1,148 +1,164 @@
+import Link from "@docusaurus/Link";
 import type {Tradition} from "../../data/atlas";
 import {useRegisteredAnchors} from "../anchors";
 import {AtlasShell} from "../AtlasShell";
 import type {AtlasPageProps, Core} from "../core";
-import {ClaimLink, EntityList, Html, PaperLink} from "../Entity";
+import {authorHref, paperHref} from "../core";
+import {ClaimLink, Html} from "../Entity";
+import {useAtlasQuery} from "../useAtlasQuery";
 import {YearStrip} from "../YearStrip";
 import type {RenderedAnnotation, RenderedPaper} from "./PaperPage";
 import {AnnotationFields} from "./PaperPage";
 
-/** A tradition whose editorial notes were rendered at build time. */
 export interface RenderedTradition extends Omit<Tradition, "notes"> {
   notes: RenderedAnnotation[];
 }
-
-/** One headline claim and the nearest sources its prior-art audit named. */
 export interface PriorArt {
   id: string;
   sources: {html: string | null; name: string}[];
 }
-
 export interface LiteratureData {
   papers: Record<string, RenderedPaper>;
   priorArt: PriorArt[];
   traditions: RenderedTradition[];
 }
 
-/**
- * The bibliography, arranged by the traditions it draws on.
- *
- * The page's job is attribution: for every source, what it establishes and
- * what this work took from it, so that a reader can tell an ingredient that
- * was already in the literature from one that was not. The year strip at the
- * top is the same set of sources placed on one axis, which is where the
- * independence of the traditions becomes visible.
- */
+/** Bibliographic context first; detailed research records remain one step away. */
 export default function LiteraturePage({core, data}: AtlasPageProps<LiteratureData>): React.JSX.Element {
-  useRegisteredAnchors([...data.traditions.map((tradition) => `tradition-${tradition.slug}`), "tradition-other"]);
-  const ordered = core.traditions
-    .map((tradition) => data.traditions.find((entry) => entry.slug === tradition.slug))
-    .filter((tradition): tradition is RenderedTradition => tradition !== undefined);
-  const placed = new Set(ordered.flatMap((tradition) => tradition.papers));
-  const other = Object.values(data.papers)
-    .filter((paper) => paper.tradition === null && !placed.has(paper.key))
-    .sort((a, b) => (a.year ?? 0) - (b.year ?? 0));
-
+  useRegisteredAnchors([...data.traditions.map((t) => `tradition-${t.slug}`), "tradition-other"]);
+  const {params, update} = useAtlasQuery();
+  const query = params.get("q") ?? "";
+  const author = params.get("author") ?? "";
+  const match = (paper: RenderedPaper): boolean =>
+    (!author || paper.authors.some((a) => a.slug === author)) &&
+    `${paper.title} ${paper.authors.map((a) => a.name).join(" ")} ${paper.year ?? ""} ${paper.note ?? ""} ${paper.annotation?.prose ?? ""}`
+      .toLowerCase()
+      .includes(query.toLowerCase());
+  const placed = new Set(data.traditions.flatMap((t) => t.papers));
+  const groups = [...data.traditions, {slug: "other", label: "Other sources", notes: [], papers: Object.keys(data.papers).filter((k) => !placed.has(k))}];
+  const count = Object.values(data.papers).filter(match).length;
   return (
-    <AtlasShell
-      wide
-      title="Literature"
-      description="The traditions this work draws on, what each source establishes, and which claims cite it."
-    >
-      <h1>Literature</h1>
-      <p className="atlas__lead">
-        The problem sits where several traditions meet — optimal experimental design, quantization
-        for estimation, determinant clustering, vector quantization, inference-aware summaries in
-        particle physics, and plug-in asymptotics — each of which developed its half of the
-        question without the others. Most of the ingredients used here are established in one of
-        them, and are cited below rather than claimed.
-      </p>
-
-      <YearStrip core={core} />
-
-      <div className="atlas__grid">
-        <div>
-          {ordered.map((tradition) => (
-            <section className="literature-tradition atlas__section" key={tradition.slug} id={`tradition-${tradition.slug}`}>
-              <h2>{tradition.label}</h2>
-              {tradition.papers.map((key) => {
-                const paper = data.papers[key];
-                return paper ? <Entry core={core} key={key} paper={paper} /> : null;
-              })}
-              {tradition.notes.map((note) => (
-                <div className="literature-note" key={note.heading}>
-                  <h3>{note.heading}</h3>
-                  <AnnotationFields fields={note.fieldsHtml} />
-                  <Html html={note.proseHtml} />
-                </div>
+    <AtlasShell wide title="Literature" description="Publications, researchers, and the ideas behind information-preserving quantization.">
+      <header className="research-opening">
+        <h1>Literature</h1>
+        <p className="atlas__lead">
+          Hard quantization connects statistical inference, optimal design, and clustering. Follow the publications behind the results, and distinguish
+          established ingredients from what this project adds.
+        </p>
+      </header>
+      <div className="research-filters">
+        <label>
+          Search publications
+          <input type="search" value={query} onChange={(e) => update({q: e.target.value}, true)} placeholder="Title, author, year, or topic" />
+        </label>
+        <label>
+          Browse by author
+          <select value={author} onChange={(e) => update({author: e.target.value})}>
+            <option value="">All authors</option>
+            {Object.values(core.authors)
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((a) => (
+                <option key={a.slug} value={a.slug}>
+                  {a.name}
+                </option>
               ))}
-            </section>
-          ))}
-
-          {other.length === 0 ? null : (
-            <section className="literature-tradition atlas__section" id="tradition-other">
-              <h2>Other sources</h2>
-              <p className="atlas__muted">
-                Sources cited for a single step, which belong to none of the traditions above.
-              </p>
-              {other.map((paper) => (
-                <Entry core={core} key={paper.key} paper={paper} />
-              ))}
-            </section>
-          )}
-        </div>
-
-        <section className="atlas__aside" aria-labelledby="closest-prior-work">
-          <h2 id="closest-prior-work">Closest prior work for the headline results</h2>
-          {data.priorArt.length === 0 ? (
-            <p className="atlas__muted">No prior-art audit has been recorded yet.</p>
-          ) : (
-            <ul className="prior-art">
-              {data.priorArt.map((entry) => (
-                <li key={entry.id}>
-                  <ClaimLink core={core} id={entry.id} showId={false} />
-                  {entry.sources.length === 0 ? (
-                    <p className="prior-art__sources">The audit found no nearer source than the traditions above.</p>
-                  ) : (
-                    <ul className="prior-art__sources">
-                      {entry.sources.map((source) => (
-                        <li key={source.name}>
-                          <span className="prior-art__name">{source.name}</span>{" "}
-                          <Html html={source.html} />
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+          </select>
+        </label>
       </div>
+      {author && core.authors[author] ? (
+        <p>
+          <Link to={authorHref(author)}>View {core.authors[author].name}’s publications and related results →</Link>
+        </p>
+      ) : null}
+      {query || author ? (
+        <p role="status">
+          {count ? `${count} matching publications.` : "No publications match this selection."}{" "}
+          <button type="button" onClick={() => update({q: "", author: ""})}>
+            Clear filters
+          </button>
+        </p>
+      ) : null}
+      <nav className="research-theme-links" aria-label="Literature traditions">
+        {groups
+          .filter((g) => g.papers.some((k) => data.papers[k] && match(data.papers[k])))
+          .map((t) => (
+            <a key={t.slug} href={`#tradition-${t.slug}`}>
+              {t.label}
+            </a>
+          ))}
+      </nav>
+      <details className="research-disclosure">
+        <summary>View the publication timeline</summary>
+        <YearStrip core={core} />
+      </details>
+      {groups.map((tradition) => {
+        const papers = tradition.papers.map((k) => data.papers[k]).filter((p): p is RenderedPaper => !!p && match(p));
+        return (
+          <section hidden={papers.length === 0} className="literature-tradition atlas__section" key={tradition.slug} id={`tradition-${tradition.slug}`}>
+            <h2>{tradition.label}</h2>
+            {papers.map((p) => (
+              <Entry key={p.key} core={core} paper={p} />
+            ))}
+            {tradition.notes.length > 0 ? (
+              <details className="research-disclosure">
+                <summary>Context for this tradition</summary>
+                {tradition.notes.map((n) => (
+                  <div key={n.heading}>
+                    <h3>{n.heading}</h3>
+                    <AnnotationFields fields={n.fieldsHtml} />
+                    <Html html={n.proseHtml} />
+                  </div>
+                ))}
+              </details>
+            ) : null}
+          </section>
+        );
+      })}
+      <details className="research-disclosure" id="closest-prior-work">
+        <summary>Prior-art search records</summary>
+        <p>These records cover the atlas independently of the home page’s selected results. A search gap records what was checked, not a priority claim.</p>
+        {data.priorArt.map((entry) => (
+          <section key={entry.id}>
+            <h3>
+              <ClaimLink core={core} id={entry.id} showId={false} />
+            </h3>
+            {entry.sources.map((source, i) => (
+              <div key={`${source.name}-${i}`}>
+                <strong>{source.name}</strong>
+                <Html html={source.html} />
+              </div>
+            ))}
+          </section>
+        ))}
+      </details>
     </AtlasShell>
   );
 }
 
-/** One source: who and when, what the annotation says, and what cites it. */
-function Entry({core, paper}: {core: Core; paper: RenderedPaper}): React.JSX.Element {
+function Entry({paper}: {core: Core; paper: RenderedPaper}): React.JSX.Element {
+  const fields = paper.annotation?.fieldsHtml;
+  const summary = fields ? (fields["Why it matters here"] ?? fields["Why important"] ?? fields["Result/use"] ?? fields.Result ?? fields.Use) : null;
   return (
-    <div className="literature-entry">
-      <div className="literature-entry__head">
-        <PaperLink core={core} id={paper.key} />
-        {paper.year === null ? null : <span className="literature-entry__year">{paper.year}</span>}
-      </div>
-      {paper.annotation === null ? null : (
-        <>
-          <AnnotationFields fields={paper.annotation.fieldsHtml} drop={["Paper"]} />
-          <Html html={paper.annotation.proseHtml} />
-        </>
+    <article className="research-paper-row">
+      <h3>
+        <Link to={paperHref(paper.slug)}>{paper.title}</Link>
+      </h3>
+      <p className="research-attribution">
+        {paper.authors.map((a, i) => (
+          <span key={a.slug}>
+            {i ? ", " : ""}
+            <Link to={authorHref(a.slug)}>{a.name}</Link>
+          </span>
+        ))}
+        {paper.year ? ` · ${paper.year}` : ""}
+      </p>
+      {summary ? (
+        <Html html={summary} />
+      ) : (
+        <p className="atlas__muted">
+          {paper.citedBy.length ? "Cited in the research record; follow the publication for its related results." : "Background reading in this tradition."}
+        </p>
       )}
-      {paper.citedBy.length === 0 ? null : (
-        <>
-          <p className="cited-by-label">Cited by</p>
-          <EntityList compact core={core} ids={paper.citedBy} />
-        </>
-      )}
-    </div>
+    </article>
   );
 }

@@ -1,0 +1,72 @@
+{
+  "intro": "How can we reduce an observation to one of a few hard labels while retaining information about model parameters? We study this problem in score space—the space of local log-likelihood gradients—distinguishing labels for a fixed sample from a rule that can label future observations.",
+  "central": {
+    "id": "D-EXCHANGE-IMPLIES-VORONOI",
+    "title": "Stable D-optimal partitions have a geometric rule.",
+    "summary": "If no allowed single-atom move improves the determinant of the retained information, every atom lies strictly nearest to its own cell centre in the metric defined by that information.",
+    "significance": "A finite assignment therefore determines a reusable nearest-centre rule without another fit. This is the main structural bridge between optimizing labels and constructing a quantizer; it does not say that every stable partition is globally optimal.",
+    "qualification": "The theorem requires merged duplicate atoms, positive-definite retained information, exactly K nonempty cells, and exact exchange stability over every move that keeps cells nonempty. Numerical stopping tolerances need their own certification."
+  },
+  "results": [
+    {
+      "id": "D-LOGDET-GAIN",
+      "title": "Score each move exactly",
+      "summary": "A closed-form determinant gain makes individual relocations comparable without refactorizing the information matrix.",
+      "significance": "Accepting only strictly improving moves gives a monotone search that terminates on a finite sample.",
+      "qualification": "The determinant identity is classical; its application to the coupled cell-centroid update is the adaptation here."
+    },
+    {
+      "id": "D-GLOBAL-GEOMETRIC-REALIZABILITY",
+      "title": "Global D optima are geometric",
+      "summary": "Every finite global D optimum satisfies the same nearest-centre geometry under the structural theorem’s hypotheses.",
+      "significance": "Searching for geometric rules need not lose the finite global optimum in this setting.",
+      "qualification": "This is a consequence of the stability theorem, not an efficient algorithm for finding that optimum."
+    },
+    {
+      "id": "DS-TILT-DUAL-CERTIFICATE",
+      "title": "Bracket the profiled optimum",
+      "summary": "For one parameter of interest, dynamic programming on a tilted scalar score supplies an achieved value and an upper bound.",
+      "significance": "An exhibited closing labelling certifies a finite global profiled optimum.",
+      "qualification": "Closure requires the stated saddle condition; a reported bracket alone is not an optimality certificate."
+    }
+  ],
+  "boundaries": [
+    {
+      "id": "DS-GLOBAL-NONGEOMETRIC",
+      "title": "Nuisance profiling can break the rule",
+      "summary": "An exact finite example has a global profiled optimum that violates its own first-order geometric rule.",
+      "significance": "The D theorem cannot simply be transferred to nuisance-adjusted information.",
+      "qualification": "A finite optimum alone does not authorize that geometric compilation."
+    },
+    {
+      "id": "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
+      "title": "The certificate need not close",
+      "summary": "Exact examples show a genuine gap between the profiled primal optimum and its tilt dual.",
+      "significance": "A useful upper bound can remain strictly above the best attainable partition.",
+      "qualification": "The contribution is the explicit witnesses; minimax failure on a finite nonconvex problem is not itself new."
+    }
+  ],
+  "questions": [
+    {
+      "id": "OPEN-D-UNRESTRICTED-CONSISTENCY",
+      "title": "Does finite optimality survive the population limit?",
+      "summary": "Restricted consistency is known. Can unrestricted empirical global D optima converge without the imposed margins?",
+      "significance": "This would connect exact finite optimization to population design.",
+      "qualification": "The unrestricted result remains open."
+    },
+    {
+      "id": "OPEN-CRITERION-CHARACTERIZATION",
+      "title": "Which criteria force geometry?",
+      "summary": "D admits an exchange-to-geometry theorem; other familiar criteria have counterexamples.",
+      "significance": "A characterization would explain the structural distinction.",
+      "qualification": "Uniqueness of the determinant is not established."
+    },
+    {
+      "id": "OPEN-SCORE-PERTURBATION",
+      "title": "How robust is the rule to estimated scores?",
+      "summary": "Can score error control changes in retained information and cell boundaries?",
+      "significance": "This would connect learned representations to quantization guarantees.",
+      "qualification": "Proxy information is not automatically true Fisher information."
+    }
+  ]
+}

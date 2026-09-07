@@ -7,27 +7,11 @@
  */
 import rawData from "../generated/atlas.json";
 
-export type Provenance =
-  | "established"
-  | "derived"
-  | "proved"
-  | "proved_new"
-  | "measured"
-  | "counterexample"
-  | "open"
-  | "verification";
+export type Provenance = "established" | "derived" | "proved" | "proved_new" | "measured" | "counterexample" | "open" | "verification";
 
 export type EntityKind = "result" | "question" | "counterexample" | "evidence" | "audit";
 
-export type EdgeType =
-  | "rests_on"
-  | "enables"
-  | "raises"
-  | "verified_by"
-  | "converse_fails"
-  | "refuted_by"
-  | "bounded_by"
-  | "cites";
+export type EdgeType = "rests_on" | "enables" | "raises" | "verified_by" | "converse_fails" | "refuted_by" | "bounded_by" | "cites";
 
 export interface VocabularyEntry {
   description: string;
@@ -63,7 +47,27 @@ export interface PriorArtAudit {
   url: string;
 }
 
+export interface EditorialSummary {
+  title: string;
+  summary: string;
+}
+
+export interface HomeEntry extends EditorialSummary {
+  id: string;
+  significance: string;
+  qualification: string;
+}
+
+export interface HomeEditorial {
+  intro: string;
+  central: HomeEntry;
+  results: HomeEntry[];
+  boundaries: HomeEntry[];
+  questions: HomeEntry[];
+}
+
 export interface Claim {
+  editorial: EditorialSummary | null;
   artifact: FileRef | null;
   assumptions: string[];
   audit: ReportRef | null;
@@ -228,6 +232,7 @@ export interface FormalModule {
 }
 
 export interface Atlas {
+  home: HomeEditorial;
   authors: Record<string, Author>;
   chapters: Chapter[];
   claims: Record<string, Claim>;

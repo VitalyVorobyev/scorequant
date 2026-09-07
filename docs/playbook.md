@@ -131,9 +131,9 @@ uv run mkdocs build --strict
 cd website && corepack pnpm assemble:site
 ```
 
-This writes `.pages-preview/` — the landing page (`landing/`, plain HTML, no build step) at the
-root, the MkDocs documentation at `/docs/`, the portal at `/portal/`, and the pre-cut redirect
-stubs — and prints the redirect and landing-link parity check ([ADR 0027](decisions.md)).
+This writes `.pages-preview/` — the portal at the root, the MkDocs documentation at `/docs/`, and
+the pre-cut redirect stubs — and prints the redirect and reference-link parity check
+([ADR 0035](decisions.md)).
 Running it locally does **not** deploy.
 
 Deployment is `site.yml`, and it is the same tree: a pull request builds and uploads it for

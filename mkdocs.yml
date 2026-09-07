@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
 site_name: ScoreQuant
 site_description: Information-preserving binning for statistical inference
-# A landing page serves the site root; this documentation is mounted at /docs/ and the
-# learning portal at /portal/ (ADR 0027).
+# The learning portal serves the site root; this documentation is mounted beneath it
+# at /docs/ (ADR 0035).
 site_url: https://vitalyvorobyev.github.io/scorequant/docs/
 repo_url: https://github.com/VitalyVorobyev/scorequant
 repo_name: VitalyVorobyev/scorequant
@@ -104,7 +104,7 @@ nav:
   - Related work: related-work.md
   - Glossary: glossary.md
   - Bibliography: bibliography.md
-  - Portal: https://vitalyvorobyev.github.io/scorequant/portal/
+  - Learning portal: https://vitalyvorobyev.github.io/scorequant/
 
 plugins:
   - search
@@ -143,8 +143,8 @@ markdown_extensions:
       alternate_style: true
 
 extra:
-  # The header title links to the landing page at the site root, not to this
-  # documentation's own index (ADR 0027).
+  # The header title links to the portal at the site root, not to this
+  # documentation's own index (ADR 0035).
   homepage: https://vitalyvorobyev.github.io/scorequant/
 
 extra_javascript:

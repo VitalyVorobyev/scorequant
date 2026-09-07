@@ -6,13 +6,13 @@ a reusable rule. Estimated scores produce a surrogate information measure.
 
 ## Start here
 
-- [Install and run](https://vitalyvorobyev.github.io/scorequant/portal/get-started/) — a complete first workflow.
+- [Install and run](https://vitalyvorobyev.github.io/scorequant/get-started/) — a complete first workflow.
 - [Choose a workflow](user-workflow.md) — task, source, provider, criterion and solver.
 - [API guide](api.md) and [symbol reference](symbols/index.md) — inputs, outputs and errors.
 
 ## Understand and reproduce
 
-- [Walkthroughs](https://vitalyvorobyev.github.io/scorequant/portal/walkthroughs/) — four applied problems, with models and interactive experiments.
+- [Walkthroughs](https://vitalyvorobyev.github.io/scorequant/walkthroughs/) — four applied problems, with models and interactive experiments.
 - [Runnable examples](examples/index.md) — scripts and committed results.
 - [The book](book/index.md) — derivations, assumptions and limits.
 - [Related work](related-work.md), [bibliography](bibliography.md) and [glossary](glossary.md).

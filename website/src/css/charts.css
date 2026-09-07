@@ -115,3 +115,31 @@
 .fringe-curve__segment-boundary { stroke: var(--border-strong); stroke-width: 1; stroke-dasharray: 4 3; }
 
 .michelson-bench, .fringe-curve { margin-bottom: 28px; }
+
+/* Ratio workflow: the density-ratio walkthrough's opening schematic. Two lanes
+   in one drawing -- the workflow a real analysis runs, and the oracle check the
+   synthetic model affords -- so the page's whole argument is visible before the
+   first equation. Drawn in TSX rather than shipped as an SVG file so it follows
+   the theme toggle; an <img> can only follow the OS colour scheme. Every colour
+   is a token: the oracle lane is carried by --warn on strokes only, which clears
+   the 3:1 graphic floor in both themes but not the 4.5:1 text floor in light. */
+
+.ratio-workflow__lane { fill: var(--text-muted); font-family: var(--font-body); font-size: 16px; font-weight: 700; letter-spacing: .12em; }
+.ratio-workflow__card { fill: var(--surface-raised); stroke: var(--border-strong); stroke-width: 1.5; }
+.ratio-workflow__card--input { fill: var(--surface-sunken); stroke: var(--border-strong); stroke-width: 1.5; }
+.ratio-workflow__card--oracle { fill: var(--surface-raised); stroke: var(--warn); stroke-width: 1.5; }
+.ratio-workflow__kicker { fill: var(--text-muted); font-family: var(--font-body); font-size: 13px; font-weight: 700; letter-spacing: .09em; }
+.ratio-workflow__title { fill: var(--text); font-family: var(--font-heading); font-size: 23px; font-weight: 600; }
+.ratio-workflow__body { fill: var(--text-muted); font-family: var(--font-body); font-size: 16px; }
+.ratio-workflow__note { fill: var(--text-muted); font-family: var(--font-body); font-size: 15px; }
+.ratio-workflow__formula { fill: var(--accent); font-family: var(--font-mono); font-size: 19px; }
+.ratio-workflow__signal { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+.ratio-workflow__background { fill: none; stroke: var(--warn); stroke-width: 2.5; }
+.ratio-workflow__axis { stroke: var(--border-strong); stroke-width: 1.5; }
+.ratio-workflow__cut { stroke: var(--accent); stroke-width: 2.5; }
+.ratio-workflow__flow { fill: none; stroke: var(--text-muted); stroke-width: 2.5; stroke-linecap: round; }
+.ratio-workflow__flow--oracle { fill: none; stroke: var(--warn); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 7 7; }
+.ratio-workflow__arrowhead { fill: var(--text-muted); }
+.ratio-workflow__arrowhead--oracle { fill: var(--warn); }
+
+.ratio-workflow { margin-bottom: 28px; }

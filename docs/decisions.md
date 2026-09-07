@@ -119,19 +119,28 @@ integers. The schema does not carry the reference point; `ScoreProvenance.refere
 and the two are validated against each other and the score dimension. Validation samples are
 compared by parameter name when both sides declare one.
 
-## ADR 0027 / 0026 · Site topology and its one workflow
+## ADR 0026 / 0027 / 0035 · Site topology and its one workflow
 
-Three surfaces in one assembled tree: `/` is a hand-written landing page (inline CSS, no
-JavaScript, no build step, links only, its single code block byte-identical to the first fence of
-`docs/index.md` and executed by the snippet harness); `/docs/` is the MkDocs documentation and
-book; `/portal/` is the Docusaurus portal. One workflow, `site.yml`, runs the strict MkDocs
-build, the portal checks, `pnpm assemble:site` and the deploy. Pre-cut URLs are stubbed by
-`website/redirects.json`; `tests/test_landing.py` and `assemble-site.mjs` resolve every link.
+Two surfaces in one assembled tree since 7 September 2026 (ADR 0035): `/` is the Docusaurus
+portal, `/docs/` is the MkDocs documentation and book. The hand-written landing page ADR 0027 put
+at the root is deleted with its guards -- the portal's home page is the front door, and its
+primary navigation carries the Reference entry into `/docs/` that the landing page used to carry.
+The portal's `404.html` therefore serves the whole domain. `website/src/lib/site.ts` and
+`mkdocs.yml` state the topology and must move together. One workflow, `site.yml`, runs the strict
+MkDocs build, the portal checks, `pnpm assemble:site` and the deploy. Pre-cut URLs are stubbed by
+`website/redirects.json`, and the portal must never emit a `docs/` route, which would be
+overwritten silently; `assemble-site.mjs` refuses that build and resolves every
+`/scorequant/docs/` href in the built portal against the assembled tree, which is the one class of
+link Docusaurus's `onBrokenLinks` cannot see. The two days the portal spent at `/portal/` are
+deliberately not stubbed, for the reason ADR 0027 gave for not stubbing its one day at the root.
 
 ## ADR 0031 / 0032 / 0028 / 0029 · The portal is four surfaces, and its pages are articles
 
 Surfaces: Get started, Walkthroughs, Research, and the Reference link into MkDocs. The home page
-is definitions and references and runs nothing. A walkthrough is an article: the author's
+is definitions and runs nothing; since it became the site root (ADR 0035) it also quotes no
+measurement, and it carries neither the displayed binning-cost identity nor the list of where each
+definition is derived, both of which belonged to a page competing with a landing page to be read
+first. A walkthrough is an article: the author's
 checklist is problem, model and score, admissible labels and criterion, run, evaluation, one
 experiment, interpretation, in that order but not headed by step names; it opens with the
 subject and the data, states the contract in prose, and puts numbers in sentences. Browser
@@ -186,5 +195,6 @@ the owner moves an item into that table.
 | ADR 0012 classifier callback boundary | ADR 0017 (ratio layer) |
 | ADR 0013 pre-1.0 API boundaries | ADR 0014 (certificates) and ADR 0009 / 0023 / 0024 |
 | ADR 0019 React learning portal, ADR 0020 portal blog | ADR 0031 (surfaces) and ADR 0027 (topology); the blog is removed |
-| ADR 0025 portal at the site root | superseded by ADR 0027 |
+| ADR 0025 portal at the site root | superseded by ADR 0027, then restored by ADR 0035 |
+| ADR 0027 hand-written landing page at the root | superseded by ADR 0035; `landing/` and `tests/test_landing.py` are deleted |
 | ADR 0028 focused research and teaching, ADR 0029 lessons replace the Lab | ADR 0031 and `agenticresearch/README.md` |

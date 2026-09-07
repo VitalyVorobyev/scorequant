@@ -5,7 +5,7 @@
   position: sticky;
   z-index: 50;
   top: 0;
-  height: 72px;
+  height: var(--header-height);
   border-bottom: 1px solid rgb(189 201 215 / 70%);
   background: rgb(248 249 251 / 92%);
   backdrop-filter: blur(18px);

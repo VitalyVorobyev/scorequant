@@ -91,8 +91,9 @@ Portal data generators invoke Python through `uv run` from the repository root; 
 second Python environment under `website/`. MkDocs remains the engineering reference while the
 portal owns curated learning and the browser lab. The production `build` downloads and prunes the
 pinned Pyodide release to its 15 MB core/NumPy/micropip runtime, builds the local Emscripten-safe
-ScoreQuant wheel, exports the locked marimo lesson, and generates Pagefind. `assemble:preview`
-combines an existing strict MkDocs build at the root with React at `/portal/`; it does not deploy.
+ScoreQuant wheel, exports the locked marimo lesson, and generates Pagefind. `assemble:site`
+combines the built portal at the site root with an existing strict MkDocs build at `/docs/`
+(ADR 0035); it does not deploy.
 
 ## Example fast mode
 

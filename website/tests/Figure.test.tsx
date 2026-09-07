@@ -7,7 +7,7 @@ import {Figure} from "../src/components/Figure";
 const base = {
   alt: "Phase score along the detector: a periodic curve over four fringe periods.",
   caption: "The phase score along the detector.",
-  src: "/scorequant/portal/figures/michelson-phase-score.svg"
+  src: "/scorequant/figures/michelson-phase-score.svg"
 };
 
 describe("Figure", () => {

@@ -4,172 +4,96 @@ sidebar_label: Get started
 sidebar_position: 1
 ---
 
+import Link from "@docusaurus/Link";
+
 import {GetStartedFirstFitLiveFit} from "@site/src/components/GetStartedFirstFitLiveFit";
 import {Snippet} from "@site/src/components/Snippet";
 import {REFERENCE_BASE} from "@site/src/lib/site";
 
 # Get started
 
-## Which of the two tasks is yours
+ScoreQuant turns continuous **score vectors** into a small number of hard labels while retaining as much Fisher information as possible.
 
-If you have a finite weighted score table and only those rows need labels, read as far as
-[The smallest real fit](#the-smallest-real-fit): that is `optimize_partition`, and it returns no
-predictor. If observations you have not seen yet must receive labels, continue to
-[The same problem, as a reusable rule](#the-same-problem-as-a-reusable-rule): that is
-`fit_quantizer`, whose result predicts through `predict_scores`. Both start from the same setup
-cell below, and both report the information kind they were evaluated with.
+You provide one score vector `s(x)` for each observation. ScoreQuant finds the bins.
 
-## Install it
+## Install
 
-`uv add scorequant`, or `pip install scorequant` outside a `uv` project. Python 3.12 or newer.
+```bash
+uv add scorequant
+```
 
-One choice is worth understanding before the first fit rather than after it. ScoreQuant runs on
-two backends. JAX is the default and the faster one. NumPy is the portable one, and it is what
-lets a saved rule predict where JAX is absent — including inside a browser, which is what the
-refit further down this page runs. Whether to enable 64-bit floats is the application's call and never the
-library's, so ScoreQuant never touches global JAX configuration at import.
+or:
 
-Every snippet below passes an explicit NumPy, float64 execution, so the output printed here is the
-output you get. They share one namespace and run top to bottom, and the whole thing is a single
-file you can run yourself.
+```bash
+pip install scorequant
+```
+
+Python 3.12 or newer.
+
+## Fit a quantizer
+
+Start with a small example. For a Gaussian location model with identity covariance, the score at the origin is the observation itself, `s(x) = x`, so we can generate score vectors directly. Everything after this point is the same whatever produced your scores.
+
+One choice is worth making explicitly rather than inheriting. ScoreQuant runs on two backends: JAX is the default and the faster one, NumPy is the portable one, and whether to enable 64-bit floats is the application's call and never the library's. Every cell below passes an explicit NumPy, float64 execution, so the output printed here is the output you get. The cells share one namespace and run top to bottom, and together they are a single file you can run yourself.
 
 <Snippet id="setup" />
 
-## The smallest real fit
+Now replace those continuous two-dimensional scores with five discrete labels:
 
-The scores here are drawn rather than derived, and that is deliberate: for a Gaussian location
-model at the origin an observation *is* its own score, so the table is honest with no model in the
-way. Everything after this point is the same whatever produced your scores.
+<Snippet id="fit" />
 
-<Snippet id="first-fit" />
+That is the main result.
 
-Four numbers, each saying something different.
+The original observations carry a two-dimensional Fisher information matrix. After replacing each observation by one of only five labels, the geometric mean information retention — the **D-efficiency** — is what the fit reports. It is a ratio rather than a score, which is what makes it comparable across bin budgets.
 
-**D-efficiency** is the headline — the geometric mean of the retained information spectrum, so the
-fraction of Fisher information the labels kept. It is a ratio rather than a score, which is what
-makes it comparable across bin budgets.
+The **effective rank** is the number to read against your parameter count. Information is a matrix, and a partition can retain a great deal in one direction while collapsing another. A rank below the number of parameters means a direction is gone, and no averaged headline will tell you that.
 
-**Effective rank** is the one to read against your parameter count. Information is a matrix, and a
-partition can retain a great deal in one direction while collapsing another. A rank below the
-number of parameters means a direction is gone, and no averaged headline will tell you that.
+## Use the rule on new observations
 
-**Exchange stability** is the solver's own certificate: no single relocation improves the
-objective. **Best remaining gain** is what the best relocation would have bought, judged against
-the tolerance the run holds at rather than against zero — on a large table a handful of boundary
-rows sit inside floating-point noise, and comparing to exact zero rejects perfectly good fits.
+`fit_quantizer` returns a reusable rule in score space:
+
+<Snippet id="predict" />
+
+Each new score vector is now mapped to one of the same five bins.
+
+ScoreQuant deliberately predicts from **scores**, not raw observations. How you obtain those scores — from an analytic likelihood, simulation, density ratios, or a classifier — is a separate part of the problem, and the conversion is never hidden inside prediction.
+
+## What did we optimize?
+
+If the original score is `s(x)`, observing it retains the full Fisher information available in that score. After quantization we keep only the bin label, one of `K` values. ScoreQuant chooses the rule so that these few discrete outcomes retain as much of the original information as possible.
+
+Here we used `DOptimality()`: it rewards partitions that retain information jointly across all parameter directions. `geometric_mean_retention` reports the resulting D-efficiency as a dimensionless ratio.
+
+That is the basic ScoreQuant workflow, and the reported retention is part of the output rather than an afterthought:
+
+<div className="showcase-pipeline">
+  <span>observations</span>
+  <span>scores</span>
+  <strong>fit_quantizer</strong>
+  <span>hard labels</span>
+  <span>information retained</span>
+</div>
+
+## Only need labels for this sample?
+
+Sometimes there will be no future observations. You only want the best partition of a finite table already in memory.
+
+Use `optimize_partition` instead:
+
+<Snippet id="partition" />
+
+`partition.labels` contains the optimized labels for these rows.
+
+Unlike `fit_quantizer`, this operation does **not** in general define how an unseen score vector should be labeled. A finite-sample optimum names labels, not a rule: many different rules reproduce the same labels on one sample and disagree everywhere else, which is why `PartitionResult` has no predict method. If you need to label future observations, fit a quantizer.
+
+This finite fit is exact and deterministic, which is why it is the one you can re-run here, in your own browser, against the same table and the same seed:
 
 <GetStartedFirstFitLiveFit />
 
-## Reading the spectrum and the cells
+## Where next?
 
-<Snippet id="reading-the-numbers" />
+For complete applied examples, go to <Link to="/walkthroughs">Walkthroughs</Link>. They start from an estimation problem and show where the scores come from, how the bins are fitted, and what the resulting information loss means.
 
-The retention spectrum is the per-direction form of the headline. The bin weights and effective
-sample sizes are the occupancy check: a cell holding almost nothing contributes almost nothing,
-and a partition that looks healthy on average can be carried by a minority of its cells. Here the
-two agree exactly, because this sample has unit weights and the effective sample size of a cell
-collapses to its raw count. They separate as soon as weights vary, which is when the effective
-number tells you something the count does not.
+For solver options, criteria, diagnostics, weights, nuisance parameters, persistence, and the exact API, use the <a href={REFERENCE_BASE}>reference documentation</a>.
 
-## Checking labels you did not produce
-
-Any labeling at all can be certified with one exact scan — an external tool's, a hand edit, a run
-someone stopped early.
-
-<Snippet id="stability-check" />
-
-The report recomputes the same exact relocation gain the engine itself uses, so it agrees with the
-solver's verdict rather than approximating it, and it states the tolerance it holds at.
-
-## The same problem, as a reusable rule
-
-Everything so far labels rows that already exist. If future events must be labeled the same way,
-that is a different problem and a different call: choose a geometric rule in score space, and let
-validation stay strictly diagnostic.
-
-<Snippet id="reusable-rule" />
-
-The **hardening gap** is the difference between the last soft objective and the retention of the
-final hard labels. A large gap means the annealed surrogate never committed to a partition. Judge
-the run by the hard number, always.
-
-The validation figure is a diagnostic and nothing more. It does not influence gradients, stopping,
-or which checkpoint is kept — a validation set that steers fitting is a training set wearing a
-disguise.
-
-<Snippet id="predict-and-save" />
-
-Prediction is explicit, and the conversion from observations to scores is never hidden inside it.
-A saved rule is a versioned artifact rather than a pickle, so the rule you fit on one machine is
-the rule that predicts on another.
-
-## A baseline worth running
-
-Normalized trace with k-means is the well-understood comparison: after whitening it is exactly
-weighted k-means.
-
-<Snippet id="baseline" />
-
-Run it even when D-optimality is the goal. The gap between the two answers a question you should
-want answered — whether the determinant geometry is buying anything on your data.
-
-## The one crossing, and the refusal that guards it
-
-A finite partition names labels, not a rule. Many different rules reproduce the same labels on one
-sample and disagree everywhere else, which is why `PartitionResult` has no predict method.
-
-There is exactly one exception, and it is a theorem rather than a convenience. If an
-exchange-stable D-optimal partition has nonsingular between-cell information, its labels already
-*are* the strict Voronoi partition of the corresponding Mahalanobis metric. That rule is canonical,
-so it can be handed back.
-
-<Snippet id="compile-bridge" />
-
-Compilation verifies that the compiled rule reproduces every positive-weight training label, and
-refuses rather than approximating when it cannot.
-
-<Snippet id="refusal" />
-
-The bracketed identifier at the end of a refusal is not decoration. It names the committed
-counterexample that forces it — here, a case where a globally optimal profiled partition violates
-the very nearest-cell geometry a compilation would have had to assume. A profiled result therefore
-has no compilation method that could succeed by accident. The fixture behind this refusal, with
-its exact data drawn, is [CE-DS-GLOBAL-GEOMETRY-001](../research/counterexamples/ce-ds-global-geometry-001/)
-in the research atlas.
-
-## Three things you will need next
-
-**Parameters of interest, with nuisance.** Compute the certified ceiling first and initialize from
-its labels, so the remaining gap measures what the solver left on the table rather than what you
-hope it left. The bound is exact for a single interest parameter; more than one is refused by name
-instead of returning an uncertified number.
-
-<Snippet id="profiled" />
-
-**A rank-one score space.** When the informative directions collapse to one, the optimal cells are
-ordered intervals, and the interval dynamic program returns the global optimum rather than a local
-one.
-
-<Snippet id="scalar" />
-
-**A small table you want proved.** Global optimality can be decided rather than assumed. The
-search is exponential in the number of distinct score atoms, so it guards both the node budget and
-the instance size, and a spent budget reports its outstanding gap rather than claiming optimality.
-
-<Snippet id="certify" />
-
-## The checklist
-
-Whatever path you took, check the same handful of numbers before believing a fit:
-
-- the retention spectrum and its geometric mean, the D-efficiency;
-- the effective rank against the number of parameters;
-- the bin weights and the effective sample sizes;
-- `exchange_stable` together with `best_remaining_gain` and the tolerance it holds at;
-- the geometry report's Voronoi violation, whenever you intend to compile;
-- the score provenance behind `information_kind`, which records whether your scores are exact or
-  estimated.
-
-The <a href="../walkthroughs/">walkthroughs</a> follow one applied question each from the problem
-to a fitted result, two of them on real data. The <a href={REFERENCE_BASE}>reference</a> states
-what every field means.
+For the mathematics behind the optimization and its guarantees, see <Link to="/research">Research</Link>.

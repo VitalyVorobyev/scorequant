@@ -80,16 +80,24 @@ const SCANNED = [
   "./research/counterexamples/ce-ds-global-geometry-001/"
 ];
 
-test("home defines the task and runs nothing", async ({page}) => {
+test("home states the task and runs nothing", async ({page}) => {
   await page.goto("./");
-  // Definitions and references, in ordinary type: no slogan, no demo, no
+  // The site root, since ADR 0035. Ordinary type, no slogan, no demo, no
   // measured comparison. The equations render through KaTeX at build time.
   await expect(page.getByRole("heading", {name: "ScoreQuant", level: 1})).toBeVisible();
-  const sections = ["The setting", "Hard binning, and what it costs", "The task, stated twice", "The criteria", "Where the scores come from", "Where each of these is derived"];
+  const sections = ["The problem", "Why score space?", "Two ways to use it", "Where do the scores come from?", "What is being optimized?", "Where next?"];
   const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
   expect(headings).toEqual(sections);
   expect(await page.locator(".katex-display").count()).toBeGreaterThan(1);
-  await expect(page.getByRole("link", {name: "Why bin at all"})).toHaveAttribute("href", /\/scorequant\/docs\/book\/ch01-why-bin\//);
+  // ADR 0035 moved the list of derivations off this page, so the home page has
+  // no link of its own into the reference. What keeps the documentation one
+  // click from the root is the shell, and that is the ADR's actual claim, so it
+  // is what is pinned here: the primary navigation's Reference entry -- asserted
+  // in the DOM rather than by role, because at mobile widths it sits behind the
+  // menu button -- and the footer's Documentation link, which is visible at
+  // every width.
+  await expect(page.locator('nav[aria-label="Primary"] a').filter({hasText: "Reference"})).toHaveAttribute("href", "/scorequant/docs/");
+  await expect(page.getByRole("contentinfo").getByRole("link", {name: "Documentation"})).toHaveAttribute("href", "/scorequant/docs/");
   await expect(page.getByRole("button", {name: /browser/i})).toHaveCount(0);
 });
 
@@ -151,7 +159,7 @@ test("core learning routes render and search opens from the keyboard", async ({p
   await page.goto("./walkthroughs/");
   await expect(page.getByRole("heading", {name: "Walkthroughs", level: 1})).toBeVisible();
   await expect(page.locator(".walkthrough-card")).toHaveCount(4);
-  await expect(page.getByRole("link", {name: "A classifier instead of a likelihood"})).toBeVisible();
+  await expect(page.getByRole("link", {name: "From a classifier to Fisher-preserving bins"})).toBeVisible();
   await page.keyboard.press("Control+k");
   await expect(page.getByRole("dialog", {name: "Search ScoreQuant"})).toBeVisible();
   await page.getByPlaceholder("Search concepts, tasks, and symbols").fill("ExecutionConfig");
@@ -300,6 +308,55 @@ test("the michelson article runs from the instrument to the experiment without l
   await expect(page.getByRole("button", {name: "Refit this budget in your browser"})).toBeVisible();
 
   expect(heavyRequests).toEqual([]);
+});
+
+/**
+ * The two reading affordances of `src/theme/DocItem/Layout`, split by viewport.
+ *
+ * Both depend on layout, which jsdom does not perform, so they cannot be
+ * asserted from a component test; the arithmetic behind them is covered by
+ * `tests/readingProgress.test.ts` instead. `scaleX(0)` and `scaleX(1)` compute
+ * to the matrices below.
+ */
+const EMPTY_BAR = "matrix(0, 0, 0, 1, 0, 0)";
+const FULL_BAR = "matrix(1, 0, 0, 1, 0, 0)";
+
+test("the progress bar reports how much of the article is left, at every width", async ({page}) => {
+  await page.goto("./walkthroughs/michelson/");
+  const bar = page.locator(".reading-progress__fill");
+  await expect(bar).toHaveCSS("transform", EMPTY_BAR);
+  await page.evaluate(() => {
+    window.scrollTo(0, document.documentElement.scrollHeight);
+  });
+  // Full, not merely non-empty: the article ends above the footer, so reaching
+  // the end of the document means there is nothing of it left to scroll in.
+  await expect(bar).toHaveCSS("transform", FULL_BAR);
+});
+
+test("the contents panel marks the section the reader is in", async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "The contents panel is hidden below 1080px.");
+  await page.goto("./walkthroughs/michelson/");
+  const contents = page.getByRole("navigation", {name: "On this page"});
+  const target = contents.getByRole("link", {name: "9. Optimizing for phase"});
+  // Nothing is current above the first heading: the title belongs to no section.
+  await expect(contents.getByRole("link")).toHaveCount(13);
+  await expect(contents.locator("a[aria-current]")).toHaveCount(0);
+  await target.click();
+  await expect(target).toHaveAttribute("aria-current", "location");
+  await expect(contents.locator("a[aria-current]")).toHaveCount(1);
+  // The heading it jumped to clears the sticky header rather than parking under
+  // it, which is what `scroll-margin-top` on the headings buys. Polled because
+  // the scroll is smooth and `boundingBox` does not retry on its own.
+  await expect
+    .poll(async () => {
+      const heading = await page
+        .getByRole("heading", {name: /9\. Optimizing for phase/})
+        .boundingBox();
+      const header = await page.locator(".site-header").boundingBox();
+      if (heading === null || header === null) return -1;
+      return heading.y - (header.y + header.height);
+    })
+    .toBeGreaterThanOrEqual(0);
 });
 
 test("the michelson refit reproduces the committed profiled retention at the headline budget", async ({page}, testInfo) => {

@@ -8,7 +8,7 @@ final model parameters.
 
 [![CI](https://github.com/VitalyVorobyev/scorequant/actions/workflows/ci.yml/badge.svg)](https://github.com/VitalyVorobyev/scorequant/actions/workflows/ci.yml)
 [Documentation](https://vitalyvorobyev.github.io/scorequant/docs/) ·
-[Walkthroughs](https://vitalyvorobyev.github.io/scorequant/portal/walkthroughs/)
+[Walkthroughs](https://vitalyvorobyev.github.io/scorequant/walkthroughs/)
 
 ## Install
 
@@ -78,7 +78,7 @@ for solver limits, tolerances and refusals.
 
 ## Further reading
 
-- [Get started](https://vitalyvorobyev.github.io/scorequant/portal/get-started/): one complete runnable workflow.
-- [Four walkthroughs](https://vitalyvorobyev.github.io/scorequant/portal/walkthroughs/): interferometry, density ratios, cytometry and HEP.
+- [Get started](https://vitalyvorobyev.github.io/scorequant/get-started/): one complete runnable workflow.
+- [Four walkthroughs](https://vitalyvorobyev.github.io/scorequant/walkthroughs/): interferometry, density ratios, cytometry and HEP.
 - [Theory](https://vitalyvorobyev.github.io/scorequant/docs/book/) and [related work](https://vitalyvorobyev.github.io/scorequant/docs/related-work/).
 - [Contributor guidance](AGENTS.md) and [MIT license](LICENSE).

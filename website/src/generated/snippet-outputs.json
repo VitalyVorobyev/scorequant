@@ -7,64 +7,24 @@
   },
   "cells": {
     "setup": {
-      "code": "import tempfile\nfrom pathlib import Path\n\nimport numpy as np\n\nimport scorequant as sq\n\nrng = np.random.default_rng(21)\nexecution = sq.ExecutionConfig(backend=\"numpy\", precision=\"float64\", device=\"cpu\")\n\n# N(mu, I_2) at mu0 = 0 has score s(x) = x: these raw observations already\n# are the score vectors every later cell works with.\nscores = rng.normal(size=(1_200, 2))\nweights = np.ones(scores.shape[0])",
+      "code": "import numpy as np\n\nimport scorequant as sq\n\nrng = np.random.default_rng(21)\nexecution = sq.ExecutionConfig(backend=\"numpy\", precision=\"float64\", device=\"cpu\")\n\n# N(mu, I_2) at mu0 = 0 has score s(x) = x: these raw observations already\n# are the score vectors every later cell works with.\nscores = rng.normal(size=(1_200, 2))\nweights = np.ones(scores.shape[0])",
       "stdout": "",
       "order": 0
     },
-    "first-fit": {
-      "code": "partition = sq.optimize_partition(\n    scores,\n    weights=weights,\n    n_bins=5,\n    criterion=sq.DOptimality(),\n    config=sq.DExchangeConfig(seed=21),\n    execution=execution,\n)\n\nprint(f\"D-efficiency         {partition.train_report.geometric_mean_retention:.4f}\")\nprint(f\"effective rank       {partition.train_report.effective_rank}\")\nprint(f\"exchange stable      {bool(partition.exchange_stable)}\")\nprint(f\"best remaining gain  {partition.best_remaining_gain:.3e}\")",
-      "stdout": "D-efficiency         0.6988\neffective rank       2\nexchange stable      True\nbest remaining gain  -8.402e-07\n",
+    "fit": {
+      "code": "quantizer = sq.fit_quantizer(\n    sq.ScoreSample(scores, weights),\n    n_bins=5,\n    criterion=sq.DOptimality(),\n    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_steps=120, record_every=20),\n    execution=execution,\n)\n\nreport = quantizer.train_report\nprint(f\"D-efficiency    {report.geometric_mean_retention:.4f}\")\nprint(f\"effective rank  {report.effective_rank}\")",
+      "stdout": "D-efficiency    0.6987\neffective rank  2\n",
       "order": 1
     },
-    "reading-the-numbers": {
-      "code": "report = partition.train_report\neigenvalues = \", \".join(f\"{value:.4f}\" for value in report.retained_eigenvalues)\nbin_weights = \", \".join(f\"{value:.1f}\" for value in report.bin_weights)\neffective_sizes = \", \".join(f\"{value:.1f}\" for value in report.bin_effective_sample_sizes)\n\nprint(f\"retained eigenvalues   [{eigenvalues}]\")\nprint(f\"bin weights            [{bin_weights}]\")\nprint(f\"bin effective sizes    [{effective_sizes}]\")",
-      "stdout": "retained eigenvalues   [0.6533, 0.7474]\nbin weights            [195.0, 302.0, 238.0, 283.0, 182.0]\nbin effective sizes    [195.0, 302.0, 238.0, 283.0, 182.0]\n",
+    "predict": {
+      "code": "new_scores = rng.normal(loc=0.2, size=(300, 2))\nlabels = quantizer.predict_scores(new_scores)\ncounts = \", \".join(f\"{count}\" for count in np.bincount(labels, minlength=5))\n\nprint(f\"bin counts  [{counts}]\")",
+      "stdout": "bin counts  [38, 86, 52, 68, 56]\n",
       "order": 2
     },
-    "stability-check": {
-      "code": "stability = sq.exchange_stability_report(scores, partition.labels, weights=weights)\n\nprint(f\"stable          {stability.stable}\")\nprint(f\"best gain       {stability.best_gain:.3e}\")\nprint(f\"gain tolerance  {stability.gain_tolerance:.1e}\")",
-      "stdout": "stable          True\nbest gain       -8.402e-07\ngain tolerance  1.0e-10\n",
+    "partition": {
+      "code": "partition = sq.optimize_partition(\n    scores,\n    weights=weights,\n    n_bins=5,\n    criterion=sq.DOptimality(),\n    config=sq.DExchangeConfig(seed=21),\n    execution=execution,\n)\n\nprint(f\"D-efficiency  {partition.train_report.geometric_mean_retention:.4f}\")",
+      "stdout": "D-efficiency  0.6988\n",
       "order": 3
-    },
-    "reusable-rule": {
-      "code": "holdout = rng.normal(size=(400, 2))\n\nquantizer = sq.fit_quantizer(\n    sq.ScoreSample(scores, weights),\n    validation=sq.ScoreSample(holdout),\n    n_bins=5,\n    criterion=sq.DOptimality(),\n    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_steps=120, record_every=20),\n    execution=execution,\n)\n\ntrain = quantizer.train_report.geometric_mean_retention\nvalidation = quantizer.validation_report.geometric_mean_retention\nprint(f\"train retention       {train:.4f}\")\nprint(f\"validation retention  {validation:.4f}\")\nprint(f\"hardening gap         {quantizer.hardening_gap:.3e}\")",
-      "stdout": "train retention       0.6987\nvalidation retention  0.6770\nhardening gap         -1.193e-05\n",
-      "order": 4
-    },
-    "predict-and-save": {
-      "code": "fresh = rng.normal(loc=0.2, size=(300, 2))\npredicted = quantizer.predict_scores(fresh)\ncounts = \", \".join(f\"{n}\" for n in np.bincount(predicted, minlength=5))\nprint(f\"bin counts  [{counts}]\")\n\nwith tempfile.TemporaryDirectory() as directory:\n    saved_path = quantizer.quantizer.save(Path(directory) / \"quantizer\")\n    reloaded = sq.Quantizer.load(saved_path)\n    reloaded_predicted = reloaded.predict_scores(fresh)\n\nagrees = bool(np.array_equal(predicted, reloaded_predicted))\nprint(f\"reload agrees on every row  {agrees}\")",
-      "stdout": "bin counts  [50, 78, 55, 68, 49]\nreload agrees on every row  True\n",
-      "order": 5
-    },
-    "baseline": {
-      "code": "baseline = sq.fit_quantizer(\n    sq.ScoreSample(scores, weights),\n    n_bins=5,\n    criterion=sq.NormalizedTrace(),\n    config=sq.KMeansConfig(seed=21, solver_restarts=4),\n    execution=execution,\n)\n\nbaseline_retention = baseline.train_report.geometric_mean_retention\nd_optimal_retention = partition.train_report.geometric_mean_retention\nprint(f\"k-means retention        {baseline_retention:.4f}\")\nprint(f\"D-optimal retention      {d_optimal_retention:.4f}\")\nprint(f\"difference (D - k-means) {d_optimal_retention - baseline_retention:.4f}\")",
-      "stdout": "k-means retention        0.6966\nD-optimal retention      0.6988\ndifference (D - k-means) 0.0022\n",
-      "order": 6
-    },
-    "compile-bridge": {
-      "code": "if partition.exchange_stable:\n    compiled = partition.compile_quantizer()\n    new_scores = rng.normal(size=(200, 2))\n    compiled_predicted = compiled.predict_scores(new_scores)\n\n    positive = partition.positive_weight_mask\n    training_predicted = compiled.predict_scores(partition.training_scores)\n    reproduces_training = bool(\n        np.array_equal(training_predicted[positive], partition.labels[positive])\n    )\n    compiled_counts = \", \".join(\n        f\"{count}\" for count in np.bincount(compiled_predicted, minlength=5)\n    )\n\n    print(f\"reproduces every positive-weight training label  {reproduces_training}\")\n    print(f\"new-score bin counts  [{compiled_counts}]\")",
-      "stdout": "reproduces every positive-weight training label  True\nnew-score bin counts  [37, 47, 41, 45, 30]\n",
-      "order": 7
-    },
-    "refusal": {
-      "code": "refusal_partition = sq.optimize_partition(\n    scores,\n    weights=weights,\n    n_bins=5,\n    criterion=sq.ProfiledDOptimality(interest=(0,)),\n    config=sq.DExchangeConfig(seed=21),\n    execution=execution,\n)\n\ntry:\n    refusal_partition.compile_quantizer()\nexcept sq.RefusalError as exc:\n    print(str(exc))",
-      "stdout": "finite profiled-D labels have no canonical inductive compilation; fit an explicit quantizer instead [CE-DS-GLOBAL-GEOMETRY-001]\n",
-      "order": 8
-    },
-    "profiled": {
-      "code": "bound = sq.efficient_score_bound(scores, interest=(0,), weights=weights, n_bins=5)\n\nprofiled = sq.optimize_partition(\n    scores,\n    weights=weights,\n    n_bins=5,\n    criterion=sq.ProfiledDOptimality(interest=(0,)),\n    config=sq.DExchangeConfig(seed=21),\n    initial_labels=bound.labels,\n    execution=execution,\n)\n\nprint(f\"efficient-score upper bound  {bound.upper_bound:.4f}\")\nprint(f\"gap to profiled partition    {float(bound.gap_to(profiled)):.3e}\")",
-      "stdout": "efficient-score upper bound  6.9547\ngap to profiled partition    1.110e-04\n",
-      "order": 9
-    },
-    "scalar": {
-      "code": "scalar_quantizer = sq.fit_quantizer(\n    sq.ScoreSample(np.asarray(scores[:, :1])),\n    n_bins=5,\n    criterion=sq.DOptimality(),\n    config=sq.ScalarDPConfig(),\n    execution=execution,\n)\n\nscalar_retention = scalar_quantizer.train_report.geometric_mean_retention\nprint(f\"scalar D-optimal retention (the global optimum)  {scalar_retention:.4f}\")",
-      "stdout": "scalar D-optimal retention (the global optimum)  0.9230\n",
-      "order": 10
-    },
-    "certify": {
-      "code": "small = rng.normal(size=(24, 2))\nincumbent = sq.optimize_partition(\n    small,\n    n_bins=3,\n    config=sq.DExchangeConfig(seed=1),\n    execution=execution,\n)\ncertificate = sq.certify_partition(small, n_bins=3, incumbent=incumbent.labels)\n\nprint(f\"status                  {certificate.status}\")\nprint(f\"gap                     {certificate.gap:.3e}\")\nprint(f\"incumbent was optimal   {bool(certificate.incumbent_was_optimal)}\")",
-      "stdout": "status                  optimal\ngap                     0.000e+00\nincumbent was optimal   True\n",
-      "order": 11
     }
   },
   "firstFit": {

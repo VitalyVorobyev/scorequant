@@ -2,7 +2,7 @@
 
 **Version:** 1.0 · 3 September 2026 · programme M12 session S2
 (the M12 manuscript session, recorded in git history; companion packet
-`WORK/completed/MANUSCRIPT-V9-RECONCILIATION.md`).
+packet `MANUSCRIPT-V9-RECONCILIATION` (git history)).
 
 **Purpose.** One row per central statement of manuscript v8 (26 Aug 2026) and per registry
 finding proved since v8, so that the v9 draft (session S5) can be written from this table and the

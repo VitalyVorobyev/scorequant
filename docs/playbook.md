@@ -75,7 +75,7 @@ uv run mkdocs build --strict   # what CI runs; a broken link or nav entry fails 
 ```
 
 The API reference is collected from docstrings by mkdocstrings. `development.md`, `roadmap.md`,
-`system-design.md`, this page, `adr/**` and `programme/**` are excluded from the published site
+`system-design.md`, this page, `decisions.md` and `programme/**` are excluded from the published site
 (`mkdocs.yml` `exclude_docs`), and `tests/test_readme.py` asserts that the exclusion list and the
 prose guard agree.
 
@@ -133,13 +133,13 @@ cd website && corepack pnpm assemble:site
 
 This writes `.pages-preview/` — the portal at the root, the MkDocs documentation at `/docs/`, and
 the pre-cut redirect stubs — and prints the redirect and reference-link parity check
-([ADR 0033](adr/0033-the-portal-is-the-site-root.md)).
+([ADR 0035](decisions.md)).
 Running it locally does **not** deploy.
 
 Deployment is `site.yml`, and it is the same tree: a pull request builds and uploads it for
 inspection, and a push to `main` publishes it to
 [the site](https://vitalyvorobyev.github.io/scorequant/)
-([ADR 0026](adr/0026-one-workflow-publishes-the-site.md)). That workflow is the only place the
+([ADR 0026](decisions.md)). That workflow is the only place the
 strict MkDocs build and the Playwright suites run in CI.
 
 ### Things that will cost you an hour if nobody says them

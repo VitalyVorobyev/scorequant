@@ -19,7 +19,7 @@ Before any mathematics, write down:
 
 ## B. Query the claim graph
 
-Use the claim graph per the lookup protocol in `AGENT.md`. List established
+Use the claim graph per the lookup protocol in `README.md`. List established
 prerequisites, unresolved dependencies, and known counterexamples nearby.
 Do not prove something already recorded `project_proved` unless the task is
 explicitly an audit.

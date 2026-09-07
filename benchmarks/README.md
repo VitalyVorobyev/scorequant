@@ -398,7 +398,7 @@ Recorded so they are not re-attempted.
 
 Not a performance issue, but it is what stopped a converged 10^6-row D-exchange measurement,
 so it belongs with the numbers. Fixed in
-[ADR 0016](../docs/adr/0016-tolerance-consistent-geometry-verification.md); the diagnosis
+[ADR 0016](../docs/decisions.md); the diagnosis
 below is kept because it is the measurement that motivated the change.
 
 `optimize_partition` at N=1 000 000, R=3, B=8, seed 2026 converges normally — 280 scans, 99 001
@@ -429,4 +429,4 @@ now converges and compiles — 280 scans, 99 001 accepted moves, `best_remaining
 default 1e-10 — in about 20 s on the reference machine. `compile_quantizer`'s contract moved
 with it: the compiled rule is self-consistent at the tolerance, not at zero, and its
 `predict_scores` differs from `PartitionResult.labels` on exactly those 13 boundary rows.
-See [ADR 0016](../docs/adr/0016-tolerance-consistent-geometry-verification.md).
+See [ADR 0016](../docs/decisions.md).

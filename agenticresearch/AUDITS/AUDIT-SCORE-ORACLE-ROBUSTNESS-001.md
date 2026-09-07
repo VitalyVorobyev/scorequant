@@ -395,4 +395,4 @@ Verified, so the packet's stated successor applies: the vector case of
 of the same cell moments, its matrix influence function, the new hypothesis
 \(I_Z\succ0\) (which needs \(K\ge d+1\) under \(E[S]=0\)), and the endpoints
 \(\eta_D\in\{0,1\}\) treated separately from the start. Packet:
-`WORK/active/RETENTION-PLUGIN-VECTOR.md`.
+`WORK/completed/RETENTION-PLUGIN-VECTOR.md`.

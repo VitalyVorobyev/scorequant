@@ -9,9 +9,10 @@
   },
   "scripts": {
     "start": "pnpm generate && docusaurus start",
-    "generate": "pnpm generate:protocol && pnpm generate:data && pnpm generate:showcase && pnpm generate:walkthroughs && pnpm generate:snippets",
+    "generate": "pnpm generate:protocol && pnpm generate:data && pnpm generate:atlas && pnpm generate:showcase && pnpm generate:walkthroughs && pnpm generate:snippets",
     "generate:protocol": "node scripts/generate-protocol.mjs",
     "generate:data": "cd .. && uv run python website/scripts/generate_data.py",
+    "generate:atlas": "cd .. && uv run python website/scripts/generate_atlas.py",
     "generate:snippets": "cd .. && uv run python website/scripts/generate_snippets.py",
     "prepare:runtime": "node scripts/prepare-runtime.mjs",
     "assemble:site": "node scripts/assemble-site.mjs",
@@ -63,8 +64,14 @@
     "jsdom": "30.0.1",
     "json-schema-to-typescript": "16.0.0",
     "pagefind": "1.5.2",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
     "typescript": "5.9.3",
     "typescript-eslint": "8.42.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0",
     "vitest": "4.1.11",
     "webpack": "5.110.0"
   }

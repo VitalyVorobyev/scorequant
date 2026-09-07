@@ -3,7 +3,7 @@ import {describe, expect, it} from "vitest";
 import {isActiveNavEntry} from "../src/lib/navigation";
 
 // The deployed baseUrl (the portal owns the site root, with the documentation
-// beneath it at /docs/, ADR 0033). The predicate may not hard-code it — it is
+// beneath it at /docs/, ADR 0035). The predicate may not hard-code it — it is
 // exercised here only as an input fixture.
 const base = "/scorequant";
 

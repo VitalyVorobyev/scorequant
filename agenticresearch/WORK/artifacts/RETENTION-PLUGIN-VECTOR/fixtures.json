@@ -1,0 +1,90 @@
+{
+  "provenance": {
+    "mode": "fixtures",
+    "params": {},
+    "git_revision": "9e6dc891f6f039f4d38eb1a41ba608a13067fa55",
+    "script_sha256": "de075c44ac8d91999edbc0da49c19fcff5c96899bd16affb2de6fbba68ed6de8",
+    "python": "3.13.12",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "numpy": "2.5.2",
+    "scorequant": "0.2.0"
+  },
+  "checks": {
+    "E_S_zero": true,
+    "V": [
+      [
+        "25/2",
+        "0"
+      ],
+      [
+        "0",
+        "25/2"
+      ]
+    ],
+    "I_Z": [
+      [
+        "9/2",
+        "0"
+      ],
+      [
+        "0",
+        "9/2"
+      ]
+    ],
+    "cell_probabilities": [
+      "1/4",
+      "1/4",
+      "1/4",
+      "1/4"
+    ],
+    "cell_means": [
+      [
+        "3",
+        "0"
+      ],
+      [
+        "0",
+        "3"
+      ],
+      [
+        "-3",
+        "0"
+      ],
+      [
+        "0",
+        "-3"
+      ]
+    ],
+    "det_ratio": "81/625",
+    "eta_D": "9/25",
+    "psi_values": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "sigma2": "0",
+    "V_is_25_over_2_identity": true,
+    "I_Z_is_9_over_2_identity": true,
+    "psi_zero_at_every_atom": true,
+    "ellipsoid_centre_and_radius": true,
+    "psi_zero_on_15_rational_circle_points": true,
+    "polynomial_identity_at_15_generic_points": true,
+    "library_geometric_mean_retention": 0.36
+  },
+  "atomless_variant": {
+    "alpha": 1.1311025856512829,
+    "mean_check": [
+      3.000000000000001,
+      0.0
+    ],
+    "second_moment_check": 25.0,
+    "note": "any law on the circle with mean (3, 0) has psi = 0 identically (polynomial identity above)"
+  },
+  "fixture_written": true,
+  "pass": true
+}

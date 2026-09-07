@@ -599,3 +599,64 @@ iff \(\eta>0\) and some positive-probability cell is atomless.
 
 **Fixture:** `CE-O6-ETA-ZERO-MULTIATOM-VARIANCE-001.json`.
 **Regression:** `tests/test_research_claims.py::test_o6_audit_eta_zero_law_has_zero_influence_variance_with_many_atoms`.
+
+---
+
+## CE-O7-ELLIPSOID-ZERO-VARIANCE-001 — an atomless vector law with zero influence variance at interior \(\eta_D\)
+
+**Status:** exact rational boundary counterexample (RETENTION-PLUGIN-VECTOR, 6 Sep 2026).
+
+**Claim falsified:**
+
+> The scalar \(\sigma^2=0\) characterisation of O6.4 lifts to vector scores:
+> for \(0<\eta_D<1\) the influence variance of the frozen-rule geometric-mean
+> retention plug-in vanishes only for laws with at most two atoms per cell,
+> so an atomless cell of positive probability implies \(\sigma^2>0\) whenever
+> \(\eta_D>0\).
+
+\(d=2\), \(K=4\), cells related by quarter turns; cell 0 carries
+\(S\in\{(3,4),(3,-4)\}\) with weight \(1/8\) each. Then \(E[S]=0\),
+\(p_b=1/4\), \(V=\tfrac{25}{2}I\), \(I_Z=\tfrac92I\), \(\eta_D=9/25\) (determinant
+ratio \(81/625\)), and the O7 influence function
+\(\psi=\tfrac{\eta_D}{2}[2s^\top I_Z^{-1}c_b-c_b^\top I_Z^{-1}c_b-s^\top V^{-1}s]\)
+vanishes at every atom. More: as a polynomial in \(s\),
+\(\psi_r(s)=-\tfrac{2r}{25}\big(s_1^2+s_2^2-\tfrac{50}{3}s_1+25\big)\) with
+\(r=\eta_D^2\), so \(\psi\) vanishes on the whole circle
+\(|s-(25/3,0)|^2=(20/3)^2\) — the cell-0 zero-variance ellipsoid of O7.4(a).
+Every law on that circle with mean \((3,0)\) is therefore a \(\sigma^2=0\) law
+at \(\eta_D=9/25\), including the **atomless** law uniform on the arc of
+half-angle \(\alpha\approx1.1311\) (\(\sin\alpha/\alpha=4/5\)) about the far
+point; measured on it, the Wald interval is conservative with width
+\(O(1/n)\). At \(d=1\) the ellipsoid is O6's two-point set, which is why the
+scalar remark was true there. Correct statement: \(\sigma^2=0\) iff every
+cell's conditional law is supported on its ellipsoid; absolutely continuous
+cells are excluded, atomless singular laws are not. Theory:
+`KNOWN_RESULTS/10-oracle.md` O7.4(a).
+
+**Fixture:** `CE-O7-ELLIPSOID-ZERO-VARIANCE-001.json`.
+**Regression:** `tests/test_research_claims.py::test_o7_ellipsoid_law_has_zero_influence_variance_on_the_whole_circle`.
+
+## CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001 — at \(\eta_D=1\) the plug-in is not 1 on every sample
+
+**Status:** exact rational boundary counterexample (AUDIT-RETENTION-PLUGIN-VECTOR, 6 Sep 2026).
+
+**Claim falsified:**
+
+> At \(\eta_D=1\) (\(S=c_Z\) almost surely) the frozen-rule geometric-mean
+> retention plug-in \(\hat\eta_D=(\det\hat I_Z/\det\hat V)^{1/d}\) equals \(1\) on
+> every sample.
+
+\(d=2\), \(K=2\), \(S=c_Z\) a.s. with \(c_0=(1,0)\), \(c_1=(0,1)\), \(p_b=1/2\):
+\(V=I_Z=\tfrac12I\), \(\eta_D=1\), \(\psi\equiv0\). The sample of \(n=2\) draws both in
+cell 0 has \(\hat V=\operatorname{diag}(1,0)\), so the estimator's own everywhere-defined
+functional returns \(0\) by its \(\det\hat V=0\) convention, while the library
+projects the null direction out and reports \(1\) on the retained rank-1
+subspace. Every composition with both cells occupied has \(\hat V=\hat I_Z\) and
+ratio exactly \(1\) (exhaustive to \(n=6\)); the one-cell event has probability
+\(2^{1-n}\), so it is transient but never absent. Correct statement: at
+\(\eta_D=1\) the plug-in is \(1\) on every sample with \(\hat V\succ0\), i.e. whenever
+the occupied cells' means span \(\mathbb R^d\). Theory: `KNOWN_RESULTS/10-oracle.md`
+O7.4(a), audit note H1.
+
+**Fixture:** `CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001.json`.
+**Regression:** `tests/test_research_claims.py::test_o7_audit_unit_retention_singular_sample_fixture`.

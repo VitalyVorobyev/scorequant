@@ -9,14 +9,14 @@
  *
  * `SITE_BASE` matches `docusaurus.config.ts`'s `baseUrl` exactly and must be
  * changed in lockstep with it. The portal owns the site root as of
- * ADR 0033, which retired the hand-written landing page that used to.
+ * ADR 0035, which retired the hand-written landing page that used to.
  */
 export const SITE_BASE = "/scorequant/";
 
 /**
  * Where the assembled MkDocs documentation is mounted. It is a child of the
  * site root the portal now serves: the portal is at `/` and the documentation
- * beneath it at `/docs/` (ADR 0033).
+ * beneath it at `/docs/` (ADR 0035).
  */
 export const REFERENCE_BASE = "/scorequant/docs/";
 

@@ -2,7 +2,7 @@
 site_name: ScoreQuant
 site_description: Information-preserving binning for statistical inference
 # The learning portal serves the site root; this documentation is mounted beneath it
-# at /docs/ (ADR 0033).
+# at /docs/ (ADR 0035).
 site_url: https://vitalyvorobyev.github.io/scorequant/docs/
 repo_url: https://github.com/VitalyVorobyev/scorequant
 repo_name: VitalyVorobyev/scorequant
@@ -14,7 +14,7 @@ exclude_docs: |
   roadmap.md
   system-design.md
   playbook.md
-  adr/**
+  decisions.md
   programme/**
 
 theme:
@@ -104,7 +104,7 @@ nav:
   - Related work: related-work.md
   - Glossary: glossary.md
   - Bibliography: bibliography.md
-  - Portal: https://vitalyvorobyev.github.io/scorequant/
+  - Learning portal: https://vitalyvorobyev.github.io/scorequant/
 
 plugins:
   - search
@@ -144,7 +144,7 @@ markdown_extensions:
 
 extra:
   # The header title links to the portal at the site root, not to this
-  # documentation's own index (ADR 0033).
+  # documentation's own index (ADR 0035).
   homepage: https://vitalyvorobyev.github.io/scorequant/
 
 extra_javascript:

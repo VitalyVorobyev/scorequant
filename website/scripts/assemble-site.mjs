@@ -10,7 +10,7 @@ const assembled = resolve(project, ".pages-preview");
 const redirectsManifestPath = resolve(website, "redirects.json");
 const referenceMount = "docs";
 
-// Two surfaces, one tree (ADR 0033): the Docusaurus portal owns the site root
+// Two surfaces, one tree (ADR 0035): the Docusaurus portal owns the site root
 // and the MkDocs documentation is mounted beneath it at /docs/. Both are build
 // outputs -- `docusaurus build` (whose `baseUrl` must match the site root) and
 // `mkdocs build --strict`. The hand-written landing page ADR 0027 put at the
@@ -20,7 +20,7 @@ await mkdir(assembled, {recursive: true});
 await cp(portalBuild, assembled, {recursive: true});
 
 /**
- * The portal must not itself emit a `docs/` route (ADR 0033).
+ * The portal must not itself emit a `docs/` route (ADR 0035).
  *
  * The MkDocs tree is copied *into* the portal's tree now rather than beside
  * it, so a portal route named `docs` would be silently overwritten by the
@@ -32,7 +32,7 @@ await cp(portalBuild, assembled, {recursive: true});
 if (await directoryExists(resolve(portalBuild, referenceMount))) {
   process.stderr.write(
     `assemble:site: the portal build emits a "${referenceMount}/" route, which is where the\n` +
-      `  MkDocs documentation is mounted (ADR 0033). Rename that route, or move the\n` +
+      `  MkDocs documentation is mounted (ADR 0035). Rename that route, or move the\n` +
       `  reference mount, before the copy silently replaces one with the other.\n`,
   );
   process.exit(1);
@@ -85,7 +85,7 @@ async function directoryExists(path) {
 const manifest = JSON.parse(await readFile(redirectsManifestPath, "utf8"));
 
 /**
- * A stub must never overwrite real content (ADR 0025, kept by ADR 0033).
+ * A stub must never overwrite real content (ADR 0025, kept by ADR 0035).
  *
  * The portal now owns the root, so a collision means a portal route, the
  * reference mount, or a manifest entry that names one of them. No portal route
@@ -136,7 +136,7 @@ for (const {from, to} of manifest.redirects) {
 }
 
 /**
- * Every portal link into the reference must resolve (ADR 0033).
+ * Every portal link into the reference must resolve (ADR 0035).
  *
  * This is the one class of link nothing else can check. Docusaurus's
  * `onBrokenLinks: "throw"` follows route links inside the portal, and

@@ -1,7 +1,7 @@
 {
   "schema_version": "4.1",
   "project": "ScoreQuant",
-  "updated": "2026-09-05",
+  "updated": "2026-09-06",
   "canonical_problem_file": "PROBLEM.md",
   "human_readable_ledger": "KNOWN_RESULTS/",
   "open_problem_ledger": "OPEN_PROBLEMS.md",
@@ -79,138 +79,108 @@
     "direction-resolved retained-information diagnostics"
   ],
   "bibliography": {
-    "Kiefer-Wolfowitz-1960": {
-      "title": "The Equivalence of Two Extremum Problems",
-      "doi": "10.4153/CJM-1960-030-4",
-      "pdf": "https://www.cambridge.org/core/services/aop-cambridge-core/content/view/B8B0626C11F52B0FD8C67C5D54BDDD43/S0008414X00010002a.pdf/the-equivalence-of-two-extremum-problems.pdf"
+    "Alsing-Wandelt-2019": {
+      "title": "Nuisance Hardened Data Compression for Fast Likelihood-Free Inference",
+      "doi": "10.1093/mnras/stz1900",
+      "arxiv": "1903.01473"
     },
-    "Wynn-1970": {
-      "title": "The Sequential Generation of D-Optimum Experimental Designs",
-      "doi": "10.1214/aoms/1177696809"
-    },
-    "Wynn-1972": {
-      "title": "Results in the Theory and Construction of D-Optimum Experimental Designs",
-      "doi": "10.1111/j.2517-6161.1972.tb00896.x"
-    },
-    "Whittle-1973": {
-      "title": "Some General Points in the Theory of Optimal Experimental Design",
-      "doi": "10.1111/j.2517-6161.1973.tb00944.x"
-    },
-    "Kiefer-1974": {
-      "title": "General Equivalence Theory for Optimum Designs (Approximate Theory)",
-      "doi": "10.1214/aos/1176342810"
-    },
-    "Nather-Reinsch-1981": {
-      "title": "D_s-optimality and Whittle's equivalence theorem",
-      "doi": "10.1080/02331888108801591"
-    },
-    "Venkitasubramaniam-Tong-Swami-2006": {
-      "title": "Score-Function Quantization for Distributed Estimation",
-      "doi": "10.1109/CISS.2006.286494"
-    },
-    "Farias-Brossier-2013": {
-      "title": "Optimal Scalar Quantization for Parameter Estimation",
-      "pdf": "https://arxiv.org/pdf/1310.6945"
+    "Anderson-2003": {
+      "title": "An Introduction to Multivariate Statistical Analysis",
+      "note": "T. W. Anderson, Wiley, 3rd ed. 2003 (2nd ed. 1984). Generalized variance s7.5, LR criterion s8.3-8.5, MANOVA s8.9, canonical correlations ch. 12, asymptotic roots s13.5-13.6. Registered 5 Sep 2026; 2nd-ed. contents scan (papers/local/); 3rd-ed. numbering unverified."
     },
     "Barnes-Han-Ozgur-2018": {
       "title": "A Geometric Characterization of Fisher Information from Quantized Samples with Applications to Distributed Statistical Estimation",
       "doi": "10.1109/ALLERTON.2018.8635899",
       "pdf": "https://web.stanford.edu/~aozgur/FisherAllerton.pdf"
     },
-    "Dulek-2023": {
-      "title": "On the Optimality of Sufficient Statistics-Based Quantizers",
-      "doi": "10.1109/TPAMI.2022.3172282"
-    },
-    "Venkitasubramaniam-Tong-Swami-2007": {
-      "title": "Quantization for Maximin ARE in Distributed Estimation",
-      "doi": "10.1109/TSP.2007.894279"
-    },
     "Barnes-Han-Ozgur-2020": {
       "title": "Lower Bounds for Learning Distributions under Communication Constraints via Fisher Information",
       "arxiv": "1902.02890",
       "pdf": "https://arxiv.org/pdf/1902.02890"
     },
-    "Zhang-Blum-Kaplan-Lu-2018": {
-      "title": "A Fundamental Limitation on Maximum Parameter Dimension for Accurate Estimation With Quantized Data",
-      "doi": "10.1109/TIT.2018.2850968",
-      "arxiv": "1605.07679"
+    "Bhattacharya-Ghosh-1978": {
+      "title": "On the validity of the formal Edgeworth expansion",
+      "note": "R. N. Bhattacharya and J. K. Ghosh, Annals of Statistics 6(2):434-451, 1978. Edgeworth validity for smooth functions of sample-mean vectors; backdrop of the O6.7 second-order readings. Registered 5 Sep 2026 (audit); abstract read."
     },
-    "Silvey-Titterington-1973": {
-      "title": "A Geometric Approach to Optimal Design Theory",
-      "doi": "10.1093/biomet/60.1.21",
-      "note": "Biometrika 60(1):21-32. The publisher summary identifies D- and Ds-equivalence as duality theorems proved through Strong Lagrangian Theory on the approximate-design feasible set; this does not transfer strong duality to hard partitions."
+    "Bickel-Klaassen-Ritov-Wellner-1993": {
+      "title": "Efficient and Adaptive Estimation for Semiparametric Models",
+      "doi": "10.1007/978-1-4612-0941-2",
+      "note": "Johns Hopkins University Press 1993; Springer reprint 1998. Classical source for the efficient score as the L2 residual after projection onto the nuisance tangent space and for least-favourable-direction orthogonality. It supplies the statistical interpretation of the full-data residual score used around DS17, but not the binned tilt-residual identity, endogenous tilt fixed point, or any hard-partition obstruction."
     },
-    "Silvey-Titterington-Torsney-1978": {
-      "title": "An Algorithm for Optimal Designs on a Design Space",
-      "doi": "10.1080/03610927808827719"
-    },
-    "Friedman-Rubin-1967": {
-      "title": "On Some Invariant Criteria for Grouping Data",
-      "doi": "10.1080/01621459.1967.10500923"
-    },
-    "Scott-Symons-1971": {
-      "title": "Clustering Methods Based on Likelihood Ratio Criteria",
-      "doi": "10.2307/2529003"
-    },
-    "Spaeth-1977": {
-      "title": "Computational experiences with the exchange method: Applied to four commonly used partitioning cluster analysis criteria",
-      "doi": "10.1016/S0377-2217(77)81005-9"
-    },
-    "Spaeth-1985": {
-      "title": "Cluster Dissection and Analysis: Theory, FORTRAN Programs, Examples",
-      "code": "https://people.math.sc.edu/Burkardt/f_src/spaeth/spaeth.html"
-    },
-    "Coleman-et-al-1999": {
-      "title": "Some computational issues in cluster analysis with no a priori metric",
-      "doi": "10.1016/S0167-9473(99)00009-2"
-    },
-    "Pollard-1981": {
-      "title": "Strong Consistency of K-Means Clustering",
-      "doi": "10.1214/aos/1176345339",
-      "pdf": "https://www.stat.yale.edu/~pollard/Papers/Pollard81AS.pdf"
-    },
-    "Rakhlin-Caponnetto-2006": {
-      "title": "Stability of K-Means Clustering",
-      "pdf": "https://proceedings.neurips.cc/paper_files/paper/2006/file/58191d2a914c6dae66371c9dcdc91b41-Paper.pdf",
-      "note": "NeurIPS 19. For bounded sources and nearest-center squared-error codebooks, uniqueness of the population minimizer forces the population almost-minimizer set to shrink; a covering-number uniform law transfers this to empirical stability. Direct prior art for DS16.1's codebook-rigidity ingredient, but not for arbitrary groupings or nuisance moments."
-    },
-    "Telgarsky-Vattani-2010": {
-      "title": "Hartigan's Method: k-means Clustering without Voronoi",
-      "pdf": "https://proceedings.mlr.press/v9/telgarsky10a/telgarsky10a.pdf",
-      "note": "AISTATS 2010, PMLR 9:820-827. Finite one-point relocation geometry and separation from the induced Voronoi partition for ordinary k-means; no profiled-Fisher or population-funnel result."
-    },
-    "Zador-1982": {
-      "title": "Asymptotic Quantization Error of Continuous Signals and the Quantization Dimension",
-      "doi": "10.1109/TIT.1982.1056490"
-    },
-    "Gersho-1979": {
-      "title": "Asymptotically Optimal Block Quantization",
-      "doi": "10.1109/TIT.1979.1056067"
+    "Blanchard-Jaffe-Zhivotovskiy-2025": {
+      "title": "Consistency and inconsistency in k-means clustering",
+      "arxiv": "2507.06226",
+      "note": "Empirical k-means centers can fail to converge under finite first moment even with a unique population optimum (extreme cluster imbalance); consistency restored by an a priori balance constraint. Closest published structure to DS15 Proposition 6 (constraints at negligible asymptotic cost), but repairs a moment pathology rather than the optimizer-driven degeneracy DS15 proves; scalar distortion only. Engage before publication."
     },
     "Bucklew-Wise-1982": {
       "title": "Multidimensional Asymptotic Quantization Theory with rth Power Distortion Measures",
       "doi": "10.1109/TIT.1982.1056486"
     },
-    "Gupta-Hero-2003": {
-      "title": "High-Rate Vector Quantization for Detection",
-      "doi": "10.1109/TIT.2003.814482"
+    "CMS-2025": {
+      "title": "Development of systematic uncertainty-aware neural network trainings for binned-likelihood analyses at the LHC",
+      "arxiv": "2502.13047",
+      "doi": "10.1140/epjc/s10052-025-14713-w",
+      "note": "CMS-MLG-23-005. Local copy: papers/cms_2025_systematic_aware_nn_training_arXiv2502.13047.pdf"
+    },
+    "Carstensen-1983": {
+      "title": "Complexity of some parametric integer and network programming problems",
+      "note": "Ph.D. thesis, University of Michigan, 1983. Secondary record only (2 Sep 2026): cited by Gajjar-Radhakrishnan 2019 and by the 2025 linear-parametric optimisation survey arXiv:2501.11544 for n^{Omega(log n)} breakpoints of a linear-parametric shortest path with matching n^{O(log n)} upper bound. Envelope-materialisation warning; no bound for the tilted interval-segmentation DP."
+    },
+    "Coleman-et-al-1999": {
+      "title": "Some computational issues in cluster analysis with no a priori metric",
+      "doi": "10.1016/S0167-9473(99)00009-2"
+    },
+    "Cramer-1946": {
+      "title": "Mathematical Methods of Statistics",
+      "note": "H. Cramer, Princeton University Press, 1946. Chapter 28 (asymptotic properties of sampling distributions), functions of sample moments: the classical normal limit for smooth functions of sample moments. Registered 5 Sep 2026 from memory; section numbering unverified."
+    },
+    "Cramer-Nicewander-1979": {
+      "title": "Some symmetric, invariant measures of multivariate association",
+      "note": "E. M. Cramer, W. A. Nicewander, Psychometrika 44(1):43-54, 1979. Symmetric invariant association measures are functions of the canonical correlations. Registered 5 Sep 2026; abstract read."
+    },
+    "Cranmer-Pavez-Louppe-2015": {
+      "title": "Approximating Likelihood Ratios with Calibrated Discriminative Classifiers",
+      "arxiv": "1506.02169",
+      "pdf": "https://arxiv.org/pdf/1506.02169"
+    },
+    "Donner-Koval-1980": {
+      "title": "The large sample variance of an intraclass correlation",
+      "note": "A. Donner and J. J. Koval, Biometrika 67(3):719-722, 1980. Delta-method variance of a between-over-total ratio under a normal random-effects model; nearest applied kin of O6. Registered 5 Sep 2026 (audit); journal record."
     },
     "Du-Faber-Gunzburger-1999": {
       "title": "Centroidal Voronoi Tessellations: Applications and Algorithms",
       "doi": "10.1137/S0036144599352836"
     },
-    "Richter-Alexa-2015": {
-      "title": "Mahalanobis centroidal Voronoi tessellations",
-      "doi": "10.1016/j.cag.2014.09.009"
+    "Dulek-2023": {
+      "title": "On the Optimality of Sufficient Statistics-Based Quantizers",
+      "doi": "10.1109/TPAMI.2022.3172282"
     },
-    "Jiang-et-al-2026": {
-      "title": "Direct target localization in USNs with hybrid quantized multi-snapshot measurements: A geometric structure-aided approach",
-      "doi": "10.1016/j.dsp.2025.105552"
+    "Esary-Proschan-Walkup-1967": {
+      "title": "Association of Random Variables, with Applications",
+      "doi": "10.1214/aoms/1177698701",
+      "note": "Ann. Math. Statist. 38(5):1466-1474. Defines association through nonnegative covariance of coordinatewise nondecreasing transforms and proves closure properties. Historical source for the covariance-sign language only; Jakubowski 2021, not this paper or FKG, is the direct equality-case source consumed by the DS17 conditional Chebyshev step."
     },
-    "Li-Mathias-2000": {
-      "title": "Extremal Characterizations of the Schur Complement and Resulting Inequalities",
-      "doi": "10.1137/S0036144599337290",
-      "note": "SIAM Review 42(2):233-246. Theorem 2.2 is the DS11 identity (Loewner-minimal generalized Schur complement with exact attainment set); attributed to M. G. Krein (1947) and Anderson's shorted operator (1971)."
+    "Fang-Krishnaiah-1982": {
+      "title": "Asymptotic distributions of functions of the eigenvalues of some random matrices for nonnormal populations",
+      "note": "C. Fang, P. R. Krishnaiah, J. Multivariate Anal. 12(1):39-63, 1982. Registered 5 Sep 2026; journal record only, text unread."
+    },
+    "Farias-Brossier-2013": {
+      "title": "Optimal Scalar Quantization for Parameter Estimation",
+      "pdf": "https://arxiv.org/pdf/1310.6945"
+    },
+    "Fisher-1958": {
+      "title": "On Grouping for Maximum Homogeneity",
+      "doi": "10.1080/01621459.1958.10501479",
+      "note": "JASA 53(284):789-798 (verbatim-verified 30 Aug 2026). Optimal 1-D weighted SSE partitions are contiguous (appendix proof); reduction to C(K-1,G-1) contiguous partitions - the classical anchor for the scalar interval optimum and exact DP step (DS8, DS15 Proposition 4). Credits the continuous analogue to Dalenius 1950 and Cox 1957."
+    },
+    "Flury-1990": {
+      "title": "Principal points",
+      "pdf": "https://doi.org/10.1093/biomet/77.1.33",
+      "note": "Biometrika 77(1):33-41; primary text read in the DS17 audit. Defines principal points as global squared-error minimizers. Proves the two-point elliptical solution lies on a leading covariance eigenvector and the general rank bound dim span{xi_j-mu} <= k-1; for k>2 the leading principal-subspace statement is explicitly a conjecture, later proved for principal points by Tarpey-Li-Flury 1995. No general existence theorem, arbitrary self-consistent-point theorem, nuisance block, or profiled objective."
+    },
+    "Friedman-Rubin-1967": {
+      "title": "On Some Invariant Criteria for Grouping Data",
+      "doi": "10.1080/01621459.1967.10500923"
     },
     "Gajjar-Radhakrishnan-2019": {
       "title": "Parametric Shortest Paths in Planar Graphs",
@@ -219,42 +189,46 @@
       "pdf": "https://arxiv.org/pdf/1811.05115",
       "note": "FOCS 2019:876-895. Constructs linear-parameter planar shortest-path instances with n^{Omega(log n)} optimal-cost pieces. This is a parametric-DP envelope-complexity warning, not a lower bound for the restricted tilted interval-segmentation DP."
     },
-    "Valassi-2020": {
-      "title": "Optimising HEP parameter fits via Monte Carlo weight derivative regression",
-      "arxiv": "2003.12853",
-      "pdf": "https://arxiv.org/pdf/2003.12853",
-      "note": "CHEP2019 proceedings (EPJ Web of Conferences). Local copy: papers/valassi_2020_weight_derivative_regression_arXiv2003.12853.pdf"
+    "Garcia-Escudero-Gordaliza-1999": {
+      "title": "Robustness Properties of k Means and Trimmed k Means",
+      "doi": "10.1080/01621459.1999.10474200",
+      "note": "JASA 94:956-969. k-means non-robustness: contamination drives a cluster to chase an outlier; trimming repairs it."
     },
-    "CMS-2025": {
-      "title": "Development of systematic uncertainty-aware neural network trainings for binned-likelihood analyses at the LHC",
-      "arxiv": "2502.13047",
-      "doi": "10.1140/epjc/s10052-025-14713-w",
-      "note": "CMS-MLG-23-005. Local copy: papers/cms_2025_systematic_aware_nn_training_arXiv2502.13047.pdf"
+    "Gersho-1979": {
+      "title": "Asymptotically Optimal Block Quantization",
+      "doi": "10.1109/TIT.1979.1056067"
     },
-    "Cranmer-Pavez-Louppe-2015": {
-      "title": "Approximating Likelihood Ratios with Calibrated Discriminative Classifiers",
-      "arxiv": "1506.02169",
-      "pdf": "https://arxiv.org/pdf/1506.02169"
+    "Graf-Luschgy-2000": {
+      "title": "Foundations of Quantization for Probability Distributions",
+      "doi": "10.1007/BFb0103945",
+      "note": "Springer LNM 1730. Every cell of an optimal quantizer has positive mass and null boundaries (content secondary-verified via Roychowdhury Prop 1.1 and Liu-Pages 2020, who pin the null-boundary statement to Thm 4.2 and existence to Thm 4.12; the \"Thm 4.1\" numbering for positive mass is unverified - 30 Aug 2026 audit); Thm 5.1: uniqueness of the scalar log-concave K-quantizer (numbering and content confirmed twice at secondary level)."
     },
-    "Alsing-Wandelt-2019": {
-      "title": "Nuisance Hardened Data Compression for Fast Likelihood-Free Inference",
-      "doi": "10.1093/mnras/stz1900",
-      "arxiv": "1903.01473"
+    "Gronlund-etal-2017": {
+      "title": "Fast Exact k-Means, k-Medians and Bregman Divergence Clustering in 1D",
+      "arxiv": "1701.07204",
+      "pdf": "https://arxiv.org/pdf/1701.07204",
+      "note": "Gronlund, Larsen, Mathiasen, Nielsen, Schneider, Song; arXiv:1701.07204 v4 (2018). Primary text pp. 1-2 read 2 Sep 2026. The contiguous 1-D k-means DP runs in O(kn^2), and in O(n log n + kn) (O(kn) on sorted input) by monotone-matrix search; the weighted discrete scalar quantization form is covered. Improves DS19.2's fixed-tilt O(KN^2) evaluation bound to O(KN) after sorting."
     },
-    "Bickel-Klaassen-Ritov-Wellner-1993": {
-      "title": "Efficient and Adaptive Estimation for Semiparametric Models",
-      "doi": "10.1007/978-1-4612-0941-2",
-      "note": "Johns Hopkins University Press 1993; Springer reprint 1998. Classical source for the efficient score as the L2 residual after projection onto the nuisance tangent space and for least-favourable-direction orthogonality. It supplies the statistical interpretation of the full-data residual score used around DS17, but not the binned tilt-residual identity, endogenous tilt fixed point, or any hard-partition obstruction."
+    "Gupta-Hero-2003": {
+      "title": "High-Rate Vector Quantization for Detection",
+      "doi": "10.1109/TIT.2003.814482"
     },
-    "Esary-Proschan-Walkup-1967": {
-      "title": "Association of Random Variables, with Applications",
-      "doi": "10.1214/aoms/1177698701",
-      "note": "Ann. Math. Statist. 38(5):1466-1474. Defines association through nonnegative covariance of coordinatewise nondecreasing transforms and proves closure properties. Historical source for the covariance-sign language only; Jakubowski 2021, not this paper or FKG, is the direct equality-case source consumed by the DS17 conditional Chebyshev step."
+    "Hall-1992": {
+      "title": "The Bootstrap and Edgeworth Expansion",
+      "note": "P. Hall, Springer, 1992. Smooth function model; studentized-statistic skewness explains the small-n under-coverage of plug-in Wald intervals. Registered 5 Sep 2026 (audit); record only."
+    },
+    "Hampel-Ronchetti-Rousseeuw-Stahel-1986": {
+      "title": "Robust Statistics: The Approach Based on Influence Functions",
+      "note": "F. R. Hampel, E. M. Ronchetti, P. J. Rousseeuw, W. A. Stahel, Wiley, 1986. Asymptotic variance of a statistical functional as the integral of its squared influence function, V(T,F) = int IF^2 dF, the formula O6.2's sigma^2 = E[psi^2] instantiates. Registered 5 Sep 2026; section number unverified."
     },
     "Hastie-Stuetzle-1989": {
       "title": "Principal Curves",
       "doi": "10.1080/01621459.1989.10478797",
       "note": "JASA 84(406):502-516. Introduced self-consistent curves; Tarpey-Flury 1996 explicitly credits this source for the self-consistency terminology before generalizing it to random vectors, principal points, and other summaries."
+    },
+    "Hennig-2004": {
+      "title": "Breakdown points for maximum likelihood estimators of location-scale mixtures",
+      "note": "Ann. Statist. 32:1313-1340. A far-enough added point forms a one-point cluster at the exact fixed-K clustering optimum (secondary-verified via Hennig arXiv:2308.14478)."
     },
     "Jakubowski-2021": {
       "title": "A complement to the Chebyshev integral inequality",
@@ -262,10 +236,31 @@
       "arxiv": "2005.00788",
       "note": "Statistics & Probability Letters 168:108934. Theorem 1.2 gives the exact equality case for monotone covariance: Cov(f(X),g(X))=0 iff f(X) or g(X) is a.s. constant. The proof uses the independent-copy product identity appearing conditionally in DS17. This supports that equality step, not the later quantizer-cell or nuisance-rank conclusions."
     },
-    "Graf-Luschgy-2000": {
-      "title": "Foundations of Quantization for Probability Distributions",
-      "doi": "10.1007/BFb0103945",
-      "note": "Springer LNM 1730. Every cell of an optimal quantizer has positive mass and null boundaries (content secondary-verified via Roychowdhury Prop 1.1 and Liu-Pages 2020, who pin the null-boundary statement to Thm 4.2 and existence to Thm 4.12; the \"Thm 4.1\" numbering for positive mass is unverified - 30 Aug 2026 audit); Thm 5.1: uniqueness of the scalar log-concave K-quantizer (numbering and content confirmed twice at secondary level)."
+    "Jiang-et-al-2026": {
+      "title": "Direct target localization in USNs with hybrid quantized multi-snapshot measurements: A geometric structure-aided approach",
+      "doi": "10.1016/j.dsp.2025.105552"
+    },
+    "Kelley-2007": {
+      "title": "Confidence intervals for standardized effect sizes: theory, application, and implementation",
+      "note": "K. Kelley, Journal of Statistical Software 20(8), 2007. Noncentral-F intervals for eta-squared and R-squared under normal-theory ANOVA; the normality assumption O6 avoids. Registered 5 Sep 2026; verified at jstatsoft.org."
+    },
+    "Kendall-Stuart-1961": {
+      "title": "The Advanced Theory of Statistics, Vol. 2: Inference and Relationship",
+      "note": "M. G. Kendall, A. Stuart, Griffin, 1961. Ch. 26 s26.21-26.24: correlation ratio, decomposition (26.50), normal-theory F tests; no large-sample variance. Registered 5 Sep 2026; primary text (archive.org OCR)."
+    },
+    "Kiefer-1974": {
+      "title": "General Equivalence Theory for Optimum Designs (Approximate Theory)",
+      "doi": "10.1214/aos/1176342810"
+    },
+    "Kiefer-Wolfowitz-1960": {
+      "title": "The Equivalence of Two Extremum Problems",
+      "doi": "10.4153/CJM-1960-030-4",
+      "pdf": "https://www.cambridge.org/core/services/aop-cambridge-core/content/view/B8B0626C11F52B0FD8C67C5D54BDDD43/S0008414X00010002a.pdf/the-equivalence-of-two-extremum-problems.pdf"
+    },
+    "Kieffer-1983": {
+      "title": "Uniqueness of locally optimal quantizer for log-concave density and convex error weighting function",
+      "doi": "10.1109/TIT.1983.1056622",
+      "note": "IEEE Trans. IT 29:42-47. Log-concave source + convex strictly increasing C1 error weight: unique locally optimal scalar quantizer (hence globally optimal); Gaussian covered. Secondary-verified via Kazikli et al. arXiv:2012.08265 Thm 3 and Liu-Pages-2020 Lemma 10."
     },
     "Levrard-2015": {
       "title": "Nonasymptotic bounds for vector quantization in Hilbert spaces",
@@ -273,35 +268,89 @@
       "arxiv": "1405.6672",
       "note": "AOS 43(2):592-619. Definition 2.1 margin condition: p(t) <= (B p_min / 128 M^2) t on the mass of t-neighborhoods of optimal-cell boundaries - a hypothesis on the LAW at population optima, never proven at empirical optima; buys finite optimal-codebook sets, quadratic growth, and 1/n rates; Gaussian mixtures satisfy it. (arXiv 1405.6672; the earlier arXiv 1310.7138 \"Margin conditions for vector quantization\" is the 2013 precursor.)"
     },
-    "Kieffer-1983": {
-      "title": "Uniqueness of locally optimal quantizer for log-concave density and convex error weighting function",
-      "doi": "10.1109/TIT.1983.1056622",
-      "note": "IEEE Trans. IT 29:42-47. Log-concave source + convex strictly increasing C1 error weight: unique locally optimal scalar quantizer (hence globally optimal); Gaussian covered. Secondary-verified via Kazikli et al. arXiv:2012.08265 Thm 3 and Liu-Pages-2020 Lemma 10."
+    "Li-Mathias-2000": {
+      "title": "Extremal Characterizations of the Schur Complement and Resulting Inequalities",
+      "doi": "10.1137/S0036144599337290",
+      "note": "SIAM Review 42(2):233-246. Theorem 2.2 is the DS11 identity (Loewner-minimal generalized Schur complement with exact attainment set); attributed to M. G. Krein (1947) and Anderson's shorted operator (1971)."
     },
     "Liu-Pages-2020": {
       "title": "Convergence rate of optimal quantization and application to the clustering performance of the empirical measure",
       "pdf": "https://www.jmlr.org/papers/volume21/18-804/18-804.pdf",
       "note": "JMLR 21(86):1-36. Lemma 10: strongly unimodal law has a unique stationary (hence optimal) scalar K-quantizer; Prop 11: positive-definite distortion Hessian at the optimum under strict log-concavity."
     },
+    "Magnus-Neudecker-1999": {
+      "title": "Matrix Differential Calculus with Applications in Statistics and Econometrics",
+      "note": "J. R. Magnus, H. Neudecker, Wiley, 1988/1999 (3rd ed. 2019). Ch. 8 s8.3 differential of a determinant, s8.4 of an inverse. Registered 5 Sep 2026; contents scan (papers/local/)."
+    },
+    "Mease-Nair-2006": {
+      "title": "Unique optimal partitions of distributions and connections to hazard rates and stochastic ordering",
+      "note": "Statistica Sinica 16:1299-1312 (verbatim-verified 30 Aug 2026). Confirms scalar-quantizer uniqueness under log-concavity of the density via likelihood-ratio ordering, and refutes Eubank-1988 weaker sufficient condition by an explicit three-stationary-solution counterexample: DS15 assumption (S) must stay pinned to log-concavity of the density itself."
+    },
+    "Megiddo-1983": {
+      "title": "Applying Parallel Computation Algorithms in the Design of Serial Algorithms",
+      "doi": "10.1145/2157.322410",
+      "note": "J. ACM 30(4):852-865 (primary record checked 2 Sep 2026). Parametric search: simulate a comparison algorithm at the unknown optimal parameter and resolve comparisons at polynomial roots with a monotone sign oracle. At d_lambda=1 it lifts the fixed-tilt interval DP to an arithmetic-polynomial exact minimiser of the tilt dual; bit complexity is not analysed there (AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER supplies it)."
+    },
+    "Muirhead-Waternaux-1980": {
+      "title": "Asymptotic distributions in canonical correlation analysis and other multivariate procedures for nonnormal populations",
+      "note": "R. J. Muirhead, C. M. Waternaux, Biometrika 67(1):31-43, 1980. Canonical-correlation asymptotics under finite fourth moments. Registered 5 Sep 2026; abstract read."
+    },
+    "Nather-Reinsch-1981": {
+      "title": "D_s-optimality and Whittle's equivalence theorem",
+      "doi": "10.1080/02331888108801591"
+    },
+    "Pollard-1981": {
+      "title": "Strong Consistency of K-Means Clustering",
+      "doi": "10.1214/aos/1176345339",
+      "pdf": "https://www.stat.yale.edu/~pollard/Papers/Pollard81AS.pdf"
+    },
+    "Pukelsheim-Titterington-1983": {
+      "title": "General Differential and Lagrangian Theory for Optimal Experimental Design",
+      "doi": "10.1214/aos/1176346321",
+      "note": "Ann. Statist. 11(4):1060-1068 (primary record checked 2 Sep 2026). Subgradient and Lagrangian duality for information functionals, including subset-parameter (D_s) criteria, over the convex set of design measures. Comparison template for DS19's certificate; its strong duality needs the convex feasible set that hard partitions lack."
+    },
+    "Radhakrishnan-Kshirsagar-1981": {
+      "title": "Influence functions for certain parameters in multivariate analysis",
+      "note": "R. Radhakrishnan, A. M. Kshirsagar, Comm. Statist. Theory Methods 10(6):515-529, 1981. Influence functions of the generalized variance, the MANOVA noncentrality matrix and its eigenvalues, canonical correlations, Wilks' Lambda. Registered 5 Sep 2026 (vector-packet literature pass); abstract read."
+    },
+    "Rakhlin-Caponnetto-2006": {
+      "title": "Stability of K-Means Clustering",
+      "pdf": "https://proceedings.neurips.cc/paper_files/paper/2006/file/58191d2a914c6dae66371c9dcdc91b41-Paper.pdf",
+      "note": "NeurIPS 19. For bounded sources and nearest-center squared-error codebooks, uniqueness of the population minimizer forces the population almost-minimizer set to shrink; a covering-number uniform law transfers this to empirical stability. Direct prior art for DS16.1's codebook-rigidity ingredient, but not for arbitrary groupings or nuisance moments."
+    },
+    "Richter-Alexa-2015": {
+      "title": "Mahalanobis centroidal Voronoi tessellations",
+      "doi": "10.1016/j.cag.2014.09.009"
+    },
+    "Robin-Smith-2000": {
+      "title": "Tests of rank",
+      "note": "J.-M. Robin and R. J. Smith, Econometric Theory 16(2):151-175, 2000. Rank tests built on the smallest estimated characteristic roots of a matrix with population rank r; the limiting law is a weighted sum of independent chi-squared variables, the trace-form kin of the rank-deficient determinant limit in O7.4(b). Registered 6 Sep 2026 (audit); abstract verified."
+    },
+    "Romanazzi-1992": {
+      "title": "Influence in canonical correlation analysis",
+      "note": "M. Romanazzi, Psychometrika 57(2):237-259, 1992. Influence function of each squared canonical correlation via generalized-eigenproblem perturbation. Registered 5 Sep 2026; abstract read."
+    },
     "Sabin-Gray-1986": {
       "title": "Global convergence and empirical consistency of the generalized Lloyd algorithm",
       "doi": "10.1109/TIT.1986.1057168",
       "note": "IEEE Trans. Inf. Theory 32(2):148-155. Establishes set convergence of generalized Lloyd fixed-point quantizers and empirical consistency under source-independent convex additive distortions. Structural precedent for empirical quantizer transfer, but not for a profiled Fisher objective, nuisance Schur complement, or exact finite one-point stability."
     },
-    "Garcia-Escudero-Gordaliza-1999": {
-      "title": "Robustness Properties of k Means and Trimmed k Means",
-      "doi": "10.1080/01621459.1999.10474200",
-      "note": "JASA 94:956-969. k-means non-robustness: contamination drives a cluster to chase an outlier; trimming repairs it."
+    "Scott-Symons-1971": {
+      "title": "Clustering Methods Based on Likelihood Ratio Criteria",
+      "doi": "10.2307/2529003"
     },
-    "Hennig-2004": {
-      "title": "Breakdown points for maximum likelihood estimators of location-scale mixtures",
-      "note": "Ann. Statist. 32:1313-1340. A far-enough added point forms a one-point cluster at the exact fixed-K clustering optimum (secondary-verified via Hennig arXiv:2308.14478)."
+    "Seo-Kanda-Fujikoshi-1995": {
+      "title": "The effects of nonnormality on tests for dimensionality in canonical correlation and MANOVA models",
+      "note": "T. Seo, T. Kanda, Y. Fujikoshi, J. Multivariate Anal. 52(2):325-337, 1995. The singular-I_Z endpoint as a dimensionality test. Registered 5 Sep 2026; journal record."
     },
-    "Wang-Yang-Stufken-2019": {
-      "title": "Information-Based Optimal Subdata Selection for Big Data Linear Regression",
-      "doi": "10.1080/01621459.2017.1408468",
-      "arxiv": "1710.10382",
-      "note": "D-determinant over an i.i.d. sample is maximized by extreme order statistics; per-point information scale 2 log n for normal covariates (Thm 2, 6)."
+    "Serfling-1980": {
+      "title": "Approximation Theorems of Mathematical Statistics",
+      "note": "R. J. Serfling, Wiley, 1980. Chapter 3 (transformations of given statistics), Section 3.3 Theorem B: multivariate delta method for functions of asymptotically normal vectors. Registered 5 Sep 2026; Theorem B corroborated by secondary citations, Theorem A label unverified."
+    },
+    "Serinko-Babu-1992": {
+      "title": "Weak limit theorems for univariate k-mean clustering under a nonregular condition",
+      "pdf": "https://doi.org/10.1016/0047-259X(92)90070-V",
+      "note": "J. Multivariate Anal. 41(2):273-296; primary PDF read verbatim. 1-D interval-partition (split-function) formulation of population k-means; the unique global optimizer with singular Hessian yields nonstandard n^{1/4} rates (double exponential, k=2). Nearest precedent for degeneracy AT a 1-D self-consistent partition optimum; describes what happens when degeneracy occurs for one law, never a class-wide forcing theorem like DS17."
     },
     "Sibson-Kenny-1975": {
       "title": "Coefficients in D-Optimal Experimental Design",
@@ -313,24 +362,26 @@
       "doi": "10.1093/biomet/65.3.553",
       "note": "Biometrika 65:553-559 (secondary-verified). Ds-optimal designs can carry singular full information matrices - the design-side analogue of the (M3) failure at Ds-optimal partitions (DS15)."
     },
-    "Fisher-1958": {
-      "title": "On Grouping for Maximum Homogeneity",
-      "doi": "10.1080/01621459.1958.10501479",
-      "note": "JASA 53(284):789-798 (verbatim-verified 30 Aug 2026). Optimal 1-D weighted SSE partitions are contiguous (appendix proof); reduction to C(K-1,G-1) contiguous partitions - the classical anchor for the scalar interval optimum and exact DP step (DS8, DS15 Proposition 4). Credits the continuous analogue to Dalenius 1950 and Cox 1957."
+    "Silvey-Titterington-1973": {
+      "title": "A Geometric Approach to Optimal Design Theory",
+      "doi": "10.1093/biomet/60.1.21",
+      "note": "Biometrika 60(1):21-32. The publisher summary identifies D- and Ds-equivalence as duality theorems proved through Strong Lagrangian Theory on the approximate-design feasible set; this does not transfer strong duality to hard partitions."
     },
-    "Mease-Nair-2006": {
-      "title": "Unique optimal partitions of distributions and connections to hazard rates and stochastic ordering",
-      "note": "Statistica Sinica 16:1299-1312 (verbatim-verified 30 Aug 2026). Confirms scalar-quantizer uniqueness under log-concavity of the density via likelihood-ratio ordering, and refutes Eubank-1988 weaker sufficient condition by an explicit three-stationary-solution counterexample: DS15 assumption (S) must stay pinned to log-concavity of the density itself."
+    "Silvey-Titterington-Torsney-1978": {
+      "title": "An Algorithm for Optimal Designs on a Design Space",
+      "doi": "10.1080/03610927808827719"
     },
-    "Blanchard-Jaffe-Zhivotovskiy-2025": {
-      "title": "Consistency and inconsistency in k-means clustering",
-      "arxiv": "2507.06226",
-      "note": "Empirical k-means centers can fail to converge under finite first moment even with a unique population optimum (extreme cluster imbalance); consistency restored by an a priori balance constraint. Closest published structure to DS15 Proposition 6 (constraints at negligible asymptotic cost), but repairs a moment pathology rather than the optimizer-driven degeneracy DS15 proves; scalar distortion only. Engage before publication."
+    "Spaeth-1977": {
+      "title": "Computational experiences with the exchange method: Applied to four commonly used partitioning cluster analysis criteria",
+      "doi": "10.1016/S0377-2217(77)81005-9"
     },
-    "Flury-1990": {
-      "title": "Principal points",
-      "pdf": "https://doi.org/10.1093/biomet/77.1.33",
-      "note": "Biometrika 77(1):33-41; primary text read in the DS17 audit. Defines principal points as global squared-error minimizers. Proves the two-point elliptical solution lies on a leading covariance eigenvector and the general rank bound dim span{xi_j-mu} <= k-1; for k>2 the leading principal-subspace statement is explicitly a conjecture, later proved for principal points by Tarpey-Li-Flury 1995. No general existence theorem, arbitrary self-consistent-point theorem, nuisance block, or profiled objective."
+    "Spaeth-1985": {
+      "title": "Cluster Dissection and Analysis: Theory, FORTRAN Programs, Examples",
+      "code": "https://people.math.sc.edu/Burkardt/f_src/spaeth/spaeth.html"
+    },
+    "Sugiura-Fujikoshi-1969": {
+      "title": "Asymptotic expansions of the non-null distributions of the likelihood ratio criteria for multivariate linear hypothesis and independence",
+      "note": "N. Sugiura, Y. Fujikoshi, Ann. Math. Statist. 40(3):942-952, 1969. Fixed-alternative expansion of the determinant-ratio criterion, normal theory. Registered 5 Sep 2026; abstract read."
     },
     "Tarpey-Flury-1996": {
       "title": "Self-consistency: a fundamental concept in statistics",
@@ -347,25 +398,14 @@
       "doi": "10.1016/j.jmva.2014.08.012",
       "note": "J. Multivariate Anal. 133:27-37. Generalizes principal-subspace results using self-consistency, including location-mixture and skew-normal settings. Forward-citation near miss for DS17's beyond-elliptical axis: it broadens the distribution classes supporting subspace restrictions, but still optimizes squared approximation error and contains no profiled Fisher block, endogenous tilt equation, or margin-certified empirical obstruction. Abstract and theorem context screened; primary theorem text remains library-access pending."
     },
-    "Serinko-Babu-1992": {
-      "title": "Weak limit theorems for univariate k-mean clustering under a nonregular condition",
-      "pdf": "https://doi.org/10.1016/0047-259X(92)90070-V",
-      "note": "J. Multivariate Anal. 41(2):273-296; primary PDF read verbatim. 1-D interval-partition (split-function) formulation of population k-means; the unique global optimizer with singular Hessian yields nonstandard n^{1/4} rates (double exponential, k=2). Nearest precedent for degeneracy AT a 1-D self-consistent partition optimum; describes what happens when degeneracy occurs for one law, never a class-wide forcing theorem like DS17."
+    "Taskinen-Croux-Kankainen-Ollila-Oja-2006": {
+      "title": "Influence functions and efficiencies of the canonical correlation and canonical vectors estimates",
+      "note": "S. Taskinen, C. Croux, A. Kankainen, E. Ollila and H. Oja, Journal of Multivariate Analysis 97(2):359-384, 2006. Restates the influence function of a squared canonical correlation, IF(rho_i^2) = 2 rho_i u_i v_i - rho_i^2 (u_i^2 + v_i^2) in the canonical variates, the form O7.2's per-coefficient check uses. Registered 6 Sep 2026 (audit); formula seen only through a citing restatement (arXiv:1705.04194)."
     },
-    "deCastro-Dorigo-2019": {
-      "title": "INFERNO: Inference-Aware Neural Optimisation",
-      "doi": "10.1016/j.cpc.2019.06.007",
-      "note": "Comput. Phys. Commun. 244:170. Differentiable Asimov-likelihood loss built from the inverse Hessian of a softened histogram -- a profiled-Fisher surrogate -- optimised over neural summaries. Closest applied statement of the DS18 objective; soft histogram, no hard partition and no optimality theorem (31 Aug 2026 DS18 audit)."
-    },
-    "Pukelsheim-Titterington-1983": {
-      "title": "General Differential and Lagrangian Theory for Optimal Experimental Design",
-      "doi": "10.1214/aos/1176346321",
-      "note": "Ann. Statist. 11(4):1060-1068 (primary record checked 2 Sep 2026). Subgradient and Lagrangian duality for information functionals, including subset-parameter (D_s) criteria, over the convex set of design measures. Comparison template for DS19's certificate; its strong duality needs the convex feasible set that hard partitions lack."
-    },
-    "Megiddo-1983": {
-      "title": "Applying Parallel Computation Algorithms in the Design of Serial Algorithms",
-      "doi": "10.1145/2157.322410",
-      "note": "J. ACM 30(4):852-865 (primary record checked 2 Sep 2026). Parametric search: simulate a comparison algorithm at the unknown optimal parameter and resolve comparisons at polynomial roots with a monotone sign oracle. At d_lambda=1 it lifts the fixed-tilt interval DP to an arithmetic-polynomial exact minimiser of the tilt dual; bit complexity is not analysed there (AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER supplies it)."
+    "Telgarsky-Vattani-2010": {
+      "title": "Hartigan's Method: k-means Clustering without Voronoi",
+      "pdf": "https://proceedings.mlr.press/v9/telgarsky10a/telgarsky10a.pdf",
+      "note": "AISTATS 2010, PMLR 9:820-827. Finite one-point relocation geometry and separation from the induced Voronoi partition for ordinary k-means; no profiled-Fisher or population-funnel result."
     },
     "Toledo-1993": {
       "title": "Maximizing Non-Linear Concave Functions in Fixed Dimension",
@@ -373,96 +413,64 @@
       "pdf": "https://www.tau.ac.il/~stoledo/Bib/Pubs/concave.pdf",
       "note": "In Complexity in Numerical Optimization (Pardalos ed.), World Scientific 1993, pp. 429-447; extended abstract FOCS 1992. Primary text (abstract, section 1, section 2 definitions) read 2 Sep 2026. Fixed dimension d, piecewise polynomial concave F over a convex set, evaluator whose branches depend on signs of bounded-degree polynomials: max F and a maximiser in time polynomial in the evaluator's arithmetic operations (RAM model). With F=-v_K and the degree-2 interval DP as evaluator this settles fixed d_lambda, variable K exact minimisation of the tilt dual in arithmetic complexity; bit complexity is not covered."
     },
-    "Gronlund-etal-2017": {
-      "title": "Fast Exact k-Means, k-Medians and Bregman Divergence Clustering in 1D",
-      "arxiv": "1701.07204",
-      "pdf": "https://arxiv.org/pdf/1701.07204",
-      "note": "Gronlund, Larsen, Mathiasen, Nielsen, Schneider, Song; arXiv:1701.07204 v4 (2018). Primary text pp. 1-2 read 2 Sep 2026. The contiguous 1-D k-means DP runs in O(kn^2), and in O(n log n + kn) (O(kn) on sorted input) by monotone-matrix search; the weighted discrete scalar quantization form is covered. Improves DS19.2's fixed-tilt O(KN^2) evaluation bound to O(KN) after sorting."
+    "Valassi-2020": {
+      "title": "Optimising HEP parameter fits via Monte Carlo weight derivative regression",
+      "arxiv": "2003.12853",
+      "pdf": "https://arxiv.org/pdf/2003.12853",
+      "note": "CHEP2019 proceedings (EPJ Web of Conferences). Local copy: papers/valassi_2020_weight_derivative_regression_arXiv2003.12853.pdf"
+    },
+    "Venkitasubramaniam-Tong-Swami-2006": {
+      "title": "Score-Function Quantization for Distributed Estimation",
+      "doi": "10.1109/CISS.2006.286494"
+    },
+    "Venkitasubramaniam-Tong-Swami-2007": {
+      "title": "Quantization for Maximin ARE in Distributed Estimation",
+      "doi": "10.1109/TSP.2007.894279"
     },
     "Wang-Song-2011": {
       "title": "Ckmeans.1d.dp: Optimal k-means Clustering in One Dimension by Dynamic Programming",
       "doi": "10.32614/RJ-2011-015",
       "note": "The R Journal 3(2):29-33 (primary record checked 2 Sep 2026). The O(kn^2)-time, O(kn)-space contiguous DP that DS19.2's fixed-tilt evaluation describes."
     },
-    "Carstensen-1983": {
-      "title": "Complexity of some parametric integer and network programming problems",
-      "note": "Ph.D. thesis, University of Michigan, 1983. Secondary record only (2 Sep 2026): cited by Gajjar-Radhakrishnan 2019 and by the 2025 linear-parametric optimisation survey arXiv:2501.11544 for n^{Omega(log n)} breakpoints of a linear-parametric shortest path with matching n^{O(log n)} upper bound. Envelope-materialisation warning; no bound for the tilted interval-segmentation DP."
+    "Wang-Yang-Stufken-2019": {
+      "title": "Information-Based Optimal Subdata Selection for Big Data Linear Regression",
+      "doi": "10.1080/01621459.2017.1408468",
+      "arxiv": "1710.10382",
+      "note": "D-determinant over an i.i.d. sample is maximized by extreme order statistics; per-point information scale 2 log n for normal covariates (Thm 2, 6)."
     },
-    "vanderVaart-1998": {
-      "title": "Asymptotic Statistics",
-      "note": "A. W. van der Vaart, Cambridge University Press, 1998. Theorem 3.1 (delta method) and the Chapter 3 sample-variance example under a finite fourth moment are the template for O6.2; Chapter 5 (M- and Z-estimators, Theorem 5.23) for plug-in sandwich variances. Registered 5 Sep 2026; theorem numbers verified via secondary quotations, no page access."
-    },
-    "Cramer-1946": {
-      "title": "Mathematical Methods of Statistics",
-      "note": "H. Cramer, Princeton University Press, 1946. Chapter 28 (asymptotic properties of sampling distributions), functions of sample moments: the classical normal limit for smooth functions of sample moments. Registered 5 Sep 2026 from memory; section numbering unverified."
-    },
-    "Serfling-1980": {
-      "title": "Approximation Theorems of Mathematical Statistics",
-      "note": "R. J. Serfling, Wiley, 1980. Chapter 3 (transformations of given statistics), Section 3.3 Theorem B: multivariate delta method for functions of asymptotically normal vectors. Registered 5 Sep 2026; Theorem B corroborated by secondary citations, Theorem A label unverified."
-    },
-    "Hampel-Ronchetti-Rousseeuw-Stahel-1986": {
-      "title": "Robust Statistics: The Approach Based on Influence Functions",
-      "note": "F. R. Hampel, E. M. Ronchetti, P. J. Rousseeuw, W. A. Stahel, Wiley, 1986. Asymptotic variance of a statistical functional as the integral of its squared influence function, V(T,F) = int IF^2 dF, the formula O6.2's sigma^2 = E[psi^2] instantiates. Registered 5 Sep 2026; section number unverified."
+    "Whittle-1973": {
+      "title": "Some General Points in the Theory of Optimal Experimental Design",
+      "doi": "10.1111/j.2517-6161.1973.tb00944.x"
     },
     "Wishart-1932": {
       "title": "A note on the distribution of the correlation ratio",
       "note": "J. Wishart, Biometrika 24(3/4):441-456, 1932. Normal-theory exact distribution of the sample correlation ratio; establishes the eta-squared lineage of O6's uncentred ratio but does not transfer (normality, centred ratio). Registered 5 Sep 2026; existence verified from the Biometrika contents index, text not read."
     },
-    "Kelley-2007": {
-      "title": "Confidence intervals for standardized effect sizes: theory, application, and implementation",
-      "note": "K. Kelley, Journal of Statistical Software 20(8), 2007. Noncentral-F intervals for eta-squared and R-squared under normal-theory ANOVA; the normality assumption O6 avoids. Registered 5 Sep 2026; verified at jstatsoft.org."
+    "Wynn-1970": {
+      "title": "The Sequential Generation of D-Optimum Experimental Designs",
+      "doi": "10.1214/aoms/1177696809"
     },
-    "Bhattacharya-Ghosh-1978": {
-      "title": "On the validity of the formal Edgeworth expansion",
-      "note": "R. N. Bhattacharya and J. K. Ghosh, Annals of Statistics 6(2):434-451, 1978. Edgeworth validity for smooth functions of sample-mean vectors; backdrop of the O6.7 second-order readings. Registered 5 Sep 2026 (audit); abstract read."
+    "Wynn-1972": {
+      "title": "Results in the Theory and Construction of D-Optimum Experimental Designs",
+      "doi": "10.1111/j.2517-6161.1972.tb00896.x"
     },
-    "Hall-1992": {
-      "title": "The Bootstrap and Edgeworth Expansion",
-      "note": "P. Hall, Springer, 1992. Smooth function model; studentized-statistic skewness explains the small-n under-coverage of plug-in Wald intervals. Registered 5 Sep 2026 (audit); record only."
+    "Zador-1982": {
+      "title": "Asymptotic Quantization Error of Continuous Signals and the Quantization Dimension",
+      "doi": "10.1109/TIT.1982.1056490"
     },
-    "Donner-Koval-1980": {
-      "title": "The large sample variance of an intraclass correlation",
-      "note": "A. Donner and J. J. Koval, Biometrika 67(3):719-722, 1980. Delta-method variance of a between-over-total ratio under a normal random-effects model; nearest applied kin of O6. Registered 5 Sep 2026 (audit); journal record."
+    "Zhang-Blum-Kaplan-Lu-2018": {
+      "title": "A Fundamental Limitation on Maximum Parameter Dimension for Accurate Estimation With Quantized Data",
+      "doi": "10.1109/TIT.2018.2850968",
+      "arxiv": "1605.07679"
     },
-    "Radhakrishnan-Kshirsagar-1981": {
-      "title": "Influence functions for certain parameters in multivariate analysis",
-      "note": "R. Radhakrishnan, A. M. Kshirsagar, Comm. Statist. Theory Methods 10(6):515-529, 1981. Influence functions of the generalized variance, the MANOVA noncentrality matrix and its eigenvalues, canonical correlations, Wilks' Lambda. Registered 5 Sep 2026 (vector-packet literature pass); abstract read."
+    "deCastro-Dorigo-2019": {
+      "title": "INFERNO: Inference-Aware Neural Optimisation",
+      "doi": "10.1016/j.cpc.2019.06.007",
+      "note": "Comput. Phys. Commun. 244:170. Differentiable Asimov-likelihood loss built from the inverse Hessian of a softened histogram -- a profiled-Fisher surrogate -- optimised over neural summaries. Closest applied statement of the DS18 objective; soft histogram, no hard partition and no optimality theorem (31 Aug 2026 DS18 audit)."
     },
-    "Romanazzi-1992": {
-      "title": "Influence in canonical correlation analysis",
-      "note": "M. Romanazzi, Psychometrika 57(2):237-259, 1992. Influence function of each squared canonical correlation via generalized-eigenproblem perturbation. Registered 5 Sep 2026; abstract read."
-    },
-    "Muirhead-Waternaux-1980": {
-      "title": "Asymptotic distributions in canonical correlation analysis and other multivariate procedures for nonnormal populations",
-      "note": "R. J. Muirhead, C. M. Waternaux, Biometrika 67(1):31-43, 1980. Canonical-correlation asymptotics under finite fourth moments. Registered 5 Sep 2026; abstract read."
-    },
-    "Fang-Krishnaiah-1982": {
-      "title": "Asymptotic distributions of functions of the eigenvalues of some random matrices for nonnormal populations",
-      "note": "C. Fang, P. R. Krishnaiah, J. Multivariate Anal. 12(1):39-63, 1982. Registered 5 Sep 2026; journal record only, text unread."
-    },
-    "Seo-Kanda-Fujikoshi-1995": {
-      "title": "The effects of nonnormality on tests for dimensionality in canonical correlation and MANOVA models",
-      "note": "T. Seo, T. Kanda, Y. Fujikoshi, J. Multivariate Anal. 52(2):325-337, 1995. The singular-I_Z endpoint as a dimensionality test. Registered 5 Sep 2026; journal record."
-    },
-    "Sugiura-Fujikoshi-1969": {
-      "title": "Asymptotic expansions of the non-null distributions of the likelihood ratio criteria for multivariate linear hypothesis and independence",
-      "note": "N. Sugiura, Y. Fujikoshi, Ann. Math. Statist. 40(3):942-952, 1969. Fixed-alternative expansion of the determinant-ratio criterion, normal theory. Registered 5 Sep 2026; abstract read."
-    },
-    "Magnus-Neudecker-1999": {
-      "title": "Matrix Differential Calculus with Applications in Statistics and Econometrics",
-      "note": "J. R. Magnus, H. Neudecker, Wiley, 1988/1999 (3rd ed. 2019). Ch. 8 s8.3 differential of a determinant, s8.4 of an inverse. Registered 5 Sep 2026; contents scan (papers/local/)."
-    },
-    "Anderson-2003": {
-      "title": "An Introduction to Multivariate Statistical Analysis",
-      "note": "T. W. Anderson, Wiley, 3rd ed. 2003 (2nd ed. 1984). Generalized variance s7.5, LR criterion s8.3-8.5, MANOVA s8.9, canonical correlations ch. 12, asymptotic roots s13.5-13.6. Registered 5 Sep 2026; 2nd-ed. contents scan (papers/local/); 3rd-ed. numbering unverified."
-    },
-    "Cramer-Nicewander-1979": {
-      "title": "Some symmetric, invariant measures of multivariate association",
-      "note": "E. M. Cramer, W. A. Nicewander, Psychometrika 44(1):43-54, 1979. Symmetric invariant association measures are functions of the canonical correlations. Registered 5 Sep 2026; abstract read."
-    },
-    "Kendall-Stuart-1961": {
-      "title": "The Advanced Theory of Statistics, Vol. 2: Inference and Relationship",
-      "note": "M. G. Kendall, A. Stuart, Griffin, 1961. Ch. 26 s26.21-26.24: correlation ratio, decomposition (26.50), normal-theory F tests; no large-sample variance. Registered 5 Sep 2026; primary text (archive.org OCR)."
+    "vanderVaart-1998": {
+      "title": "Asymptotic Statistics",
+      "note": "A. W. van der Vaart, Cambridge University Press, 1998. Theorem 3.1 (delta method) and the Chapter 3 sample-variance example under a finite fourth moment are the template for O6.2; Chapter 5 (M- and Z-estimators, Theorem 5.23) for plug-in sandwich variances. Registered 5 Sep 2026; theorem numbers verified via secondary quotations, no page access."
     }
   },
   "agent_usage": {

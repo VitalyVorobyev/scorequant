@@ -38,7 +38,7 @@ The build is a required pull-request and release gate, alongside `leanchecker` a
 audit allowing exactly `propext`, `Classical.choice` and `Quot.sound`. It certifies the stated
 theorems, not that ScoreQuant's Python/JAX code implements them. Upgrading `lean-toolchain`, the
 Mathlib revision and `lake-manifest.json` is a dedicated reviewed change; they move together.
-See [ADR 0030](adr/0030-formal-verification-track.md).
+See [ADR 0030](decisions.md).
 
 X64 is an explicit application and CI choice. The package never changes global JAX configuration during import.
 
@@ -93,7 +93,7 @@ portal owns curated learning and the browser lab. The production `build` downloa
 pinned Pyodide release to its 15 MB core/NumPy/micropip runtime, builds the local Emscripten-safe
 ScoreQuant wheel, exports the locked marimo lesson, and generates Pagefind. `assemble:site`
 combines the built portal at the site root with an existing strict MkDocs build at `/docs/`
-(ADR 0033); it does not deploy.
+(ADR 0035); it does not deploy.
 
 ## Example fast mode
 

@@ -66,7 +66,7 @@ const config: Config = {
   // both `research.html` and a `research/` directory with no index.html, and which
   // one a static host serves for `/research` is host-dependent — `docusaurus serve`
   // resolves the directory and renders the 404 shell. Directory URLs also match the
-  // MkDocs reference mounted at /docs/ beneath this site (ADR 0033), so the whole
+  // MkDocs reference mounted at /docs/ beneath this site (ADR 0035), so the whole
   // domain reads one way.
   trailingSlash: true,
   // Matches the separator AppShell already uses for the pages it titles itself,
@@ -93,15 +93,9 @@ const config: Config = {
         rehypePlugins: [rehypeKatex]
       }
     ],
-    [
-      "@docusaurus/plugin-content-docs",
-      {
-        id: "research",
-        path: "research",
-        routeBasePath: "research",
-        sidebarPath: false
-      }
-    ],
+    // The Research Atlas: one static route per view and per research entity,
+    // generated from src/generated/atlas.json (ADR 0035). It owns /research.
+    "./plugins/research-atlas/index.mjs",
     [
       "@docusaurus/plugin-content-docs",
       {
@@ -171,6 +165,9 @@ const config: Config = {
             "./src/css/responsive.css",
             "./src/css/prose.css",
             "./src/css/charts.css",
+            "./src/css/atlas.css",
+            "./src/css/atlas-views.css",
+            "./src/css/atlas-literature.css",
             "./src/css/live-fit.css"
           ]
         }

@@ -1,0 +1,332 @@
+{
+  "schemaVersion": 1,
+  "objects": [
+    {
+      "name": "DOptimality",
+      "symbols": [
+        "DOptimality"
+      ],
+      "group": "criteria",
+      "role": "The log determinant of the binned information. Chosen partly because it is invariant under invertible reparameterization",
+      "claims": [
+        "FI-QUANT-IDENTITY",
+        "D-REPARAM-INVARIANCE"
+      ]
+    },
+    {
+      "name": "ProfiledDOptimality",
+      "symbols": [
+        "ProfiledDOptimality"
+      ],
+      "group": "criteria",
+      "role": "The log determinant of the Schur complement for the declared parameters of interest. The `interest` argument is the parameter block; at least one nuisance column must remain",
+      "claims": [
+        "DS-SCHUR"
+      ]
+    },
+    {
+      "name": "NormalizedTrace",
+      "symbols": [
+        "NormalizedTrace"
+      ],
+      "group": "criteria",
+      "role": "Retained normalized trace, which after Fisher whitening is exactly weighted k-means",
+      "claims": [
+        "TRACE-WHITENED-KMEANS"
+      ]
+    },
+    {
+      "name": "DExchangeConfig",
+      "symbols": [
+        "DExchangeConfig"
+      ],
+      "group": "configurations",
+      "role": "Exact positive-gain one-point exchange: the closed-form relocation gain on the rank-two update, accepted only on strictly positive exact gains so the search terminates",
+      "claims": [
+        "D-LOGDET-GAIN",
+        "D-RANK2-MOVE",
+        "D-EXCHANGE-TERMINATES"
+      ]
+    },
+    {
+      "name": "MahalanobisLloydConfig",
+      "symbols": [
+        "MahalanobisLloydConfig"
+      ],
+      "group": "configurations",
+      "role": "Batch reassignment as a proposal, accepted on the exact objective. The guard exists because the unguarded step is not monotone; `guard=\"exchange\"` hands the labels to the exact engine so the reported state stays compilable",
+      "claims": [
+        "D-GUARDED-LLOYD",
+        "D-LLOYD-NONMONOTONE"
+      ]
+    },
+    {
+      "name": "KMeansConfig",
+      "symbols": [
+        "KMeansConfig"
+      ],
+      "group": "configurations",
+      "role": "Weighted k-means on whitened scores, which is the trace criterion exactly",
+      "claims": [
+        "TRACE-WHITENED-KMEANS"
+      ]
+    },
+    {
+      "name": "SoftVoronoiConfig",
+      "symbols": [
+        "SoftVoronoiConfig"
+      ],
+      "group": "configurations",
+      "role": "Optimization of a randomized quantizer's exact information, which exists because the hard empirical objective is piecewise constant and has no usable gradient. Its guarantees are those of smooth nonconvex optimization and no more",
+      "claims": [
+        "SOFT-RANDOMIZED-FIM",
+        "HARD-GEOMETRIC-EMPIRICAL-PIECEWISE-CONSTANT",
+        "SOFT-FIXED-TEMP-STATIONARY"
+      ]
+    },
+    {
+      "name": "ScalarDPConfig",
+      "symbols": [
+        "ScalarDPConfig"
+      ],
+      "group": "configurations",
+      "role": "Exact interval dynamic programming on one score coordinate — the optimal cells are intervals, so the program returns a global optimum rather than a local one",
+      "claims": [
+        "DS-SCALAR-EFFICIENT-DP"
+      ]
+    },
+    {
+      "name": "PartitionResult",
+      "symbols": [
+        "PartitionResult"
+      ],
+      "group": "results",
+      "role": "A labelling of one fixed sample — the first of the three questions. It deliberately has no `predict` method, because a finite labelling does not determine its own extension",
+      "claims": []
+    },
+    {
+      "name": "PartitionResult.compile_quantizer()",
+      "symbols": [
+        "PartitionResult"
+      ],
+      "group": "results",
+      "role": "The one exception: an exchange-stable, nonsingular `DOptimality` result compiles into a Mahalanobis rule. It is bookkeeping, not a second fit",
+      "claims": [
+        "D-FINITE-INDUCTIVE-CLOSURE"
+      ]
+    },
+    {
+      "name": "GeometryReport",
+      "symbols": [
+        "GeometryReport"
+      ],
+      "group": "results",
+      "role": "Measures both sides of the exchange-implies-Voronoi theorem on the terminal state instead of assuming them. `guaranteed_violation_gain` is the theorem's lower bound; `maximum_violation_gain` is the exact gain the theorem bounds; `maximum_separation_residual` checks the leverage inequality, so a positive value indicates numerical trouble rather than a better partition",
+      "claims": [
+        "D-EXCHANGE-IMPLIES-VORONOI",
+        "D-LEVERAGE"
+      ]
+    },
+    {
+      "name": "StabilityReport",
+      "symbols": [
+        "StabilityReport"
+      ],
+      "group": "results",
+      "role": "One complete exact scan certifying that no single relocation improves a supplied labelling, at a stated `gain_tolerance`. A labelling certified at one tolerance is not certified at a smaller one",
+      "claims": []
+    },
+    {
+      "name": "PartitionCertificate",
+      "symbols": [
+        "PartitionCertificate"
+      ],
+      "group": "results",
+      "role": "The outcome of a bounded global search using the singleton-completion ceiling. `status` is either \"optimal\" or \"budget_exhausted\"; the second proves nothing about the incumbent, and `incumbent_was_optimal` is `False` whenever it occurs",
+      "claims": [
+        "D-BB-SINGLETON-BOUND"
+      ]
+    },
+    {
+      "name": "EfficientScoreBound",
+      "symbols": [
+        "EfficientScoreBound"
+      ],
+      "group": "results",
+      "role": "The full-data efficient-score ceiling on profiled information, attained for one parameter of interest by the exact interval program. Its `labels` also serve as a strong initializer",
+      "claims": [
+        "DS-EFFICIENT-SCORE-DOMINATION"
+      ]
+    },
+    {
+      "name": "ProfiledGeometryReport",
+      "symbols": [
+        "ProfiledGeometryReport"
+      ],
+      "group": "results",
+      "role": "Diagnoses the finite efficient-semimetric gap — the quantity that the profiled case has instead of a geometry theorem",
+      "claims": [
+        "DS-FINITE-GEOMETRY-FAILS"
+      ]
+    },
+    {
+      "name": "InformationReport.retained_matrix, retained_eigenvalues",
+      "symbols": [
+        "InformationReport"
+      ],
+      "group": "information",
+      "role": "The normalized retention spectrum, every eigenvalue in the unit interval",
+      "claims": [
+        "INFO-RETENTION-SPECTRUM"
+      ]
+    },
+    {
+      "name": "InformationReport.geometric_mean_retention",
+      "symbols": [
+        "InformationReport"
+      ],
+      "group": "information",
+      "role": "Determinant efficiency against unbinned inference",
+      "claims": [
+        "INFO-D-EFFICIENCY"
+      ]
+    },
+    {
+      "name": "InformationReport.arithmetic_mean_retention, and the eigenvalue list",
+      "symbols": [
+        "InformationReport"
+      ],
+      "group": "information",
+      "role": "Direction-resolved diagnostics. They are reported separately because optimizing the determinant does not equalize retention across directions — a caution, not a theorem",
+      "claims": [
+        "INFO-DIRECTIONAL-DIAGNOSTICS"
+      ]
+    },
+    {
+      "name": "InformationReport.effective_rank",
+      "symbols": [
+        "InformationReport"
+      ],
+      "group": "information",
+      "role": "The rank the binned information actually reached, against the ceiling `min(d, K-1)`",
+      "claims": [
+        "FI-RANK-CEILING"
+      ]
+    },
+    {
+      "name": "ProfiledInformationReport.geometric_mean_retention",
+      "symbols": [
+        "ProfiledInformationReport"
+      ],
+      "group": "information",
+      "role": "Profiled efficiency, undefined where the Schur complement is singular",
+      "claims": [
+        "INFO-DS-EFFICIENCY"
+      ]
+    },
+    {
+      "name": "ScoreSample",
+      "symbols": [
+        "ScoreSample"
+      ],
+      "group": "providers",
+      "role": "The scores are supplied directly; provenance is exact and every identity on these pages applies as written",
+      "claims": []
+    },
+    {
+      "name": "LinearComponentScore, scores_from_components",
+      "symbols": [
+        "LinearComponentScore",
+        "scores_from_components"
+      ],
+      "group": "providers",
+      "role": "Component densities give the local score of a linear mixture",
+      "claims": [
+        "MIXTURE-RATIO-SCORE"
+      ]
+    },
+    {
+      "name": "DensityRatioScore, CentralLogRatioScore",
+      "symbols": [
+        "DensityRatioScore",
+        "CentralLogRatioScore"
+      ],
+      "group": "providers",
+      "role": "The local score is the gradient of a log density ratio, so normalized densities are unnecessary",
+      "claims": [
+        "RATIO-LOCAL-SCORE"
+      ]
+    },
+    {
+      "name": "ratios_from_posteriors",
+      "symbols": [
+        "ratios_from_posteriors"
+      ],
+      "group": "providers",
+      "role": "Calibrated classifier posterior odds recover component density ratios when the training priors are known",
+      "claims": [
+        "CLASSIFIER-RATIO-ORACLE"
+      ]
+    },
+    {
+      "name": "RatioProvenance, ScoreProvenance",
+      "symbols": [
+        "RatioProvenance",
+        "ScoreProvenance"
+      ],
+      "group": "providers",
+      "role": "The record of which of the above applies. Estimated ratios never claim exact Fisher semantics, because the retained information is governed by the true score under the estimated rule and no theorem yet bounds the difference",
+      "claims": [
+        "PROXY-TRUE-RETAINED-FI"
+      ]
+    },
+    {
+      "name": "ratio_closure_report",
+      "symbols": [
+        "ratio_closure_report"
+      ],
+      "group": "providers",
+      "role": "A necessary check that model ratios integrate to one under the reference measure. It is necessary and not sufficient: a small residual never upgrades estimated provenance to exact",
+      "claims": []
+    }
+  ],
+  "refusals": [
+    {
+      "code": "CE-DS-GLOBAL-GEOMETRY-001",
+      "trigger": "`compile_quantizer()` on a result fitted under `ProfiledDOptimality`",
+      "claims": [
+        "DS-GLOBAL-NONGEOMETRIC"
+      ],
+      "reason": "a global profiled optimum can violate its own first-order rule, so profiled labels have no canonical extension",
+      "remedy": "Fit a reusable rule directly with `fit_quantizer` instead of converting a fixed-sample partition"
+    },
+    {
+      "code": "CE-D-VORONOI-CONVERSE-001",
+      "trigger": "`compile_quantizer()` on a partition whose stability certificate is `False`",
+      "claims": [
+        "D-VORONOI-NOT-EXCHANGE"
+      ],
+      "reason": "looking geometric is strictly weaker than being exchange-stable",
+      "remedy": "Inspect `best_remaining_gain`; raise `max_scans`, or set `guard=\"exchange\"` on the guarded batch solver"
+    },
+    {
+      "code": "CE-D-UNMERGED-DUPLICATES-001",
+      "trigger": "The terminal rule would relabel a training row by more than the gain tolerance",
+      "claims": [
+        "D-UNMERGED-DUPLICATES-FAIL"
+      ],
+      "reason": "split duplicate atoms can be vacuously stable while defeating label reproduction",
+      "remedy": "Merge or consistently label coincident score rows; inspect `geometry.maximum_violation_gain`"
+    },
+    {
+      "code": "CE-DS-MARGINS-RANK-VACUITY-001",
+      "trigger": "A profiled fit or partition whose cell count cannot generate nonsingular binned information",
+      "claims": [
+        "OPEN-DS-MARGINS-AT-OPTIMA",
+        "FI-RANK-CEILING"
+      ],
+      "reason": "The cardinality boundary of OPEN-DS-MARGINS-AT-OPTIMA, and behind it the rank ceiling FI-RANK-CEILING",
+      "remedy": "Raise `n_bins` above the score dimension. On an exactly centred sample no sample size helps — this is arithmetic, not a data problem"
+    }
+  ]
+}

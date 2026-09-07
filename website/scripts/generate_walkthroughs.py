@@ -882,7 +882,7 @@ def write_walkthrough_score_tables() -> dict[str, int]:
     The density-ratio page carries no experiment at all: its argument is the
     gap between a reported and an achieved retention, which a refit of the
     estimated score cannot show, so it makes its point with a comparison and a
-    figure instead (ADR 0033).
+    figure instead (ADR 0035).
 
     Returns
     -------

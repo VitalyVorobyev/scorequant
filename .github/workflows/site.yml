@@ -3,7 +3,7 @@ name: Site
 # The one workflow that builds and publishes the site: the Docusaurus portal at
 # the root, the strict MkDocs documentation beneath it at `docs/`, and the
 # pre-cut redirect stubs, assembled by `pnpm assemble:site` into `.pages-preview`
-# and uploaded as a single Pages artifact (ADR 0033; the hand-written landing
+# and uploaded as a single Pages artifact (ADR 0035; the hand-written landing
 # page ADR 0027 put at the root is gone).
 #
 # A pull request builds the whole tree and uploads it for inspection but never

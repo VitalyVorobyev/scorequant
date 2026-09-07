@@ -116,3 +116,23 @@ Communities, venues, or periods suspected under-covered by the current graph.
   of Seo, Kanda & Fujikoshi (1995) were not screened; the fixed-partition
   CCA-with-indicators case (canonical discriminant analysis under
   nonnormality) may sit there.
+
+## After the RETENTION-PLUGIN-VECTOR derivation — 6 September 2026
+
+- **Radhakrishnan & Kshirsagar (1981) remains unread and unrestated.** A
+  retrieval pass found no abstract page, no open copy and no citing paper
+  that reproduces their \(\Lambda\)/noncentrality-matrix influence function;
+  O7's \(\psi\) was checked instead against Romanazzi's per-coefficient form
+  as restated in arXiv:1809.01625 (secondary). Before any publication-level
+  claim the printed formula must be compared with
+  \(\operatorname{IF}(\log\Lambda)=-\sum_i\operatorname{IF}(\rho_i^2)/(1-\rho_i^2)\).
+- **Fang & Krishnaiah (1982): abstract now read** (multiplicities explicitly
+  allowed); theorem numbering and the fourth-cumulant covariance still
+  unread. Muirhead & Waternaux (1980) theorem numbering likewise.
+- **Seo, Kanda & Fujikoshi (1995): the null rate and limit law of the
+  smallest sample canonical correlations were not obtained**, so the
+  singular-endpoint rate of O7.4(b) is recorded as project-level
+  (`search_gap`), not attributed.
+- **Serfling §3.3 A/B is still split in the secondary literature** (Beutner
+  et al. 2024 say Theorem B; a UW lecture chapter says "theorem A" for the
+  real-valued case). Needs the physical book.

@@ -10,7 +10,7 @@ import {describe, expect, it} from "vitest";
 // written anywhere else.
 //
 // The prefix used to be `scorequant/portal`, which was distinctive enough to
-// search for as a bare substring. Since ADR 0033 the portal owns the site root
+// search for as a bare substring. Since ADR 0035 the portal owns the site root
 // and the prefix is just `/scorequant/`, which also occurs inside the GitHub
 // source URLs in `src/generated/portal-data.json`
 // (`.../blob/main/src/scorequant/config.py`). So the search is for a *quoted

@@ -14,12 +14,12 @@ once already, which retroactively asserted that unshipped work had shipped.
 ### Site
 
 - The learning portal takes the site root and the hand-written landing page is retired
-  (ADR 0033, superseding ADR 0027). Two surfaces remain: the portal at `/`, the MkDocs
+  (ADR 0035, superseding ADR 0027). Two surfaces remain: the portal at `/`, the MkDocs
   documentation at `/docs/`. `landing/` and its guard test are deleted, `baseUrl` and `SITE_BASE`
   move together, and the assemble script's landing-link parity check becomes a check that every
   `/docs/` link the built portal carries resolves in the assembled tree. The portal's two days at
   `portal/` are not stubbed, for the reason ADR 0027 gave for not stubbing its one day at the root.
-- The portal home page is rewritten to the shape ADR 0033 amends into ADR 0031: what the library
+- The portal home page is rewritten to the shape ADR 0035 amends into ADR 0031: what the library
   is for, why score space, the two tasks, where scores come from and what is optimised. The
   displayed binning-cost identity and the list of derivations move off it; the primary
   navigation's *Reference* entry is the home page's route into the documentation.

@@ -170,8 +170,8 @@ export default function Home(): React.JSX.Element {
             <Link to="/research">Research →</Link>
           </h3>
           <p>
-            Explore the mathematics, guarantees, limitations, exact results, and open questions
-            behind the method.
+            Explore an atlas of the mathematics, guarantees, limitations, exact results, and open
+            questions behind the method, one page per result.
           </p>
         </section>
       </article>

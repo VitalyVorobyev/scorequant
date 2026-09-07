@@ -41,7 +41,21 @@ const ROUTES = [
   "./walkthroughs/hep/",
   "./walkthroughs/michelson/",
   "./walkthroughs/ratios/",
-  "./research/"
+  "./research/",
+  "./research/map/",
+  "./research/landscape/",
+  "./research/frontier/",
+  "./research/literature/",
+  "./research/machine-checked/",
+  "./research/library/",
+  "./research/how-to-read/",
+  "./research/claims/",
+  "./research/counterexamples/",
+  "./research/claims/d-exchange-implies-voronoi/",
+  "./research/claims/open-ds-margins-noncentered/",
+  "./research/counterexamples/ce-ds-global-geometry-001/",
+  "./research/literature/telgarsky-vattani-2010/",
+  "./research/authors/kiefer/"
 ];
 
 /**
@@ -58,19 +72,24 @@ const SCANNED = [
   "./walkthroughs/flowcyt/",
   "./walkthroughs/hep/",
   "./walkthroughs/michelson/",
-  "./walkthroughs/ratios/"
+  "./walkthroughs/ratios/",
+  "./research/map/",
+  "./research/landscape/",
+  "./research/literature/",
+  "./research/claims/d-exchange-implies-voronoi/",
+  "./research/counterexamples/ce-ds-global-geometry-001/"
 ];
 
 test("home states the task and runs nothing", async ({page}) => {
   await page.goto("./");
-  // The site root, since ADR 0033. Ordinary type, no slogan, no demo, no
+  // The site root, since ADR 0035. Ordinary type, no slogan, no demo, no
   // measured comparison. The equations render through KaTeX at build time.
   await expect(page.getByRole("heading", {name: "ScoreQuant", level: 1})).toBeVisible();
   const sections = ["The problem", "Why score space?", "Two ways to use it", "Where do the scores come from?", "What is being optimized?", "Where next?"];
   const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
   expect(headings).toEqual(sections);
   expect(await page.locator(".katex-display").count()).toBeGreaterThan(1);
-  // ADR 0033 moved the list of derivations off this page, so the home page has
+  // ADR 0035 moved the list of derivations off this page, so the home page has
   // no link of its own into the reference. What keeps the documentation one
   // click from the root is the shell, and that is the ADR's actual claim, so it
   // is what is pinned here: the primary navigation's Reference entry -- asserted
@@ -110,9 +129,23 @@ test("every route renders one main landmark and none of them loads a runtime", a
  * which is the least useful way for a suite to fail. Split, each route gets
  * its own budget and the projects' workers run them in parallel; the set of
  * assertions is unchanged.
+ *
+ * That budget is set here rather than left at the default 30s, because what a
+ * scan costs is set by the page and not by this suite: axe walks every node
+ * twice over, once per theme, and the atlas routes are generated from the
+ * registry, so they grow whenever the research graph does. `./research/literature/`
+ * is the largest of them — one annotated entry per source, 11.5k nodes, a
+ * quarter of them KaTeX spans — and its two analyses take ~10s on a developer
+ * machine and ~31s on a contended CI runner. Under the default it failed on
+ * main having passed its own pull request only by a retry that came in at 29.1s,
+ * which is the same as not being tested at all. 120s is the observed CI cost
+ * with room for a registry several times the present size; a scan that ever
+ * approaches it is reporting a page that has grown past what a reader can use,
+ * not a flaky test.
  */
 for (const route of SCANNED) {
   test(`${route} has no accessibility violations in either theme`, async ({page}) => {
+    test.setTimeout(120_000);
     await page.goto(route);
     for (const theme of ["light", "dark"] as const) {
       await setTheme(page, theme);
@@ -337,4 +370,38 @@ test("the michelson refit reproduces the committed profiled retention at the hea
   const liveValue = await page.locator(".live-fit__result--live .live-fit__value").innerText();
   expect(liveValue).toBe(committedValue);
   await expect(page.getByRole("img", {name: /Your browser's readout at 6 counters/})).toBeVisible();
+});
+
+test("the research atlas opens on the problem and the map focuses from a deep link", async ({page}, testInfo) => {
+  await page.goto("./research/");
+  await expect(page.getByRole("heading", {name: "Research", level: 1})).toBeVisible();
+  const sections = ["The problem", "Established here", "The shape of the field", "Where the frontier is now", "Ways in"];
+  const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
+  expect(headings).toEqual(sections);
+  await expect(page.getByRole("table", {name: /Known, new here/})).toBeVisible();
+  await expect(page.locator(".result-card").first()).toBeVisible();
+
+  await page.goto("./research/map/?focus=D-EXCHANGE-IMPLIES-VORONOI");
+  await expect(page.getByRole("heading", {name: "Argument map", level: 1})).toBeVisible();
+  if (testInfo.project.name !== "desktop") {
+    // Below the map's width the drawing gives way to the list by problem level.
+    await expect(page.getByRole("heading", {name: "Every result by problem level"})).toBeVisible();
+    return;
+  }
+  const panel = page.locator(".argument-map__panel");
+  await expect(panel.getByRole("heading", {level: 2})).toHaveText(/exchange stability implies/i);
+  await panel.getByRole("button", {name: "Where does it stop?"}).click();
+  await expect(panel.getByRole("button", {name: "Where does it stop?"})).toHaveAttribute("aria-pressed", "true");
+  await expect(page).toHaveURL(/ask=stops/);
+});
+
+test("a claim page carries the reading grammar and links into the map", async ({page}) => {
+  await page.goto("./research/claims/d-exchange-implies-voronoi/");
+  await expect(page.getByRole("heading", {level: 1})).toHaveText(/exchange stability implies/i);
+  for (const section of ["Statement", "Rests on", "Where it stops", "Machine-checked", "Local map", "Proof"]) {
+    await expect(page.getByRole("heading", {name: section, level: 2})).toBeVisible();
+  }
+  await expect(page.locator(".proof .katex").first()).toBeAttached();
+  await expect(page.getByRole("link", {name: "Open in the map"})).toHaveAttribute("href", /\/research\/map\/\?focus=D-EXCHANGE-IMPLIES-VORONOI/);
+  await expect(page.getByRole("link", {name: /D-Voronoi fixed point does not imply/})).toBeVisible();
 });

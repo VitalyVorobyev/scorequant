@@ -1,0 +1,64 @@
+{
+  "id": "RETENTION-PLUGIN-CLT-FROZEN-VECTOR",
+  "title": "Frozen-rule vector retention: plug-in CLT for the geometric-mean D-retention with a consistent influence-function variance",
+  "criterion": [
+    "D"
+  ],
+  "level": "information_accounting",
+  "status": "bridge",
+  "publication_status": "derived_from_published",
+  "statement": "Conditional on a frozen provider s_hat and rule q, for an iid equally weighted evaluation sample with true d-dimensional scores S_i and labels Z_i = q(s_hat(X_i)), the plug-in geometric-mean retention eta_hat_D = (det I_hat_Z / det V_hat)^(1/d), V_hat = mean(S S^T), I_hat_Z = sum_b m_hat_b m_hat_b^T / p_hat_b (0/0 := 0), satisfies V_hat - I_hat_Z = within-cell scatter about the cell means (so 0 <= eta_hat_D <= 1, uncentred matrix form of Kendall-Stuart (26.50)) and equals the library's information_report(...).geometric_mean_retention whenever V_hat is positive definite and rank_rtol projects nothing. Under (A1)-(A3') sqrt(n)(eta_hat_D - eta_D) -> N(0, sigma^2), sigma^2 = E[psi^2], psi = (eta_D/d)[2 S^T I_Z^{-1} c_Z - c_Z^T I_Z^{-1} c_Z - S^T V^{-1} S], c_b = m_b/p_b, which reduces to the O6 influence function at d = 1 and equals (eta_D/d) sum_i IF(rho_i^2)/rho_i^2 over the squared uncentred canonical correlations between S and the cell indicator. The plug-in sigma_hat^2 = mean(psi_hat_i^2) is strongly consistent and sum_i psi_hat_i = 0 exactly; the Wald interval eta_hat_D +/- z sigma_hat/sqrt(n) has asymptotic level 1 - alpha if sigma^2 > 0 (A4); when sigma^2 = 0 the first-order theory gives no level and the interval is unsupported (measured conservative, width O(1/n); the 'only if' is not proved). sigma^2 = 0 iff for every cell S | Z = b is supported on the ellipsoid (s - V I_Z^{-1} c_b)^T V^{-1} (s - V I_Z^{-1} c_b) = c_b^T I_Z^{-1} (V - I_Z) I_Z^{-1} c_b (the right-hand side is >= 0 because V >= I_Z, and the ellipsoid is the single point V I_Z^{-1} c_b when it is 0): an absolutely continuous cell of positive probability forces sigma^2 > 0, but for d >= 2 atomless laws supported on the ellipsoid have sigma^2 = 0 at interior eta_D (CE-O7-ELLIPSOID-ZERO-VARIANCE-001), so O6's atomless remark does not lift. At eta_D = 1 (S = c_Z a.s.) sigma^2 = 0 and the plug-in is 1 on every sample with V_hat positive definite, i.e. whenever the occupied cells' means span R^d; on a sample confined to fewer spanning cells V_hat is singular, the plug-in is 0 by its own convention while the library projects and reports 1 (CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001), an event of probability -> 0 exponentially under A1. At singular I_Z (eta_D = 0) the plug-in is biased upward at rate n^{-(d-r)/d} (RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE) and the interval is unsupported. Both eta_D and psi are invariant under S -> A S. The interval is for the true retention (det Var(E[s | q(s_hat)]) / det I_full)^(1/d); the proxy surrogate's population value is a different number, excluded with probability -> 1.",
+  "assumptions": [
+    "A1: every cell has positive population probability under the evaluation law",
+    "A2: the true score has a finite fourth moment E||S||^4 < infinity under the evaluation law (automatic for bounded scores, e.g. mixture-fraction scores at interior reference points); it is a real constraint in practice - measured coverage on unbounded polynomial scores with E||S||^4 = 83 and 4259 is liberal at every n <= 3000 while bounded mixture scores are nominal from n = 100",
+    "A3: positive definite unbinned second moment V = E[S S^T] (the library projects numerically singular directions out and reports a different, discontinuous estimator with exponent 1/rank; that estimator is outside the theorem)",
+    "A4: sigma^2 > 0, i.e. some cell's conditional law is not supported on its ellipsoid; sufficient: some positive-probability cell is absolutely continuous; not implied by atomlessness when d >= 2 (the fixture's arc law in d = 2 and a K = 6 sphere law in d = 3 are atomless with sigma^2 = 0 at eta_D = 9/25); A4 is sufficient for the Wald level, and the theorem says nothing about the level when it fails",
+    "A4: sigma^2 > 0, i.e. some cell's conditional law is not supported on its ellipsoid; sufficient: some positive-probability cell is absolutely continuous; not implied by atomlessness when d >= 2",
+    "the rule, provider, training data, reference point and K are frozen; the evaluation sample is independent of them, iid, equally weighted, and scores are never centred; q o s_hat is a fixed measurable map, which makes the (S, Z) pairs iid and satisfies the fixed-in-theta hypothesis of FI-QUANT-IDENTITY",
+    "the retained-information reading of eta_D requires the evaluation law to be the reference law P_theta0 (E[S] = 0, V = I_full); under any other law the interval estimates the uncentred determinant ratio on Z under that law, which is not a Fisher retention; the CLT never uses E[S] = 0",
+    "the delta method is applied to the estimator's own everywhere-defined functional phi(p, M, V) (0/0 := 0 on empty cells, phi := 0 when det V = 0 or the ratio is <= 0), which equals the smooth g on the open set {p_b > 0, V > 0, I_Z > 0} containing theta; so eta_hat_D = phi(T_bar) on every sample and no empty-cell transfer step is needed",
+    "sigma_hat^2 -> sigma^2 almost surely: strong laws for finitely many within-cell moments of order <= 4 plus continuity of a fixed polynomial at the limit; empty cells are a.s. transient by Borel-Cantelli under A1",
+    "first-order statement only: no finite-sample or uniform rare-cell coverage guarantee; the measured under-coverage on heavy-tailed scores (O7.7: sigma_hat under-estimates sigma by 46% at n = 100 in d = 2 and by 76% in d = 3) is a second-order effect recorded, not a counterexample; no transformation of the interval was attempted",
+    "the geometric mean says nothing about the worst retained direction (OPEN-D-DIRECTIONAL-BOUND); the profiled D_s retention is a Schur-complement functional not covered here",
+    "the sigma^2 = 0 characterisation and the eta_D = 1 statement are exact-arithmetic facts about the population functional; the 'plug-in is 1 on every sample' sentence holds only on samples with V_hat positive definite (audit hardening H1, fixture CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001)",
+    "independently audited 6 Sep 2026 (AUDIT-RETENTION-PLUGIN-VECTOR): O7.1-O7.3, the Wald statement under A4, the ellipsoid characterisation and the endpoint rate verified by an independent exact-arithmetic and fresh-seed instrument; hardenings H1 (eta_D = 1 singular samples), H2 ('iff' -> 'if'), H4 (degenerate ellipsoid)"
+  ],
+  "dependencies": [
+    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
+    "PROXY-TRUE-RETAINED-FI",
+    "FI-QUANT-IDENTITY",
+    "FI-RANK-CEILING",
+    "INFO-D-EFFICIENCY",
+    "D-REPARAM-INVARIANCE"
+  ],
+  "implies": [
+    "OPEN-RETENTION-UNCERTAINTY"
+  ],
+  "literature": [
+    "Fang-Krishnaiah-1982",
+    "Hampel-Ronchetti-Rousseeuw-Stahel-1986",
+    "Kendall-Stuart-1961",
+    "Magnus-Neudecker-1999",
+    "Muirhead-Waternaux-1980",
+    "Radhakrishnan-Kshirsagar-1981",
+    "Robin-Smith-2000",
+    "Romanazzi-1992",
+    "Seo-Kanda-Fujikoshi-1995",
+    "Sugiura-Fujikoshi-1969",
+    "Taskinen-Croux-Kankainen-Ollila-Oja-2006",
+    "vanderVaart-1998"
+  ],
+  "literature_search_status": "prior_art_found",
+  "proof_location": {
+    "file": "KNOWN_RESULTS/10-oracle.md",
+    "section": "O7. Frozen-rule vector retention: plug-in asymptotics of the geometric-mean retention"
+  },
+  "artifact": "py/retention_plugin_vector.py",
+  "role": "the frozen-rule, vector, oracle-score special case of OP27: the number the library reports (geometric_mean_retention) with a conditional n^{-1/2} error bar; separates evaluation uncertainty from proxy bias",
+  "warning": "Bridge: the CLT is the vector delta method (van der Vaart Thm 3.1) composed with the determinant and inverse differentials (Magnus & Neudecker Sec. 8.3-8.4); the influence function is the average of the per-coefficient canonical-correlation influence functions of Romanazzi (1992) and a special case of the Lambda/noncentrality-matrix influence functions of Radhakrishnan & Kshirsagar (1981); fourth-moment asymptotic normality of such eigenvalue functionals, repeated roots allowed, is Muirhead & Waternaux (1980) and Fang & Krishnaiah (1982). None of it is re-proved. Project-level (a search gap, not novelty): the uncentred fixed-partition form on the library's cell moments, the explicit psi and its d = 1 reduction, the plug-in variance and its consistency, the ellipsoid characterisation of sigma^2 = 0 with the atomless counterexample, the singular-endpoint rate, the library agreement and the rank_rtol caveat. Radhakrishnan & Kshirsagar's and Fang & Krishnaiah's statements were not read (paywalled; LITERATURE/gaps.md): cited for the method through abstracts and citing restatements. Independently audited 6 Sep 2026 (AUDITS/AUDIT-RETENTION-PLUGIN-VECTOR-001.md): verified with hardened assumptions; the audit authorizes closure step 1 (an engineering step with its own tests), not this node's use as a library guarantee by itself. Does not resolve OPEN-RETENTION-UNCERTAINTY (refitted rules, weights, no oracle, degenerate limits, D_s). Not a library feature: no public uncertainty API exists.",
+  "boundary_counterexamples": [
+    "CE-O7-ELLIPSOID-ZERO-VARIANCE-001",
+    "CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001"
+  ],
+  "audit": "AUDITS/AUDIT-RETENTION-PLUGIN-VECTOR-001.md"
+}

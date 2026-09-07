@@ -42,8 +42,7 @@ export default function LiteraturePage({core, data}: AtlasPageProps<LiteratureDa
       <header className="research-opening">
         <h1>Literature</h1>
         <p className="atlas__lead">
-          Hard quantization connects statistical inference, optimal design, and clustering. Follow the publications behind the results, and distinguish
-          established ingredients from what this project adds.
+          Find the publication behind a result. Each entry says what the paper establishes, how this project uses it, and what it leaves unsettled.
         </p>
       </header>
       <div className="research-filters">

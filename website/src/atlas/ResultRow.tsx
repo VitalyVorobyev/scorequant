@@ -11,8 +11,9 @@ export function ResultRow({core, claim}: {core: Core; claim: CoreClaim}): React.
       </h3>
       {claim.editorial ? <p>{claim.editorial.summary}</p> : null}
       <p className="research-attribution">
-        {provenanceLabel(core, claim.provenance)}
-        {claim.parked ? " · Parked" : ""}
+        {[provenanceLabel(core, claim.provenance), claim.machineChecked ? "machine-checked" : null, claim.audited ? "audited" : null, claim.parked ? "parked" : null]
+          .filter((mark) => mark !== null)
+          .join(" · ")}
       </p>
     </article>
   );

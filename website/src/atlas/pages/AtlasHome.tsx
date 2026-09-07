@@ -2,7 +2,7 @@ import Link from "@docusaurus/Link";
 import type {HomeEntry} from "../../data/atlas";
 import {AtlasShell} from "../AtlasShell";
 import type {AtlasPageProps, Core} from "../core";
-import {claimHref} from "../core";
+import {claimHref, provenanceLabel} from "../core";
 import {Html} from "../Entity";
 
 export interface HomeCard extends HomeEntry {
@@ -22,6 +22,9 @@ function Finding({entry, core, central = false}: {entry: HomeCard; core: Core; c
   const claim = core.claims[entry.id];
   if (!claim) throw new Error(`Unknown featured claim: ${entry.id}`);
   const href = claimHref(claim.slug);
+  const trust = [provenanceLabel(core, claim.provenance), claim.machineChecked ? "machine-checked in Lean" : null, claim.audited ? "independently audited" : null]
+    .filter((mark) => mark !== null)
+    .join(" · ");
   return (
     <article className={central ? "research-finding research-finding--central" : "research-finding"}>
       {central ? <p className="research-eyebrow">Central result</p> : null}
@@ -32,6 +35,7 @@ function Finding({entry, core, central = false}: {entry: HomeCard; core: Core; c
           <Link to={href}>{entry.title}</Link>
         </h3>
       )}
+      <p className="research-trust">{trust}</p>
       <Html html={entry.summaryHtml} />
       <Html html={entry.significanceHtml} />
       <Html html={entry.qualificationHtml} className="research-qualification" />

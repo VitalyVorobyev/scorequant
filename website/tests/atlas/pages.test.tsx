@@ -73,6 +73,11 @@ describe("AtlasHome", () => {
     const article = container.querySelector("article.atlas__wide");
     expect(article?.textContent).not.toMatch(/D-EXCHANGE|DS-TILT|OPEN-/);
     expect(article?.textContent).toContain("merged duplicate atoms");
+    // The trust line under each finding is registry status, not editorial copy,
+    // so it sits outside the word budget.
+    const trust = container.querySelector(".research-finding--central .research-trust");
+    expect(trust?.textContent).toMatch(/^Proved here · machine-checked in Lean · independently audited$/);
+    container.querySelectorAll(".research-trust").forEach((line) => line.remove());
     const words = article?.textContent.split(/\s+/).length ?? 0;
     expect(words).toBeGreaterThanOrEqual(450);
     expect(words).toBeLessThanOrEqual(550);

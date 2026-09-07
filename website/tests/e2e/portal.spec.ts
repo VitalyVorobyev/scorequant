@@ -268,7 +268,7 @@ test("the michelson article runs from the instrument to the experiment without l
   await expect(page.getByRole("img", {name: "Fringe intensity along the aperture"})).toBeVisible();
   await expect(page.getByRole("img", {name: /^Phase score along the detector/})).toBeVisible();
   await expect(page.getByRole("img", {name: /^The Michelson model in score space/})).toBeVisible();
-  await expect(page.getByRole("img", {name: /^Two panels\. Top: the score plane tinted by six convex cells/})).toBeVisible();
+  await expect(page.getByRole("img", {name: /^Three panels\. Top left: the raw score plane tinted by six convex cells/})).toBeVisible();
   await expect(page.getByRole("img", {name: /^Three panels\. Top: the score trajectory's four loops coloured by the six profiled cells/})).toBeVisible();
   // The question is stated before any result is quoted. Asserted on prose that
   // carries no math: KaTeX splits an expression across spans, so a regex over a

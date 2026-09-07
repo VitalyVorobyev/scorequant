@@ -46,6 +46,7 @@ from matplotlib.figure import Figure
 
 import scorequant as sq
 from examples._env import example_scale
+from scorequant.transforms import fisher_transform
 
 ASSET_DIR = Path("docs/examples/assets")
 METRICS_PATH = ASSET_DIR / "michelson-phase.json"
@@ -1053,26 +1054,98 @@ def _draw_bands(axes: plt.Axes, sample: TrainSample, bands: list[tuple[str, np.n
     )
 
 
-def _draw_trajectory(axes: plt.Axes, sample: TrainSample, labels: np.ndarray) -> None:
-    """Draw the score trajectory coloured by label, on axes with the origin marked."""
-    s_phi = sample.scores[:, 0]
-    s_eps = sample.scores[:, 1]
-    axes.scatter(s_phi, s_eps, c=[counter_color(label) for label in labels], s=4, linewidths=0)
+def _draw_trajectory(
+    axes: plt.Axes,
+    sample: TrainSample,
+    labels: np.ndarray,
+    *,
+    coordinates: np.ndarray | None = None,
+    axis_labels: tuple[str, str] = (r"$s_\varphi$", r"$s_\epsilon$"),
+) -> None:
+    """Draw the score trajectory coloured by label, on axes with the origin marked.
+
+    `coordinates` lets the same trajectory be drawn in another linear frame
+    of score space, such as the whitened one; it defaults to the raw scores.
+    """
+    points = sample.scores if coordinates is None else coordinates
+    axes.scatter(
+        points[:, 0], points[:, 1], c=[counter_color(label) for label in labels], s=4, linewidths=0
+    )
     axes.axhline(0.0, color=NEUTRAL_COLOR, linewidth=0.6)
     axes.axvline(0.0, color=NEUTRAL_COLOR, linewidth=0.6)
-    axes.set(xlabel=r"$s_\varphi$", ylabel=r"$s_\epsilon$")
+    axes.set(xlabel=axis_labels[0], ylabel=axis_labels[1])
+
+
+def _shade_cells(
+    axes: plt.Axes,
+    study: Study,
+    n_bins: int,
+    *,
+    extents: tuple[float, float],
+    grid_points: int,
+    to_raw: np.ndarray | None = None,
+) -> None:
+    """Shade a plane by the compiled rule's own cells, evaluated on a dense grid.
+
+    The grid is laid out in the plane's own coordinates and mapped back to
+    raw scores through `to_raw` (the identity when the plane *is* raw score
+    space) before `compiled.predict_scores` labels it, so the cells drawn are
+    always the cells the library computes.
+    """
+    x_grid = np.linspace(-extents[0], extents[0], grid_points)
+    y_grid = np.linspace(-extents[1], extents[1], grid_points)
+    mesh_x, mesh_y = np.meshgrid(x_grid, y_grid)
+    grid = np.column_stack([mesh_x.ravel(), mesh_y.ravel()])
+    raw = grid if to_raw is None else grid @ to_raw
+    cells = np.asarray(study.compiled.predict_scores(raw, execution=EXECUTION))
+    tint = ListedColormap([to_rgba(counter_color(label), alpha=0.18) for label in range(n_bins)])
+    axes.pcolormesh(
+        x_grid,
+        y_grid,
+        cells.reshape(mesh_x.shape),
+        cmap=tint,
+        vmin=-0.5,
+        vmax=n_bins - 0.5,
+        shading="nearest",
+        rasterized=True,
+    )
+
+
+def _mark_means(axes: plt.Axes, means: np.ndarray) -> None:
+    """Mark the cell means and number them."""
+    axes.scatter(
+        means[:, 0],
+        means[:, 1],
+        c=[counter_color(label) for label in range(means.shape[0])],
+        s=80,
+        marker="o",
+        edgecolors="black",
+        linewidths=1.0,
+        zorder=5,
+    )
+    for label, (x, y) in enumerate(means):
+        axes.annotate(
+            str(label), (x, y), textcoords="offset points", xytext=(7, 5), fontsize=9, color="black"
+        )
 
 
 def make_d_geometry_figure(study: Study, *, grid_points: int = 400) -> Figure:
-    """Render the D-optimal partition in score space and along the detector.
+    """Render the D-optimal partition raw, whitened, and along the detector.
 
-    Top: the raw score plane, shaded by the compiled rule's own Mahalanobis-
-    Voronoi cells (`compiled.predict_scores` on a dense grid of raw scores,
-    so the cells drawn are the cells the library computes), the cell mean
-    scores, and the trajectory coloured by the finite partition's labels.
-    Bottom: the same labels laid back along the detector above the
-    equal-width segments. A connected cell that the folded trajectory crosses
-    several times is what makes the bottom row a comb.
+    Top left: the raw score plane, shaded by the compiled rule's own
+    Mahalanobis-Voronoi cells (`compiled.predict_scores` on a dense grid of
+    raw scores, so the cells drawn are the cells the library computes), the
+    cell mean scores, and the trajectory coloured by the finite partition's
+    labels. Top right: the same cells, means and trajectory in coordinates
+    whitened by the binned Fisher matrix, `sq.fisher_transform(I_bin,
+    whiten=True)`. The compiled rule is the nearest-mean rule under the metric
+    \\(I_{\\mathrm{bin}}^{-1}\\), so in these coordinates it is an ordinary
+    Euclidean Voronoi diagram with perpendicular bisectors, which is the
+    "directionally uniform" picture the raw plane hides: the raw axes carry
+    different units and are correlated along the trajectory. Bottom: the
+    same labels laid back along the detector above the equal-width segments.
+    A connected cell that the folded trajectory crosses several times is what
+    makes the bottom row a comb.
 
     Parameters
     ----------
@@ -1084,67 +1157,67 @@ def make_d_geometry_figure(study: Study, *, grid_points: int = 400) -> Figure:
     Returns
     -------
     matplotlib.figure.Figure
-        The two-panel figure.
+        The three-panel figure.
     """
     headline = next(row for row in study.sweep if row.n_bins == N_BINS)
     sample = study.sample
-    s_phi = sample.scores[:, 0]
-    s_eps = sample.scores[:, 1]
-    phi_extent = 1.1 * float(np.max(np.abs(s_phi)))
-    eps_extent = 1.1 * float(np.max(np.abs(s_eps)))
-    phi_grid = np.linspace(-phi_extent, phi_extent, grid_points)
-    eps_grid = np.linspace(-eps_extent, eps_extent, grid_points)
-    mesh_phi, mesh_eps = np.meshgrid(phi_grid, eps_grid)
-    grid_scores = np.column_stack([mesh_phi.ravel(), mesh_eps.ravel()])
-    cells = np.asarray(study.compiled.predict_scores(grid_scores, execution=EXECUTION))
-    cells = cells.reshape(mesh_phi.shape)
+    means = np.asarray(headline.d_partition.cell_score_means)
+    transform = fisher_transform(
+        headline.d_partition.information_partitioned, whiten=True, execution=EXECUTION
+    )
+    whitening = np.asarray(transform.matrix)
+    if whitening.shape != (2, 2):
+        raise ValueError("the binned Fisher matrix of this model must have full rank two")
+    whitened = np.asarray(transform.apply(sample.scores, execution=EXECUTION))
+    whitened_means = np.asarray(transform.apply(means, execution=EXECUTION))
 
-    figure = plt.figure(figsize=(9.0, 9.6), constrained_layout=True)
-    grid = figure.add_gridspec(2, 1, height_ratios=[3.2, 1.0])
+    raw_extents = (
+        1.1 * float(np.max(np.abs(sample.scores[:, 0]))),
+        1.1 * float(np.max(np.abs(sample.scores[:, 1]))),
+    )
+    white_extent = 1.1 * float(np.max(np.abs(whitened)))
+
+    figure = plt.figure(figsize=(13.0, 8.4), constrained_layout=True)
+    grid = figure.add_gridspec(2, 2, height_ratios=[3.2, 1.0])
     plane = figure.add_subplot(grid[0, 0])
-    strip = figure.add_subplot(grid[1, 0])
+    white = figure.add_subplot(grid[0, 1])
+    strip = figure.add_subplot(grid[1, :])
 
-    tint = ListedColormap(
-        [to_rgba(counter_color(label), alpha=0.18) for label in range(headline.n_bins)]
-    )
-    plane.pcolormesh(
-        phi_grid,
-        eps_grid,
-        cells,
-        cmap=tint,
-        vmin=-0.5,
-        vmax=headline.n_bins - 0.5,
-        shading="nearest",
-        rasterized=True,
-    )
+    _shade_cells(plane, study, headline.n_bins, extents=raw_extents, grid_points=grid_points)
     _draw_trajectory(plane, sample, headline.d_labels)
-    means = headline.d_partition.cell_score_means
-    plane.scatter(
-        means[:, 0],
-        means[:, 1],
-        c=[counter_color(label) for label in range(means.shape[0])],
-        s=80,
-        marker="o",
-        edgecolors="black",
-        linewidths=1.0,
-        zorder=5,
-    )
-    for label, (mean_phi, mean_eps) in enumerate(means):
-        plane.annotate(
-            str(label),
-            (mean_phi, mean_eps),
-            textcoords="offset points",
-            xytext=(7, 5),
-            fontsize=9,
-            color="black",
-        )
+    _mark_means(plane, means)
     plane.set(
-        xlim=(-phi_extent, phi_extent),
-        ylim=(-eps_extent, eps_extent),
+        xlim=(-raw_extents[0], raw_extents[0]),
+        ylim=(-raw_extents[1], raw_extents[1]),
         title=(
-            f"D-optimal partition, {headline.n_bins} cells\n"
-            "cells of the compiled Mahalanobis-Voronoi rule, cell means, "
-            "and the detector trajectory"
+            f"D-optimal partition, {headline.n_bins} cells, raw score plane\n"
+            "cells of the compiled Mahalanobis-Voronoi rule, cell means, and the trajectory"
+        ),
+    )
+
+    _shade_cells(
+        white,
+        study,
+        headline.n_bins,
+        extents=(white_extent, white_extent),
+        grid_points=grid_points,
+        to_raw=np.linalg.inv(whitening),
+    )
+    _draw_trajectory(
+        white,
+        sample,
+        headline.d_labels,
+        coordinates=whitened,
+        axis_labels=("whitened coordinate 1", "whitened coordinate 2"),
+    )
+    _mark_means(white, whitened_means)
+    white.set(
+        xlim=(-white_extent, white_extent),
+        ylim=(-white_extent, white_extent),
+        aspect="equal",
+        title=(
+            "The same cells, whitened by the binned Fisher matrix\n"
+            "an ordinary Euclidean Voronoi diagram of the cell means"
         ),
     )
 

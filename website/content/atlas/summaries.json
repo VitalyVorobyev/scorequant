@@ -1,6 +1,6 @@
 {
   "A-EXACT-MOVE-ORACLE": {
-    "title": "Evaluate finite A moves exactly",
+    "title": "Finite A moves have an exact gain",
     "summary": "Relocation updates give an exact objective comparison for the A criterion under its feasibility conditions."
   },
   "A-EXCHANGE-TERMINATES": {
@@ -12,15 +12,15 @@
     "summary": "A counterexample prevents transferring the finite D exchange-to-geometry theorem to A."
   },
   "A-TANGENT-SCREENING": {
-    "title": "Screen A moves safely",
+    "title": "A tangent bound safely screens A moves",
     "summary": "A tangent bound can reject moves that cannot improve the exact A objective."
   },
   "CLASSIFIER-MIXTURE-SCORE-FORMULA": {
-    "title": "From class probabilities to mixture scores",
+    "title": "Class probabilities determine the mixture score",
     "summary": "Classifier posteriors yield explicit mixture score coordinates under the stated model and calibration assumptions."
   },
   "CLASSIFIER-RATIO-ORACLE": {
-    "title": "Recover ratios from posterior odds",
+    "title": "Calibrated posterior odds recover density ratios",
     "summary": "Calibrated posterior odds recover component density ratios after correcting for class priors."
   },
   "CONSISTENCY-RESTRICTED-AFFINE": {
@@ -28,7 +28,7 @@
     "summary": "Uniform convergence supports value consistency in a compact finite-capacity family with mass and conditioning margins."
   },
   "D-BB-SINGLETON-BOUND": {
-    "title": "Bound unfinished D assignments",
+    "title": "Singleton refinement bounds unfinished D assignments",
     "summary": "Singleton refinement supplies an upper bound for branch-and-bound certification on small finite problems."
   },
   "D-EXCHANGE-IMPLIES-VORONOI": {
@@ -36,7 +36,7 @@
     "summary": "Under the theorem’s hypotheses, exact exchange stability forces strict self-consistent nearest-centre geometry."
   },
   "D-EXCHANGE-SCALAR-CORE": {
-    "title": "The scalar exchange inequality",
+    "title": "A scalar inequality drives the exchange argument",
     "summary": "A scalar inequality supplies the core step of the quantitative exchange-to-geometry argument."
   },
   "D-EXCHANGE-TERMINATES": {
@@ -48,7 +48,7 @@
     "summary": "A wrongly assigned atom supplies a strictly improving relocation with an explicit lower bound under the stated hypotheses."
   },
   "D-FINITE-INDUCTIVE-CLOSURE": {
-    "title": "Compile a stable D assignment",
+    "title": "A stable D assignment compiles into a rule",
     "summary": "The terminal centres and information metric define a rule reproducing the assignment under the exact theorem’s conditions."
   },
   "D-GLOBAL-GEOMETRIC-REALIZABILITY": {
@@ -56,15 +56,15 @@
     "summary": "Global optimality implies exchange stability, and hence geometric realizability under the structural theorem’s hypotheses."
   },
   "D-GLOBAL-XP": {
-    "title": "Exact D search at fixed dimension and bin count",
+    "title": "Exact D search is polynomial at fixed dimension and bin count",
     "summary": "The geometric structure yields an XP complexity bound; the polynomial exponent depends on dimension and bin count."
   },
   "D-GUARDED-LLOYD": {
-    "title": "Guard Lloyd proposals with exact gains",
+    "title": "Exact gains guard Lloyd proposals",
     "summary": "Accepting a Lloyd proposal only after an exact objective check preserves monotonicity."
   },
   "D-LEVERAGE": {
-    "title": "Bound the D leverage of a cell",
+    "title": "A cell's D leverage is bounded",
     "summary": "The leverage inequality constrains cell centres in the inverse retained-information metric."
   },
   "D-LLOYD-NONMONOTONE": {
@@ -72,11 +72,11 @@
     "summary": "Updating the Mahalanobis metric and reassigning all observations need not increase the determinant objective."
   },
   "D-LOGDET-GAIN": {
-    "title": "Score each D relocation exactly",
+    "title": "Every D relocation has an exact closed-form gain",
     "summary": "A classical determinant identity gives a closed-form gain for the coupled cell-centroid update."
   },
   "D-POP-VORONOI": {
-    "title": "Stationary D geometry in the population",
+    "title": "Stationary population D partitions are geometric",
     "summary": "The population first-order condition gives nearest-centre geometry under its measure and regularity assumptions."
   },
   "D-RANK2-MOVE": {
@@ -88,7 +88,7 @@
     "summary": "An invertible change of parameter coordinates preserves the D-optimal partition."
   },
   "D-TANGENT-SCREENING": {
-    "title": "Screen D moves safely",
+    "title": "A tangent bound safely screens D moves",
     "summary": "A tangent upper bound can exclude unprofitable moves before exact gain evaluation."
   },
   "D-UNMERGED-DUPLICATES-FAIL": {
@@ -100,7 +100,7 @@
     "summary": "A self-consistent D-Voronoi partition can still admit a profitable exact relocation."
   },
   "DS-CLASSICAL-DESIGN-THEORY": {
-    "title": "Classical design with nuisance parameters",
+    "title": "Classical design theory already covers nuisance parameters",
     "summary": "Established optimal-design theory supplies the background for profiled determinant criteria."
   },
   "DS-EFFICIENT-SCORE-DOMINATION": {
@@ -108,15 +108,15 @@
     "summary": "Between-cell information of the full-data efficient score dominates the profiled information for the same rule."
   },
   "DS-EFFICIENT-SCORE-GLOBAL-UPPER": {
-    "title": "An upper problem for profiled optimization",
+    "title": "An efficient-score problem bounds profiled optimization from above",
     "summary": "Optimizing efficient-score information over the same bin budget bounds the global profiled optimum."
   },
   "DS-EXACT-MOVE-ORACLE": {
-    "title": "Evaluate profiled moves exactly",
+    "title": "Profiled moves have an exact gain",
     "summary": "An exact one-point objective oracle compares feasible finite assignments with nuisance profiling."
   },
   "DS-EXCHANGE-LEVERAGE-BOUND": {
-    "title": "A leverage bound for profiled stability",
+    "title": "Profiled stability bounds cell leverage",
     "summary": "An exact bound quantifies what one-point profiled exchange stability says about first-order geometry."
   },
   "DS-EXCHANGE-TERMINATES": {
@@ -148,11 +148,11 @@
     "summary": "With multiple parameters of interest, the outer tilt ceiling can fail quasiconvexity."
   },
   "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER": {
-    "title": "A law with convergent global profiled optima",
+    "title": "One explicit non-centered law has convergent global profiled optima",
     "summary": "An explicit atomless law has a unique isolated population optimum approached by exact finite global optima; practical ascent selection is not claimed."
   },
   "DS-OKN-BOUND": {
-    "title": "Approximate profiled geometry at stability",
+    "title": "Profiled stability implies approximate geometry",
     "summary": "The first-order violation bound scales with observation weight relative to the affected cell masses."
   },
   "DS-POP-WASTED-CELLS": {
@@ -160,11 +160,11 @@
     "summary": "Degenerate projected centres allow stationary profiled partitions that no efficient-semimetric rule reproduces."
   },
   "DS-PROFILED-COMPILE-CERTIFICATE": {
-    "title": "Let the certificate decide compilation",
+    "title": "A certificate decides profiled compilation",
     "summary": "Observable certificate conditions separate justified profiled conclusions from cases requiring refusal."
   },
   "DS-PROFILED-VARIATIONAL": {
-    "title": "A variational form of profiling",
+    "title": "Profiling has a variational form",
     "summary": "Minimization over nuisance tilts expresses the profiled objective through a classical variational identity."
   },
   "DS-PROJECTED-K-REQUIREMENT": {
@@ -172,11 +172,11 @@
     "summary": "Efficient-score projection reduces the relevant rank requirement to the number of parameters of interest."
   },
   "DS-SCALAR-EFFICIENT-DP": {
-    "title": "Solve the scalar upper problem exactly",
+    "title": "Dynamic programming solves the scalar upper problem exactly",
     "summary": "Interval dynamic programming optimizes the scalar efficient-score upper problem within the finite capacity limit."
   },
   "DS-SCHUR": {
-    "title": "Profiling uses Schur information",
+    "title": "Profiled information is a Schur complement",
     "summary": "The profiled determinant measures efficient information for the parameters of interest after nuisance adjustment."
   },
   "DS-STABLE-BASINS-CENTERED-OBSTRUCTION": {
@@ -184,11 +184,11 @@
     "summary": "In the stated class of laws, the margin-certified stable branch is empty under the audited sequence assumptions."
   },
   "DS-STABLE-BASINS-FIXED-POINT-GATE": {
-    "title": "A root equation for regular self-consistency",
+    "title": "A root equation gates regular self-consistency",
     "summary": "A scalar tilt equation is necessary for the stated empirical inhabitation problem; no converse or basin-transfer result follows."
   },
   "DS-STABLE-BASINS-GATE-SCANS": {
-    "title": "Numerical probes of the margin gate",
+    "title": "The margin gate was probed numerically",
     "summary": "Finite searches compare empty and inhabited regimes on specified laws; they are measured probes, not existence decisions in general."
   },
   "DS-STABLE-BASINS-LCM-CLASSIFICATION": {
@@ -200,27 +200,27 @@
     "summary": "For the stated scalar conditionally centred class, maintaining nuisance information separates achievable value from the unrestricted ceiling."
   },
   "DS-STABLE-STATE-SELECTION": {
-    "title": "Measured selection of profiled stable states",
+    "title": "Selection of profiled stable states was measured",
     "summary": "Experiments find both margin regimes and examine which states ascent selects at increasing sample sizes."
   },
   "DS-STRIP-DP-DELTA-CONSISTENCY": {
-    "title": "A consistent interval rule on an explicit law",
+    "title": "An interval rule is consistent on an explicit law",
     "summary": "The zero-tilt interval dynamic program approaches the profiled value on the audited law without implying exchange stability or compilation authority."
   },
   "DS-TANGENT-SCREENING": {
-    "title": "Screen profiled moves safely",
+    "title": "A tangent bound safely screens profiled moves",
     "summary": "A first-order upper bound excludes moves unable to improve the exact profiled objective."
   },
   "DS-TILT-DUAL-CERTIFICATE": {
-    "title": "Bracket the profiled optimum",
+    "title": "A tilted dual brackets the profiled optimum",
     "summary": "Scalar-interest tilt dynamic programming gives two-sided bounds, with exact closure when an exhibited labelling satisfies the saddle condition."
   },
   "DS-TILT-DUAL-STRONG-DUALITY-FAILS": {
-    "title": "The profiled certificate need not close",
+    "title": "The profiled dual gap can be strictly positive",
     "summary": "Exact finite witnesses show a genuine primal–dual gap; a nonclosing reported bracket alone does not prove such a gap."
   },
   "DWW-PURIFICATION-MOMENTS": {
-    "title": "Purify randomized assignments on atomless laws",
+    "title": "Randomized assignments purify on atomless laws",
     "summary": "Classical purification preserves the cell masses and first moments that determine the information objective."
   },
   "E-BB-APPLIES": {
@@ -240,11 +240,11 @@
     "summary": "A repeated minimum eigenvalue makes one-transfer first-order geometry non-identifying."
   },
   "E-SUPERGRADIENT": {
-    "title": "Supergradients for the E criterion",
+    "title": "The E criterion has explicit supergradients",
     "summary": "Classical spectral analysis describes the supergradient when the smallest eigenvalue is simple or repeated."
   },
   "E-TANGENT-SCREENING": {
-    "title": "Screen E moves with supergradients",
+    "title": "Supergradients safely screen E moves",
     "summary": "A valid supergradient gives a safe bound for rejecting finite moves."
   },
   "FI-LOSS-DECOMPOSITION": {
@@ -256,7 +256,7 @@
     "summary": "Fisher information is preserved exactly when the score is measurable from the label under the stated model assumptions."
   },
   "FI-QUANT-IDENTITY": {
-    "title": "Information carried by a hard label",
+    "title": "A hard label's information is the covariance of cell mean scores",
     "summary": "Cell masses and conditional score means determine the retained Fisher information of a fixed rule in a regular model."
   },
   "FI-RANK-CEILING": {
@@ -268,15 +268,15 @@
     "summary": "Splitting cells increases retained information in the positive-semidefinite order."
   },
   "GENERAL-FIRST-VARIATION": {
-    "title": "The infinitesimal effect of a cell transfer",
+    "title": "A cell transfer has an explicit first variation",
     "summary": "The first variation connects changes in cell moments to the information criterion’s local geometry."
   },
   "GENERAL-REFINEMENT-BB": {
-    "title": "Refinement bounds for monotone criteria",
+    "title": "Refinement bounds hold for every monotone criterion",
     "summary": "A refinement upper-bounds coarser assignments for any criterion monotone in the information matrix."
   },
   "GENERAL-SUPERGRADIENT-SCREENING": {
-    "title": "A common safe-screening principle",
+    "title": "One supergradient principle screens moves safely",
     "summary": "Concavity turns supergradients into upper bounds for finite objective changes."
   },
   "GENERAL-WEIGHTED-TANGENT-STABILITY": {
@@ -288,23 +288,23 @@
     "summary": "Moving a boundary without crossing a sample point leaves its labels and hard objective unchanged."
   },
   "INFO-D-EFFICIENCY": {
-    "title": "Measure determinant retention",
+    "title": "D-efficiency measures determinant retention",
     "summary": "D-efficiency compares binned and unbinned information through a dimension-normalized determinant ratio."
   },
   "INFO-DIRECTIONAL-DIAGNOSTICS": {
-    "title": "Inspect retention by direction",
+    "title": "Retention can be inspected direction by direction",
     "summary": "Directional diagnostics reveal information losses hidden by a single aggregate efficiency."
   },
   "INFO-DS-EFFICIENCY": {
-    "title": "Measure profiled determinant retention",
+    "title": "Profiled D-efficiency measures profiled determinant retention",
     "summary": "The profiled efficiency compares information for parameters of interest after nuisance adjustment."
   },
   "INFO-RETENTION-SPECTRUM": {
-    "title": "The spectrum of retained information",
+    "title": "Every retention eigenvalue lies between zero and one",
     "summary": "Whitening against the full information reveals the retained fraction in each information direction."
   },
   "MIXTURE-RATIO-SCORE": {
-    "title": "Construct mixture scores from ratios",
+    "title": "Density ratios determine the mixture score",
     "summary": "Component density ratios suffice for explicit score construction in a linear-mixture model."
   },
   "OPEN-A-QUANTITATIVE-BOUND": {
@@ -316,7 +316,7 @@
     "summary": "Determine the possible advantage of randomized labels when atomless purification is unavailable."
   },
   "OPEN-CLASSIFIER-CALIBRATION-FI": {
-    "title": "Translate calibration error into information loss",
+    "title": "How does calibration error become information loss?",
     "summary": "A general propagation bound from classifier calibration error to retained Fisher information remains open."
   },
   "OPEN-CRITERION-CHARACTERIZATION": {
@@ -348,15 +348,15 @@
     "summary": "Establish unrestricted global D consistency beyond compact rule families with imposed margins."
   },
   "OPEN-DS-DOMINATION-EQUALITY": {
-    "title": "When is efficient-score domination tight?",
+    "title": "Efficient-score domination is tight exactly when nuisance projections agree",
     "summary": "The exact gap and equality conditions identify when the efficient-score upper bound is attained."
   },
   "OPEN-DS-E-UNRESTRICTED-CONSISTENCY": {
-    "title": "Unrestricted population limits for profiled D and E",
+    "title": "Do unrestricted profiled D and E optima have population limits?",
     "summary": "Determine when finite optimal assignments converge without the restricted theory’s assumptions."
   },
   "OPEN-DS-FINITE-POP-BRIDGE": {
-    "title": "A conditional profiled population bridge",
+    "title": "Margined profiled stable labellings become geometric in the limit",
     "summary": "The proved bridge requires the stated regularity and margin hypotheses; it is not unrestricted consistency."
   },
   "OPEN-DS-MARGINS-AT-OPTIMA": {
@@ -364,15 +364,15 @@
     "summary": "In the audited scalar conditionally centred class, optimal value converges while binned nuisance information vanishes."
   },
   "OPEN-DS-MARGINS-NONCENTERED": {
-    "title": "Extend the scalar margins dichotomy",
+    "title": "Does the scalar margins dichotomy extend beyond centred laws?",
     "summary": "The corresponding geometry and margin behaviour beyond the audited scalar class remain open."
   },
   "OPEN-DS-POP-COMMON-METRIC": {
-    "title": "Stationary profiled population geometry",
+    "title": "Stationary profiled population quantizers are efficient-Voronoi",
     "summary": "An efficient projection describes stationarity under regularity assumptions, but stationarity alone does not force distinct projected centres."
   },
   "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER": {
-    "title": "A certificate-based profiled solver conclusion",
+    "title": "The certified profiled solver question closes by reduction",
     "summary": "The settled reduction distinguishes an exhibited saddle, an open bracket, conditional geometry, and refusal; broader exact complexity remains open."
   },
   "OPEN-DS-STABLE-BASINS": {
@@ -380,7 +380,7 @@
     "summary": "Wasted-cell tracking and constrained-value attainment remain unresolved beyond the established obstructions."
   },
   "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY": {
-    "title": "The exact bit complexity of tilt optimization",
+    "title": "What is the exact bit complexity of tilt optimization?",
     "summary": "Resolve remaining exact-complexity questions as nuisance dimension and cell count vary."
   },
   "OPEN-E-COMMON-SUPERGRADIENT": {
@@ -392,19 +392,19 @@
     "summary": "Seek a quantitative finite necessity bound under eigenvalue separation."
   },
   "OPEN-EXTENDED-COUNT-SHAPE": {
-    "title": "Combine count and shape information",
+    "title": "Can count and shape information be combined?",
     "summary": "Make the quantization problem explicit for extended template fits using both event count and event shape."
   },
   "OPEN-HEP-NUISANCE-SCALING": {
-    "title": "Scale template fits with nuisance parameters",
+    "title": "How do template fits scale with nuisance parameters?",
     "summary": "Understand systematic template morphing and the cost of larger nuisance models."
   },
   "OPEN-MIXTURE-PARAMETERIZATION": {
-    "title": "Choose mixture score coordinates systematically",
+    "title": "Which mixture score coordinates should be used?",
     "summary": "A canonical parameterization for linear-mixture score construction remains to be developed."
   },
   "OPEN-MULTIREFERENCE-ROBUST": {
-    "title": "Design bins for several reference models",
+    "title": "Can one binning serve several reference models?",
     "summary": "Study robust quantization across multiple parameter reference points."
   },
   "OPEN-PARAMETER-MISMATCH": {
@@ -412,11 +412,11 @@
     "summary": "Bound the degradation when the operating parameter differs from the design reference."
   },
   "OPEN-REPRESENTATION-LOSS-ESTIMATION": {
-    "title": "Separate representation and binning loss in estimates",
+    "title": "Can representation and binning loss be estimated separately?",
     "summary": "Determine how to estimate both contributions rather than only their combined effect."
   },
   "OPEN-RETENTION-UNCERTAINTY": {
-    "title": "Finite-sample uncertainty for retention",
+    "title": "How uncertain is a finite-sample retention estimate?",
     "summary": "Beyond frozen-rule asymptotics, finite-sample guarantees for retention estimates remain open."
   },
   "OPEN-SCORE-PERTURBATION": {
@@ -428,7 +428,7 @@
     "summary": "Understand the zero-temperature limit and what survives hardening."
   },
   "OPEN-STRONGER-BB": {
-    "title": "Tighter bounds for exact search",
+    "title": "Are there tighter bounds for exact search?",
     "summary": "Improve branch-and-bound ceilings beyond singleton refinement."
   },
   "OPEN-STRONGER-LOCAL-NEIGHBORHOODS": {
@@ -436,31 +436,31 @@
     "summary": "Study stronger neighbourhoods beyond single-observation relocation."
   },
   "PROXY-TRUE-RETAINED-FI": {
-    "title": "True information when labels use a proxy",
+    "title": "Proxy-built labels retain the true score's information, not the proxy's",
     "summary": "The true score, conditioned on proxy-derived labels, determines achieved Fisher information; proxy moments measure a different quantity."
   },
   "RATIO-LOCAL-SCORE": {
-    "title": "Recover local scores from density ratios",
+    "title": "Density ratios determine the local score",
     "summary": "Differentiating a local model density ratio yields the local score under the stated regularity conditions."
   },
   "REPRESENTATION-QUANTIZATION-LOSS": {
-    "title": "Separate representation loss from binning loss",
+    "title": "Information loss splits into representation and binning parts",
     "summary": "Conditional projection decomposes information lost in the representation and in its subsequent hard labels."
   },
   "RETENTION-PLUGIN-CLT-FROZEN-SCALAR": {
-    "title": "Uncertainty for a frozen scalar rule",
+    "title": "A frozen scalar rule's retention has a limiting distribution",
     "summary": "A plug-in central limit theorem gives a consistent influence-function variance for independent evaluation under the stated nondegeneracy assumptions."
   },
   "RETENTION-PLUGIN-CLT-FROZEN-VECTOR": {
-    "title": "Uncertainty for a frozen vector rule",
+    "title": "A frozen vector rule's retention has a limiting distribution",
     "summary": "A plug-in central limit theorem describes geometric-mean determinant retention under its regularity and nonsingularity conditions."
   },
   "RETENTION-PLUGIN-COVERAGE-DOOR3": {
-    "title": "Measured coverage for scalar retention",
+    "title": "Coverage of scalar retention intervals was measured",
     "summary": "A classifier-based experiment tests the frozen-rule interval’s coverage; the evidence is numerical."
   },
   "RETENTION-PLUGIN-COVERAGE-VECTOR": {
-    "title": "Measured coverage for vector retention",
+    "title": "Coverage of vector retention intervals was measured",
     "summary": "Closed-form laws test the vector interval’s coverage and its limitations numerically."
   },
   "RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE": {
@@ -468,11 +468,11 @@
     "summary": "At singular retained information, geometric-mean retention has an upward plug-in bias with a rank-dependent rate."
   },
   "SOFT-ASSIGNMENT-GRADIENT": {
-    "title": "Differentiate soft assignments exactly",
+    "title": "Soft assignments have an exact gradient",
     "summary": "An exact gradient supports optimization of the randomized-assignment information objective."
   },
   "SOFT-FIXED-TEMP-STATIONARY": {
-    "title": "Fixed-temperature stationary guarantees",
+    "title": "Fixed-temperature optimization reaches only ordinary stationary points",
     "summary": "Standard nonconvex optimization theory supplies stationary guarantees at a fixed temperature, not global hard optimality."
   },
   "SOFT-HARD-ATOMLESS-EQUIVALENCE": {

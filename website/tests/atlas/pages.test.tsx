@@ -1,7 +1,6 @@
 import {fireEvent, render, screen} from "@testing-library/react";
 import {describe, expect, it} from "vitest";
 
-import {BandStrip} from "../../src/atlas/BandStrip";
 import {localLayout} from "../../src/atlas/LocalMap";
 import AtlasHome from "../../src/atlas/pages/AtlasHome";
 import {homeData} from "./renderData";
@@ -77,16 +76,6 @@ describe("AtlasHome", () => {
     const words = article?.textContent.split(/\s+/).length ?? 0;
     expect(words).toBeGreaterThanOrEqual(450);
     expect(words).toBeLessThanOrEqual(550);
-  });
-});
-
-describe("BandStrip", () => {
-  it("links every glyph to a claim page and leaves empty cells marked", () => {
-    render(<BandStrip core={core} />);
-    const links = screen.getAllByRole("link");
-    expect(links.length).toBeGreaterThan(100);
-    expect(links.every((link) => link.getAttribute("href")?.startsWith("/research/claims/"))).toBe(true);
-    expect(screen.getAllByLabelText("none").length).toBeGreaterThan(0);
   });
 });
 

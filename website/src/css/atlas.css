@@ -138,19 +138,6 @@
 .proof__body .katex-display { overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
 .proof__source { padding: 0 16px 12px; font-size: 13px; color: var(--text-faint); }
 
-/* Result cards (home): meaning first, then provenance and a local graph. */
-.result-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 18px; margin: 18px 0 8px; }
-.result-card { display: grid; grid-template-rows: auto 1fr auto; gap: 10px; padding: 20px 22px 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-raised); }
-.result-card h3 { margin: 0; font-size: 17.5px; line-height: 1.3; }
-.result-card h3 a { color: var(--text); text-decoration: none; }
-.result-card h3 a:hover { color: var(--accent-strong); text-decoration: underline; text-underline-offset: 4px; }
-.result-card__meaning { margin: 0; color: var(--ink-700); font-size: 14.5px; line-height: 1.6; }
-.result-card__meaning p { margin: 0 0 8px; }
-.result-card__meaning p:last-child { margin: 0; }
-.result-card__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-muted); }
-.result-card__foot .provenance-band { margin: 0; gap: 6px 10px; }
-.result-card__graph { width: 100%; height: auto; margin-top: 4px; }
-
 /* ------------------------------------------------------------------ Figures shared by views */
 .atlas-figure { margin: 18px 0 8px; padding: 14px 16px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-raised); }
 .atlas-figure__caption { margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
@@ -176,20 +163,6 @@
 .node:focus-visible { outline: none; }
 .node:focus-visible .node__halo { fill: none; stroke: var(--atlas-focus-ring); stroke-width: 2; }
 
-/* Known -> New here -> Boundary -> Open strip. */
-.band-strip { display: grid; grid-template-columns: 180px repeat(4, minmax(0, 1fr)); gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface-raised); font-size: 13px; }
-.band-strip__head { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text-faint); font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; background: var(--surface); }
-.band-strip__row { display: contents; }
-.band-strip__label { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); font-weight: 560; }
-.band-strip__cell { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 5px; padding: 10px 12px; border-bottom: 1px solid var(--border); border-left: 1px solid var(--border); min-height: 40px; }
-.band-strip__cell a { display: inline-flex; line-height: 0; }
-.band-strip__row:last-child .band-strip__label, .band-strip__row:last-child .band-strip__cell { border-bottom: 0; }
-.band-strip__empty { color: var(--text-faint); font-size: 12px; align-self: center; }
-@media (max-width: 720px) {
-  .band-strip { grid-template-columns: 120px repeat(4, minmax(0, 1fr)); font-size: 12px; }
-  .band-strip__head, .band-strip__label, .band-strip__cell { padding: 8px 6px; }
-}
-
 /* Ways in: a definition list, not tiles. */
 .ways-in { margin: 0; padding: 0; }
 .ways-in > div { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-top: 1px solid var(--border); }
@@ -211,18 +184,6 @@
 @media (max-width: 640px) { .prior-art__sources > div { grid-template-columns: 1fr; gap: 2px; } }
 .local-map { max-width: 100%; }
 .local-map--thumb { max-height: 150px; }
-
-/* ------------------------------------------------------------------ Home */
-.frontier-item { margin: 0 0 22px; padding: 0 0 18px; border-bottom: 1px solid var(--border); }
-.frontier-item h3 { margin: 0 0 8px; }
-.frontier-item h3 a { color: var(--text); text-decoration: none; }
-.frontier-item h3 a:hover { color: var(--accent-strong); text-decoration: underline; text-underline-offset: 4px; }
-.frontier-item__line { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 10px; margin: 6px 0 0; font-size: 14px; }
-.frontier-item__line > span { color: var(--text-faint); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; padding-top: 3px; }
-.frontier-item__line .entity-list { margin: 0; }
-.result-card__nearest { font-size: 13px; color: var(--text-muted); }
-.result-card__nearest .entity-link { display: inline; }
-.result-card__nearest .entity-link__id { display: none; }
 
 /* ------------------------------------------------------------------ Argument map */
 .argument-map { margin-top: 20px; }

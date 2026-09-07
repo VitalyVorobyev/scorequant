@@ -211,7 +211,12 @@ test("the flowcyt walkthrough tells the study end to end without loading a runti
   await page.goto("./walkthroughs/flowcyt/");
 
   await expect(page.getByRole("heading", {name: /Bone-marrow cell populations/})).toBeVisible();
-  for (const section of ["The cells, their labels, and a patient's fractions", "The data and its licence", "The numbers"]) {
+  for (const section of [
+    /The cells and a patient's composition/,
+    /Applying the frozen rule to held-out patients/,
+    /The bin budget/,
+    /Limits, and how to reproduce this/,
+  ]) {
     await expect(page.getByRole("heading", {name: section})).toBeVisible();
   }
 
@@ -222,6 +227,8 @@ test("the flowcyt walkthrough tells the study end to end without loading a runti
 
   await expect(page.getByRole("img", {name: /composition of every patient/})).toBeVisible();
   await expect(page.getByRole("img", {name: /macro RMSE against bin budget/})).toBeVisible();
+  await expect(page.getByRole("img", {name: /D-efficiency against bin budget/})).toBeVisible();
+  await expect(page.getByRole("img", {name: /Estimated against expert population fractions/})).toBeVisible();
   await expect(page.getByRole("img", {name: /FS INT intensity distribution/})).toBeVisible();
 
   expect(heavyRequests).toEqual([]);

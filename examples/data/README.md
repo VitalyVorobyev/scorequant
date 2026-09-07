@@ -12,6 +12,17 @@ Copyright belongs to Lorenzo Bini, Fatemeh Nassajian Mojarrad, Margarita
 Liarou, Thomas Matthes, and Stéphane Marchand-Maillet. See
 `flowcyt_fixture.json` for provenance and sampling details.
 
+`flowcyt_walkthrough.npz` is the fixture-scale table the FlowCyt walkthrough
+page runs on: the mixture scores of the reference cells the rule is fitted on,
+of the reference cells that calibrate the categories, and of a subsample of the
+held-out patients' cells, with patient ids, expert labels and the frozen
+classifier's ratios. It is derived from the fixture through
+`examples.cell_population` by `website/scripts/generate_showcase.py --force`,
+and its sidecar `flowcyt_walkthrough.json` records the run and what the
+walkthrough's own chain produces on it. As a derivative of the benchmark it
+carries the same CC BY-NC-SA 4.0 terms and attribution; it is not covered by
+ScoreQuant's MIT licence.
+
 The complete research workflow does not commit its 600,000-cell bounded sample.
 It recreates `flowcyt-results/flowcyt_sample_20000.npz` with deterministic HTTP
 range reads from all 180 upstream FCS files. The complete command, sample digest,

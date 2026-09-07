@@ -16,16 +16,25 @@ def _run_lab() -> Callable[[str], str]:
     return cast(Callable[[str], str], namespace["run_lab"])
 
 
+def _flowcyt_table() -> tuple[np.ndarray, np.ndarray, list[str]]:
+    """The committed fixture-scale FlowCyt walkthrough table's partition rows."""
+    with np.load(ROOT / "examples/data/flowcyt_walkthrough.npz") as table:
+        scores = np.asarray(table["partition_scores"], dtype=np.float64)
+        weights = np.asarray(table["partition_weights"], dtype=np.float64)
+        schema = [str(name) for name in table["schema"]]
+    return scores, weights / weights.mean(), schema
+
+
 def _flowcyt_problem(**overrides: object) -> dict[str, object]:
-    """Build a request from the committed score table the portal ships."""
-    payload = json.loads((ROOT / "website/static/showcase-data/flowcyt-scores.json").read_text())
+    """Build a request from the committed FlowCyt walkthrough table."""
+    scores, weights, schema = _flowcyt_table()
     # A slice keeps the pin fast; the browser envelope is exercised by the shape
-    # assertions rather than by re-running five thousand rows here.
+    # assertions rather than by re-running seven thousand rows here.
     rows = 600
     problem: dict[str, object] = {
-        "scores": payload["scores"][:rows],
-        "weights": payload["weights"][:rows],
-        "schema": payload["schema"]["parameters"],
+        "scores": scores[:rows].tolist(),
+        "weights": weights[:rows].tolist(),
+        "schema": schema,
         "nBins": 6,
         "solver": "d_exchange",
         "seed": 28,
@@ -36,20 +45,21 @@ def _flowcyt_problem(**overrides: object) -> dict[str, object]:
     return problem
 
 
-def test_the_shipped_score_table_is_within_the_browser_envelope() -> None:
-    """The Lab caps a run, and the table it ships must fit under that cap."""
-    payload = json.loads((ROOT / "website/static/showcase-data/flowcyt-scores.json").read_text())
-    scores = np.asarray(payload["scores"], dtype=np.float64)
+def test_the_committed_walkthrough_table_is_within_the_browser_envelope() -> None:
+    """The Lab caps a run, and the FlowCyt partition rows must fit under that cap."""
+    scores, weights, schema = _flowcyt_table()
+    facts = json.loads((ROOT / "examples/data/flowcyt_walkthrough.json").read_text())
     assert scores.ndim == 2
     assert scores.shape[0] <= 8_000, "the browser refuses more rows than this"
     assert scores.shape[1] <= 6, "the browser refuses more score dimensions than this"
-    assert scores.shape[1] == len(payload["schema"]["parameters"])
-    assert len(payload["weights"]) == scores.shape[0]
+    assert scores.shape[1] == len(schema)
+    assert weights.shape[0] == scores.shape[0]
     assert np.isfinite(scores).all()
     # The mixture score absorbs one component, so five columns for six
     # populations. A change here means the score construction changed.
     assert scores.shape[1] == 5
-    assert payload["license"] == "CC-BY-NC-SA-4.0"
+    assert facts["license"] == "CC-BY-NC-SA-4.0"
+    assert facts["rows"]["partition"] == scores.shape[0]
 
 
 def test_the_browser_adapter_runs_the_real_five_dimensional_scores() -> None:

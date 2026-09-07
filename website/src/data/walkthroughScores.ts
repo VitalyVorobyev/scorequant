@@ -18,10 +18,9 @@ export interface WalkthroughScoreTable {
 /**
  * Fetch one walkthrough's committed score table on demand.
  *
- * Kept out of the bundle the same way `loadLabScores` keeps the FlowCyt table
- * out of it (`website/src/data/showcase.ts`): a `LiveFit` problem resolver is
- * the only caller, so a walkthrough that never activates its experiment
- * fetches nothing extra.
+ * Kept out of the bundle: a `LiveFit` problem resolver is the only caller,
+ * so a walkthrough that never activates its experiment fetches nothing
+ * extra.
  */
 export async function loadWalkthroughScoreTable(
   slug: string,

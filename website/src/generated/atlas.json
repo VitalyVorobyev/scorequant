@@ -14054,71 +14054,71 @@
     "boundaries": [
       {
         "id": "DS-GLOBAL-NONGEOMETRIC",
-        "qualification": "A finite optimum alone does not authorize that geometric compilation.",
-        "significance": "The D theorem cannot simply be transferred to nuisance-adjusted information.",
-        "summary": "An exact finite example has a global profiled optimum that violates its own first-order geometric rule.",
-        "title": "Nuisance profiling can break the rule"
+        "qualification": "A finite profiled optimum alone does not authorize compilation.",
+        "significance": "The D theorem does not transfer to profiled information.",
+        "summary": "An exhaustively solved finite example has a unique global profiled optimum violating its own first-order nearest-cell rule.",
+        "title": "Profiling can break the geometric rule"
       },
       {
         "id": "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
-        "qualification": "The contribution is the explicit witnesses; minimax failure on a finite nonconvex problem is not itself new.",
-        "significance": "A useful upper bound can remain strictly above the best attainable partition.",
-        "summary": "Exact examples show a genuine gap between the profiled primal optimum and its tilt dual.",
-        "title": "The certificate need not close"
+        "qualification": "The witnesses are the contribution; finite minimax failure is not new.",
+        "significance": "The bound is useful but can exceed every partition.",
+        "summary": "Exact examples separate the best profiled partition from its tilt dual, with rational witnesses down to three observations and two cells.",
+        "title": "The profiled dual gap can be strictly positive"
       }
     ],
     "central": {
       "id": "D-EXCHANGE-IMPLIES-VORONOI",
-      "qualification": "The theorem requires merged duplicate atoms, positive-definite retained information, exactly K nonempty cells, and exact exchange stability over every move that keeps cells nonempty. Numerical stopping tolerances need their own certification.",
-      "significance": "A finite assignment therefore determines a reusable nearest-centre rule without another fit. This is the main structural bridge between optimizing labels and constructing a quantizer; it does not say that every stable partition is globally optimal.",
-      "summary": "If no allowed single-atom move improves the determinant of the retained information, every atom lies strictly nearest to its own cell centre in the metric defined by that information.",
+      "qualification": "Hypotheses: merged duplicate atoms, positive-definite retained information, exactly K nonempty cells, exact stability over every move keeping cells nonempty; a stopping tolerance needs its own certification.",
+      "significance": "A labelled sample therefore compiles into a reusable nearest-centre rule: the bridge from labels to a quantizer. Stability does not imply global optimality.",
+      "summary": "Label a finite sample into K cells, merging identical observations by weight into one atom. The labelling is exchange-stable if no single atom can move to another cell and increase the determinant of the retained information. Then every atom already sits in the cell whose centre is nearest in the metric that information defines, so a nearest-centre rule reproduces the labelling.",
       "title": "Stable D-optimal partitions have a geometric rule."
     },
-    "intro": "How can we reduce an observation to one of a few hard labels while retaining information about model parameters? We study this problem in score space—the space of local log-likelihood gradients—distinguishing labels for a fixed sample from a rule that can label future observations.",
+    "intro": "Report an observation as one of K hard labels; only the labels reach the parameter fit. Which split keeps the most parameter information?\n\nScore space gives the natural coordinates: each observation becomes its score, the gradient of the log-likelihood in the parameters, and Fisher information is the covariance of those scores. Hard bins keep the information in the cell averages and lose the rest.\n\nA finite assignment labels a fixed sample; a rule labels future observations. The central result says when one becomes the other.",
     "questions": [
       {
         "id": "OPEN-D-UNRESTRICTED-CONSISTENCY",
-        "qualification": "The unrestricted result remains open.",
-        "significance": "This would connect exact finite optimization to population design.",
-        "summary": "Restricted consistency is known. Can unrestricted empirical global D optima converge without the imposed margins?",
+        "qualification": "Open in the unrestricted case.",
+        "significance": "This would link finite optimization to population design.",
+        "summary": "Consistency is known for restricted rule families with mass and conditioning margins. Do unrestricted empirical D optima converge without them?",
         "title": "Does finite optimality survive the population limit?"
       },
       {
         "id": "OPEN-CRITERION-CHARACTERIZATION",
         "qualification": "Uniqueness of the determinant is not established.",
-        "significance": "A characterization would explain the structural distinction.",
-        "summary": "D admits an exchange-to-geometry theorem; other familiar criteria have counterexamples.",
+        "significance": "That would explain what is special about D.",
+        "summary": "The determinant admits an exchange-to-geometry theorem; alternatives such as A-optimality have counterexamples.",
         "title": "Which criteria force geometry?"
       },
       {
         "id": "OPEN-SCORE-PERTURBATION",
-        "qualification": "Proxy information is not automatically true Fisher information.",
+        "qualification": "Proxy information is not Fisher information.",
         "significance": "This would connect learned representations to quantization guarantees.",
-        "summary": "Can score error control changes in retained information and cell boundaries?",
+        "summary": "Classifier or density-ratio scores carry error. Can bounds on it control the retained information and the cell boundaries?",
         "title": "How robust is the rule to estimated scores?"
       }
     ],
     "results": [
       {
         "id": "D-LOGDET-GAIN",
-        "qualification": "The determinant identity is classical; its application to the coupled cell-centroid update is the adaptation here.",
-        "significance": "Accepting only strictly improving moves gives a monotone search that terminates on a finite sample.",
-        "summary": "A closed-form determinant gain makes individual relocations comparable without refactorizing the information matrix.",
-        "title": "Score each move exactly"
+        "qualification": "The determinant identity is classical; its use in the coupled cell-centroid update is the adaptation.",
+        "significance": "Strictly improving moves give a terminating search.",
+        "summary": "One atom's move changes the log-determinant by an explicit formula in three inner products, so moves compare exactly without refactorizing.",
+        "title": "Every relocation has an exact closed-form gain"
       },
       {
         "id": "D-GLOBAL-GEOMETRIC-REALIZABILITY",
-        "qualification": "This is a consequence of the stability theorem, not an efficient algorithm for finding that optimum.",
-        "significance": "Searching for geometric rules need not lose the finite global optimum in this setting.",
-        "summary": "Every finite global D optimum satisfies the same nearest-centre geometry under the structural theorem’s hypotheses.",
-        "title": "Global D optima are geometric"
+        "qualification": "A consequence of the stability theorem, not an algorithm.",
+        "significance": "Geometric rules lose no finite optimum here.",
+        "summary": "A global optimum is exchange-stable, so it satisfies the nearest-centre geometry under the same hypotheses.",
+        "title": "Every finite global D optimum is geometric"
       },
       {
         "id": "DS-TILT-DUAL-CERTIFICATE",
-        "qualification": "Closure requires the stated saddle condition; a reported bracket alone is not an optimality certificate.",
-        "significance": "An exhibited closing labelling certifies a finite global profiled optimum.",
-        "summary": "For one parameter of interest, dynamic programming on a tilted scalar score supplies an achieved value and an upper bound.",
-        "title": "Bracket the profiled optimum"
+        "qualification": "Closure needs the stated saddle condition; a bracket alone certifies nothing.",
+        "significance": "When they meet, the labelling is certified globally optimal.",
+        "summary": "For one parameter of interest, the rest profiled out, dynamic programming on a tilted scalar score (the score projected on one direction and shifted) yields an achieved value and an upper bound.",
+        "title": "A tilted dual brackets the profiled optimum"
       }
     ]
   },

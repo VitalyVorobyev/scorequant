@@ -53,7 +53,6 @@ export default function AtlasHome({core, data}: AtlasPageProps<HomeData>): React
       wide
     >
       <header className="research-opening">
-        <p className="research-eyebrow">ScoreQuant · Research atlas</p>
         <h1>Research</h1>
         <Html className="atlas__lead" html={data.introHtml} />
       </header>
@@ -91,19 +90,19 @@ export default function AtlasHome({core, data}: AtlasPageProps<HomeData>): React
             <h3>
               <Link to="/research/landscape/">Explore the results →</Link>
             </h3>
-            <p>Known results, contributions, and boundaries, organised by theme.</p>
+            <p>Every result, by theme.</p>
           </div>
           <div>
             <h3>
               <Link to="/research/literature/">Follow the literature →</Link>
             </h3>
-            <p>Publications, authors, and the ideas this work builds on.</p>
+            <p>The publications behind the results.</p>
           </div>
           <div>
             <h3>
               <Link to="/research/frontier/">Visit the frontier →</Link>
             </h3>
-            <p>Precise open questions and the evidence that constrains them.</p>
+            <p>What is still open, and what bounds it.</p>
           </div>
         </div>
       </section>

@@ -37,9 +37,9 @@ function Card({card}: {card: WalkthroughCard}): React.JSX.Element {
           {card.tags
             .filter((tag) => tag.kind === "task")
             .map((tag) => (
-              <div key={tag.label} className="visually-hidden">
-                <dt>{TAG_KIND_LABELS.task}</dt>
-                <dd>{tag.label}</dd>
+              <div key={tag.label}>
+                <dt className="visually-hidden">{TAG_KIND_LABELS.task}</dt>
+                <dd className="visually-hidden">{tag.label}</dd>
               </div>
             ))}
           {symbols.map((tag) => (

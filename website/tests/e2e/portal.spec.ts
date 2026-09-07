@@ -416,6 +416,12 @@ test("explore filters and literature links preserve the research trail", async (
   await expect(page).toHaveURL(/research\/authors\//);
   await expect(page.getByRole("heading", {name: "Claims that cite this work"})).toBeVisible();
   await page.goto("./research/literature/");
+  await page.getByText("View the publication timeline", {exact: true}).click();
+  const marks = page.locator(".year-strip circle");
+  expect(await marks.count()).toBeGreaterThan(20);
+  const cy = await marks.evaluateAll((nodes) => nodes.map((node) => Number(node.getAttribute("cy"))));
+  expect(cy.every(Number.isFinite)).toBe(true);
+  expect(new Set(cy.map((value) => Math.round(value / 20))).size).toBeGreaterThan(3);
   await page.getByRole("searchbox").fill("Nuisance Hardened");
   await expect(page.locator(".research-paper-row")).toHaveCount(1);
   await page.getByRole("button", {name: "Clear filters"}).click();

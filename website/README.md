@@ -73,6 +73,8 @@ The generator reads `content/atlas/home.json` for the bounded home story and
 registry claims; neither changes statements, statuses, edges, or evidence. Missing summaries,
 invalid featured kinds/statuses, duplicate IDs, and incorrect selection counts fail generation.
 Keep essential qualifications in home copy, and put full statements and provenance on claim pages.
+The line under each featured result ("Proved here · machine-checked in Lean · independently
+audited") is built from the registry at render time; editorial files never carry proof status.
 
 Explore defaults to themes; its matrix is an advanced view. Graph defaults to a neighbourhood,
 with the full graph on demand. Literature coverage never depends on home selections. Existing

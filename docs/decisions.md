@@ -191,8 +191,10 @@ questions. `website/content/atlas/home.json` and `summaries.json` add validated 
 keyed to registry claims; exact statements and provenance remain authoritative upstream. Explore
 is theme-first, graphs are neighbourhood-first, and detailed evidence uses fragment-aware
 disclosure. All entity routes and typed edges survive. Literature coverage is independent of home
-selection; proof, publication, and priority-search status remain distinct. Reader acceptance is a
-human gate, not inferred from passing automated checks.
+selection; proof, publication, and priority-search status remain distinct. Proof and audit status
+may appear beside a featured result only as marks derived from the registry, never as editorial
+text. Listing titles state a claim, not an instruction. Reader acceptance is a human gate, not
+inferred from passing automated checks.
 
 ## Absorbed and superseded records
 

@@ -371,6 +371,7 @@ test("research tells the story and graph navigation follows URL history", async 
   const sections = ["Stable D-optimal partitions have a geometric rule.", "What we established", "Where it breaks", "Open frontier", "Explore further"];
   expect(await page.getByRole("heading", {level: 2}).allInnerTexts()).toEqual(sections);
   await expect(page.locator(".result-card, .band-strip, .atlas-legend")).toHaveCount(0);
+  await expect(page.locator(".research-finding--central .research-trust")).toHaveText("Proved here · machine-checked in Lean · independently audited");
   await page.goto("./research/map/?focus=D-EXCHANGE-IMPLIES-VORONOI");
   await expect(page.getByRole("heading", {name: "Research graph", level: 1})).toBeVisible();
   const panel = page.locator(".argument-map__panel");
@@ -420,4 +421,26 @@ test("explore filters and literature links preserve the research trail", async (
   await page.getByRole("button", {name: "Clear filters"}).click();
   await page.getByRole("combobox").selectOption({label: "Kiefer"});
   await expect(page.getByRole("link", {name: /View Kiefer/})).toBeVisible();
+});
+
+test("research navigation exposes its tools and collapses on mobile", async ({page}, testInfo) => {
+  await page.goto("./research/");
+  const nav = page.getByRole("navigation", {name: "Research atlas"});
+  if (testInfo.project.name === "mobile") {
+    const toggle = nav.getByRole("button", {name: "Research navigation"});
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(nav.getByRole("link", {name: "Explore"})).toBeHidden();
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  }
+  await expect(nav.getByRole("link", {name: "Graph"})).toBeHidden();
+  await nav.getByText("Research tools", {exact: true}).click();
+  await nav.getByRole("link", {name: "Graph"}).click();
+  await expect(page).toHaveURL(/research\/map\//);
+  await expect(page.getByRole("heading", {name: "Research graph", level: 1})).toBeVisible();
+  await page.goBack();
+  if (testInfo.project.name === "mobile") await nav.getByRole("button", {name: "Research navigation"}).click();
+  await nav.getByRole("link", {name: "Explore"}).click();
+  await expect(page).toHaveURL(/research\/landscape\//);
+  await expect(page.getByRole("button", {name: /^D-optimality/})).toContainText("Start here");
 });

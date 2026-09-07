@@ -43,7 +43,7 @@ describe("ClaimPage", () => {
   it("reorders the sections for an open question", () => {
     render(<ClaimPage core={core} data={claimData("OPEN-DS-MARGINS-NONCENTERED")} />);
     const headings = screen.getAllByRole("heading", {level: 2}).map((h) => h.textContent);
-    expect(headings).toContain("Already excluded");
+    expect(headings).toContain("Ruled out by");
     expect(headings).toContain("The question in full");
     expect(headings).not.toContain("Proof");
     expect(screen.getByText("Open question · OPEN-DS-MARGINS-NONCENTERED")).toBeInTheDocument();

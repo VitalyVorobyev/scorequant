@@ -66,7 +66,6 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
           </p>
           <h1>{data.editorial?.title ?? data.title}</h1>
           <ProvenanceBand core={core} data={data} />
-          <p className="research-attribution">Publication status: {data.publicationStatus.replaceAll("_", " ")}</p>
           {data.proofHtml !== null ? (
             <p>
               <a href="#proof">{isQuestion ? "Read the full question" : "Read the proof and evidence"} →</a>
@@ -106,7 +105,7 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
 
           {stop.converse.length + stop.refuted.length + stop.bounded.length > 0 || data.scopeHtml !== null ? (
             <section id="stops" className="atlas__section">
-              <h2>{isQuestion ? "Already excluded" : "Where it stops"}</h2>
+              <h2>{isQuestion ? "Ruled out by" : "Where it stops"}</h2>
               {data.scopeHtml !== null ? <Html html={data.scopeHtml} className="scope-note" /> : null}
               {stop.converse.length > 0 ? (
                 <>
@@ -149,7 +148,7 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
               ) : null}
               {data.priorArt.length > 0 ? (
                 <details className="research-disclosure">
-                  <summary>Detailed prior-art searches</summary>
+                  <summary>Why each source is not this result: the search records</summary>
                   {data.priorArt.map((audit) => (
                     <div key={audit.url} className="prior-art">
                       <h3>Nearest sources{audit.date ? `, checked ${audit.date}` : ""}</h3>
@@ -181,7 +180,7 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
             <summary>Relationships</summary>
             {rests.length > 0 ? (
               <section id="rests-on" className="atlas__section">
-                <h2>{isQuestion ? "Settled next to it" : "Rests on"}</h2>
+                <h2>{isQuestion ? "Related settled results" : "Rests on"}</h2>
                 <EntityList core={core} ids={rests} />
                 {chain.length > 0 ? (
                   <details className="chain">
@@ -199,7 +198,7 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
 
             {enabled.length + raised.length + verifiers.length + (isQuestion ? motivatedBy.length : 0) > 0 ? (
               <section id="enables" className="atlas__section">
-                <h2>{isQuestion ? "Would unlock" : "Enables"}</h2>
+                <h2>{isQuestion ? "Where it comes from" : "Enables"}</h2>
                 {isQuestion && motivatedBy.length > 0 ? (
                   <>
                     <h3>Raised by</h3>
@@ -369,23 +368,33 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
               ))}
           </ul>
           <h2>Where it sits</h2>
+          <p className="atlas__aside-meta">
+            {data.criterion.map((c) => criterionLabel(core, c)).join(", ")} · {levelLabel(core, data.level)}
+          </p>
+          <h2>Continue</h2>
           <ul>
-            <li>{data.criterion.map((c) => criterionLabel(core, c)).join(", ")}</li>
-            <li>{levelLabel(core, data.level)}</li>
-            {data.chapter ? (
+            <li>
+              <Link to={data.strip ? `/research/landscape/?theme=${encodeURIComponent(data.strip)}` : "/research/landscape/"}>
+                {data.strip ? `Explore ${core.strips.find((strip) => strip.id === data.strip)?.label ?? "this theme"}` : "Explore the results"}
+              </Link>
+            </li>
+            {data.kind !== "audit" ? (
               <li>
-                <Link to={`/research/claims/#group-${data.chapter.slug}`}>{data.chapter.label}</Link>
-                {data.chapter.section ? ` · ${data.chapter.section}` : ""}
+                <Link to={`/research/map/?focus=${encodeURIComponent(id)}`}>Open in the graph</Link>
               </li>
             ) : null}
             {data.theme ? (
               <li>
-                <Link to={`/research/frontier/#${data.theme}`}>{core.themes.find((theme) => theme.slug === data.theme)?.label ?? data.theme}</Link>
+                <Link to={`/research/frontier/#${data.theme}`}>
+                  Frontier: {core.themes.find((theme) => theme.slug === data.theme)?.label ?? data.theme}
+                </Link>
               </li>
             ) : null}
-            <li>
-              <Link to="/research/landscape/">Landscape</Link>
-            </li>
+            {data.chapter ? (
+              <li>
+                <Link to={`/research/claims/#group-${data.chapter.slug}`}>Chapter: {data.chapter.label}</Link>
+              </li>
+            ) : null}
           </ul>
         </nav>
       </div>
@@ -399,6 +408,7 @@ function ProvenanceBand({core, data}: {core: Core; data: ClaimData}): React.JSX.
       <span className="provenance-band__class">{provenanceLabel(core, data.provenance)}</span>
       {data.machineChecked !== null ? <span className="provenance-band__mark">machine-checked statement</span> : null}
       {data.audit !== null ? <span className="provenance-band__mark">independently audited</span> : null}
+      <span className="provenance-band__mark">publication: {data.publicationStatus.replaceAll("_", " ")}</span>
       {data.searchStatus === "search_gap" && data.provenance !== "proved_new" ? <span className="provenance-band__mark">no direct precedent found</span> : null}
       {data.searchStatus === "prior_art_found" ? <span className="provenance-band__mark">prior art found</span> : null}
       {data.parked ? (

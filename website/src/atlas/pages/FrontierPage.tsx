@@ -34,7 +34,7 @@ function settled(core: Core, adj: Adjacency, id: string): string[] {
 function Question({adj, core, question}: {adj: Adjacency; core: Core; question: FrontierQuestion}): React.JSX.Element {
   const alreadyExcluded = excluded(core, adj, question.id);
   const nextTo = settled(core, adj, question.id);
-  const wouldUnlock = raisedBy(adj, question.id);
+  const raisedByResults = raisedBy(adj, question.id);
   return (
     <section aria-labelledby={question.slug} className="frontier__question">
       <h3 id={question.slug}>
@@ -53,20 +53,20 @@ function Question({adj, core, question}: {adj: Adjacency; core: Core; question: 
         <div className="frontier__lists">
           {alreadyExcluded.length > 0 ? (
             <div>
-              <h4>Already excluded</h4>
+              <h4>Ruled out by</h4>
               <EntityList compact core={core} ids={alreadyExcluded} />
             </div>
           ) : null}
           {nextTo.length > 0 ? (
             <div>
-              <h4>Settled next to it</h4>
+              <h4>Related settled results</h4>
               <EntityList compact core={core} ids={nextTo} />
             </div>
           ) : null}
-          {wouldUnlock.length > 0 ? (
+          {raisedByResults.length > 0 ? (
             <div>
               <h4>Raised by</h4>
-              <EntityList compact core={core} ids={wouldUnlock} />
+              <EntityList compact core={core} ids={raisedByResults} />
             </div>
           ) : null}
         </div>
@@ -101,7 +101,8 @@ export default function FrontierPage({core, data}: AtlasPageProps<FrontierData>)
     >
       <h1>The frontier</h1>
       <p className="atlas__lead">
-        Questions that remain unresolved in this research record. Open a question for its precise statement, settled neighbours, and known obstructions.
+        What is still open, grouped by theme. Open a question for its exact statement, the results that rule answers out, the settled results beside it,
+        and the results that raised it.
       </p>
       <nav className="research-theme-links" aria-label="Frontier themes">
         {themes.map((theme) => (

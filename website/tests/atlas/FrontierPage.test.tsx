@@ -69,9 +69,9 @@ describe("FrontierPage", () => {
     if (!question) throw new Error("no question block");
 
     fireEvent.click(within(question).getByText("Statement and research context", {selector: "summary"}));
-    expect(within(question).getByRole("heading", {name: "Already excluded"})).toBeInTheDocument();
+    expect(within(question).getByRole("heading", {name: "Ruled out by"})).toBeInTheDocument();
     expect(within(question).getByText("CE-DS-MARGINS-RANK-VACUITY-001")).toBeInTheDocument();
-    expect(within(question).getByRole("heading", {name: "Settled next to it"})).toBeInTheDocument();
+    expect(within(question).getByRole("heading", {name: "Related settled results"})).toBeInTheDocument();
     expect(within(question).getByRole("heading", {name: "Raised by"})).toBeInTheDocument();
 
     const settled = atlas.edges.filter((edge) => edge.source === "OPEN-DS-MARGINS-NONCENTERED" && edge.type === "rests_on");

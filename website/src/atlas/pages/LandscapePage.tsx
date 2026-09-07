@@ -15,6 +15,8 @@ const INTRO: Record<string, string> = {
   access: "From densities and classifiers to scores, and from proxy to true information.",
 };
 const BANDS = ["Known", "Established here", "Boundary", "Open"] as const;
+/** The theme that carries the main line of the argument; listed first. */
+const MAIN = "d";
 function band(c: CoreClaim): (typeof BANDS)[number] {
   if (c.provenance === "open") return "Open";
   if (c.provenance === "counterexample") return "Boundary";
@@ -43,16 +45,31 @@ export default function LandscapePage({core, data}: AtlasPageProps<Record<string
         `${c.editorial?.title} ${c.editorial?.summary} ${c.title} ${c.id}`.toLowerCase().includes(query.toLowerCase()),
     )
     .sort((a, b) => (a.editorial?.title ?? a.title).localeCompare(b.editorial?.title ?? b.title));
-  const themeList = (<div className="research-theme-list" aria-label="Research themes">
-            {[...core.strips, {id: "other", label: "Further results"}]
-              .filter((t) => t.id !== "other" || Object.values(core.claims).some((c) => c.kind !== "audit" && !c.strip))
-              .map((t) => (
-                <button key={t.id} type="button" aria-pressed={theme === t.id} onClick={() => update({theme: theme === t.id ? "" : t.id})}>
-                  <strong>{t.label}</strong>
-                  <span>{INTRO[t.id] ?? "Research recorded outside the main themes."}</span>
-                </button>
-              ))}
-          </div>);
+  const all = Object.values(core.claims).filter((c) => c.kind !== "audit");
+  const tally = (id: string): string => {
+    const mine = all.filter((c) => (id === "other" ? !c.strip : c.strip === id));
+    const parts = BANDS.map((name) => [name, mine.filter((c) => band(c) === name).length] as const)
+      .filter(([, n]) => n > 0)
+      .map(([name, n]) => `${n} ${name.toLowerCase()}`);
+    return [`${mine.length} results`, ...parts].join(" · ");
+  };
+  const themes = [...core.strips.filter((t) => t.id === MAIN), ...core.strips.filter((t) => t.id !== MAIN), {id: "other", label: "Further results"}].filter(
+    (t) => t.id !== "other" || all.some((c) => !c.strip),
+  );
+  const themeList = (
+    <div className="research-theme-list" aria-label="Research themes">
+      {themes.map((t) => (
+        <button key={t.id} type="button" aria-pressed={theme === t.id} onClick={() => update({theme: theme === t.id ? "" : t.id})}>
+          <strong>
+            {t.label}
+            {t.id === MAIN ? <em className="research-theme-list__start">Start here</em> : null}
+          </strong>
+          <span>{INTRO[t.id] ?? "Research recorded outside the main themes."}</span>
+          <span className="research-theme-list__count">{tally(t.id)}</span>
+        </button>
+      ))}
+    </div>
+  );
   return (
     <AtlasShell title="Explore" description="Explore known results, contributions, boundaries, and open questions by research theme." wide>
       <h1>Explore the research</h1>
@@ -61,10 +78,10 @@ export default function LandscapePage({core, data}: AtlasPageProps<Record<string
       </p>
       <div className="research-view-switch">
         <button type="button" aria-pressed={!matrix} onClick={() => update({view: ""})}>
-          By theme
+          Themes
         </button>
         <button type="button" aria-pressed={matrix} onClick={() => update({view: "matrix"})}>
-          Advanced matrix
+          Matrix (advanced)
         </button>
       </div>
       {matrix ? (
@@ -131,7 +148,8 @@ export default function LandscapePage({core, data}: AtlasPageProps<Record<string
             </div>
           ) : (
             <p className="atlas__muted">
-              Select a theme above to read its results. The advanced matrix compares criteria and problem levels across the record.
+              Each theme lists what was already known, what this project established, where it breaks, and what is open. The matrix view compares
+              criteria and problem levels across the whole record.
             </p>
           )}
         </>

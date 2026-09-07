@@ -202,13 +202,13 @@ d_labels = d_partition.labels
 
 <Figure
   src={siteUrl("walkthrough-figures/michelson-d-geometry.png")}
-  alt="Two panels. Top: the score plane tinted by six convex cells that meet along straight edges, with the trajectory's four loops coloured by cell and a marked mean point in each cell. Bottom: the same labels along the detector, a comb of twenty-four intervals above the six equal-width segments."
-  caption={<>Top: the score plane shaded by the six cells of the compiled D-optimal rule, the cell means, and the trajectory coloured by cell. Bottom: the same labels pulled back to the detector coordinate, above the equal-width segments.</>}
+  alt="Three panels. Top left: the raw score plane tinted by six convex cells that meet along straight edges, with the trajectory's four loops coloured by cell and a marked mean point in each cell. Top right: the same cells and trajectory in coordinates whitened by the binned Fisher matrix, where the cells are an ordinary Voronoi diagram of the cell means with perpendicular bisectors. Bottom: the same labels along the detector, a comb of twenty-four intervals above the six equal-width segments."
+  caption={<>Top left: the raw score plane shaded by the six cells of the compiled D-optimal rule, the cell means, and the trajectory coloured by cell. Top right: the same cells in coordinates whitened by the binned Fisher matrix, where the rule is an ordinary nearest-mean Voronoi diagram. Bottom: the same labels pulled back to the detector coordinate, above the equal-width segments.</>}
   paper
   wide
 />
 
-In score space the {f("bins")} cells are connected regions with straight boundaries. Along the detector, however, the same labels form a comb. The reason is simple: the one-dimensional score trajectory folds through the same two-dimensional cells several times. A connected cell in score space can therefore correspond to several disconnected intervals in $u$, and a brief crossing of a cell produces a narrow detector interval.
+In score space the {f("bins")} cells are connected regions with straight boundaries. The raw axes are not directionally uniform: the two scores carry different units and are correlated along the trajectory, so the cells look stretched and their boundaries oblique. Whitening score space by the binned Fisher matrix removes that: in the right-hand panel the same rule is a plain nearest-mean Voronoi diagram, because an exchange-stable D-optimal partition is exactly a Voronoi partition under the inverse binned Fisher metric, and that metric is the identity in whitened coordinates. Along the detector, however, the same labels form a comb. The reason is simple: the one-dimensional score trajectory folds through the same two-dimensional cells several times. A connected cell in score space can therefore correspond to several disconnected intervals in $u$, and a brief crossing of a cell produces a narrow detector interval.
 
 This is the geometrically clean case. An exchange-stable D-optimal partition with a nonsingular Fisher matrix is exactly a Mahalanobis–Voronoi partition of score space, with the inverse of the binned Fisher matrix as metric. The theorem and its proof are in <ReferenceLink to="book/ch08-d-optimality/">D-optimality and exact exchange</ReferenceLink>; the shading in the figure is that rule evaluated on a grid.
 

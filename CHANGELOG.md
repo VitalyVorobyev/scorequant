@@ -13,6 +13,32 @@ once already, which retroactively asserted that unshipped work had shipped.
 
 ### Site
 
+- The FlowCyt and HEP walkthroughs are rebuilt as linear scientific walkthroughs (ADR 0038).
+  FlowCyt's page code now runs the whole reference-to-held-out chain on a committed
+  fixture-scale table (`examples/data/flowcyt_walkthrough.npz`, written by
+  `generate_showcase.py --force`, replacing the unused `showcase-data/flowcyt-scores.json`),
+  shows what the eight categories are as \(P(\text{population}\mid\text{bin})\), leads with the
+  held-out estimation error, and tells the bin-budget story from the evidence; the unsupported
+  pairwise-separability claim, the misnamed marker grid, the contract demonstrations and the
+  Gaussian mini-example are gone. HEP's page leads with a reusable profiled-\(D_s\) rule fitted
+  on half the events and applied to the other half, and with the expected signal-strength
+  uncertainty from the count table's own likelihood with the energy scale fixed and floating.
+- New chart components: `BinCompositionHeatmap`, `EstimateScatter`, a `metric` switch on
+  `MethodComparison`, and a `targetsOnly` view on `CompositionBars`. The HEP walkthrough score
+  table nothing fetched is no longer generated.
+
+### Examples
+
+- `examples/hep_classifier` is restructured around reusable rules evaluated out of sample: a
+  stratified half/half event split cross-evaluated in both directions with percentile bootstrap
+  envelopes and per-half certified ceilings; an Asimov downstream uncertainty on the signal
+  strength from each rule's yield templates at the seven committed energy-scale points, with and
+  without the Monte Carlo statistical inflation and with a recorded physical-width constraint;
+  a maximum-\(S^2/(S+B)\) interval baseline with a minimum background count; a `tes`
+  score-reliability diagnostic. The `tes` classifier now trains under the Monte Carlo weights,
+  which changes the downstream conclusion, not only the numbers. The in-sample-only "reusable
+  rule" scored on its own full-sample classifiers is removed. Two figures replace the dashboard.
+
 - The learning portal takes the site root and the hand-written landing page is retired
   (ADR 0035, superseding ADR 0027). Two surfaces remain: the portal at `/`, the MkDocs
   documentation at `/docs/`. `landing/` and its guard test are deleted, `baseUrl` and `SITE_BASE`

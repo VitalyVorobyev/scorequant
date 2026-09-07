@@ -98,21 +98,24 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
     title: "A Higgs search with a floating energy scale",
     href: "/walkthroughs/hep",
     lead:
-      `Keep only ${hep("bins")} counts of simulated collisions and still measure the signal ` +
-      "strength while the tau energy scale floats.",
+      `Fit a ${hep("bins")}-category rule on half the simulated collisions, apply it to the other ` +
+      "half, and measure the signal strength while the tau energy scale floats.",
     problem:
       "Simulated collision events, a signal strength to estimate, and a tau energy scale that " +
-      `floats in the fit as a nuisance. Only ${hep("bins")} counts are kept. The page chooses ` +
-      "them for the profiled information about the signal strength and compares that against " +
-      "slices of the classifier output on the same weighted events.",
+      `floats in the fit as a nuisance. Only ${hep("bins")} counts are kept. The page fits a ` +
+      "reusable rule for the profiled information about the signal strength, applies it to " +
+      "events it never saw, and shows in the fitted uncertainty why slices of the classifier " +
+      "output fall apart once the energy scale floats.",
     data:
       "Simulated events from the FAIR Universe HiggsML public dataset, each with a Monte Carlo " +
       "weight and shifted-energy-scale copies. A simulation study, not an analysis.",
     tags: [
+      {kind: "task", label: "fit_quantizer"},
       {kind: "task", label: "optimize_partition"},
-      {kind: "input", label: "DensityRatioScore"},
-      {kind: "input", label: "CentralLogRatioScore"},
+      {kind: "input", label: "ScoreSample"},
       {kind: "criterion", label: "ProfiledDOptimality"},
+      {kind: "criterion", label: "DOptimality"},
+      {kind: "solver", label: "SoftVoronoiConfig"},
       {kind: "solver", label: "DExchangeConfig"}
     ]
   },
@@ -126,15 +129,16 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
     problem:
       "Each cell carries marker intensities and an expert label; the quantity to estimate is a " +
       `patient's population fractions. The page fits ${flowcyt("bins")} categories on reference ` +
-      "patients from classifier-estimated scores, applies them to held-out patients, and " +
-      "measures the composition error the reduction costs.",
+      "patients from classifier-estimated scores, freezes them, applies them to held-out " +
+      "patients, fits the fractions from the counts, and measures the error the reduction costs.",
     data:
       "Real cells from the FlowCyt classification benchmark, with whole patients held out before " +
       "anything was fitted.",
     tags: [
       {kind: "task", label: "fit_quantizer"},
-      {kind: "input", label: "DensityRatioScore"},
+      {kind: "input", label: "ScoreSample"},
       {kind: "criterion", label: "DOptimality"},
+      {kind: "solver", label: "SoftVoronoiConfig"},
       {kind: "solver", label: "DExchangeConfig"}
     ]
   }

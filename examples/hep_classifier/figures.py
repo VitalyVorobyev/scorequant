@@ -1,12 +1,24 @@
-"""Committed figure for the HEP classifier showcase."""
+"""Committed figures for the HEP classifier showcase."""
 
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from .experiment import Study
+from .experiment import MetricRow, Study
+
+CELL_COLORS = (
+    "#38618c",
+    "#c0563c",
+    "#4f9d69",
+    "#8e6bb3",
+    "#d59a2b",
+    "#5aa9c9",
+    "#7a7a7a",
+    "#b5566f",
+)
 
 
 def _mapping(metrics: dict[str, object], key: str) -> dict[str, object]:
@@ -23,8 +35,78 @@ def _rows(metrics: dict[str, object], key: str) -> list[dict[str, object]]:
     return [row for row in value if isinstance(row, dict)]
 
 
-def make_figure(study: Study) -> Figure:
-    """Render the four-panel HEP classifier dashboard.
+def _logit(posterior: np.ndarray) -> np.ndarray:
+    clipped = np.clip(posterior, 1e-12, 1.0 - 1e-12)
+    return np.log(clipped / (1.0 - clipped))
+
+
+def _draw_cells(
+    axis: Axes,
+    study: Study,
+    labels: np.ndarray,
+    occupancy: list[MetricRow],
+    *,
+    title: str,
+) -> None:
+    logit = _logit(study.table.posterior)
+    tes_score = study.table.scores[:, 2]
+    order = np.argsort(labels, kind="stable")
+    n_cells = int(np.max(labels)) + 1
+    for cell in range(n_cells):
+        mask = labels[order] == cell
+        axis.scatter(
+            logit[order][mask],
+            tes_score[order][mask],
+            s=9,
+            alpha=0.75,
+            linewidths=0,
+            color=CELL_COLORS[cell % len(CELL_COLORS)],
+            label=f"cell {cell}",
+        )
+    for row in occupancy:
+        mean = row["mean_tes_score"]
+        share = row["signal_fraction"]
+        if mean is None or share is None:
+            continue
+        cell = int(row["cell"])  # type: ignore[call-overload]
+        axis.axhline(
+            float(mean),  # type: ignore[arg-type]
+            color=CELL_COLORS[cell % len(CELL_COLORS)],
+            linewidth=0.8,
+            linestyle=":",
+            alpha=0.9,
+        )
+    axis.set(xlabel="signal posterior, log-odds", ylabel="tes score", title=title)
+    axis.axhline(0.0, color="#333333", linewidth=0.6)
+    text = "\n".join(
+        f"cell {int(row['cell'])}: {int(row['events'])} events, "  # type: ignore[call-overload]
+        f"signal share {float(row['signal_fraction']):.3f}, "  # type: ignore[arg-type]
+        f"mean tes score {float(row['mean_tes_score']):+.2f}"  # type: ignore[arg-type]
+        for row in occupancy
+        if row["signal_fraction"] is not None
+    )
+    axis.text(
+        0.01,
+        0.99,
+        text,
+        transform=axis.transAxes,
+        fontsize=7.5,
+        va="top",
+        ha="left",
+        family="monospace",
+        bbox={"boxstyle": "round", "facecolor": "white", "alpha": 0.85, "edgecolor": "#cccccc"},
+    )
+
+
+def make_cells_figure(study: Study) -> Figure:
+    """Render the two six-cell rules in the plane the physics lives in.
+
+    Left: equal-width cells of the classifier's log-odds -- vertical stripes,
+    because the classifier output is one number and the `tes` direction is
+    invisible to it. Right: the reusable profiled-D_s rule fitted on the
+    same events, whose cells also cut along the `tes` score, which is what
+    lets a change in the energy scale be told apart from a change in the
+    signal strength. Dotted lines mark each cell's weighted mean `tes` score.
 
     Parameters
     ----------
@@ -34,96 +116,100 @@ def make_figure(study: Study) -> Figure:
     Returns
     -------
     matplotlib.figure.Figure
-        Score-space scatter of the two ScoreQuant labelings, the headline
-        full/profiled retention bars, the bin-budget sweep against the
-        certified ceiling, and the delta convergence study.
+        The two-panel figure.
+    """
+    figure, axes = plt.subplots(1, 2, figsize=(13.0, 5.6), constrained_layout=True, sharey=True)
+    _draw_cells(
+        axes[0],
+        study,
+        study.logit_labels,
+        study.logit_occupancy,
+        title="Classifier log-odds, equal-width cells",
+    )
+    _draw_cells(
+        axes[1],
+        study,
+        study.ds_rule_labels,
+        study.ds_rule_occupancy,
+        title="Profiled $D_s$ rule, soft Voronoi in score space",
+    )
+    figure.suptitle(
+        "Six cells, all 1,000 events, coloured by cell. "
+        "Only the profiled rule resolves the tes direction."
+    )
+    return figure
+
+
+def make_budget_figure(study: Study) -> Figure:
+    """Render the bin-budget sweep: ceiling, in-sample partition, held-out rule, baseline.
+
+    Parameters
+    ----------
+    study
+        The object returned by `examples.hep_classifier.experiment.run_study`.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        One panel of profiled retention against the bin budget.
     """
     metrics = study.metrics
-    figure, axes = plt.subplots(2, 2, figsize=(13.0, 9.0), constrained_layout=True)
-
-    axes[0, 0].scatter(
-        study.signal_posterior,
-        study.tes_score,
-        c=study.ds_labels,
-        cmap="tab10",
-        s=10,
-        alpha=0.7,
-        linewidths=0,
-    )
-    axes[0, 0].set(
-        xlabel="calibrated signal posterior $\\eta_s$",
-        ylabel="tes score",
-        title="Profiled $D_s$ cells in (signal posterior, tes score)",
-    )
-
-    partitions = _rows(metrics, "partitions")
-    names = [str(row["label"]) for row in partitions]
-    full_values = [float(row["full_retention"]) for row in partitions]
-    profiled_values = [float(row["profiled_retention"]) for row in partitions]
-    y = np.arange(len(names))
-    axes[0, 1].barh(y - 0.2, full_values, height=0.4, label="full D", color="#38618c")
-    axes[0, 1].barh(y + 0.2, profiled_values, height=0.4, label="profiled $D_s$", color="#c0563c")
-    axes[0, 1].set(
-        yticks=y,
-        yticklabels=names,
-        xlabel="retention",
-        title="Every labeling, scored both ways",
-    )
-    axes[0, 1].legend()
-
-    sweep = _rows(metrics, "ceiling_sweep")
+    in_sample = _mapping(metrics, "in_sample")
+    sweep = _rows(in_sample, "ceiling_sweep")
+    held_out = _rows(_mapping(metrics, "cross_evaluation"), "held_out_budget_sweep")
+    figure, axis = plt.subplots(figsize=(8.0, 5.0), constrained_layout=True)
     budgets = [float(row["n_bins"]) for row in sweep]
-    axes[1, 0].plot(
+    axis.plot(
         budgets,
         [float(row["ceiling_retention"]) for row in sweep],
         marker="^",
         linestyle="--",
         color="#666666",
-        label="certified ceiling",
+        label="certified ceiling, in sample",
     )
-    axes[1, 0].plot(
+    axis.plot(
         budgets,
         [float(row["ds_profiled_retention"]) for row in sweep],
         marker="o",
         color="#38618c",
-        label="ScoreQuant profiled $D_s$",
+        label="profiled $D_s$ finite partition, in sample",
     )
-    axes[1, 0].plot(
-        budgets,
-        [float(row["classifier_quantile_profiled_retention"]) for row in sweep],
-        marker="s",
+    held_budgets = [float(row["n_bins"]) for row in held_out]
+    means = [row["ds_rule_evaluation_profiled_retention"] for row in held_out]
+    axis.plot(
+        held_budgets,
+        [np.nan if value is None else float(value) for value in means],  # type: ignore[arg-type]
+        marker="D",
         color="#c0563c",
-        label="classifier-quantile bins",
+        label="profiled $D_s$ reusable rule, held out (mean of two directions)",
     )
-    axes[1, 0].set(
-        xlabel="bin budget",
-        ylabel="profiled retention of mu_htautau",
-        xticks=budgets,
-        title="Bin-budget sweep against the certified ceiling",
-    )
-    axes[1, 0].legend()
-
-    delta_rows = _rows(_mapping(metrics, "delta_convergence"), "rows")
-    deltas = [float(row["delta"]) for row in delta_rows]
-    axes[1, 1].plot(
-        deltas,
-        [float(row["ds_profiled_retention"]) for row in delta_rows],
-        marker="o",
-        color="#38618c",
-        label="profiled $D_s$ retention",
-    )
-    axes[1, 1].plot(
-        deltas,
-        [float(row["minus_plus_auc"]) for row in delta_rows],
+    for row in held_out:
+        directions = row["directions"]
+        if isinstance(directions, list):
+            for value in directions:
+                if value is not None:
+                    axis.plot(
+                        [float(row["n_bins"])],
+                        [float(value)],
+                        marker="_",
+                        color="#c0563c",
+                        markersize=12,
+                        linestyle="none",
+                    )
+    quantile = [row["classifier_quantile_profiled_retention"] for row in sweep]
+    axis.plot(
+        budgets,
+        [np.nan if value is None else float(value) for value in quantile],  # type: ignore[arg-type]
         marker="s",
         color="#4f9d69",
-        label="minus/plus classifier AUC",
+        label="classifier quantile bins, in sample",
     )
-    axes[1, 1].set(
-        xlabel="delta",
-        title="Three-point delta convergence study",
+    axis.set(
+        xlabel="bin budget",
+        ylabel="profiled retention of $\\mu_{h\\tau\\tau}$",
+        xticks=budgets,
+        ylim=(0.0, 1.02),
+        title="Retention against the bin budget",
     )
-    axes[1, 1].legend()
-
-    figure.suptitle("FAIR Universe HiggsML classifier showcase")
+    axis.legend(loc="lower right", fontsize=8.5)
     return figure

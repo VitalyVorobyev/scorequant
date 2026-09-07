@@ -77,8 +77,9 @@ nodes — the closed forms are a check on the library, not merely a description 
 phase information before any binning at all: \(0.2\to 0.047938\).
 
 ![The six-cell D-optimal partition: the raw score plane shaded by the compiled rule's
-Mahalanobis-Voronoi cells with the cell means marked, the detector trajectory coloured by cell,
-and the same labels laid back along the detector above the equal-width
+Mahalanobis-Voronoi cells with the cell means and the coloured trajectory, the same cells in
+coordinates whitened by the binned Fisher matrix where they form an ordinary Voronoi diagram,
+and the labels along the detector above the equal-width
 segments](assets/michelson-d-geometry.png)
 
 ## API walkthrough

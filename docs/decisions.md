@@ -196,6 +196,34 @@ may appear beside a featured result only as marks derived from the registry, nev
 text. Listing titles state a claim, not an instruction. Reader acceptance is a human gate, not
 inferred from passing automated checks.
 
+## ADR 0038 · Walkthrough evidence: held-out rules, downstream metrics, one honest headline
+
+An applied walkthrough leads with a quantity its domain reports, measured on data the rule never
+saw, and says which of three things every number is: a finite partition of a fixed table (a
+labelling of those rows, with no predict method), a reusable rule scored on the rows it was
+fitted on, or a reusable rule applied to held-out rows. Local Fisher retention is the
+explanation, not the headline; a partition's in-sample retention is a methodological reference,
+never quoted as an out-of-sample result. Consequences, in force on the FlowCyt and HEP pages:
+
+- The FlowCyt page's code runs the reference-to-held-out chain (fit, freeze, `predict_scores`,
+  per-patient counts, mixture fit, unbinned comparison) on a committed fixture-scale table,
+  `examples/data/flowcyt_walkthrough.npz`, whose sidecar records what that run produces so the
+  page can state its own outcome next to the full study's. The learned categories are shown
+  as \(P(\text{population}\mid\text{bin})\), never as a projection.
+- The HEP study splits the events once, stratified, into two halves; every reusable rule is
+  built on one half and evaluated on the other, in both directions, with percentile bootstrap
+  envelopes and the evaluation half's own certified ceiling. The primary applied result is the
+  expected signal-strength uncertainty from each rule's own count-table likelihood, built from the
+  simulation's energy-scale-shifted copies, reported with the nuisance fixed and floating. The
+  `tes` classifier trains under the Monte Carlo weights (an unweighted one estimates the ratio of
+  a one-third-signal population and reverses the downstream conclusion), and the energy scale is
+  stated to be unconstrained wherever it is profiled. The two-bin significance cut is reported as
+  not identified under three floating parameters, not as zero retention. A label-tuned
+  classifier baseline requires a minimum simulated background count per interval.
+- A rule's held-out retention is computed outside the fit from `predict_scores` and checked
+  against `fit_quantizer`'s validation report; the in-sample finite partition and its ceiling
+  stay on the page, labelled in sample.
+
 ## Absorbed and superseded records
 
 | Record | Where it lives now |

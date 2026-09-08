@@ -14,58 +14,75 @@ const SCOREQUANT_COLORS = ["#2b77f3", "#20bfae", "#8b5cf6"];
 // hues keep them visibly secondary while staying separable.
 const BASELINE_COLORS = ["#94a3b8", "#a1785c", "#7d8fa8", "#b0894f"];
 
+export type MethodMetric = "macroRmse" | "heldOutEfficiency";
+
 interface MethodComparisonProps {
-  baseline: {label: string; macroRmse: number};
+  /** Drawn as a horizontal reference line; only meaningful for the error metric. */
+  baseline?: {label: string; macroRmse: number};
   methods: MethodSeries[];
+  /** Which held-out quantity to plot against the bin budget; error by default. */
+  metric?: MethodMetric;
+}
+
+function metricValue(point: MethodSeries["points"][number], metric: MethodMetric): number | null {
+  if (metric === "macroRmse") return Math.log10(point.macroRmse);
+  return point.heldOutEfficiency;
 }
 
 /**
- * Held-out estimation error against the bin budget.
+ * A held-out quantity against the bin budget, one line per method.
  *
- * The vertical axis is logarithmic because the methods span two decades: on a
- * linear axis every ScoreQuant curve collapses onto the floor and the reader
- * cannot see that they separate from each other at all.
+ * For the estimation error the vertical axis is logarithmic because the
+ * methods span two decades: on a linear axis every ScoreQuant curve collapses
+ * onto the floor and the reader cannot see that they separate from each
+ * other at all. For the retained information the axis is linear from zero to
+ * one, which is the scale on which "five bins cannot work" is visible.
  */
-export function MethodComparison({baseline, methods}: MethodComparisonProps): React.JSX.Element {
+export function MethodComparison({baseline, methods, metric = "macroRmse"}: MethodComparisonProps): React.JSX.Element {
   const area = plotArea(FRAME);
   const {lines, x, y} = useMemo(() => {
     const allBins = methods.flatMap((method) => method.points.map((point) => point.bins));
-    const allErrors = [
-      ...methods.flatMap((method) => method.points.map((point) => Math.log10(point.macroRmse))),
-      Math.log10(baseline.macroRmse),
-    ];
+    const allValues = methods.flatMap((method) =>
+      method.points.map((point) => metricValue(point, metric)).filter((value): value is number => value !== null)
+    );
+    if (metric === "macroRmse" && baseline !== undefined) allValues.push(Math.log10(baseline.macroRmse));
     const xScale = linearScale(extent(allBins), [area.left, area.right]);
-    const yScale = linearScale(extent(allErrors), [area.bottom, area.top]);
+    const yScale = linearScale(metric === "macroRmse" ? extent(allValues) : [0, 1], [area.bottom, area.top]);
     let quantIndex = 0;
     let baselineIndex = 0;
     const built = methods.map((method) => {
       const color = method.isScoreQuant
         ? (SCOREQUANT_COLORS[quantIndex++ % SCOREQUANT_COLORS.length] ?? "#2b77f3")
         : (BASELINE_COLORS[baselineIndex++ % BASELINE_COLORS.length] ?? "#94a3b8");
+      const plotted = method.points
+        .map((point) => ({bins: point.bins, value: metricValue(point, metric)}))
+        .filter((point): point is {bins: number; value: number} => point.value !== null);
       return {
         color,
         dashed: !method.isScoreQuant,
         label: method.label,
-        marks: method.points.map((point) => ({
-          cx: xScale(point.bins),
-          cy: yScale(Math.log10(point.macroRmse)),
-        })),
-        points: method.points
-          .map((point) => `${String(xScale(point.bins))},${String(yScale(Math.log10(point.macroRmse)))}`)
-          .join(" "),
+        marks: plotted.map((point) => ({cx: xScale(point.bins), cy: yScale(point.value)})),
+        points: plotted.map((point) => `${String(xScale(point.bins))},${String(yScale(point.value))}`).join(" "),
       };
     });
     return {lines: built, x: xScale, y: yScale};
-  }, [area.bottom, area.left, area.right, area.top, baseline.macroRmse, methods]);
+  }, [area.bottom, area.left, area.right, area.top, baseline, methods, metric]);
 
-  const baselineY = y(Math.log10(baseline.macroRmse));
+  const showBaseline = metric === "macroRmse" && baseline !== undefined;
+  const baselineY = showBaseline ? y(Math.log10(baseline.macroRmse)) : 0;
+  const isError = metric === "macroRmse";
   return (
     <figure className="chart-figure chart-figure--wide">
       <svg viewBox={`0 0 ${String(FRAME.width)} ${String(FRAME.height)}`} role="img">
-        <title>Held-out macro RMSE against bin budget, by binning method</title>
+        <title>
+          {isError
+            ? "Held-out macro RMSE against bin budget, by binning method"
+            : "Held-out D-efficiency against bin budget, by binning method"}
+        </title>
         <desc>
-          Lower is better. ScoreQuant methods are drawn solid and coloured; convenience baselines
-          are dashed and grey. The horizontal line is the unbinned classifier-ratio estimate.
+          {isError
+            ? "Lower is better. ScoreQuant methods are drawn solid and coloured; convenience baselines are dashed and grey. The horizontal line is the unbinned classifier-ratio estimate."
+            : "Higher is better, on a linear axis from zero to one. ScoreQuant methods are drawn solid and coloured; convenience baselines are dashed and grey."}
         </desc>
         <Axes
           frame={FRAME}
@@ -73,13 +90,17 @@ export function MethodComparison({baseline, methods}: MethodComparisonProps): Re
           xLabel="bins"
           xTickCount={6}
           y={y}
-          yLabel="log₁₀ macro RMSE"
+          yLabel={isError ? "log₁₀ macro RMSE" : "held-out D-efficiency"}
           yTickCount={4}
         />
-        <line className="chart-reference" x1={area.left} x2={area.right} y1={baselineY} y2={baselineY} />
-        <text className="chart-annotation" x={area.right - 4} y={baselineY - 6} textAnchor="end">
-          {baseline.label}
-        </text>
+        {showBaseline && (
+          <>
+            <line className="chart-reference" x1={area.left} x2={area.right} y1={baselineY} y2={baselineY} />
+            <text className="chart-annotation" x={area.right - 4} y={baselineY - 6} textAnchor="end">
+              {baseline.label}
+            </text>
+          </>
+        )}
         {lines.map((line) => (
           <g key={line.label}>
             <polyline
@@ -96,7 +117,7 @@ export function MethodComparison({baseline, methods}: MethodComparisonProps): Re
       <Legend
         entries={[
           ...lines.map((line) => ({color: line.color, label: line.label})),
-          {color: "#64748b", label: baseline.label},
+          ...(showBaseline ? [{color: "#64748b", label: baseline.label}] : []),
         ]}
       />
     </figure>

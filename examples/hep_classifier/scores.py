@@ -12,16 +12,24 @@ Two classifiers, two different ratio doors:
 Both classifiers are cross-fitted out-of-fold with **one fold id per event**,
 reused by every `tes` copy of that event: a plain per-row split lets the
 `tes` classifier memorize an event from its eighteen `tes`-inert columns and
-invert the label. Both are trained with **per-class normalized weights** and
-declared training priors `(0.5, 0.5)`: the raw Monte Carlo weights make the
-signal class statistically invisible (weighted fraction ~0.001), so the
-physical rate ratio enters through `IntensityParameterization` coefficients
-instead, never through the priors.
+invert the label. Both are trained under the Monte Carlo event weights, so
+the ratios they estimate are ratios of the *physical* weighted mixture. The
+signal/background classifier additionally normalizes each class to mass
+one half, because the raw weights make the signal class statistically
+invisible (weighted fraction ~0.001); the physical rate then enters through
+`IntensityParameterization` coefficients, never through the priors. The
+`tes` classifier needs no such balancing: both copies of an event carry the
+same weight, so the two classes are balanced by construction.
+
+The fold models are kept, so the same out-of-fold rule can score an event's
+`tes`-shifted copies. That is what turns a reusable bin rule into yield
+templates for the downstream signal-strength fit.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from collections.abc import Sequence
+from dataclasses import dataclass, field
 
 import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
@@ -160,12 +168,23 @@ def _fit_signal_background_classifier(
 
 
 def _fit_tes_classifier(
-    minus_features: np.ndarray, plus_features: np.ndarray, *, max_iter: int, seed: int
+    minus_features: np.ndarray,
+    plus_features: np.ndarray,
+    raw_weights: np.ndarray,
+    *,
+    max_iter: int,
+    seed: int,
 ) -> HistGradientBoostingClassifier:
     features = np.concatenate([minus_features, plus_features], axis=0)
     labels = np.concatenate(
         [np.zeros(len(minus_features), dtype=np.int64), np.ones(len(plus_features), dtype=np.int64)]
     )
+    # The Monte Carlo weight of an event applies to both of its copies, so the
+    # two classes stay balanced 1:1 and no class correction is needed. The
+    # weights are still essential: the `tes` score column is the derivative
+    # of the *physical* mixture's log density, and the unweighted event list
+    # is one-third signal where the weighted mixture is one-thousandth.
+    weights = np.concatenate([raw_weights, raw_weights]) / np.mean(raw_weights)
     classifier = HistGradientBoostingClassifier(
         learning_rate=0.08,
         max_iter=max_iter,
@@ -174,13 +193,27 @@ def _fit_tes_classifier(
         early_stopping=False,
         random_state=seed,
     )
-    # Uniform weights: the minus and plus copies are balanced 1:1 by
-    # construction, and the target is the tes deformation itself, not a
-    # physics rate, so no class-balancing correction is needed here.
-    classifier.fit(features, labels)
+    classifier.fit(features, labels, sample_weight=weights)
     if tuple(int(value) for value in classifier.classes_) != (0, 1):
         raise ValueError("tes classifier must see both the minus and plus classes")
     return classifier
+
+
+def _predict_out_of_fold(
+    models: Sequence[HistGradientBoostingClassifier],
+    fold_ids: np.ndarray,
+    features: np.ndarray,
+    temperature: float,
+) -> np.ndarray:
+    """Score every row with the fold model that never saw its event."""
+    raw = np.full((features.shape[0], 2), np.nan)
+    for fold, model in enumerate(models):
+        held_mask = fold_ids == fold
+        if np.any(held_mask):
+            raw[held_mask] = model.predict_proba(features[held_mask])
+    if not np.isfinite(raw).all():
+        raise ValueError("every row must be scored by exactly one fold model")
+    return _temperature_scale(raw, temperature)
 
 
 @dataclass(frozen=True, slots=True)
@@ -190,8 +223,9 @@ class SignalBackgroundOOF:
     Attributes
     ----------
     probabilities
-        Calibrated out-of-fold posteriors, shape ``[N, 2]``, columns
-        ``[background, signal]`` (classifier class order 0, 1).
+        Calibrated out-of-fold posteriors at the nominal features, shape
+        ``[N, 2]``, columns ``[background, signal]`` (classifier class order
+        0, 1).
     temperature
         Fitted temperature-scaling scalar.
     signal_fraction
@@ -200,12 +234,21 @@ class SignalBackgroundOOF:
     weighted_auc
         Out-of-fold AUC of the calibrated signal posterior, weighted by the
         raw Monte Carlo event weights.
+    fold_ids, models
+        The per-event fold assignment and the fold models, kept so that
+        `predict` can score an event's shifted copies out of fold.
     """
 
     probabilities: np.ndarray
     temperature: float
     signal_fraction: float
     weighted_auc: float
+    fold_ids: np.ndarray = field(repr=False)
+    models: tuple[HistGradientBoostingClassifier, ...] = field(repr=False)
+
+    def predict(self, features: np.ndarray) -> np.ndarray:
+        """Calibrated out-of-fold posteriors for row-aligned features."""
+        return _predict_out_of_fold(self.models, self.fold_ids, features, self.temperature)
 
 
 def fit_signal_background_oof(
@@ -232,7 +275,8 @@ def fit_signal_background_oof(
     features = data.features_at(1.0)
     labels = data.is_signal.astype(np.int64)
     raw_oof = np.full((data.n_events, 2), np.nan)
-    for fold in np.unique(fold_ids):
+    models: list[HistGradientBoostingClassifier] = []
+    for fold in range(int(np.max(fold_ids)) + 1):
         train_mask = fold_ids != fold
         held_mask = fold_ids == fold
         classifier = _fit_signal_background_classifier(
@@ -243,13 +287,16 @@ def fit_signal_background_oof(
             seed=seed + int(fold),
         )
         raw_oof[held_mask] = classifier.predict_proba(features[held_mask])
+        models.append(classifier)
     if not np.isfinite(raw_oof).all():
         raise ValueError("every event must receive an out-of-fold signal/background prediction")
     temperature = _fit_temperature(raw_oof, labels, _balanced_class_weights(labels, data.weights))
     calibrated = _temperature_scale(raw_oof, temperature)
     signal_fraction = float(np.sum(data.weights[data.is_signal]) / np.sum(data.weights))
     weighted_auc = float(roc_auc_score(labels, calibrated[:, 1], sample_weight=data.weights))
-    return SignalBackgroundOOF(calibrated, temperature, signal_fraction, weighted_auc)
+    return SignalBackgroundOOF(
+        calibrated, temperature, signal_fraction, weighted_auc, fold_ids, tuple(models)
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -269,11 +316,15 @@ class TesOOF:
     temperature
         Fitted temperature-scaling scalar.
     minus_plus_auc
-        Out-of-fold AUC of the minus/plus classification task itself
-        (unweighted; the pairing is already balanced 1:1 by construction).
+        Out-of-fold AUC of the minus/plus classification task itself,
+        weighted by the Monte Carlo event weights (the pairing is balanced
+        1:1 by construction, so no class correction enters).
     near_half_fraction
         Fraction of events whose nominal-point calibrated posterior falls
         within `NEAR_HALF_TOLERANCE` of 0.5 -- a noise diagnostic.
+    fold_ids, models
+        The per-event fold assignment and the fold models, kept so that
+        `predict` can score an event's shifted copies out of fold.
     """
 
     delta: float
@@ -281,6 +332,12 @@ class TesOOF:
     temperature: float
     minus_plus_auc: float
     near_half_fraction: float
+    fold_ids: np.ndarray = field(repr=False)
+    models: tuple[HistGradientBoostingClassifier, ...] = field(repr=False)
+
+    def predict(self, features: np.ndarray) -> np.ndarray:
+        """Calibrated out-of-fold minus/plus posteriors for row-aligned features."""
+        return _predict_out_of_fold(self.models, self.fold_ids, features, self.temperature)
 
 
 def fit_tes_oof(
@@ -314,11 +371,17 @@ def fit_tes_oof(
     raw_oof = np.full((data.n_events, 2), np.nan)
     pooled_probabilities: list[np.ndarray] = []
     pooled_labels: list[np.ndarray] = []
-    for fold in np.unique(fold_ids):
+    pooled_weights: list[np.ndarray] = []
+    models: list[HistGradientBoostingClassifier] = []
+    for fold in range(int(np.max(fold_ids)) + 1):
         train_mask = fold_ids != fold
         held_mask = fold_ids == fold
         classifier = _fit_tes_classifier(
-            minus[train_mask], plus[train_mask], max_iter=max_iter, seed=seed + int(fold)
+            minus[train_mask],
+            plus[train_mask],
+            data.weights[train_mask],
+            max_iter=max_iter,
+            seed=seed + int(fold),
         )
         raw_oof[held_mask] = classifier.predict_proba(nominal[held_mask])
         held_count = int(np.count_nonzero(held_mask))
@@ -326,25 +389,100 @@ def fit_tes_oof(
         pooled_probabilities.append(classifier.predict_proba(plus[held_mask]))
         pooled_labels.append(np.zeros(held_count, dtype=np.int64))
         pooled_labels.append(np.ones(held_count, dtype=np.int64))
+        pooled_weights.append(data.weights[held_mask])
+        pooled_weights.append(data.weights[held_mask])
+        models.append(classifier)
     if not np.isfinite(raw_oof).all():
         raise ValueError("every event must receive an out-of-fold tes prediction")
     task_probabilities = np.concatenate(pooled_probabilities, axis=0)
     task_labels = np.concatenate(pooled_labels, axis=0)
-    temperature = _fit_temperature(task_probabilities, task_labels, np.ones(task_labels.shape[0]))
+    task_weights = np.concatenate(pooled_weights, axis=0)
+    temperature = _fit_temperature(task_probabilities, task_labels, task_weights)
     calibrated_nominal = _temperature_scale(raw_oof, temperature)
-    minus_plus_auc = float(roc_auc_score(task_labels, task_probabilities[:, 1]))
+    minus_plus_auc = float(
+        roc_auc_score(task_labels, task_probabilities[:, 1], sample_weight=task_weights)
+    )
     near_half_fraction = float(
         np.mean(np.abs(calibrated_nominal[:, 1] - 0.5) < NEAR_HALF_TOLERANCE)
     )
-    return TesOOF(delta, calibrated_nominal, temperature, minus_plus_auc, near_half_fraction)
+    return TesOOF(
+        delta,
+        calibrated_nominal,
+        temperature,
+        minus_plus_auc,
+        near_half_fraction,
+        fold_ids,
+        tuple(models),
+    )
+
+
+def _score_columns(
+    rate_probabilities: np.ndarray,
+    tes_probabilities: np.ndarray,
+    *,
+    signal_fraction: float,
+    delta: float,
+) -> np.ndarray:
+    """Turn the two calibrated posterior tables into the three score columns."""
+    rate_provider = sq.DensityRatioScore.from_classifier(
+        lambda observations: rate_probabilities,
+        [0.5, 0.5],
+        sq.IntensityParameterization([1.0 - signal_fraction, signal_fraction]),
+        calibration="temperature",
+        description="signal-vs-background classifier, out-of-fold",
+    )
+    tes_provider = sq.CentralLogRatioScore(
+        lambda observations: tes_probabilities,
+        deltas=[delta],
+        class_priors=[0.5, 0.5],
+        description="tes minus/plus classifier, out-of-fold",
+    )
+    placeholder = np.zeros((rate_probabilities.shape[0], 1))
+    rate_scores = np.asarray(rate_provider.score(placeholder))  # columns [background, signal]
+    tes_scores = np.asarray(tes_provider.score(placeholder))  # one column
+    return np.concatenate([rate_scores[:, [1, 0]], tes_scores], axis=1)
+
+
+def out_of_fold_scores(
+    data: HepData, sigbg: SignalBackgroundOOF, tes: TesOOF, *, tes_point: float = 1.0
+) -> np.ndarray:
+    """Score every event's copy at one `tes` point with the out-of-fold models.
+
+    The parameterization (the physical signal fraction) and both calibration
+    temperatures are the full-sample values frozen inside `sigbg` and `tes`,
+    so every table this returns -- nominal or shifted, any subset of rows --
+    lives in one parameterization and is comparable with every other.
+
+    Parameters
+    ----------
+    data
+        The loaded fixture.
+    sigbg, tes
+        The cross-fitted classifiers.
+    tes_point
+        Which committed feature copy to score; ``1.0`` is the nominal table
+        `assemble_score_sample` wraps.
+
+    Returns
+    -------
+    numpy.ndarray
+        Score table with shape ``[N, 3]`` in `SCHEMA` order.
+    """
+    features = data.features_at(tes_point)
+    return _score_columns(
+        sigbg.predict(features),
+        tes.predict(features),
+        signal_fraction=sigbg.signal_fraction,
+        delta=tes.delta,
+    )
 
 
 def assemble_score_sample(data: HepData, sigbg: SignalBackgroundOOF, tes: TesOOF) -> sq.ScoreSample:
     """Combine out-of-fold posteriors into the three-column `ScoreSample`.
 
-    This is the leakage-free score table the finite study runs on: every
-    column is a fold-cross-fitted prediction, never a model evaluated on the
-    event it was trained on.
+    This is the leakage-free score table the study runs on: every column is
+    a fold-cross-fitted prediction, never a model evaluated on the event it
+    was trained on.
 
     Parameters
     ----------
@@ -361,23 +499,12 @@ def assemble_score_sample(data: HepData, sigbg: SignalBackgroundOOF, tes: TesOOF
         Weighted score table with `SCHEMA` and `kind="estimated_ratio"`
         provenance.
     """
-    nominal = data.features_at(1.0)
-    rate_provider = sq.DensityRatioScore.from_classifier(
-        lambda observations: sigbg.probabilities,
-        [0.5, 0.5],
-        sq.IntensityParameterization([1.0 - sigbg.signal_fraction, sigbg.signal_fraction]),
-        calibration="temperature",
-        description="signal-vs-background classifier, out-of-fold",
+    scores = _score_columns(
+        sigbg.probabilities,
+        tes.probabilities,
+        signal_fraction=sigbg.signal_fraction,
+        delta=tes.delta,
     )
-    tes_provider = sq.CentralLogRatioScore(
-        lambda observations: tes.probabilities,
-        deltas=[tes.delta],
-        class_priors=[0.5, 0.5],
-        description="tes minus/plus classifier, out-of-fold",
-    )
-    rate_scores = np.asarray(rate_provider.score(nominal))  # columns [background, signal]
-    tes_scores = np.asarray(tes_provider.score(nominal))  # one column
-    scores = np.concatenate([rate_scores[:, [1, 0]], tes_scores], axis=1)
     provenance = sq.ScoreProvenance(
         kind="estimated_ratio",
         description="Out-of-fold classifier scores, FAIR Universe HiggsML fixture",
@@ -391,107 +518,71 @@ def assemble_score_sample(data: HepData, sigbg: SignalBackgroundOOF, tes: TesOOF
     return sq.ScoreSample(scores, data.weights, schema=SCHEMA, provenance=provenance)
 
 
-@dataclass(frozen=True, slots=True)
-class HepScoreProvider:
-    """Compose the signal-rate and `tes`-nuisance halves into one `ScoreProvider`.
-
-    Implements the open `scorequant.ScoreProvider` protocol directly -- see
-    its docstring in `src/scorequant/providers.py` -- rather than subclassing
-    a built-in: the two halves go through different ratio doors and only
-    their concatenated output is a valid three-column ScoreQuant score table.
-    """
-
-    rate: sq.DensityRatioScore
-    tes: sq.CentralLogRatioScore
-    provenance: sq.ScoreProvenance
-    schema: sq.ScoreSchema = SCHEMA
-
-    def score(self, observations: np.ndarray) -> np.ndarray:
-        """Map raw 28-feature observation rows to the three declared score columns."""
-        rate_scores = np.asarray(self.rate.score(observations))  # columns [background, signal]
-        tes_scores = np.asarray(self.tes.score(observations))  # one column
-        return np.concatenate([rate_scores[:, [1, 0]], tes_scores], axis=1)
-
-
-def fit_final_provider(
+def tes_score_reliability(
     data: HepData, *, delta: float, max_iter: int, seed: int
-) -> HepScoreProvider:
-    """Fit both classifiers on every event, for use as a reusable rule.
+) -> dict[str, float]:
+    """Measure how much of the `tes` score column is reproducible.
 
-    Unlike `assemble_score_sample`'s out-of-fold scores, this provider is
-    meant to be applied to new observations -- the deliverable
-    `fit_quantizer`'s reusable rule needs ("the classifier is trained inside
-    the example"). Scoring it back on its own training fixture is therefore
-    in-sample, unlike the leakage-free finite-partition study.
+    Two `tes` classifiers are trained on disjoint thirds of the events and
+    both evaluated on the remaining third. Their central-difference scores
+    would agree perfectly if the column were a property of the events; the
+    part that does not agree is per-event estimation noise. That noise
+    inflates the unbinned nuisance information and therefore biases every
+    reported profiled retention *down*, so the correlation is published as
+    the diagnostic that bounds how much of the reported loss is the proxy's
+    rather than the binning's.
 
     Parameters
     ----------
     data
         The loaded fixture.
     delta
-        Finite-difference half-offset for the `tes` classifier.
+        Finite-difference half-offset.
     max_iter
-        Boosting round budget for each final classifier.
+        Boosting round budget for each classifier.
     seed
-        Deterministic seed; the `tes` classifier uses ``seed + 1``.
+        Deterministic seed for the three-way split and the two fits.
 
     Returns
     -------
-    HepScoreProvider
-        A provider whose `score` calls the two full-sample classifiers.
+    dict of float
+        ``weighted_correlation`` of the two score columns on the common
+        held-out third, the two classifiers' weighted minus/plus AUCs on
+        that third, and the number of held-out events.
     """
-    features = data.features_at(1.0)
+    thirds = event_folds(data.is_signal, n_folds=3, seed=seed)
     minus = data.features_at(round(1.0 - delta, 4))
     plus = data.features_at(round(1.0 + delta, 4))
-
-    signal_classifier = _fit_signal_background_classifier(
-        features, data.is_signal, data.weights, max_iter=max_iter, seed=seed
-    )
-    tes_classifier = _fit_tes_classifier(minus, plus, max_iter=max_iter, seed=seed + 1)
-
-    signal_fraction = float(np.sum(data.weights[data.is_signal]) / np.sum(data.weights))
-    signal_labels = data.is_signal.astype(np.int64)
-    signal_temperature = _fit_temperature(
-        signal_classifier.predict_proba(features),
-        signal_labels,
-        _balanced_class_weights(signal_labels, data.weights),
-    )
-    minus_plus_features = np.concatenate([minus, plus], axis=0)
-    minus_plus_labels = np.concatenate(
-        [np.zeros(data.n_events, dtype=np.int64), np.ones(data.n_events, dtype=np.int64)]
-    )
-    tes_temperature = _fit_temperature(
-        tes_classifier.predict_proba(minus_plus_features),
-        minus_plus_labels,
-        np.ones(minus_plus_labels.shape[0]),
-    )
-
-    def predict_rate(observations: np.ndarray) -> np.ndarray:
-        return _temperature_scale(
-            signal_classifier.predict_proba(np.asarray(observations)), signal_temperature
+    nominal = data.features_at(1.0)
+    held = thirds == 2
+    held_count = int(np.count_nonzero(held))
+    columns: list[np.ndarray] = []
+    aucs: list[float] = []
+    for fold, offset in ((0, 1), (1, 2)):
+        train = thirds == fold
+        model = _fit_tes_classifier(
+            minus[train], plus[train], data.weights[train], max_iter=max_iter, seed=seed + offset
         )
-
-    def predict_tes(observations: np.ndarray) -> np.ndarray:
-        return _temperature_scale(
-            tes_classifier.predict_proba(np.asarray(observations)), tes_temperature
+        task_probabilities = np.concatenate(
+            [model.predict_proba(minus[held]), model.predict_proba(plus[held])], axis=0
         )
-
-    rate_provider = sq.DensityRatioScore.from_classifier(
-        predict_rate,
-        [0.5, 0.5],
-        sq.IntensityParameterization([1.0 - signal_fraction, signal_fraction]),
-        calibration="temperature",
-        description="signal-vs-background classifier, full-sample fit",
-    )
-    tes_provider = sq.CentralLogRatioScore(
-        predict_tes,
-        deltas=[delta],
-        class_priors=[0.5, 0.5],
-        description="tes minus/plus classifier, full-sample fit",
-    )
-    provenance = sq.ScoreProvenance(
-        kind="estimated_ratio",
-        description="Reusable HEP classifier-to-score rule",
-        metadata={"delta": delta, "signal_fraction": signal_fraction},
-    )
-    return HepScoreProvider(rate_provider, tes_provider, provenance)
+        task_labels = np.concatenate(
+            [np.zeros(held_count, dtype=np.int64), np.ones(held_count, dtype=np.int64)]
+        )
+        task_weights = np.concatenate([data.weights[held], data.weights[held]])
+        aucs.append(
+            float(roc_auc_score(task_labels, task_probabilities[:, 1], sample_weight=task_weights))
+        )
+        posterior = np.clip(model.predict_proba(nominal[held]), 1e-12, 1.0)
+        columns.append(np.log(posterior[:, 1] / posterior[:, 0]) / (2.0 * delta))
+    weights = data.weights[held]
+    centered = [column - np.average(column, weights=weights) for column in columns]
+    covariance = float(np.average(centered[0] * centered[1], weights=weights))
+    variances = [float(np.average(column**2, weights=weights)) for column in centered]
+    correlation = covariance / float(np.sqrt(variances[0] * variances[1]))
+    return {
+        "weighted_correlation": correlation,
+        "first_minus_plus_auc": aucs[0],
+        "second_minus_plus_auc": aucs[1],
+        "held_out_events": float(held_count),
+    }

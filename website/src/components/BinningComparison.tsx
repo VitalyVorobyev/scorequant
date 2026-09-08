@@ -45,7 +45,10 @@ export function BinningComparison({axisLabel, caption, rows}: BinningComparisonP
 
   const {plotWidth, scale} = useMemo(() => {
     const width = WIDTH - LABEL_WIDTH - MARGIN.right;
-    const domain = extent([0, ...rows.map((row) => row.value)]);
+    // Leave room past the longest bar for its printed value, which otherwise
+    // runs off the right edge when no ceiling row extends the axis.
+    const [, high] = extent([0, ...rows.map((row) => row.value)]);
+    const domain: [number, number] = [0, high * 1.14];
     return {plotWidth: width, scale: linearScale(domain, [0, width])};
   }, [rows]);
 

@@ -143,3 +143,19 @@
 .ratio-workflow__arrowhead--oracle { fill: var(--warn); }
 
 .ratio-workflow { margin-bottom: 28px; }
+
+/* BinCompositionHeatmap: what each learned category is. Cell shading is the
+   probability itself, so a gate reads as one dark cell and a mixed category as
+   a pale row. The strength variable is set inline per cell.
+
+   The ramp tops out at 50% accent because the numeral sits on it: --text over
+   color-mix(accent 50%, surface) is 5.52:1 in dark and 8.58:1 in light, and
+   dark mode drops under the 4.5:1 floor at about 59%. Raising the cap needs a
+   different foreground, not a brighter tint. */
+.bin-composition__table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.bin-composition__table th { padding: 6px 8px; color: var(--text-muted); font-weight: 500; text-align: left; font-size: 12px; }
+.bin-composition__table thead th { border-bottom: 1px solid var(--border-strong); white-space: nowrap; }
+.bin-composition__table thead th .chart-swatch { margin-right: 6px; vertical-align: -1px; }
+.bin-composition__table tbody th { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; white-space: nowrap; }
+.bin-composition__cell { padding: 6px 8px; text-align: right; font-family: var(--font-mono); font-size: 12px; color: var(--text); background: color-mix(in srgb, var(--accent) calc(var(--cell-strength) * 50%), transparent); }
+.bin-composition__cell--dominant { font-weight: 600; }

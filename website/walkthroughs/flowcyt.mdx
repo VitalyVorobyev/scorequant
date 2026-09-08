@@ -7,7 +7,9 @@ sidebar_position: 2
 import {BinningComparison} from "@site/src/components/BinningComparison";
 import {Diagnostics} from "@site/src/components/Diagnostics";
 import {Legend} from "@site/src/components/charts/Axes";
+import {BinCompositionHeatmap} from "@site/src/components/charts/BinCompositionHeatmap";
 import {CompositionBars} from "@site/src/components/charts/CompositionBars";
+import {EstimateScatter} from "@site/src/components/charts/EstimateScatter";
 import {MarkerHistogram} from "@site/src/components/charts/MarkerHistogram";
 import {MethodComparison} from "@site/src/components/charts/MethodComparison";
 import {populationColor} from "@site/src/components/charts/scale";
@@ -20,98 +22,49 @@ export const dataset = showcaseData.dataset;
 export const exploration = showcaseData.exploration;
 export const comparison = showcaseData.comparison;
 export const schema = showcaseData.scoreSchema;
-export const shownPopulations = dataset.populations
+export const targetPopulations = dataset.populations
   .map((_, index) => index)
   .filter((index) => index < dataset.populations.length - 1);
 export const shownMarkers = exploration.markers;
 
 # Bone-marrow cell populations
 
-## The cells, their labels, and a patient's fractions
+*A patient's bone marrow is measured one cell at a time. The quantity to report is the fraction of cells in each of six populations. This page reduces every cell to one of {f("bins")} categories chosen from the estimation problem, freezes the categories, and asks how well the fractions of patients the categories never saw can be recovered from {f("bins")} integer counts.*
 
-The data is the FlowCyt classification benchmark: bone-marrow aspirates measured by flow
-cytometry, one cell at a time. For every cell the instrument records a forward-scatter and a
-side-scatter intensity and one fluorescence intensity per marker channel, twelve numbers in all,
-and an expert has labelled each cell as one of six populations: T cells, B cells, monocytes, mast
-cells, the CD34-positive progenitors (HSPCs), and everything else. The quantity to estimate for a
-patient is the composition, the fraction of that patient's cells in each population.
+## 1. The cells and a patient's composition
 
-This page asks what happens when a patient is summarised by a few integer counts instead of the
-cells themselves: each cell is assigned to one of a small number of categories, and the population
-fractions are then fitted from the category counts. Which categories should they be, and how much
-of the composition do they cost? The categories here are chosen from the estimation problem and
-frozen before the held-out patients are seen.
+Flow cytometry passes cells one by one through a laser and records, for each cell, a forward-scatter and a side-scatter intensity and one fluorescence intensity per marker channel: twelve numbers per cell here. In the FlowCyt benchmark an expert has labelled every cell of thirty bone-marrow aspirates as one of six populations: T cells, B cells, monocytes, mast cells, the CD34-positive progenitors (HSPCs), and everything else. The clinical quantity is the **composition**, the fraction of a patient's cells in each population, and the differences between patients are what a report is about.
 
-<CompositionBars patients={exploration.patients} populations={dataset.populations} />
+<CompositionBars patients={exploration.patients} populations={dataset.populations} targetsOnly />
 
-Each bar above is one patient's composition, and the spread between them is the thing being
-measured. It is much wider than the error any of the methods below make, which is what keeps the
-small numbers later on meaningful rather than merely small.
+Each bar is one patient's composition over the five target populations, drawn at their true fractions; the dominant remaining compartment, about nine tenths of every patient, is left out so the variation is visible. The spread between patients is the thing being measured, and it is much wider than any of the estimation errors below.
 
-## The data and its licence
+The cohort was split once, before anything was fitted, into twenty reference patients the categories are built from and {f("heldOutPatients")} held-out patients that nothing downstream has seen. Every number on this page that is called held out was computed on those {f("heldOutPatients")} patients.
 
-The cohort was split once, before anything was fitted, into a reference group that the
-compression is built from and a held-out group that nothing downstream has seen. Every number on
-this page that is called held out was computed on that second group.
+## 2. Why compress the cells
 
-The benchmark is &copy; {dataset.citation}, licensed{" "}
-<a href={dataset.licenseUrl} rel="noreferrer noopener" target="_blank">{f("license")}</a>, and
-lives in its{" "}
-<a href={f("sourceRepository")} rel="noreferrer noopener" target="_blank">source repository</a>;
-this repository does not redistribute it. What is committed here is a small deterministic fixture
-and the score table the fits on this page use. The headline numbers further down come from the
-full study on {f("studyCells")} cells; the acquisition protocol, the fixture's contents and the
-per-patient estimates are in the{" "}
-<ReferenceLink to="usecases/flowcyt/">FlowCyt case study</ReferenceLink>.
+A patient's cells can be fitted directly, cell by cell, and the result section below does exactly that as the reference. The reason to reduce them to a handful of integer counts is that counts are what can be archived, transmitted, audited and compared across instruments: a category rule plus {f("bins")} integers is a summary a laboratory can publish, whereas a hundred thousand continuous classifier outputs is not. The cost of the compression is the question.
 
-```python
-import json
-from pathlib import Path
+There is a floor on how few categories can work. Six fractions that sum to one have {f("freeFractions")} free coordinates, and a fixed number of cells spread over $B$ categories gives only $B - 1$ independent counts. Five categories therefore cannot identify the composition, whatever they are: with {f("fiveBinRankBound")} independent counts for {f("freeFractions")} unknowns the fit has a flat direction. The bin-budget section shows that this is exactly what happens.
 
-import numpy as np
-
-import scorequant as sq
-```
-
-```python
-table = json.loads(Path("website/static/showcase-data/flowcyt-scores.json").read_text())
-scores = np.asarray(table["scores"], dtype=float)
-weights = np.asarray(table["weights"], dtype=float)
-parameters = table["schema"]["parameters"]
-assert scores.shape[1] == len(parameters)
-```
+## 3. From marker channels to a score
 
 <div className="marker-grid">
   {shownMarkers.map((panel) => (
-    <MarkerHistogram key={panel.marker} panel={panel} visible={shownPopulations} />
+    <MarkerHistogram key={panel.marker} panel={panel} visible={targetPopulations} />
   ))}
 </div>
 
 <Legend
-  entries={shownPopulations.map((index) => ({
+  entries={targetPopulations.map((index) => ({
     color: populationColor(index),
     label: dataset.populations[index],
   }))}
 />
 
-Every channel, drawn as a density per population, with the dominant "other" compartment hidden so
-the rest are visible at all. The horizontal axis is the {exploration.markerScale}: on a linear
-intensity axis every panel collapses into one spike against the origin. The two scatter channels
-separate the broad compartments, CD34 is what makes the smallest compartment visible at all,
-and CD45, the pan-leukocyte backbone, is where everything overlaps. No single channel
-separates the populations, and no pair of them does either — which is the reason the reduction
-cannot be a rectangle on one plane.
+Every channel, drawn as a density per population, with the dominant compartment hidden so the rest are visible at all. The horizontal axis is the {exploration.markerScale}: on a linear intensity axis every panel collapses into one spike against the origin. The two scatter channels separate the broad compartments, CD34 is what makes the smallest compartment visible, and CD45, the pan-leukocyte backbone, is where everything overlaps. No single channel separates the populations. What separates them is the joint distribution of all twelve, and that is what the score captures.
 
-## From marker channels to a score
-
-The score model here is Door 3, the density-ratio route. A patient-cross-fitted classifier
-estimates each cell's posterior over the populations under the mixture it was trained on. If those
-posteriors are calibrated, dividing each by its population's training proportion gives that
-population's density relative to the training mixture, and the ratio of any two of them is the
-posterior odds over the prior odds, which is the ratio of the two population densities. The
-mixture parameterization turns those ratios into a score — the derivative of a cell's log
-likelihood with respect to the population fractions. One population is absorbed as the simplex-dependent
-reference, so the score has one coordinate per remaining population:
+ScoreQuant works with the **score** of a cell: the derivative of the log likelihood of the cell with respect to the parameters being estimated, one coordinate per parameter. For a mixture of six populations with fractions $\theta$ and the last population absorbed as the simplex reference, the score has five coordinates, and each is a function of the ratios between the population densities at the cell. Nobody has those densities, so they are estimated: a classifier cross-fitted across the reference patients gives each cell a calibrated posterior over the populations, dividing by the training proportions turns posteriors into density ratios, and the mixture parameterization turns ratios into the score.
 
 <ul className="showcase-schema">
   {schema.parameters.map((parameter, index) => (
@@ -122,188 +75,154 @@ reference, so the score has one coordinate per remaining population:
   ))}
 </ul>
 
-Those names travel with the table as a score schema, which is what lets a profiled objective name
-the compartment it is optimising for rather than a column index whose meaning lives in a comment.
+Two of the boxes in that chain are deliberately not ScoreQuant: the classifier is not, and the mixture likelihood that finally turns counts into fractions is not. What the library receives is a table of score rows with their weights, declared as an estimated ratio rather than an exact score, so nothing downstream can describe the result in exact-Fisher language. The classifier, its calibration and its cross-fitting protocol are on the <ReferenceLink to="usecases/flowcyt/scores/">score-model page</ReferenceLink> of the reference study.
 
-Two of the boxes in that chain are deliberately not ScoreQuant. The classifier is not, and the
-mixture likelihood that finally turns counts into fractions is not:
+## 4. The reference patients and the call
 
-<div className="showcase-pipeline">
-  <span>per-cell channel intensities</span>
-  <span>calibrated classifier</span>
-  <span>density ratios</span>
-  <span>mixture score</span>
-  <strong>ScoreQuant</strong>
-  <span>{f("bins")} frozen hard bins</span>
-  <span>integer counts</span>
-  <span>mixture fit</span>
-  <span>population fractions</span>
-</div>
-
-By the time ScoreQuant is called, that map has already been applied, so what the library receives
-is a table of score rows and their weights — precomputed scores, plus a declaration of where they
-came from. A source and a score provider are separate contracts, and the library will not let the
-two be confused: a table already in score space refuses a provider, and a table of raw
-observations insists on one, because without the observation-to-score map there is no score law to
-optimise against.
+The code on this page runs the whole chain on a committed fixture-scale table: {f("tablePartitionRows")} reference cells the rule is fitted on, {f("tableTemplateRows")} further reference cells kept apart to calibrate the categories, and {f("tableHeldOutRows")} cells of the {f("heldOutPatients")} held-out patients. The numbers displayed on the page come from the full study on {f("studyCells")} cells, and the closing section says what the fixture-scale run gives instead.
 
 ```python
-flowcyt = sq.ScoreSample(
-    scores,
-    weights,
+import numpy as np
+
+import scorequant as sq
+from examples.cell_population import fit_binned_mixture, fit_unbinned_mixture
+from examples.cell_population.likelihood import estimate_bin_templates
+
+table = np.load("examples/data/flowcyt_walkthrough.npz")
+parameters = tuple(str(name) for name in table["schema"])
+theta0 = table["theta0"]
+
+reference = sq.ScoreSample(
+    table["partition_scores"].astype(float),
+    table["partition_weights"],
+    schema=sq.ScoreSchema(parameters),
     provenance=sq.ScoreProvenance(
         kind="estimated_ratio",
         description="patient-cross-fitted calibrated FlowCyt mixture score",
     ),
 )
-assert flowcyt.provenance.exact_fisher is False
-
-try:
-    sq.fit_quantizer(flowcyt, provider=sq.ScoreFunction(lambda x: np.asarray(x)), n_bins=8)
-    raise AssertionError("a ScoreSample must reject a provider")
-except ValueError as error:
-    score_sample_rejects_provider = str(error)
-
-try:
-    sq.fit_quantizer(sq.ObservationSample(scores), n_bins=8)
-    raise AssertionError("an ObservationSample must require a provider")
-except ValueError as error:
-    observation_sample_requires_provider = str(error)
+assert reference.provenance.exact_fisher is False
 ```
 
-The provenance is not decoration either. `kind="estimated_ratio"` is a statement that a classifier
-produced these numbers, and `exact_fisher` is derived from it rather than accepted as a flag, so
-nothing downstream can describe this fit in exact-Fisher language. The last section of this page is
-about what that costs.
-
-## The fit
-
-The call is the ordinary one. It takes the source, a bin budget, a criterion, and the
-configuration for the solver that criterion selects:
+The weights make the reference measure: every reference patient counts equally within a population, and the populations are weighted by the reference composition, so no single patient's abundance sets the categories. The call takes the source, a bin budget, a criterion and the configuration of the solver that criterion selects.
 
 ```python
-soft = sq.fit_quantizer(
-    flowcyt,
+quantizer = sq.fit_quantizer(
+    reference,
     n_bins=8,
     criterion=sq.DOptimality(),
     config=sq.SoftVoronoiConfig(seed=2026, initializer_restarts=4, max_steps=160),
 )
-exchange = sq.fit_quantizer(
-    flowcyt,
-    n_bins=8,
-    criterion=sq.DOptimality(),
-    config=sq.DExchangeConfig(seed=2026),
-)
-assert soft.n_bins == exchange.n_bins == 8
-assert soft.information_kind == exchange.information_kind == "supplied_score_surrogate"
+assert quantizer.n_bins == 8
+assert quantizer.information_kind == "supplied_score_surrogate"
 ```
 
-`DOptimality` is the criterion that treats every population fraction as equally worth keeping: it
-maximises the determinant of the information the labels carry, which is the same as minimising the
-volume of the joint uncertainty ellipsoid over all the fractions at once. The alternative — naming
-one fraction as the parameter of interest and letting the rest float — is a different inferential
-question, and the last section reports what it bought here.
+`DOptimality` treats every population fraction as equally worth keeping: it maximises the determinant of the information the {f("bins")} labels carry about the five fractions, which is the same as minimising the volume of their joint uncertainty ellipsoid. The soft Voronoi solver relaxes the hard assignment into a temperature-annealed soft one, optimises the cell centres, and hardens at the end. The result is a **rule**: a function from a cell's five score coordinates to a category, which is what makes it applicable to patients it never saw. This is the distinction the whole page rests on. A partition of the reference rows would label those rows and stop; `fit_quantizer` returns something that labels the next patient.
 
-The two configurations are two solvers for that one criterion, and this study runs both. The soft
-Voronoi fit relaxes the hard assignment into a temperature-annealed soft one, optimises the
-centres with Adam, and hardens at the end; `initializer_restarts` is how many k-means starts seed
-it and `max_steps` how many Adam updates it takes, both set to the study's values, and `seed` is
-what makes the whole thing reproducible. The exchange fit instead moves single rows between cells
-while the exact determinant improves, and stops when no single move helps. Neither is judged on
-its soft objective: both are scored after hardening, on patients neither of them has seen.
+## 5. What the eight categories are
 
-## The numbers
+A five-dimensional partition cannot be drawn, but it can be described without projecting it: for each category, the probability that a cell landing there belongs to each population, at the reference composition.
+
+<BinCompositionHeatmap composition={showcaseData.binComposition} />
+
+Six of the {f("bins")} categories act as gates: each is dominated by one population, including one for the rare progenitors and one for the mast cells, which is the category a single marker could not have found. The remaining two are mixed. They are not a failure of the fit. A gate per population would spend six categories and identify the composition only through the gates' purities; the mixed categories are where the classifier is uncertain, and keeping them as their own counts is what lets the fit separate the populations along the directions the gates confuse. The criterion chose them because they carry information about the fractions, not because they look like anything on a two-channel plot.
+
+## 6. Applying the frozen rule to held-out patients
+
+The rule is frozen. It is applied to the calibration cells, whose expert labels give each category's probability under each population, $P(\text{bin} \mid \text{population})$; and to the held-out cells, whose predicted categories are counted per patient. The count vector and the calibration table are the whole input to the mixture fit. The held-out labels are used only afterwards, to score the estimate.
+
+```python
+template_bins = quantizer.predict_scores(table["template_scores"].astype(float))
+templates = estimate_bin_templates(
+    table["template_labels"], template_bins, table["template_patients"], n_bins=8
+)
+
+held_out_scores = table["held_out_scores"].astype(float)
+held_out_patients = table["held_out_patients"]
+held_out_bins = quantizer.predict_scores(held_out_scores)
+
+patients = np.unique(held_out_patients)
+counts = np.array([np.bincount(held_out_bins[held_out_patients == p], minlength=8) for p in patients])
+binned = np.array([fit_binned_mixture(row, templates).fractions for row in counts])
+unbinned = np.array(
+    [
+        fit_unbinned_mixture(table["held_out_ratios"][held_out_patients == p].astype(float)).fractions
+        for p in patients
+    ]
+)
+expert = np.array(
+    [
+        np.bincount(table["held_out_labels"][held_out_patients == p], minlength=6)
+        / np.count_nonzero(held_out_patients == p)
+        for p in patients
+    ]
+)
+assert counts.shape == (len(patients), 8)
+assert binned.shape == unbinned.shape == expert.shape
+```
+
+The unbinned fit is the reference the compression is measured against: the same classifier's continuous ratios, straight into the mixture likelihood, with no compression at all. The **macro RMSE** below is the root-mean-square error of the fitted fractions over the {f("heldOutPatients")} held-out patients, averaged over the five target populations.
+
+```python
+def macro_rmse(estimate):
+    per_population = np.sqrt(np.mean((estimate - expert) ** 2, axis=0))
+    return float(np.mean(per_population[:5]))
+
+
+binned_rmse = macro_rmse(binned)
+unbinned_rmse = macro_rmse(unbinned)
+```
+
+## 7. The result
 
 <Diagnostics
-  caption="The full study, at its operating bin budget. Macro RMSE is measured on the frozen held-out patients, and D-efficiency on the same held-out cells."
+  caption={`The full study on ${f("studyCells")} cells, at ${f("bins")} categories. Every number is measured on the ${f("heldOutPatients")} held-out patients.`}
   items={[
     {
-      label: "Bin budget",
-      value: f("bins"),
-      meaning: "Hard categories each cell is reduced to. The whole per-patient summary is this many integer counts.",
-    },
-    {
-      label: "Soft Voronoi, held-out macro RMSE",
+      label: "Held-out macro RMSE, from the counts",
       value: f("softVoronoiRmse"),
-      meaning: "Error in the recovered population fractions, averaged over populations and held-out patients: the error in the quantity this page estimates.",
+      meaning: "Error in the recovered population fractions from the eight counts, averaged over the five target populations and the held-out patients. The quantity this page estimates.",
     },
     {
-      label: "Soft Voronoi, held-out D-efficiency",
-      value: f("softVoronoiEfficiency"),
-      meaning: "Geometric mean of the eigenvalues of the binned information relative to the unbinned information: what fraction of the score's information the labels keep.",
-    },
-    {
-      label: "D exchange, held-out macro RMSE",
-      value: f("dExchangeRmse"),
-      meaning: "The same estimation error for the exact finite-relocation solver, which lands slightly worse than soft Voronoi here.",
-    },
-    {
-      label: "D exchange, held-out D-efficiency",
-      value: f("dExchangeEfficiency"),
-      meaning: "And slightly better than soft Voronoi on information, which is why neither solver is the page's single headline.",
-    },
-    {
-      label: "Unbinned classifier ratio",
+      label: "Held-out macro RMSE, unbinned",
       value: f("unbinnedMacroRmse"),
-      meaning: "The same estimate with no compression at all: continuous ratios straight into the mixture fit. The reference both methods are measured against.",
+      meaning: "The same estimate with no compression: the continuous classifier ratios straight into the mixture fit. The floor the counts are measured against.",
+    },
+    {
+      label: "Held-out D-efficiency",
+      value: f("softVoronoiEfficiency"),
+      meaning: "Geometric mean of the eigenvalues of the binned information relative to the unbinned information on the held-out cells: the fraction of the score's information the eight labels keep.",
     },
     {
       label: "Information kind",
       value: f("informationKind"),
-      meaning: "What the library will call this result. The scores were estimated by a classifier, so it is a surrogate and never exact Fisher information.",
+      meaning: "What the library calls this result. The scores were estimated by a classifier, so it is a surrogate and never exact Fisher information.",
     },
   ]}
 />
 
-The two solvers disagree, and they disagree in opposite directions on the two metrics: soft
-Voronoi wins on estimation error, the exchange wins on retained information. That is not a
-contradiction — the downstream fit is a fixed-total multinomial likelihood on the counts, not the
-local Fisher quadratic the criterion optimises — but it does mean any sentence about this study
-has to say which method produced the number in it.
+<EstimateScatter patients={showcaseData.patientEstimates} populations={dataset.populations} visible={targetPopulations} />
 
-A validation source can be attached to any fit, and it is diagnostic only: it never influences a
-gradient, a stopping rule, an initialization choice, or a checkpoint. Here the committed table is
-split by alternating rows, which keeps every population on both sides:
+Every held-out patient and every target population sits on the diagonal at every abundance, from the mast cells near one part in ten thousand to the T cells near one in ten, and the filled marks from the {f("bins")} counts sit where the hollow unbinned marks sit. Compression costs, as it must: the information carried by a label is never more than the information carried by the thing it replaced, and the binned error is above the unbinned one. The finding is the size of the cost. The two errors are of the same order, and both are far below the spread between patients in the first chart, so replacing a patient's cells with {f("bins")} integers does not change what the report says.
 
-```python
-fitted = sq.fit_quantizer(
-    sq.ScoreSample(scores[::2], weights[::2]),
-    validation=sq.ScoreSample(scores[1::2], weights[1::2]),
-    n_bins=8,
-    criterion=sq.NormalizedTrace(),
-    config=sq.KMeansConfig(seed=4, solver_restarts=4),
-)
-train_efficiency = float(fitted.train_report.geometric_mean_retention)
-holdout_efficiency = float(fitted.validation_report.geometric_mean_retention)
-assert 0.0 < holdout_efficiency <= 1.0
-```
+The exact finite-D solver, run on the same reference rows and compiled into its Voronoi rule, reaches {f("dExchangeRmse")} on the same patients with a D-efficiency of {f("dExchangeEfficiency")}: slightly worse on the error, slightly better on the information. The two disagree in opposite directions because the downstream fit is a fixed-total multinomial likelihood on the counts, not the local Fisher quadratic the criterion optimises, so any sentence about this study has to say which method produced the number in it. Both are on the <ReferenceLink to="usecases/flowcyt/solvers/">solver-comparison page</ReferenceLink>.
 
-That is the mechanism; the study proper holds out whole patients frozen before any fitting rather
-than alternate rows of one table. Its solver comparison, score calibration and per-patient
-estimates are in the{" "}
-<ReferenceLink to="usecases/flowcyt/">FlowCyt case study</ReferenceLink>.
+## 8. Why it works: the retained information
 
-## What that means for the composition
+The D-efficiency is the explanation, not the headline. The {f("bins")} labels keep {f("softVoronoiEfficiency")} of the information the estimated score carries about the five fractions, on cells the rule never saw; the criterion optimised that quantity on the reference cells, and it transferred. A high retained information is a local, quadratic statement about the likelihood near the reference composition, and the held-out patients differ from the reference composition, so the retention does not guarantee the estimation error; it makes it unsurprising.
 
-On this cohort a patient can be reduced to {f("bins")} integer counts and still yield the
-population fractions to within an error far smaller than the differences between patients. The
-categories are not rectangles on a two-channel projection; they are chosen from the estimation
-problem itself, and they are frozen, so the same rule applies to every patient in the cohort and
-to the next one that arrives. How many categories that takes is measured below rather than
-assumed.
+What the retention measures is how much of the *estimated* score the labels keep, a number that stays high whether or not the estimate itself is good. The <a href="/walkthroughs/ratios">density-ratio page</a> measures the gap between those two things on a problem where the exact score is known; the unbinned row of the table above is this page's own check, because a poor estimate would have shown up there first.
 
-## What simpler reductions retain on the same cells
+## 9. What simpler reductions retain
 
-Every method below sees the same cells and gets the same budget, and every one is scored the same
-way: fit the fractions from the counts on the frozen patients, and measure the result against the
-expert composition.
+Every method below sees the same reference cells, gets the same budget, is frozen the same way and is scored the same way: fit the fractions from the counts on the held-out patients, and measure the result against the expert composition.
 
 <BinningComparison
   axisLabel={`Held-out D-efficiency at ${f("bins")} bins`}
   caption="Three ordinary reductions against the two information-optimal ones, at the same bin budget on the same held-out cells."
   rows={[
     {
-      label: "Two-marker grid",
+      label: "Grid on two marker PCs",
       text: f("twoDimensionalGridEfficiency"),
       value: factValue("flowcyt", "twoDimensionalGridEfficiency"),
     },
@@ -313,7 +232,7 @@ expert composition.
       value: factValue("flowcyt", "oneDimensionalEfficiency"),
     },
     {
-      label: "Marker k-means",
+      label: "k-means on the markers",
       text: f("markerKmeansEfficiency"),
       value: factValue("flowcyt", "markerKmeansEfficiency"),
     },
@@ -332,76 +251,29 @@ expert composition.
   ]}
 />
 
-The three baselines use the same cells and the same budget without the score geometry. A
-rectangular grid on two marker channels is a two-dimensional gate with straight edges. Clustering
-the raw marker vectors groups cells that look alike and counts the groups. Cutting a single score
-direction into intervals keeps the classifier output but summarises it in one dimension. All three
-land an order of magnitude away on estimation error as well:
+A rectangular grid on the two leading principal components of the marker channels is a two-dimensional gate with straight edges. Clustering the twelve-dimensional marker vectors groups cells that look alike and counts the groups. Cutting a single score direction into intervals keeps the classifier output but summarises it in one dimension. All three land an order of magnitude away on estimation error as well, at every budget:
 
 <MethodComparison baseline={comparison.unbinnedBaseline} methods={comparison.methods} />
 
-The gap widens rather than closes as bins are added, which is the useful part: a grid or a single
-direction cannot spend extra categories usefully, because the directions it is spending them on
-are not the ones carrying the answer.
+## 10. The bin budget
 
-## What this does not do
+<MethodComparison methods={comparison.methods} metric="heldOutEfficiency" />
 
-It does not improve the measurement. The unbinned classifier ratio, with no compression at all,
-reaches {f("unbinnedMacroRmse")} macro RMSE; soft Voronoi, the better of the two methods on that
-metric, reaches {f("softVoronoiRmse")}. Compression costs, as it must: the information carried by
-a label is never more than the information carried by the thing it replaced. The finding worth
-reporting is the size of the cost: those two errors are of the same order, and both
-sit far below the spread between patients in the first chart, so replacing the continuous ratio
-with {f("bins")} integer counts does not change what the report says. If a continuous ratio is
-available to you at analysis time, use it; this page is for when it is not, because the summary
-has to be archivable, transmissible, or auditable.
+Five bins fail, as the second section said they must: the held-out D-efficiency is {f("fiveBinEfficiency")} and the macro RMSE {f("fiveBinRmse")}, because {f("fiveBinRankBound")} independent counts cannot resolve {f("freeFractions")} fractions and the fit has a flat direction. Eight is the knee: {f("softVoronoiEfficiency")} retained and {f("softVoronoiRmse")} error. Ten bins retain {f("tenBinEfficiency")} and reach {f("tenBinRmse")}; thirty retain {f("thirtyBinEfficiency")} and reach {f("thirtyBinRmse")}. More categories keep more of the local information, and the fraction estimates get no better, because the calibration table has more entries to estimate from the same reference cells and the smallest categories run empty on some patients. The simpler reductions do improve with more bins, the grid from {f("twoDimensionalGridRmse")} at eight to {f("twoDimensionalGridRmseThirty")} at thirty, and remain an order of magnitude away.
 
-The second limit is in the provenance. The classifier's ratios are estimated, so the result is
-recorded as <code>{f("informationKind")}</code> and not as exact Fisher information. What the reported
-D-efficiency measures is how much of the *estimated* score the bins keep — a number that stays
-high whether or not the estimate itself is any good.{" "}
-<a href="/walkthroughs/ratios">From a classifier to Fisher-preserving bins</a> measures the gap between
-those two things on a problem where the exact score is known, and it is the honest companion to
-this page.
+## 11. Limits, and how to reproduce this
 
-The third is a negative result the study went looking for. Aiming the objective at one compartment
-— the HSPC fraction, with the rest of the composition floating — barely moves anything: on the
-committed fixture, the plain D partition already retains {f("profiledDPartitionRetention")} of the
-profiled information against a certified ceiling of {f("profiledCeilingRetention")}. A criterion
-aimed at one fraction is a different inferential objective, not an automatically better one, and
-here there was almost nothing left for it to win.
+**The fixture-scale run is not the full study.** The code on this page, run on the committed table, gives a held-out macro RMSE of {f("tableSoftVoronoiRmse")} from the counts against {f("tableUnbinnedRmse")} unbinned, with a held-out D-efficiency of {f("tableSoftVoronoiEfficiency")}. The information retention is close to the full study's; the estimation error is several times worse, because the calibration table $P(\text{bin} \mid \text{population})$ is estimated from {f("tableTemplateRows")} cells instead of hundreds of thousands, and at that size the calibration, not the categories, limits the fit. The full study's numbers, the ones displayed above, come from {f("studyCells")} cells drawn from the complete benchmark.
 
-## The same door, other inputs
+**The score is a surrogate.** The classifier's ratios are estimated, so the result is recorded as <code>{f("informationKind")}</code>, never as exact Fisher information.
 
-Precomputed scores are not only for classifier output. When a model is analytic, the score is
-known in closed form and the same table can be declared exact — and then, and only then, the
-result is allowed to report exact Fisher information. The scores of a Gaussian location model at
-the origin are the observations themselves, which makes the smallest possible honest example:
+**Aiming at one fraction does not help here.** The study also asked for the categories that best resolve the progenitor fraction alone, with the rest of the composition profiled out. On the committed fixture the plain D partition already retains {f("profiledDPartitionRetention")} of that profiled information against a certified ceiling of {f("profiledCeilingRetention")}, so there was almost nothing left for a profiled criterion to win. That negative result is on the <ReferenceLink to="usecases/flowcyt/profiled/">profiled-criterion page</ReferenceLink>.
 
-```python
-rng = np.random.default_rng(7)
-normal_scores = rng.normal(size=(2_000, 2))
-normal_weights = np.ones(normal_scores.shape[0])
+**The data.** The benchmark is &copy; {dataset.citation}, licensed{" "}
+<a href={dataset.licenseUrl} rel="noreferrer noopener" target="_blank">{f("license")}</a>, and lives in its{" "}
+<a href={f("sourceRepository")} rel="noreferrer noopener" target="_blank">source repository</a>; this repository does not redistribute it. What is committed is a small deterministic fixture, the fixture-scale walkthrough table this page runs on, and the evidence file of the full study. The acquisition protocol, the per-patient estimates, the solver comparison and the uncertainty audit are in the <ReferenceLink to="usecases/flowcyt/">FlowCyt case study</ReferenceLink>.
 
-analytic = sq.ScoreSample(
-    normal_scores,
-    normal_weights,
-    provenance=sq.ScoreProvenance(kind="exact", reference_point=(0.0, 0.0)),
-)
-assert analytic.provenance.exact_fisher is True
-
-rule = sq.fit_quantizer(
-    analytic, n_bins=6, criterion=sq.DOptimality(), config=sq.DExchangeConfig(seed=7)
-)
-assignment = sq.optimize_partition(
-    normal_scores, weights=normal_weights, n_bins=6, config=sq.DExchangeConfig(seed=7)
-)
-assert rule.information_kind == "exact_fisher"
-assert assignment.labels.shape == (normal_scores.shape[0],)
+```text
+JAX_ENABLE_X64=1 MPLBACKEND=Agg uv run python -m examples.cell_population --full
+uv run python website/scripts/generate_showcase.py --force
 ```
-
-The same rows serve either task, and the two tasks are deliberately different. `fit_quantizer`
-returns a reusable rule, so `rule.predict_scores(...)` labels events it has never seen.
-`optimize_partition` returns an assignment of exactly these rows and stops there — it has no
-predict method, because a labelling optimised for one fixed sample is not a rule about future
-events.

@@ -1,5 +1,4 @@
 import rawShowcase from "../generated/showcase-data.json";
-import {siteUrl} from "../lib/site";
 
 export interface ShowcaseDataset {
   citation: string;
@@ -48,7 +47,27 @@ export interface MethodSeries {
   points: MethodPoint[];
 }
 
+export interface BinCompositionRow {
+  bin: number;
+  composition: number[];
+  dominant: string;
+}
+
+export interface BinComposition {
+  bins: number;
+  populations: string[];
+  rows: BinCompositionRow[];
+}
+
+export interface PatientEstimate {
+  binned: number[];
+  expert: number[];
+  patient: number;
+  unbinned: number[];
+}
+
 export interface ShowcaseData {
+  binComposition: BinComposition;
   comparison: {
     budgets: number[];
     methods: MethodSeries[];
@@ -62,6 +81,7 @@ export interface ShowcaseData {
     macroRmse: number;
     unbinnedMacroRmse: number;
   };
+  patientEstimates: PatientEstimate[];
   scoreSchema: {parameters: string[]};
 }
 
@@ -70,36 +90,3 @@ export interface ShowcaseData {
  * Never edit by hand; run `pnpm generate:showcase`.
  */
 export const showcaseData = rawShowcase as unknown as ShowcaseData;
-
-/** The five-dimensional score table the Lab runs on, fetched rather than bundled. */
-export interface ScoreStructure {
-  distinctPlanePositions: number;
-  perPopulation: {cells: number; meanFirstScore: number; population: string; spread: number}[];
-  rows: number;
-}
-
-export interface LabScoreTable {
-  dimensions: number;
-  license: string;
-  populationNames: string[];
-  populations: number[];
-  rows: number;
-  schema: {parameters: string[]};
-  scores: number[][];
-  structure: ScoreStructure;
-  weights: number[];
-}
-
-const SCORES_URL = siteUrl("showcase-data/flowcyt-scores.json");
-
-/**
- * Load the score table on demand.
- *
- * It is ~300 KB and only the playground needs it, so it stays out of the
- * bundle and out of the narrative route's critical path.
- */
-export async function loadLabScores(signal?: AbortSignal): Promise<LabScoreTable> {
-  const response = await fetch(SCORES_URL, signal === undefined ? {} : {signal});
-  if (!response.ok) throw new Error(`The FlowCyt score table is unavailable (${String(response.status)}).`);
-  return (await response.json()) as LabScoreTable;
-}

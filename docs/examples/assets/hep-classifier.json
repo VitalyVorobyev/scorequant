@@ -2,10 +2,12 @@
   "fixture": {
     "n_events": 1000,
     "weight_sum": 1051433.0267105103,
+    "effective_events": 665.2979770496346,
     "signal_events": 336,
     "background_events": 664
   },
   "n_bins": 6,
+  "n_parameters": 3,
   "interest": [
     0
   ],
@@ -18,147 +20,1992 @@
   "n_folds": 5,
   "classifier_max_iter": 300,
   "soft_steps": 400,
+  "tes_constraint_width": 0.01,
   "classifiers": {
     "signal_weighted_auc": 0.8344737120691251,
     "signal_temperature": 2.70338298629393,
     "signal_fraction": 0.00098781975979457,
-    "signal_seconds": 7.698392458027229,
-    "tes_minus_plus_auc": 0.567367,
+    "tes_minus_plus_auc": 0.575284565048716,
     "tes_temperature": 3.9999999994841673,
-    "tes_near_half_fraction": 0.091,
-    "tes_seconds": 5.825357875030022
-  },
-  "partitions": [
-    {
-      "key": "d_partition",
-      "label": "Plain D",
-      "criterion": "DOptimality",
-      "n_bins": 6,
-      "full_retention": 0.89246968750141,
-      "profiled_retention": 0.8369649450262336
-    },
-    {
-      "key": "ds_partition",
-      "label": "Profiled D_s",
-      "criterion": "ProfiledDOptimality",
-      "n_bins": 6,
-      "full_retention": 0.40838224440624826,
-      "profiled_retention": 0.956003693016737
-    },
-    {
-      "key": "classifier_quantile",
-      "label": "Classifier quantile bins (6)",
-      "criterion": "naive baseline",
-      "n_bins": 6,
-      "full_retention": 0.17817409175557267,
-      "profiled_retention": 0.2454280517847531
-    },
-    {
-      "key": "classifier_logit_equal_width",
-      "label": "Classifier logit equal-width bins (6)",
-      "criterion": "naive baseline",
-      "n_bins": 6,
-      "full_retention": 0.21661583682402136,
-      "profiled_retention": 0.4552468544888668
-    },
-    {
-      "key": "threshold_cut",
-      "label": "Threshold cut at eta_s=0.5119",
-      "criterion": "naive baseline",
-      "n_bins": 2,
-      "full_retention": 3.3931829167082604e-06,
-      "profiled_retention": 0.0
+    "tes_near_half_fraction": 0.065,
+    "tes_reliability": {
+      "weighted_correlation": 0.49819665199074037,
+      "first_minus_plus_auc": 0.5716338963123001,
+      "second_minus_plus_auc": 0.6202470283393207,
+      "held_out_events": 333.0
     }
-  ],
-  "criterion_trade": {
-    "full_retention_given_up": 0.4840874430951617,
-    "profiled_retention_gained": 0.1190387479905034
   },
-  "scorequant_vs_classifier_binning": {
-    "best_baseline_key": "classifier_logit_equal_width",
-    "profiled_retention_gap": 0.5007568385278702,
-    "profiled_retention_gap_to_equal_frequency": 0.7105756412319839,
-    "baseline_spread": 0.2098188027041137,
-    "full_retention_gap": 0.1917664075822269
-  },
-  "ceiling": {
-    "upper_bound": 14.09321515865392,
-    "ceiling_retention": 0.9568542109395966,
-    "gap_to_ds_partition": 0.0008892641498832177
-  },
-  "ceiling_sweep": [
-    {
-      "n_bins": 3.0,
-      "ds_profiled_retention": 0.8213960084766362,
-      "classifier_quantile_profiled_retention": 0.07652145798664006,
-      "ceiling_retention": 0.8469043795028911,
-      "gap": 0.030582453034462276,
-      "scans": 13,
-      "accepted_moves": 15
-    },
-    {
-      "n_bins": 4.0,
-      "ds_profiled_retention": 0.8998244441188009,
-      "classifier_quantile_profiled_retention": 0.18084009282789268,
-      "ceiling_retention": 0.903514791720541,
-      "gap": 0.004092799269065139,
-      "scans": 7,
-      "accepted_moves": 7
-    },
-    {
-      "n_bins": 6.0,
-      "ds_profiled_retention": 0.956003693016737,
-      "classifier_quantile_profiled_retention": 0.2454280517847531,
-      "ceiling_retention": 0.9568542109395966,
-      "gap": 0.0008892641498832177,
-      "scans": 19,
-      "accepted_moves": 32
-    },
-    {
-      "n_bins": 8.0,
-      "ds_profiled_retention": 0.975668899187969,
-      "classifier_quantile_profiled_retention": 0.4374074923233694,
-      "ceiling_retention": 0.9771831844674906,
-      "gap": 0.0015508451415247038,
-      "scans": 23,
-      "accepted_moves": 75
-    }
-  ],
-  "delta_convergence": {
-    "rows": [
+  "in_sample": {
+    "partitions": [
       {
-        "delta": 0.025,
-        "minus_plus_auc": 0.5307139999999999,
-        "near_half_fraction": 0.101,
-        "ds_profiled_retention": 0.9567344098094354,
-        "ceiling_retention": 0.9595196058136393
+        "key": "ds_partition",
+        "label": "Profiled Ds partition",
+        "criterion": "ProfiledDOptimality",
+        "n_bins": 6,
+        "full_retention": 0.4783739966225967,
+        "profiled_retention": 0.9550321935360592
       },
       {
-        "delta": 0.05,
-        "minus_plus_auc": 0.567367,
-        "near_half_fraction": 0.091,
-        "ds_profiled_retention": 0.956003693016737,
-        "ceiling_retention": 0.9568542109395966
+        "key": "d_partition",
+        "label": "Plain D partition",
+        "criterion": "DOptimality",
+        "n_bins": 6,
+        "full_retention": 0.8745590644517677,
+        "profiled_retention": 0.8238099690756355
       },
       {
-        "delta": 0.1,
-        "minus_plus_auc": 0.659783,
-        "near_half_fraction": 0.055,
-        "ds_profiled_retention": 0.9552114145815266,
-        "ceiling_retention": 0.9560503262429372
+        "key": "ds_rule",
+        "label": "Profiled Ds rule",
+        "criterion": "scorequant",
+        "n_bins": 6,
+        "full_retention": 0.5619528710445053,
+        "profiled_retention": 0.9145460370335429
+      },
+      {
+        "key": "d_rule",
+        "label": "Plain D rule",
+        "criterion": "scorequant",
+        "n_bins": 6,
+        "full_retention": 0.8745590644517677,
+        "profiled_retention": 0.8238099690756355
+      },
+      {
+        "key": "classifier_significance_intervals",
+        "label": "Classifier intervals, max S\u00b2/(S+B)",
+        "criterion": "classifier",
+        "n_bins": 6,
+        "full_retention": 0.23072714672300812,
+        "profiled_retention": 0.3315373670911111
+      },
+      {
+        "key": "classifier_logit_equal_width",
+        "label": "Classifier logit, equal width",
+        "criterion": "classifier",
+        "n_bins": 6,
+        "full_retention": 0.24364108553574895,
+        "profiled_retention": 0.33327793303393444
+      },
+      {
+        "key": "classifier_quantile",
+        "label": "Classifier quantile bins",
+        "criterion": "classifier",
+        "n_bins": 6,
+        "full_retention": 0.2314404614054665,
+        "profiled_retention": 0.26823967398151194
+      },
+      {
+        "key": "threshold_cut",
+        "label": "Significance cut, two bins",
+        "criterion": "conventional",
+        "n_bins": 2,
+        "full_retention": 0.0,
+        "profiled_retention": null
       }
     ],
-    "agreement": {
-      "headline_delta": 0.05,
-      "half_delta": 0.025,
-      "score_correlation": 0.6293785477264123,
-      "retention_gap": 0.000730716792698316
+    "by_key": {
+      "ds_partition": {
+        "key": "ds_partition",
+        "label": "Profiled Ds partition",
+        "criterion": "ProfiledDOptimality",
+        "n_bins": 6,
+        "full_retention": 0.4783739966225967,
+        "profiled_retention": 0.9550321935360592
+      },
+      "d_partition": {
+        "key": "d_partition",
+        "label": "Plain D partition",
+        "criterion": "DOptimality",
+        "n_bins": 6,
+        "full_retention": 0.8745590644517677,
+        "profiled_retention": 0.8238099690756355
+      },
+      "ds_rule": {
+        "key": "ds_rule",
+        "label": "Profiled Ds rule",
+        "criterion": "scorequant",
+        "n_bins": 6,
+        "full_retention": 0.5619528710445053,
+        "profiled_retention": 0.9145460370335429
+      },
+      "d_rule": {
+        "key": "d_rule",
+        "label": "Plain D rule",
+        "criterion": "scorequant",
+        "n_bins": 6,
+        "full_retention": 0.8745590644517677,
+        "profiled_retention": 0.8238099690756355
+      },
+      "classifier_significance_intervals": {
+        "key": "classifier_significance_intervals",
+        "label": "Classifier intervals, max S\u00b2/(S+B)",
+        "criterion": "classifier",
+        "n_bins": 6,
+        "full_retention": 0.23072714672300812,
+        "profiled_retention": 0.3315373670911111
+      },
+      "classifier_logit_equal_width": {
+        "key": "classifier_logit_equal_width",
+        "label": "Classifier logit, equal width",
+        "criterion": "classifier",
+        "n_bins": 6,
+        "full_retention": 0.24364108553574895,
+        "profiled_retention": 0.33327793303393444
+      },
+      "classifier_quantile": {
+        "key": "classifier_quantile",
+        "label": "Classifier quantile bins",
+        "criterion": "classifier",
+        "n_bins": 6,
+        "full_retention": 0.2314404614054665,
+        "profiled_retention": 0.26823967398151194
+      },
+      "threshold_cut": {
+        "key": "threshold_cut",
+        "label": "Significance cut, two bins",
+        "criterion": "conventional",
+        "n_bins": 2,
+        "full_retention": 0.0,
+        "profiled_retention": null
+      }
+    },
+    "criterion_trade": {
+      "full_retention_given_up": 0.39618506782917096,
+      "profiled_retention_gained": 0.13122222446042364
+    },
+    "scorequant_vs_classifier_binning": {
+      "best_baseline_key": "classifier_logit_equal_width",
+      "best_baseline_label": "Classifier logit, equal width",
+      "profiled_retention_gap": 0.6217542605021247,
+      "profiled_retention_gap_to_equal_frequency": 0.6867925195545472,
+      "baseline_spread": 0.0650382590524225
+    },
+    "ceiling": {
+      "upper_bound": 14.074492964219361,
+      "ceiling_retention": 0.9552772335234024,
+      "gap_to_ds_partition_nats": 0.0002565448143787563,
+      "gap_to_ds_partition_retention": 0.00024503998734326515
+    },
+    "ceiling_sweep": [
+      {
+        "n_bins": 3.0,
+        "ds_profiled_retention": 0.8131103994412104,
+        "classifier_quantile_profiled_retention": 0.06196939095522928,
+        "ceiling_retention": 0.8405541332094654,
+        "gap": 0.03319446373536472,
+        "scans": 15,
+        "accepted_moves": 50
+      },
+      {
+        "n_bins": 4.0,
+        "ds_profiled_retention": 0.8951608564418949,
+        "classifier_quantile_profiled_retention": 0.17764922507635977,
+        "ceiling_retention": 0.8981801748095355,
+        "gap": 0.0033672582825960973,
+        "scans": 12,
+        "accepted_moves": 15
+      },
+      {
+        "n_bins": 6.0,
+        "ds_profiled_retention": 0.9550321935360592,
+        "classifier_quantile_profiled_retention": 0.26823967398151194,
+        "ceiling_retention": 0.9552772335234024,
+        "gap": 0.0002565448143787563,
+        "scans": 23,
+        "accepted_moves": 68
+      },
+      {
+        "n_bins": 8.0,
+        "ds_profiled_retention": 0.9752633987612815,
+        "classifier_quantile_profiled_retention": 0.3864172691648355,
+        "ceiling_retention": 0.9753002731306275,
+        "gap": 3.7808936854233366e-05,
+        "scans": 6,
+        "accepted_moves": 9
+      }
+    ],
+    "delta_convergence": {
+      "rows": [
+        {
+          "delta": 0.025,
+          "minus_plus_auc": 0.5378838061833021,
+          "near_half_fraction": 0.071,
+          "ds_profiled_retention": 0.9552296306804825,
+          "ceiling_retention": 0.9565594788198369
+        },
+        {
+          "delta": 0.05,
+          "minus_plus_auc": 0.575284565048716,
+          "near_half_fraction": 0.065,
+          "ds_profiled_retention": 0.9550321935360592,
+          "ceiling_retention": 0.9552772335234024
+        },
+        {
+          "delta": 0.1,
+          "minus_plus_auc": 0.6785893420125944,
+          "near_half_fraction": 0.045,
+          "ds_profiled_retention": 0.9526991515521862,
+          "ceiling_retention": 0.9531747822732143
+        }
+      ],
+      "agreement": {
+        "headline_delta": 0.05,
+        "half_delta": 0.025,
+        "score_correlation": 0.6362828470467868,
+        "retention_gap": 0.00019743714442332916
+      }
+    },
+    "occupancy": {
+      "ds_rule": [
+        {
+          "cell": 0,
+          "events": 199,
+          "signal_events": 109,
+          "weighted_yield": 142727.2209239006,
+          "signal_fraction": 0.002361175414008627,
+          "mean_tes_score": -3.5231352851575624,
+          "mean_posterior": 0.46996811304180797
+        },
+        {
+          "cell": 1,
+          "events": 347,
+          "signal_events": 31,
+          "weighted_yield": 500111.54887366295,
+          "signal_fraction": 0.00019167803126391038,
+          "mean_tes_score": 1.690677076480353,
+          "mean_posterior": 0.13606520007128053
+        },
+        {
+          "cell": 2,
+          "events": 3,
+          "signal_events": 2,
+          "weighted_yield": 1588.5394580364227,
+          "signal_fraction": 0.0038871140290200144,
+          "mean_tes_score": -32.75179778352169,
+          "mean_posterior": 0.76872934855142
+        },
+        {
+          "cell": 3,
+          "events": 129,
+          "signal_events": 86,
+          "weighted_yield": 68282.64917325974,
+          "signal_fraction": 0.003892822882761412,
+          "mean_tes_score": 1.8119734531642246,
+          "mean_posterior": 0.7317835703775092
+        },
+        {
+          "cell": 4,
+          "events": 73,
+          "signal_events": 56,
+          "weighted_yield": 27076.739520072937,
+          "signal_fraction": 0.006388802205325811,
+          "mean_tes_score": 3.6387357860973433,
+          "mean_posterior": 0.8504650483923415
+        },
+        {
+          "cell": 5,
+          "events": 249,
+          "signal_events": 52,
+          "weighted_yield": 311646.3287615776,
+          "signal_fraction": 0.0005159274363967475,
+          "mean_tes_score": -2.4927824871003708,
+          "mean_posterior": 0.24894583062232428
+        }
+      ],
+      "classifier_logit_equal_width": [
+        {
+          "cell": 0,
+          "events": 105,
+          "signal_events": 7,
+          "weighted_yield": 155093.3814034462,
+          "signal_fraction": 0.00013958203086054762,
+          "mean_tes_score": -1.9963951894490082,
+          "mean_posterior": 0.0569907218554856
+        },
+        {
+          "cell": 1,
+          "events": 254,
+          "signal_events": 16,
+          "weighted_yield": 376625.6566104889,
+          "signal_fraction": 0.0001314156384334683,
+          "mean_tes_score": -0.9594059728502545,
+          "mean_posterior": 0.13430631825904157
+        },
+        {
+          "cell": 2,
+          "events": 227,
+          "signal_events": 49,
+          "weighted_yield": 281797.922688961,
+          "signal_fraction": 0.0005375966237331177,
+          "mean_tes_score": 0.04101879315838489,
+          "mean_posterior": 0.28315078947861083
+        },
+        {
+          "cell": 3,
+          "events": 199,
+          "signal_events": 112,
+          "weighted_yield": 137790.34938311577,
+          "signal_fraction": 0.0025130750103471125,
+          "mean_tes_score": 1.4438726242560478,
+          "mean_posterior": 0.5181536711597404
+        },
+        {
+          "cell": 4,
+          "events": 168,
+          "signal_events": 113,
+          "weighted_yield": 87346.34182834625,
+          "signal_fraction": 0.003998503690394791,
+          "mean_tes_score": 1.633084966426255,
+          "mean_posterior": 0.7458471497134204
+        },
+        {
+          "cell": 5,
+          "events": 47,
+          "signal_events": 39,
+          "weighted_yield": 12779.374796152115,
+          "signal_fraction": 0.009425954390263665,
+          "mean_tes_score": 4.213594354675186,
+          "mean_posterior": 0.8739225886717421
+        }
+      ]
     }
   },
-  "reusable_rule": {
-    "train_full_retention": 0.9729852579299458,
-    "train_profiled_retention": 0.9999957324382192,
-    "hardening_gap": -6.341593916658894e-12,
-    "seconds": 4.4801121249911375
+  "split": {
+    "seed": 7,
+    "halves": [
+      {
+        "name": "a_to_b",
+        "reference_events": 500,
+        "reference_signal_events": 168,
+        "evaluation_events": 500,
+        "evaluation_signal_events": 168
+      },
+      {
+        "name": "b_to_a",
+        "reference_events": 500,
+        "reference_signal_events": 168,
+        "evaluation_events": 500,
+        "evaluation_signal_events": 168
+      }
+    ]
+  },
+  "cross_evaluation": {
+    "directions": [
+      {
+        "name": "a_to_b",
+        "reference_events": 500,
+        "evaluation_events": 500,
+        "reference_ceiling_retention": 0.9698818941070824,
+        "evaluation_ceiling_retention": 0.9641742886714496,
+        "ds_partition_reference_profiled_retention": 0.9673088679006104,
+        "ds_partition_reference_full_retention": 0.4041230932148084,
+        "ds_rule_validation_report_retention": 0.859066279111288,
+        "ds_rule_hardening_gap": 4.331273498447974e-05,
+        "rules": {
+          "ds_rule": {
+            "key": "ds_rule",
+            "label": "Profiled Ds rule",
+            "kind": "scorequant",
+            "n_bins": 6,
+            "identified": true,
+            "reference_full_retention": 0.6513745981993759,
+            "reference_profiled_retention": 0.9121980381380227,
+            "evaluation_full_retention": 0.658286566057646,
+            "evaluation_profiled_retention": 0.859066279111288,
+            "evaluation_occupied_bins": 6,
+            "evaluation_min_bin_events": 2,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 37,
+                "signal_events": 8,
+                "weighted_yield": 45913.311544418335,
+                "signal_fraction": 0.0005387859622087047,
+                "mean_tes_score": 8.200111884013213,
+                "mean_posterior": 0.17664897268584237
+              },
+              {
+                "cell": 1,
+                "events": 2,
+                "signal_events": 1,
+                "weighted_yield": 1585.4568049907684,
+                "signal_fraction": 0.0019503407204770472,
+                "mean_tes_score": -35.86206106684725,
+                "mean_posterior": 0.1699702941088729
+              },
+              {
+                "cell": 2,
+                "events": 95,
+                "signal_events": 50,
+                "weighted_yield": 71333.06229400635,
+                "signal_fraction": 0.002167058568886769,
+                "mean_tes_score": -2.1709005472798855,
+                "mean_posterior": 0.4848128137590275
+              },
+              {
+                "cell": 3,
+                "events": 95,
+                "signal_events": 66,
+                "weighted_yield": 46081.03060007095,
+                "signal_fraction": 0.0044267503477819735,
+                "mean_tes_score": 2.8727817162999036,
+                "mean_posterior": 0.7728406366587294
+              },
+              {
+                "cell": 4,
+                "events": 257,
+                "signal_events": 31,
+                "weighted_yield": 357468.35863780975,
+                "signal_fraction": 0.00026820178665192294,
+                "mean_tes_score": -0.6902920831439294,
+                "mean_posterior": 0.18268981798312092
+              },
+              {
+                "cell": 5,
+                "events": 14,
+                "signal_events": 12,
+                "weighted_yield": 3201.774665594101,
+                "signal_fraction": 0.011570276304985392,
+                "mean_tes_score": 3.986927815774109,
+                "mean_posterior": 0.8773206964654278
+              }
+            ],
+            "evaluation_bootstrap": {
+              "replicates": 200,
+              "dropped": 0,
+              "p05": 0.8051127114077529,
+              "p50": 0.8586138052861685,
+              "p95": 0.896317824404093
+            }
+          },
+          "d_rule": {
+            "key": "d_rule",
+            "label": "Plain D rule",
+            "kind": "scorequant",
+            "n_bins": 6,
+            "identified": true,
+            "reference_full_retention": 0.8770729828030368,
+            "reference_profiled_retention": 0.8165599719512693,
+            "evaluation_full_retention": 0.8659410637331406,
+            "evaluation_profiled_retention": 0.8191442555309645,
+            "evaluation_occupied_bins": 6,
+            "evaluation_min_bin_events": 10,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 163,
+                "signal_events": 29,
+                "weighted_yield": 212095.04405140877,
+                "signal_fraction": 0.00042276387042562827,
+                "mean_tes_score": 0.03521078943906886,
+                "mean_posterior": 0.20260117828332827
+              },
+              {
+                "cell": 1,
+                "events": 10,
+                "signal_events": 2,
+                "weighted_yield": 12665.101354122162,
+                "signal_fraction": 0.0004882994428346217,
+                "mean_tes_score": -21.5028006458282,
+                "mean_posterior": 0.1402360610998146
+              },
+              {
+                "cell": 2,
+                "events": 86,
+                "signal_events": 17,
+                "weighted_yield": 109212.68246412277,
+                "signal_fraction": 0.0004815268246008019,
+                "mean_tes_score": -5.717070978507427,
+                "mean_posterior": 0.21467387326821102
+              },
+              {
+                "cell": 3,
+                "events": 99,
+                "signal_events": 70,
+                "weighted_yield": 46093.40959692001,
+                "signal_fraction": 0.004694124756145915,
+                "mean_tes_score": 3.083489030736233,
+                "mean_posterior": 0.7650339528406381
+              },
+              {
+                "cell": 4,
+                "events": 125,
+                "signal_events": 36,
+                "weighted_yield": 140726.43342876434,
+                "signal_fraction": 0.000790779128762081,
+                "mean_tes_score": 5.713038532004211,
+                "mean_posterior": 0.2775089639060465
+              },
+              {
+                "cell": 5,
+                "events": 17,
+                "signal_events": 14,
+                "weighted_yield": 4790.3236515522,
+                "signal_fraction": 0.009024396392899287,
+                "mean_tes_score": 1.3167546856953578,
+                "mean_posterior": 0.8733269425015067
+              }
+            ],
+            "evaluation_bootstrap": {
+              "replicates": 200,
+              "dropped": 0,
+              "p05": 0.7577722727561096,
+              "p50": 0.8191181085795972,
+              "p95": 0.8639293454097712
+            }
+          },
+          "classifier_significance_intervals": {
+            "key": "classifier_significance_intervals",
+            "label": "Classifier intervals, max S\u00b2/(S+B)",
+            "kind": "classifier",
+            "n_bins": 6,
+            "identified": true,
+            "reference_full_retention": 0.22749491633850744,
+            "reference_profiled_retention": 0.387023085684322,
+            "evaluation_full_retention": 0.23152354733641106,
+            "evaluation_profiled_retention": 0.24943310128864662,
+            "evaluation_occupied_bins": 6,
+            "evaluation_min_bin_events": 21,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 263,
+                "signal_events": 29,
+                "weighted_yield": 370328.27718758583,
+                "signal_fraction": 0.0002422143378475247,
+                "mean_tes_score": -0.691190880449166,
+                "mean_posterior": 0.1559537418017062
+              },
+              {
+                "cell": 1,
+                "events": 61,
+                "signal_events": 19,
+                "weighted_yield": 66289.28129816055,
+                "signal_fraction": 0.0008858662468868475,
+                "mean_tes_score": 1.3967812593246836,
+                "mean_posterior": 0.4166640488730929
+              },
+              {
+                "cell": 2,
+                "events": 21,
+                "signal_events": 10,
+                "weighted_yield": 17428.78754711151,
+                "signal_fraction": 0.0017730393987988645,
+                "mean_tes_score": 1.9834718525196433,
+                "mean_posterior": 0.539986402935426
+              },
+              {
+                "cell": 3,
+                "events": 54,
+                "signal_events": 38,
+                "weighted_yield": 25437.137068986893,
+                "signal_fraction": 0.004620276056827532,
+                "mean_tes_score": 2.3114514437243234,
+                "mean_posterior": 0.6158660319088417
+              },
+              {
+                "cell": 4,
+                "events": 41,
+                "signal_events": 31,
+                "weighted_yield": 15919.46118092537,
+                "signal_fraction": 0.0060187301317584365,
+                "mean_tes_score": 1.9946152104553898,
+                "mean_posterior": 0.7205964462504324
+              },
+              {
+                "cell": 5,
+                "events": 60,
+                "signal_events": 41,
+                "weighted_yield": 30180.050264120102,
+                "signal_fraction": 0.00419665048302172,
+                "mean_tes_score": 3.360645616275804,
+                "mean_posterior": 0.8206806450627826
+              }
+            ],
+            "evaluation_bootstrap": {
+              "replicates": 200,
+              "dropped": 0,
+              "p05": 0.10420170995633914,
+              "p50": 0.31114331212362334,
+              "p95": 0.579702076091985
+            }
+          },
+          "classifier_logit_equal_width": {
+            "key": "classifier_logit_equal_width",
+            "label": "Classifier logit, equal width",
+            "kind": "classifier",
+            "n_bins": 6,
+            "identified": true,
+            "reference_full_retention": 0.24647722217225526,
+            "reference_profiled_retention": 0.4468731725484658,
+            "evaluation_full_retention": 0.2697777592014025,
+            "evaluation_profiled_retention": 0.343425079343918,
+            "evaluation_occupied_bins": 6,
+            "evaluation_min_bin_events": 24,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 54,
+                "signal_events": 4,
+                "weighted_yield": 79130.6029074192,
+                "signal_fraction": 0.00015634540611050689,
+                "mean_tes_score": -2.1207605650151984,
+                "mean_posterior": 0.0592586611831099
+              },
+              {
+                "cell": 1,
+                "events": 131,
+                "signal_events": 11,
+                "weighted_yield": 189891.16195201874,
+                "signal_fraction": 0.00017918410240683172,
+                "mean_tes_score": -0.40219364981132627,
+                "mean_posterior": 0.1373343796877761
+              },
+              {
+                "cell": 2,
+                "events": 105,
+                "signal_events": 20,
+                "weighted_yield": 134544.8259215355,
+                "signal_fraction": 0.0004597713561905582,
+                "mean_tes_score": 0.2654258044642475,
+                "mean_posterior": 0.2935201827368548
+              },
+              {
+                "cell": 3,
+                "events": 98,
+                "signal_events": 52,
+                "weighted_yield": 72724.32195734978,
+                "signal_fraction": 0.0022104382287201373,
+                "mean_tes_score": 1.7401540783274387,
+                "mean_posterior": 0.5225666171418833
+              },
+              {
+                "cell": 4,
+                "events": 88,
+                "signal_events": 63,
+                "weighted_yield": 39742.310225486755,
+                "signal_fraction": 0.004899748873171675,
+                "mean_tes_score": 2.761518161433663,
+                "mean_posterior": 0.7595345055933769
+              },
+              {
+                "cell": 5,
+                "events": 24,
+                "signal_events": 18,
+                "weighted_yield": 9549.771583080292,
+                "signal_fraction": 0.005820436484381138,
+                "mean_tes_score": 3.701213516225479,
+                "mean_posterior": 0.863158742605878
+              }
+            ],
+            "evaluation_bootstrap": {
+              "replicates": 200,
+              "dropped": 0,
+              "p05": 0.15418648671713564,
+              "p50": 0.426263982046017,
+              "p95": 0.668953934616377
+            }
+          },
+          "classifier_quantile": {
+            "key": "classifier_quantile",
+            "label": "Classifier quantile bins",
+            "kind": "classifier",
+            "n_bins": 6,
+            "identified": true,
+            "reference_full_retention": 0.17468279224974298,
+            "reference_profiled_retention": 0.1691953785895534,
+            "evaluation_full_retention": 0.27020958080772145,
+            "evaluation_profiled_retention": 0.3186133797526589,
+            "evaluation_occupied_bins": 6,
+            "evaluation_min_bin_events": 76,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 76,
+                "signal_events": 5,
+                "weighted_yield": 112363.35219287872,
+                "signal_fraction": 0.00013762393977100217,
+                "mean_tes_score": -1.4556521084029816,
+                "mean_posterior": 0.06825464541496769
+              },
+              {
+                "cell": 1,
+                "events": 97,
+                "signal_events": 8,
+                "weighted_yield": 140828.58206439018,
+                "signal_fraction": 0.00017573800818397925,
+                "mean_tes_score": -0.767121909181637,
+                "mean_posterior": 0.1419829502646111
+              },
+              {
+                "cell": 2,
+                "events": 76,
+                "signal_events": 14,
+                "weighted_yield": 98140.0036084652,
+                "signal_fraction": 0.0004411926922608389,
+                "mean_tes_score": -0.27228427746064526,
+                "mean_posterior": 0.24317277820241573
+              },
+              {
+                "cell": 3,
+                "events": 77,
+                "signal_events": 22,
+                "weighted_yield": 86872.83245825768,
+                "signal_fraction": 0.000782540458110454,
+                "mean_tes_score": 1.5236528670008853,
+                "mean_posterior": 0.39886965939213365
+              },
+              {
+                "cell": 4,
+                "events": 77,
+                "signal_events": 50,
+                "weighted_yield": 42870.35394477844,
+                "signal_fraction": 0.0036070227105061995,
+                "mean_tes_score": 2.3526695378667806,
+                "mean_posterior": 0.591716927174454
+              },
+              {
+                "cell": 5,
+                "events": 97,
+                "signal_events": 69,
+                "weighted_yield": 44507.87027812004,
+                "signal_fraction": 0.004790018461349437,
+                "mean_tes_score": 2.8817548896567007,
+                "mean_posterior": 0.7896064455831137
+              }
+            ],
+            "evaluation_bootstrap": {
+              "replicates": 200,
+              "dropped": 0,
+              "p05": 0.17964071179988597,
+              "p50": 0.3889850089859117,
+              "p95": 0.6317659298442865
+            }
+          },
+          "threshold_cut": {
+            "key": "threshold_cut",
+            "label": "Significance cut, two bins",
+            "kind": "conventional",
+            "n_bins": 2,
+            "identified": false,
+            "reference_full_retention": 2.2482884954137595e-06,
+            "reference_profiled_retention": 1.8162411078786589e-16,
+            "evaluation_full_retention": 0.0,
+            "evaluation_profiled_retention": null,
+            "evaluation_occupied_bins": 2,
+            "evaluation_min_bin_events": 176,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 324,
+                "signal_events": 48,
+                "weighted_yield": 436617.5584857464,
+                "signal_fraction": 0.0003399365242945881,
+                "mean_tes_score": -0.37418536881509945,
+                "mean_posterior": 0.19553597697961
+              },
+              {
+                "cell": 1,
+                "events": 176,
+                "signal_events": 120,
+                "weighted_yield": 88965.43606114388,
+                "signal_fraction": 0.004169018913176884,
+                "mean_tes_score": 2.546425665836022,
+                "mean_posterior": 0.6892212296326959
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "b_to_a",
+        "reference_events": 500,
+        "evaluation_events": 500,
+        "reference_ceiling_retention": 0.9641742886714496,
+        "evaluation_ceiling_retention": 0.9698818941070824,
+        "ds_partition_reference_profiled_retention": 0.9638096293584555,
+        "ds_partition_reference_full_retention": 0.5668195476076846,
+        "ds_rule_validation_report_retention": 0.8561338730366487,
+        "ds_rule_hardening_gap": -2.2431382957988077e-05,
+        "rules": {
+          "ds_rule": {
+            "key": "ds_rule",
+            "label": "Profiled Ds rule",
+            "kind": "scorequant",
+            "n_bins": 6,
+            "identified": true,
+            "reference_full_retention": 0.7402854320673999,
+            "reference_profiled_retention": 0.9442521640831515,
+            "evaluation_full_retention": 0.7568548906561146,
+            "evaluation_profiled_retention": 0.8561338730366487,
+            "evaluation_occupied_bins": 6,
+            "evaluation_min_bin_events": 15,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 88,
+                "signal_events": 51,
+                "weighted_yield": 58698.82215809822,
+                "signal_fraction": 0.0026862519266426534,
+                "mean_tes_score": 1.556576987023004,
+                "mean_posterior": 0.5960784331797889
+              },
+              {
+                "cell": 1,
+                "events": 38,
+                "signal_events": 26,
+                "weighted_yield": 19057.161323785782,
+                "signal_fraction": 0.004214612500972745,
+                "mean_tes_score": 1.7412711541687678,
+                "mean_posterior": 0.749257960698434
+              },
+              {
+                "cell": 2,
+                "events": 15,
+                "signal_events": 5,
+                "weighted_yield": 15839.097617149353,
+                "signal_fraction": 0.000975521288425451,
+                "mean_tes_score": -22.38333078456813,
+                "mean_posterior": 0.3134017323155905
+              },
+              {
+                "cell": 3,
+                "events": 36,
+                "signal_events": 30,
+                "weighted_yield": 9586.894320249557,
+                "signal_fraction": 0.009670136439609699,
+                "mean_tes_score": 4.398721132873433,
+                "mean_posterior": 0.8568192854547324
+              },
+              {
+                "cell": 4,
+                "events": 173,
+                "signal_events": 14,
+                "weighted_yield": 251641.0390648842,
+                "signal_fraction": 0.00017202025576062494,
+                "mean_tes_score": 1.338140236453945,
+                "mean_posterior": 0.1356142831493821
+              },
+              {
+                "cell": 5,
+                "events": 150,
+                "signal_events": 42,
+                "weighted_yield": 171027.0176794529,
+                "signal_fraction": 0.0007593057367533992,
+                "mean_tes_score": -2.7834956705554617,
+                "mean_posterior": 0.25529111215852446
+              }
+            ],
+            "evaluation_bootstrap": {
+              "replicates": 200,
+              "dropped": 0,
+              "p05": 0.8289159654420561,
+              "p50": 0.8708513781326717,
+              "p95": 0.9146025172964825
+            }
+          },
+          "d_rule": {
+            "key": "d_rule",
+            "label": "Plain D rule",
+            "kind": "scorequant",
+            "n_bins": 6,
+            "identified": true,
+            "reference_full_retention": 0.8850374643746266,
+            "reference_profiled_retention": 0.8710284151095425,
+            "evaluation_full_retention": 0.8667471463182139,
+            "evaluation_profiled_retention": 0.7858333771644644,
+            "evaluation_occupied_bins": 6,
+            "evaluation_min_bin_events": 17,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 122,
+                "signal_events": 29,
+                "weighted_yield": 147251.36584472656,
+                "signal_fraction": 0.0006090219997254724,
+                "mean_tes_score": -5.023512072367617,
+                "mean_posterior": 0.19804008050512537
+              },
+              {
+                "cell": 1,
+                "events": 64,
+                "signal_events": 41,
+                "weighted_yield": 36499.65615153313,
+                "signal_fraction": 0.0034713819415235713,
+                "mean_tes_score": 1.6548134214696317,
+                "mean_posterior": 0.7187127371150701
+              },
+              {
+                "cell": 2,
+                "events": 17,
+                "signal_events": 5,
+                "weighted_yield": 19003.826865196228,
+                "signal_fraction": 0.0008130666009842371,
+                "mean_tes_score": -20.93355047442582,
+                "mean_posterior": 0.3050118524346941
+              },
+              {
+                "cell": 3,
+                "events": 37,
+                "signal_events": 31,
+                "weighted_yield": 9589.986501216888,
+                "signal_fraction": 0.009989456926149727,
+                "mean_tes_score": 4.39591867243068,
+                "mean_posterior": 0.8568003927275681
+              },
+              {
+                "cell": 4,
+                "events": 162,
+                "signal_events": 30,
+                "weighted_yield": 208966.61857295036,
+                "signal_fraction": 0.00044366757347147746,
+                "mean_tes_score": 0.27490052280354726,
+                "mean_posterior": 0.20047716084259495
+              },
+              {
+                "cell": 5,
+                "events": 98,
+                "signal_events": 32,
+                "weighted_yield": 104538.57822799683,
+                "signal_fraction": 0.0009466367881768584,
+                "mean_tes_score": 6.22166390862523,
+                "mean_posterior": 0.2767714498316609
+              }
+            ],
+            "evaluation_bootstrap": {
+              "replicates": 200,
+              "dropped": 0,
+              "p05": 0.7310771253319913,
+              "p50": 0.7984191995693668,
+              "p95": 0.849567940845747
+            }
+          },
+          "classifier_significance_intervals": {
+            "key": "classifier_significance_intervals",
+            "label": "Classifier intervals, max S\u00b2/(S+B)",
+            "kind": "classifier",
+            "n_bins": 6,
+            "identified": true,
+            "reference_full_retention": 0.2344649566684647,
+            "reference_profiled_retention": 0.2717275581764553,
+            "evaluation_full_retention": 0.2195808158535285,
+            "evaluation_profiled_retention": 0.3993615014590651,
+            "evaluation_occupied_bins": 6,
+            "evaluation_min_bin_events": 11,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 298,
+                "signal_events": 37,
+                "weighted_yield": 413113.3278172016,
+                "signal_fraction": 0.0002768839689365537,
+                "mean_tes_score": -1.0243558184496973,
+                "mean_posterior": 0.1700765557266646
+              },
+              {
+                "cell": 1,
+                "events": 13,
+                "signal_events": 4,
+                "weighted_yield": 14255.434948205948,
+                "signal_fraction": 0.0008682192288180942,
+                "mean_tes_score": -1.6868459581557789,
+                "mean_posterior": 0.4260042130140459
+              },
+              {
+                "cell": 2,
+                "events": 11,
+                "signal_events": 6,
+                "weighted_yield": 7930.376205921173,
+                "signal_fraction": 0.0023394963015919766,
+                "mean_tes_score": 2.377849245050346,
+                "mean_posterior": 0.4700592152180022
+              },
+              {
+                "cell": 3,
+                "events": 55,
+                "signal_events": 35,
+                "weighted_yield": 31757.27409362793,
+                "signal_fraction": 0.0034072547783022236,
+                "mean_tes_score": 0.16669110787363517,
+                "mean_posterior": 0.5449813294798701
+              },
+              {
+                "cell": 4,
+                "events": 50,
+                "signal_events": 32,
+                "weighted_yield": 28573.394679307938,
+                "signal_fraction": 0.003463245866909518,
+                "mean_tes_score": 2.5368177386770796,
+                "mean_posterior": 0.670550101389102
+              },
+              {
+                "cell": 5,
+                "events": 73,
+                "signal_events": 54,
+                "weighted_yield": 30220.224419355392,
+                "signal_fraction": 0.005520451318918051,
+                "mean_tes_score": 0.7761241416751337,
+                "mean_posterior": 0.7844196275429006
+              }
+            ],
+            "evaluation_bootstrap": {
+              "replicates": 200,
+              "dropped": 0,
+              "p05": 0.150509995293921,
+              "p50": 0.526666913344113,
+              "p95": 0.8063394577622326
+            }
+          },
+          "classifier_logit_equal_width": {
+            "key": "classifier_logit_equal_width",
+            "label": "Classifier logit, equal width",
+            "kind": "classifier",
+            "n_bins": 6,
+            "identified": true,
+            "reference_full_retention": 0.2943494159675811,
+            "reference_profiled_retention": 0.38690735678400795,
+            "evaluation_full_retention": 0.183952729524655,
+            "evaluation_profiled_retention": 0.19887622478434208,
+            "evaluation_occupied_bins": 6,
+            "evaluation_min_bin_events": 31,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 52,
+                "signal_events": 3,
+                "weighted_yield": 77545.14312005043,
+                "signal_fraction": 0.00011962764563644493,
+                "mean_tes_score": -1.7733483851657443,
+                "mean_posterior": 0.05536640721041129
+              },
+              {
+                "cell": 1,
+                "events": 117,
+                "signal_events": 6,
+                "weighted_yield": 175661.03447127342,
+                "signal_fraction": 0.00010566489448116697,
+                "mean_tes_score": -1.3602244172751632,
+                "mean_posterior": 0.12876389204244867
+              },
+              {
+                "cell": 2,
+                "events": 126,
+                "signal_events": 27,
+                "weighted_yield": 156739.3236603737,
+                "signal_fraction": 0.0005324087845139792,
+                "mean_tes_score": -0.12869395512260656,
+                "mean_posterior": 0.2687116916255778
+              },
+              {
+                "cell": 3,
+                "events": 92,
+                "signal_events": 53,
+                "weighted_yield": 61879.64777445793,
+                "signal_fraction": 0.0026482771787186303,
+                "mean_tes_score": -0.1994523680010466,
+                "mean_posterior": 0.5056547659383508
+              },
+              {
+                "cell": 4,
+                "events": 82,
+                "signal_events": 53,
+                "weighted_yield": 46032.72216510773,
+                "signal_fraction": 0.0035584692737675554,
+                "mean_tes_score": 0.899703113577722,
+                "mean_posterior": 0.7171240253601521
+              },
+              {
+                "cell": 5,
+                "events": 31,
+                "signal_events": 26,
+                "weighted_yield": 7992.160972356796,
+                "signal_fraction": 0.010052081347895831,
+                "mean_tes_score": 5.057445122255095,
+                "mean_posterior": 0.8637303428409598
+              }
+            ],
+            "evaluation_bootstrap": {
+              "replicates": 200,
+              "dropped": 0,
+              "p05": 0.10882994985721857,
+              "p50": 0.37320755568968916,
+              "p95": 0.865602545631397
+            }
+          },
+          "classifier_quantile": {
+            "key": "classifier_quantile",
+            "label": "Classifier quantile bins",
+            "kind": "classifier",
+            "n_bins": 6,
+            "identified": true,
+            "reference_full_retention": 0.27698981299064857,
+            "reference_profiled_retention": 0.35730962649770376,
+            "evaluation_full_retention": 0.2547012347408208,
+            "evaluation_profiled_retention": 0.41771286094182375,
+            "evaluation_occupied_bins": 6,
+            "evaluation_min_bin_events": 72,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 91,
+                "signal_events": 4,
+                "weighted_yield": 137678.0910139084,
+                "signal_fraction": 8.98379965776416e-05,
+                "mean_tes_score": -1.5913943932955619,
+                "mean_posterior": 0.07123330052154009
+              },
+              {
+                "cell": 1,
+                "events": 72,
+                "signal_events": 5,
+                "weighted_yield": 106033.89883327484,
+                "signal_fraction": 0.000145887531013567,
+                "mean_tes_score": -1.3637411002411162,
+                "mean_posterior": 0.14472325911448553
+              },
+              {
+                "cell": 2,
+                "events": 90,
+                "signal_events": 15,
+                "weighted_yield": 118725.4550254345,
+                "signal_fraction": 0.0003902426350688098,
+                "mean_tes_score": -0.5462395370851768,
+                "mean_posterior": 0.23058292501703626
+              },
+              {
+                "cell": 3,
+                "events": 91,
+                "signal_events": 37,
+                "weighted_yield": 85563.90974330902,
+                "signal_fraction": 0.0013375213583497196,
+                "mean_tes_score": -0.591638411379031,
+                "mean_posterior": 0.39800593821643704
+              },
+              {
+                "cell": 4,
+                "events": 81,
+                "signal_events": 51,
+                "weighted_yield": 47622.28343081474,
+                "signal_fraction": 0.0033113377527040737,
+                "mean_tes_score": 2.7008758195363627,
+                "mean_posterior": 0.6287029455755846
+              },
+              {
+                "cell": 5,
+                "events": 75,
+                "signal_events": 56,
+                "weighted_yield": 30226.39411687851,
+                "signal_fraction": 0.005723440732228919,
+                "mean_tes_score": 0.7750100114716862,
+                "mean_posterior": 0.7844055742882079
+              }
+            ],
+            "evaluation_bootstrap": {
+              "replicates": 200,
+              "dropped": 0,
+              "p05": 0.12058439831687588,
+              "p50": 0.4812946550252459,
+              "p95": 0.8330349129350083
+            }
+          },
+          "threshold_cut": {
+            "key": "threshold_cut",
+            "label": "Significance cut, two bins",
+            "kind": "conventional",
+            "n_bins": 2,
+            "identified": false,
+            "reference_full_retention": 2.9939042681100496e-06,
+            "reference_profiled_retention": 0.0,
+            "evaluation_full_retention": 0.0,
+            "evaluation_profiled_retention": null,
+            "evaluation_occupied_bins": 2,
+            "evaluation_min_bin_events": 144,
+            "evaluation_occupancy": [
+              {
+                "cell": 0,
+                "events": 356,
+                "signal_events": 67,
+                "weighted_yield": 457515.87193512917,
+                "signal_fraction": 0.00045280642113256473,
+                "mean_tes_score": -0.9776739525669554,
+                "mean_posterior": 0.20055156877639405
+              },
+              {
+                "cell": 1,
+                "events": 144,
+                "signal_events": 101,
+                "weighted_yield": 68334.16022849083,
+                "signal_fraction": 0.004567837717236635,
+                "mean_tes_score": 1.7585731808752105,
+                "mean_posterior": 0.709430524965851
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "mean": {
+      "ds_rule": {
+        "label": "Profiled Ds rule",
+        "kind": "scorequant",
+        "n_bins": 6,
+        "identified": true,
+        "reference_profiled_retention": 0.9282251011105871,
+        "evaluation_profiled_retention": 0.8576000760739684,
+        "evaluation_full_retention": 0.7075707283568803,
+        "evaluation_p05_min": 0.8051127114077529,
+        "evaluation_p95_max": 0.9146025172964825,
+        "evaluation_min_bin_events": 2
+      },
+      "d_rule": {
+        "label": "Plain D rule",
+        "kind": "scorequant",
+        "n_bins": 6,
+        "identified": true,
+        "reference_profiled_retention": 0.8437941935304059,
+        "evaluation_profiled_retention": 0.8024888163477144,
+        "evaluation_full_retention": 0.8663441050256773,
+        "evaluation_p05_min": 0.7310771253319913,
+        "evaluation_p95_max": 0.8639293454097712,
+        "evaluation_min_bin_events": 10
+      },
+      "classifier_significance_intervals": {
+        "label": "Classifier intervals, max S\u00b2/(S+B)",
+        "kind": "classifier",
+        "n_bins": 6,
+        "identified": true,
+        "reference_profiled_retention": 0.32937532193038865,
+        "evaluation_profiled_retention": 0.32439730137385586,
+        "evaluation_full_retention": 0.2255521815949698,
+        "evaluation_p05_min": 0.10420170995633914,
+        "evaluation_p95_max": 0.8063394577622326,
+        "evaluation_min_bin_events": 11
+      },
+      "classifier_logit_equal_width": {
+        "label": "Classifier logit, equal width",
+        "kind": "classifier",
+        "n_bins": 6,
+        "identified": true,
+        "reference_profiled_retention": 0.4168902646662369,
+        "evaluation_profiled_retention": 0.27115065206413,
+        "evaluation_full_retention": 0.22686524436302874,
+        "evaluation_p05_min": 0.10882994985721857,
+        "evaluation_p95_max": 0.865602545631397,
+        "evaluation_min_bin_events": 24
+      },
+      "classifier_quantile": {
+        "label": "Classifier quantile bins",
+        "kind": "classifier",
+        "n_bins": 6,
+        "identified": true,
+        "reference_profiled_retention": 0.2632525025436286,
+        "evaluation_profiled_retention": 0.3681631203472413,
+        "evaluation_full_retention": 0.2624554077742711,
+        "evaluation_p05_min": 0.12058439831687588,
+        "evaluation_p95_max": 0.8330349129350083,
+        "evaluation_min_bin_events": 72
+      },
+      "threshold_cut": {
+        "label": "Significance cut, two bins",
+        "kind": "conventional",
+        "n_bins": 2,
+        "identified": false,
+        "reference_profiled_retention": 9.081205539393294e-17,
+        "evaluation_profiled_retention": null,
+        "evaluation_full_retention": 0.0,
+        "evaluation_p05_min": null,
+        "evaluation_p95_max": null,
+        "evaluation_min_bin_events": 144
+      }
+    },
+    "held_out_budget_sweep": [
+      {
+        "n_bins": 3.0,
+        "ds_rule_evaluation_profiled_retention": 0.645462731302716,
+        "directions": [
+          0.6236316860678998,
+          0.6672937765375323
+        ]
+      },
+      {
+        "n_bins": 4.0,
+        "ds_rule_evaluation_profiled_retention": 0.7586096230453865,
+        "directions": [
+          0.7250539825865165,
+          0.7921652635042565
+        ]
+      },
+      {
+        "n_bins": 6.0,
+        "ds_rule_evaluation_profiled_retention": 0.8576000760739684,
+        "directions": [
+          0.859066279111288,
+          0.8561338730366487
+        ]
+      },
+      {
+        "n_bins": 8.0,
+        "ds_rule_evaluation_profiled_retention": 0.8893402629357366,
+        "directions": [
+          0.9131017004583016,
+          0.8655788254131717
+        ]
+      }
+    ],
+    "bootstrap_replicates": 200
+  },
+  "downstream": {
+    "tes_constraint_width": 0.01,
+    "held_out": [
+      {
+        "events": 500,
+        "weighted_yield": 525582.9945468903,
+        "unbinned_proxy": {
+          "sigma_mu": 1.1984536511985528,
+          "sigma_mu_tes_fixed": 1.175284141159898
+        },
+        "rules": {
+          "ds_rule": {
+            "sigma_mu": 1.1453516898773712,
+            "sigma_mu_mc_inflated": 45.50640259178268,
+            "sigma_mu_tes_constrained": 1.1434131377302108,
+            "sigma_mu_tes_fixed": 0.9125159418102925,
+            "sigma_mu_central_difference": 1.0314248573415314,
+            "occupied_bins": 6,
+            "nominal_yield": [
+              45913.311544418335,
+              1585.4568049907684,
+              71333.06229400635,
+              46081.03060007095,
+              357468.35863780975,
+              3201.774665594101
+            ],
+            "signal_yield": [
+              24.73744773864746,
+              3.0921809673309326,
+              154.58292388916016,
+              203.98921823501587,
+              95.87365245819092,
+              37.04541754722595
+            ],
+            "tes_slope": [
+              87266.28211180368,
+              -19644.201237360623,
+              -42802.214056877805,
+              68178.02343822658,
+              -151942.40656398595,
+              58944.51630819413
+            ],
+            "label": "Profiled Ds rule",
+            "kind": "scorequant",
+            "n_bins": 6,
+            "sigma_mu_proxy_score": 1.2930279326882095
+          },
+          "d_rule": {
+            "sigma_mu": 1.025890466545272,
+            "sigma_mu_mc_inflated": 40.71425398619457,
+            "sigma_mu_tes_constrained": 1.025837543732696,
+            "sigma_mu_tes_fixed": 0.9763792513977424,
+            "sigma_mu_central_difference": 1.0416886823086764,
+            "occupied_bins": 6,
+            "nominal_yield": [
+              212095.04405140877,
+              12665.101354122162,
+              109212.68246412277,
+              46093.40959692001,
+              140726.43342876434,
+              4790.3236515522
+            ],
+            "signal_yield": [
+              89.6661217212677,
+              6.184361934661865,
+              52.58883619308472,
+              216.36821508407593,
+              111.28352642059326,
+              43.22977948188782
+            ],
+            "tes_slope": [
+              38872.62021609711,
+              -328590.1196893055,
+              -156752.39490690682,
+              125341.37363456542,
+              275753.0196546372,
+              45375.5010909126
+            ],
+            "label": "Plain D rule",
+            "kind": "scorequant",
+            "n_bins": 6,
+            "sigma_mu_proxy_score": 1.3241617782127155
+          },
+          "classifier_significance_intervals": {
+            "sigma_mu": 1.4047190626918133,
+            "sigma_mu_mc_inflated": 55.75217595699088,
+            "sigma_mu_tes_constrained": 1.397645827287963,
+            "sigma_mu_tes_fixed": 0.8876623295313336,
+            "sigma_mu_central_difference": 1.555729292235846,
+            "occupied_bins": 6,
+            "nominal_yield": [
+              370328.27718758583,
+              66289.28129816055,
+              17428.78754711151,
+              25437.137068986893,
+              15919.46118092537,
+              30180.050264120102
+            ],
+            "signal_yield": [
+              89.69881844520569,
+              58.72343683242798,
+              30.90192699432373,
+              117.5265953540802,
+              95.81494069099426,
+              126.65512251853943
+            ],
+            "tes_slope": [
+              -357302.61083262303,
+              76725.30974206468,
+              67731.578561692,
+              111357.27544557478,
+              9064.040646098905,
+              92424.40643719262
+            ],
+            "label": "Classifier intervals, max S\u00b2/(S+B)",
+            "kind": "classifier",
+            "n_bins": 6,
+            "sigma_mu_proxy_score": 2.3996295402943475
+          },
+          "classifier_logit_equal_width": {
+            "sigma_mu": 1.4467254987041684,
+            "sigma_mu_mc_inflated": 57.45297162442831,
+            "sigma_mu_tes_constrained": 1.4405252639320147,
+            "sigma_mu_tes_fixed": 0.9290390552435132,
+            "sigma_mu_central_difference": 1.2841541916444368,
+            "occupied_bins": 6,
+            "nominal_yield": [
+              79130.6029074192,
+              189891.16195201874,
+              134544.8259215355,
+              72724.32195734978,
+              39742.310225486755,
+              9549.771583080292
+            ],
+            "signal_yield": [
+              12.371706247329712,
+              34.02547740936279,
+              61.85985708236694,
+              160.75262141227722,
+              194.72733974456787,
+              55.58383893966675
+            ],
+            "tes_slope": [
+              -197436.50548798693,
+              -84437.05660047985,
+              -33356.215296472765,
+              183642.147001766,
+              58976.37872627801,
+              72611.25165689559
+            ],
+            "label": "Classifier logit, equal width",
+            "kind": "classifier",
+            "n_bins": 6,
+            "sigma_mu_proxy_score": 2.0450561619415577
+          },
+          "classifier_quantile": {
+            "sigma_mu": 1.824885904332062,
+            "sigma_mu_mc_inflated": 72.46963880217928,
+            "sigma_mu_tes_constrained": 1.809616033377426,
+            "sigma_mu_tes_fixed": 0.9337728212051016,
+            "sigma_mu_central_difference": 1.8120606166911033,
+            "occupied_bins": 6,
+            "nominal_yield": [
+              112363.35219287872,
+              140828.58206439018,
+              98140.0036084652,
+              86872.83245825768,
+              42870.35394477844,
+              44507.87027812004
+            ],
+            "signal_yield": [
+              15.463887214660645,
+              24.748934507369995,
+              43.2986524105072,
+              67.98150610923767,
+              154.63434028625488,
+              213.1935203075409
+            ],
+            "tes_slope": [
+              -197457.12002776912,
+              -117599.24544493362,
+              -78449.70701512828,
+              102413.04885455535,
+              177532.34730992996,
+              113560.6763233457
+            ],
+            "label": "Classifier quantile bins",
+            "kind": "classifier",
+            "n_bins": 6,
+            "sigma_mu_proxy_score": 2.1231918483554213
+          },
+          "threshold_cut": {
+            "sigma_mu": null,
+            "sigma_mu_mc_inflated": null,
+            "sigma_mu_tes_constrained": 9.951220337845843,
+            "sigma_mu_tes_fixed": 0.9597006825147304,
+            "sigma_mu_central_difference": null,
+            "occupied_bins": 2,
+            "nominal_yield": [
+              436617.5584857464,
+              88965.43606114388
+            ],
+            "signal_yield": [
+              148.42225527763367,
+              370.8985855579376
+            ],
+            "tes_slope": [
+              -280577.2806562696,
+              280577.2806562696
+            ],
+            "label": "Significance cut, two bins",
+            "kind": "conventional",
+            "n_bins": 2,
+            "sigma_mu_proxy_score": null
+          }
+        }
+      },
+      {
+        "events": 500,
+        "weighted_yield": 525850.03216362,
+        "unbinned_proxy": {
+          "sigma_mu": 1.264456722451857,
+          "sigma_mu_tes_fixed": 1.249620646327986
+        },
+        "rules": {
+          "ds_rule": {
+            "sigma_mu": 0.8973220859903247,
+            "sigma_mu_mc_inflated": 35.58790704749372,
+            "sigma_mu_tes_constrained": 0.8973127504398509,
+            "sigma_mu_tes_fixed": 0.8875839478728936,
+            "sigma_mu_central_difference": 0.8970078931049897,
+            "occupied_bins": 6,
+            "nominal_yield": [
+              58698.82215809822,
+              19057.161323785782,
+              15839.097617149353,
+              9586.894320249557,
+              251641.0390648842,
+              171027.0176794529
+            ],
+            "signal_yield": [
+              157.67982411384583,
+              80.31855034828186,
+              15.451376914978027,
+              92.7065761089325,
+              43.28735589981079,
+              129.86179566383362
+            ],
+            "tes_slope": [
+              119108.10753413604,
+              96766.17092904587,
+              -393535.3949957801,
+              12123.954033170425,
+              82713.68903705046,
+              82823.4734623772
+            ],
+            "label": "Profiled Ds rule",
+            "kind": "scorequant",
+            "n_bins": 6,
+            "sigma_mu_proxy_score": 1.3665739239035124
+          },
+          "d_rule": {
+            "sigma_mu": 0.9713622628678475,
+            "sigma_mu_mc_inflated": 38.497939574618336,
+            "sigma_mu_tes_constrained": 0.9713497755227665,
+            "sigma_mu_tes_fixed": 0.9586569199547257,
+            "sigma_mu_central_difference": 0.9785644520695979,
+            "occupied_bins": 6,
+            "nominal_yield": [
+              147251.36584472656,
+              36499.65615153313,
+              19003.826865196228,
+              9589.986501216888,
+              208966.61857295036,
+              104538.57822799683
+            ],
+            "signal_yield": [
+              89.6793212890625,
+              126.70424723625183,
+              15.451376914978027,
+              95.79875707626343,
+              92.71171259880066,
+              98.96006393432617
+            ],
+            "tes_slope": [
+              -155379.0518592653,
+              170594.76178033007,
+              -411637.67713660264,
+              15137.998930613197,
+              266639.8374571118,
+              114644.13082781291
+            ],
+            "label": "Plain D rule",
+            "kind": "scorequant",
+            "n_bins": 6,
+            "sigma_mu_proxy_score": 1.426391473905225
+          },
+          "classifier_significance_intervals": {
+            "sigma_mu": 1.7151842422527712,
+            "sigma_mu_mc_inflated": 68.14652416889837,
+            "sigma_mu_tes_constrained": 1.6914482562991708,
+            "sigma_mu_tes_fixed": 0.9099457330539003,
+            "sigma_mu_central_difference": 1.4388828672463096,
+            "occupied_bins": 6,
+            "nominal_yield": [
+              413113.3278172016,
+              14255.434948205948,
+              7930.376205921173,
+              31757.27409362793,
+              28573.394679307938,
+              30220.224419355392
+            ],
+            "signal_yield": [
+              114.38445782661438,
+              12.376842737197876,
+              18.553085803985596,
+              108.20512390136719,
+              98.95669102668762,
+              166.82927775382996
+            ],
+            "tes_slope": [
+              -254942.33147598448,
+              40661.27364408402,
+              5924.820944695253,
+              21053.67870762236,
+              99510.66824231826,
+              87791.88993726455
+            ],
+            "label": "Classifier intervals, max S\u00b2/(S+B)",
+            "kind": "classifier",
+            "n_bins": 6,
+            "sigma_mu_proxy_score": 2.000879208688557
+          },
+          "classifier_logit_equal_width": {
+            "sigma_mu": 1.2543505730705733,
+            "sigma_mu_mc_inflated": 49.719982524515665,
+            "sigma_mu_tes_constrained": 1.2482632687289772,
+            "sigma_mu_tes_fixed": 0.8569294982743672,
+            "sigma_mu_central_difference": 1.1067914169945032,
+            "occupied_bins": 6,
+            "nominal_yield": [
+              77545.14312005043,
+              175661.03447127342,
+              156739.3236603737,
+              61879.64777445793,
+              46032.72216510773,
+              7992.160972356796
+            ],
+            "signal_yield": [
+              9.276542901992798,
+              18.56120467185974,
+              83.44939279556274,
+              163.87445902824402,
+              163.80602741241455,
+              80.33785223960876
+            ],
+            "tes_slope": [
+              -167278.5459681919,
+              -125202.92585895176,
+              34548.72630164735,
+              82701.14056995937,
+              161574.18300583246,
+              13657.421949704476
+            ],
+            "label": "Classifier logit, equal width",
+            "kind": "classifier",
+            "n_bins": 6,
+            "sigma_mu_proxy_score": 2.8353882549536276
+          },
+          "classifier_quantile": {
+            "sigma_mu": 1.57865284585802,
+            "sigma_mu_mc_inflated": 62.71678746788246,
+            "sigma_mu_tes_constrained": 1.5686612969960416,
+            "sigma_mu_tes_fixed": 0.9220126108205071,
+            "sigma_mu_central_difference": 1.7169331704611626,
+            "occupied_bins": 6,
+            "nominal_yield": [
+              137678.0910139084,
+              106033.89883327484,
+              118725.4550254345,
+              85563.90974330902,
+              47622.28343081474,
+              30226.39411687851
+            ],
+            "signal_yield": [
+              12.36872386932373,
+              15.469023704528809,
+              46.33173441886902,
+              114.4435567855835,
+              157.69346499443054,
+              172.99897527694702
+            ],
+            "tes_slope": [
+              -278829.9680500938,
+              4465.057631447164,
+              -92096.83841478256,
+              156537.45848542164,
+              113108.01438263482,
+              96816.2759653727
+            ],
+            "label": "Classifier quantile bins",
+            "kind": "classifier",
+            "n_bins": 6,
+            "sigma_mu_proxy_score": 1.9564332998875091
+          },
+          "threshold_cut": {
+            "sigma_mu": null,
+            "sigma_mu_mc_inflated": null,
+            "sigma_mu_tes_constrained": 8.692998400572518,
+            "sigma_mu_tes_fixed": 0.9956509485123908,
+            "sigma_mu_central_difference": null,
+            "occupied_bins": 2,
+            "nominal_yield": [
+              457515.87193512917,
+              68334.16022849083
+            ],
+            "signal_yield": [
+              207.16612458229065,
+              312.13935446739197
+            ],
+            "tes_slope": [
+              -211488.38955356958,
+              211488.38955356958
+            ],
+            "label": "Significance cut, two bins",
+            "kind": "conventional",
+            "n_bins": 2,
+            "sigma_mu_proxy_score": null
+          }
+        }
+      }
+    ],
+    "all_events": {
+      "events": 1000,
+      "weighted_yield": 1051433.0267105103,
+      "unbinned_proxy": {
+        "sigma_mu": 0.8692599880247781,
+        "sigma_mu_tes_fixed": 0.8557262640145936
+      },
+      "rules": {
+        "ds_rule": {
+          "sigma_mu": 0.7198361143506828,
+          "sigma_mu_mc_inflated": 28.592394757442285,
+          "sigma_mu_tes_constrained": 0.7197287541774746,
+          "sigma_mu_tes_fixed": 0.7003032629637141,
+          "sigma_mu_central_difference": 0.7052026256357771,
+          "occupied_bins": 6,
+          "nominal_yield": [
+            142727.2209239006,
+            500111.54887366295,
+            1588.5394580364227,
+            68282.64917325974,
+            27076.739520072937,
+            311646.3287615776
+          ],
+          "signal_yield": [
+            337.00400495529175,
+            95.86039710044861,
+            6.1748340129852295,
+            265.8122591972351,
+            172.9879331588745,
+            160.7868914604187
+          ],
+          "tes_slope": [
+            -319977.2802684419,
+            81009.13068067448,
+            -22699.453593208666,
+            202484.60438478555,
+            78788.90189829325,
+            -19605.903102102773
+          ],
+          "label": "Profiled Ds rule",
+          "kind": "scorequant",
+          "n_bins": 6,
+          "sigma_mu_proxy_score": 0.9089644611981625
+        },
+        "d_rule": {
+          "sigma_mu": 0.7647334317974998,
+          "sigma_mu_mc_inflated": 30.361173115196106,
+          "sigma_mu_tes_constrained": 0.7647171358814954,
+          "sigma_mu_tes_fixed": 0.7349662958635401,
+          "sigma_mu_central_difference": 0.7708108547269714,
+          "occupied_bins": 6,
+          "nominal_yield": [
+            261204.95566487312,
+            237381.59936261177,
+            33251.29284334183,
+            73079.90918707848,
+            28659.104144096375,
+            417856.1655085087
+          ],
+          "signal_yield": [
+            136.08164143562317,
+            228.75268292427063,
+            21.635738849639893,
+            327.65662360191345,
+            172.9879331588745,
+            151.51169991493225
+          ],
+          "tes_slope": [
+            -260893.51804369973,
+            406855.5561803635,
+            -749269.8803917564,
+            295817.4895007269,
+            78765.43268249148,
+            228724.9200718742
+          ],
+          "label": "Plain D rule",
+          "kind": "scorequant",
+          "n_bins": 6,
+          "sigma_mu_proxy_score": 0.9577147319812948
+        },
+        "classifier_significance_intervals": {
+          "sigma_mu": 1.909383932681784,
+          "sigma_mu_mc_inflated": 75.75676524994952,
+          "sigma_mu_tes_constrained": 1.8751824558751378,
+          "sigma_mu_tes_fixed": 0.5963359210113813,
+          "sigma_mu_central_difference": 1.5187977160273725,
+          "occupied_bins": 6,
+          "nominal_yield": [
+            810334.9889242649,
+            101227.22904372215,
+            27010.17406153679,
+            17516.727907180786,
+            79384.36328077316,
+            15959.543493032455
+          ],
+          "signal_yield": [
+            207.17032074928284,
+            179.3199861049652,
+            108.19896388053894,
+            120.61877632141113,
+            287.42102003097534,
+            135.89725279808044
+          ],
+          "tes_slope": [
+            -595748.430967785,
+            171408.41923304964,
+            45263.72485501425,
+            126466.82260036466,
+            170903.2201757885,
+            81706.24410356792
+          ],
+          "label": "Classifier intervals, max S\u00b2/(S+B)",
+          "kind": "classifier",
+          "n_bins": 6,
+          "sigma_mu_proxy_score": 1.5096749450400229
+        },
+        "classifier_logit_equal_width": {
+          "sigma_mu": 1.4595680269191333,
+          "sigma_mu_mc_inflated": 57.98156284240298,
+          "sigma_mu_tes_constrained": 1.448154490939131,
+          "sigma_mu_tes_fixed": 0.6360253003054837,
+          "sigma_mu_central_difference": 1.5911671745078626,
+          "occupied_bins": 6,
+          "nominal_yield": [
+            155093.3814034462,
+            376625.6566104889,
+            281797.922688961,
+            137790.34938311577,
+            87346.34182834625,
+            12779.374796152115
+          ],
+          "signal_yield": [
+            21.64824914932251,
+            49.4945011138916,
+            151.49361181259155,
+            346.27748370170593,
+            349.25467014312744,
+            120.45780396461487
+          ],
+          "tes_slope": [
+            -354177.7336997076,
+            -238270.3021503631,
+            -13933.62309728341,
+            295197.50589461543,
+            233975.38116205306,
+            77208.77189068566
+          ],
+          "label": "Classifier logit, equal width",
+          "kind": "classifier",
+          "n_bins": 6,
+          "sigma_mu_proxy_score": 1.5057275960845569
+        },
+        "classifier_quantile": {
+          "sigma_mu": 1.1900594304957608,
+          "sigma_mu_mc_inflated": 47.28268445364205,
+          "sigma_mu_tes_constrained": 1.1855305389226563,
+          "sigma_mu_tes_fixed": 0.6688983798041772,
+          "sigma_mu_central_difference": 1.387948681361438,
+          "occupied_bins": 6,
+          "nominal_yield": [
+            248462.170763731,
+            243694.65946865082,
+            218447.82325792313,
+            172430.56082201004,
+            93678.97957921028,
+            74718.83281898499
+          ],
+          "signal_yield": [
+            30.924792051315308,
+            37.12577724456787,
+            89.63038682937622,
+            176.24368333816528,
+            333.9407608509064,
+            370.76091957092285
+          ],
+          "tes_slope": [
+            -476284.1431436083,
+            -107105.69324811308,
+            -166008.27289626704,
+            296558.87838726945,
+            237977.9730113347,
+            214861.2578893843
+          ],
+          "label": "Classifier quantile bins",
+          "kind": "classifier",
+          "n_bins": 6,
+          "sigma_mu_proxy_score": 1.6783718361562376
+        },
+        "threshold_cut": {
+          "sigma_mu": null,
+          "sigma_mu_mc_inflated": null,
+          "sigma_mu_tes_constrained": 9.26174788977514,
+          "sigma_mu_tes_fixed": 0.6723649974448257,
+          "sigma_mu_central_difference": null,
+          "occupied_bins": 2,
+          "nominal_yield": [
+            879842.6657903194,
+            171590.3609201908
+          ],
+          "signal_yield": [
+            306.10536551475525,
+            732.5209543704987
+          ],
+          "tes_slope": [
+            -520593.8495097841,
+            520593.8495097841
+          ],
+          "label": "Significance cut, two bins",
+          "kind": "conventional",
+          "n_bins": 2,
+          "sigma_mu_proxy_score": null
+        }
+      }
+    }
+  },
+  "timings_seconds": {
+    "signal_classifier": 42.39809058299579,
+    "tes_classifier": 44.889685041998746,
+    "tes_reliability": 3.7111629999999423,
+    "in_sample": 36.658013291991665,
+    "cross_evaluation": 23.067042333001154,
+    "downstream": 0.06070400000317022
   }
 }

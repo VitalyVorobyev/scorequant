@@ -29,6 +29,14 @@ ScoreQuant. Neither is the downstream mixture likelihood. ScoreQuant receives
 score vectors and returns a frozen score quantizer. This makes the study useful
 for cytometry users and for developers adapting the same API to another domain.
 
+The portal's
+[FlowCyt walkthrough](https://vitalyvorobyev.github.io/scorequant/walkthroughs/flowcyt/) tells
+this study as one linear arc and runs the reference-to-held-out chain in the reader's own Python
+on a committed fixture-scale table, `examples/data/flowcyt_walkthrough.npz`, written by
+`website/scripts/generate_showcase.py --force`; its sidecar `flowcyt_walkthrough.json` records
+what that run produces (a held-out macro RMSE several times the full study's, because the
+category calibration is estimated from 3,518 cells rather than hundreds of thousands).
+
 ## The section
 
 | Page | What it settles |

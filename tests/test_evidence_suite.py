@@ -1349,36 +1349,59 @@ def test_fast_rerun_reproduces_the_michelson_aliasing_and_criterion_gap() -> Non
 
 # --- docs/usecases/hep/index.md --------------------------------------------
 
-# The headline partition table: n_bins, full retention, profiled retention,
-# at the precision the doc page prints.
-PAGE_HEP_PARTITIONS: dict[str, tuple[int, float, float]] = {
-    "d_partition": (6, 0.89247, 0.83696),
-    "ds_partition": (6, 0.40838, 0.95600),
-    "classifier_quantile": (6, 0.17817, 0.24543),
-    "classifier_logit_equal_width": (6, 0.21663, 0.45525),
-    "threshold_cut": (2, 0.00000, 0.00000),
+# The in-sample partition table on all events: n_bins, full retention,
+# profiled retention, at the precision the doc page prints. The two-bin cut
+# is not identified under three floating parameters, so its profiled entry
+# is None rather than a number.
+PAGE_HEP_PARTITIONS: dict[str, tuple[int, float | None, float | None]] = {
+    "ds_partition": (6, 0.47837, 0.95503),
+    "d_partition": (6, 0.87456, 0.82381),
+    "ds_rule": (6, 0.56195, 0.91455),
+    "d_rule": (6, 0.87456, 0.82381),
+    "classifier_significance_intervals": (6, 0.23073, 0.33154),
+    "classifier_logit_equal_width": (6, 0.24364, 0.33328),
+    "classifier_quantile": (6, 0.23144, 0.26824),
+    "threshold_cut": (2, 0.0, None),
 }
 
-# The bin-budget sweep: bins, ScoreQuant profiled D_s, classifier-quantile
-# baseline, certified ceiling, and the certified gap.
+# The bin-budget sweep, in sample: bins, profiled D_s, classifier-quantile
+# baseline, certified ceiling, and the certified gap in nats.
 PAGE_HEP_SWEEP = [
-    (3, 0.82140, 0.07652, 0.84690, 0.030582),
-    (4, 0.89982, 0.18084, 0.90351, 0.004093),
-    (6, 0.95600, 0.24543, 0.95685, 0.000889),
-    (8, 0.97567, 0.43741, 0.97718, 0.001551),
+    (3, 0.81311, 0.06197, 0.84055, 0.033194),
+    (4, 0.89516, 0.17765, 0.89818, 0.003367),
+    (6, 0.95503, 0.26824, 0.95528, 0.000257),
+    (8, 0.97526, 0.38642, 0.97530, 0.000038),
 ]
 
-# The three-point delta convergence table: delta, minus/plus classifier AUC,
-# near-half fraction, profiled D_s retention, certified ceiling.
-PAGE_HEP_DELTA_SWEEP = [
-    (0.025, 0.53071, 0.101, 0.95673, 0.95952),
-    (0.05, 0.56737, 0.091, 0.95600, 0.95685),
-    (0.10, 0.65978, 0.055, 0.95521, 0.95605),
-]
+# Held out: every reusable rule built on one half and scored on the other,
+# mean of both directions of the split.
+PAGE_HEP_HELD_OUT: dict[str, float | None] = {
+    "ds_rule": 0.8576,
+    "d_rule": 0.8025,
+    "classifier_significance_intervals": 0.3244,
+    "classifier_logit_equal_width": 0.2712,
+    "classifier_quantile": 0.3682,
+    "threshold_cut": None,
+}
+
+# Downstream, all events: relative sigma(mu) with tes fixed and with tes
+# floating, per rule.
+PAGE_HEP_SIGMA: dict[str, tuple[float, float | None]] = {
+    "ds_rule": (0.700, 0.720),
+    "d_rule": (0.735, 0.765),
+    "classifier_significance_intervals": (0.596, 1.909),
+    "classifier_logit_equal_width": (0.636, 1.460),
+    "classifier_quantile": (0.669, 1.190),
+    "threshold_cut": (0.672, None),
+}
 
 
 def _hep_metrics() -> dict[str, object]:
     return _load(HEP_METRICS)
+
+
+def _hep_in_sample() -> dict[str, object]:
+    return _mapping(_hep_metrics(), "in_sample")
 
 
 def test_hep_json_matches_the_fixture_facts() -> None:
@@ -1387,77 +1410,121 @@ def test_hep_json_matches_the_fixture_facts() -> None:
     assert fixture["n_events"] == 1_000
     assert fixture["signal_events"] == 336
     assert fixture["background_events"] == 664
+    assert round(float(fixture["effective_events"])) == 665  # type: ignore[arg-type]
     assert metrics["schema"] == ["mu_htautau", "nu_background", "tes"]
     assert metrics["interest"] == [0]
     assert metrics["n_bins"] == 6
+    assert metrics["n_parameters"] == 3
     assert metrics["delta"] == 0.05
 
 
 def test_hep_json_matches_the_published_classifier_diagnostics() -> None:
-    """D9's two failure modes, fixed: the spike's own target numbers."""
     classifiers = _mapping(_hep_metrics(), "classifiers")
-    # D9/F2: weighted signal AUC 0.8316 and weighted signal fraction 0.00099
-    # in the spike; this run lands close, not exactly, on its own seeds.
     assert round(float(classifiers["signal_weighted_auc"]), 2) == pytest.approx(0.83, abs=0.02)  # type: ignore[arg-type]
     assert round(float(classifiers["signal_fraction"]), 4) == pytest.approx(0.0010, abs=2e-4)  # type: ignore[arg-type]
-    # D9/F1: grouped out-of-fold AUC 0.5733 in the spike, comfortably above
-    # chance and far from the 0.3424 a plain per-row split produces.
-    assert float(classifiers["tes_minus_plus_auc"]) > 0.55
-    assert float(classifiers["tes_minus_plus_auc"]) < 0.65
+    # Weighted out-of-fold AUC of the tes task, comfortably above chance and
+    # far from the 0.34 a plain per-row split produces.
+    assert 0.55 < float(classifiers["tes_minus_plus_auc"]) < 0.65  # type: ignore[arg-type]
+    # Two tes classifiers trained on disjoint events reproduce the score
+    # column only in part: the page says so, and pins the order of magnitude.
+    reliability = _mapping(classifiers, "tes_reliability")
+    assert 0.3 < float(reliability["weighted_correlation"]) < 0.7  # type: ignore[arg-type]
 
 
 def test_hep_json_matches_the_published_partition_table() -> None:
-    partitions = {str(row["key"]): row for row in _listing(_hep_metrics(), "partitions")}
-    assert set(partitions) == set(PAGE_HEP_PARTITIONS)
+    by_key = _mapping(_hep_in_sample(), "by_key")
+    assert set(by_key) == set(PAGE_HEP_PARTITIONS)
     for key, (n_bins, full, profiled) in PAGE_HEP_PARTITIONS.items():
-        row = partitions[key]
+        row = _mapping(by_key, key)
         assert int(row["n_bins"]) == n_bins  # type: ignore[call-overload]
         assert round(float(row["full_retention"]), 5) == pytest.approx(full, abs=5e-4)  # type: ignore[arg-type]
-        assert round(float(row["profiled_retention"]), 5) == pytest.approx(profiled, abs=5e-4)  # type: ignore[arg-type]
+        if profiled is None:
+            assert row["profiled_retention"] is None
+        else:
+            assert round(float(row["profiled_retention"]), 5) == pytest.approx(profiled, abs=5e-4)  # type: ignore[arg-type]
 
 
 def test_hep_json_supports_the_central_prediction() -> None:
-    """D6's prediction, measured: ScoreQuant beats classifier-output bins on profiled D_s.
+    """The prediction, measured in sample and held out.
 
-    D6 is explicit that this is a prediction, not a guarantee, and that a
-    small, zero, or reversed gap must be reported as measured. Here the
-    measured gap is large and in the predicted direction.
+    Profiled D_s beats every classifier-output binning on profiled
+    information, in sample and on events the rule never saw, and each
+    criterion wins on its own objective.
     """
-    partitions = {str(row["key"]): row for row in _listing(_hep_metrics(), "partitions")}
-    ds_profiled = float(partitions["ds_partition"]["profiled_retention"])  # type: ignore[arg-type]
-    # The gap is quoted against the *strongest* one-dimensional binning of the
-    # classifier output, not the first one tried. Equal-frequency and
-    # logit-equal-width cells of the same posterior differ by 0.21 in retained
-    # profiled information, so pinning only the weaker one would have let the
-    # headline number be set by the baseline's difficulty rather than by the
-    # method. Both are pinned, and so is the spread between them.
-    quantile_profiled = float(partitions["classifier_quantile"]["profiled_retention"])  # type: ignore[arg-type]
-    logit_profiled = float(partitions["classifier_logit_equal_width"]["profiled_retention"])  # type: ignore[arg-type]
-    best_baseline = max(quantile_profiled, logit_profiled)
-    assert ds_profiled - best_baseline == pytest.approx(0.5008, abs=5e-3)
-    assert ds_profiled - quantile_profiled == pytest.approx(0.7106, abs=5e-3)
-    assert abs(logit_profiled - quantile_profiled) == pytest.approx(0.2098, abs=5e-3)
+    by_key = _mapping(_hep_in_sample(), "by_key")
+    ds_profiled = float(_mapping(by_key, "ds_partition")["profiled_retention"])  # type: ignore[arg-type]
+    d_profiled = float(_mapping(by_key, "d_partition")["profiled_retention"])  # type: ignore[arg-type]
+    classifier_keys = (
+        "classifier_significance_intervals",
+        "classifier_logit_equal_width",
+        "classifier_quantile",
+    )
+    best_baseline = max(
+        float(_mapping(by_key, key)["profiled_retention"])  # type: ignore[arg-type]
+        for key in classifier_keys
+    )
+    assert ds_profiled > d_profiled > best_baseline
+    gap = _mapping(_hep_in_sample(), "scorequant_vs_classifier_binning")
+    assert float(gap["profiled_retention_gap"]) == pytest.approx(ds_profiled - best_baseline)  # type: ignore[arg-type]
 
-    gap = _mapping(_hep_metrics(), "scorequant_vs_classifier_binning")
-    assert gap["best_baseline_key"] == "classifier_logit_equal_width"
-    assert float(gap["profiled_retention_gap"]) == pytest.approx(0.5008, abs=5e-3)  # type: ignore[arg-type]
-
-    # Each criterion still wins on its own objective and loses on the other,
-    # the same trade `nuisance-profiled-ds` and `michelson-phase` report.
-    d_full = float(partitions["d_partition"]["full_retention"])  # type: ignore[arg-type]
-    ds_full = float(partitions["ds_partition"]["full_retention"])  # type: ignore[arg-type]
-    d_profiled = float(partitions["d_partition"]["profiled_retention"])  # type: ignore[arg-type]
+    ds_full = float(_mapping(by_key, "ds_partition")["full_retention"])  # type: ignore[arg-type]
+    d_full = float(_mapping(by_key, "d_partition")["full_retention"])  # type: ignore[arg-type]
     assert d_full > ds_full
-    assert ds_profiled > d_profiled
+
+    mean = _mapping(_mapping(_hep_metrics(), "cross_evaluation"), "mean")
+    assert set(mean) == set(PAGE_HEP_HELD_OUT)
+    for key, expected in PAGE_HEP_HELD_OUT.items():
+        value = _mapping(mean, key)["evaluation_profiled_retention"]
+        if expected is None:
+            assert value is None
+        else:
+            assert round(float(value), 4) == pytest.approx(expected, abs=5e-4)  # type: ignore[arg-type]
+    held_ds = float(_mapping(mean, "ds_rule")["evaluation_profiled_retention"])  # type: ignore[arg-type]
+    held_d = float(_mapping(mean, "d_rule")["evaluation_profiled_retention"])  # type: ignore[arg-type]
+    for key in classifier_keys:
+        assert held_ds > float(_mapping(mean, key)["evaluation_profiled_retention"])  # type: ignore[arg-type]
+    assert held_ds > held_d
+
+
+def test_hep_json_held_out_numbers_are_certified_and_disclosed() -> None:
+    """No held-out number sits above its half's ceiling, and both directions are recorded."""
+    directions = _listing(_mapping(_hep_metrics(), "cross_evaluation"), "directions")
+    assert [str(direction["name"]) for direction in directions] == ["a_to_b", "b_to_a"]
+    for direction in directions:
+        ceiling = float(direction["evaluation_ceiling_retention"])  # type: ignore[arg-type]
+        assert ceiling <= 1.0 + 1e-9
+        rules = _mapping(direction, "rules")
+        for key in rules:
+            row = _mapping(rules, key)
+            value = row["evaluation_profiled_retention"]
+            if value is not None:
+                assert float(value) <= ceiling + 1e-9  # type: ignore[arg-type]
+                bootstrap = _mapping(row, "evaluation_bootstrap")
+                assert float(bootstrap["p05"]) <= float(value) + 0.2  # type: ignore[arg-type]
+                assert bootstrap["dropped"] == 0
+        # The finite partition on the reference half is in sample and above
+        # the rule it seeds.
+        ds_rule = _mapping(rules, "ds_rule")
+        assert float(direction["ds_partition_reference_profiled_retention"]) >= float(  # type: ignore[arg-type]
+            ds_rule["reference_profiled_retention"]  # type: ignore[arg-type]
+        )
+        # The library's own validation report agrees with the re-derived number.
+        assert float(direction["ds_rule_validation_report_retention"]) == pytest.approx(  # type: ignore[arg-type]
+            float(ds_rule["evaluation_profiled_retention"]),  # type: ignore[arg-type]
+            abs=1e-6,
+        )
 
 
 def test_hep_json_matches_the_published_ceiling_and_sweep() -> None:
-    metrics = _hep_metrics()
-    ceiling = _mapping(metrics, "ceiling")
-    assert round(float(ceiling["ceiling_retention"]), 5) == pytest.approx(0.95685)  # type: ignore[arg-type]
-    assert round(float(ceiling["gap_to_ds_partition"]), 5) == pytest.approx(0.00089, abs=2e-5)  # type: ignore[arg-type]
+    in_sample = _hep_in_sample()
+    ceiling = _mapping(in_sample, "ceiling")
+    assert round(float(ceiling["ceiling_retention"]), 5) == pytest.approx(0.95528, abs=5e-4)  # type: ignore[arg-type]
+    assert float(ceiling["gap_to_ds_partition_retention"]) == pytest.approx(  # type: ignore[arg-type]
+        float(ceiling["ceiling_retention"])  # type: ignore[arg-type]
+        - float(_mapping(_mapping(in_sample, "by_key"), "ds_partition")["profiled_retention"])  # type: ignore[arg-type]
+    )
 
-    sweep = _listing(metrics, "ceiling_sweep")
+    sweep = _listing(in_sample, "ceiling_sweep")
     assert len(sweep) == len(PAGE_HEP_SWEEP)
     for row, (n_bins, ds_profiled, quantile, published_ceiling, gap) in zip(
         sweep, PAGE_HEP_SWEEP, strict=True
@@ -1472,60 +1539,101 @@ def test_hep_json_matches_the_published_ceiling_and_sweep() -> None:
             published_ceiling, abs=5e-4
         )
         assert round(float(row["gap"]), 4) == pytest.approx(gap, abs=5e-3)  # type: ignore[arg-type]
-        # The ceiling dominates every labeling at its own budget.
         assert float(row["ds_profiled_retention"]) <= float(row["ceiling_retention"]) + 1e-9  # type: ignore[arg-type]
-        assert (
-            float(row["classifier_quantile_profiled_retention"])  # type: ignore[arg-type]
-            <= float(row["ceiling_retention"]) + 1e-9  # type: ignore[arg-type]
+
+    held_out = _listing(_mapping(_hep_metrics(), "cross_evaluation"), "held_out_budget_sweep")
+    assert [int(float(row["n_bins"])) for row in held_out] == [3, 4, 6, 8]  # type: ignore[arg-type]
+    values = [float(row["ds_rule_evaluation_profiled_retention"]) for row in held_out]  # type: ignore[arg-type]
+    assert values == sorted(values)
+    for row, in_sample_row in zip(held_out, sweep, strict=True):
+        assert float(row["ds_rule_evaluation_profiled_retention"]) <= float(  # type: ignore[arg-type]
+            in_sample_row["ceiling_retention"]  # type: ignore[arg-type]
         )
 
 
 def test_hep_json_matches_the_published_delta_convergence() -> None:
-    """D4's convergence study: delta and delta/2 agree, and a disagreement would be reported."""
-    convergence = _mapping(_hep_metrics(), "delta_convergence")
+    convergence = _mapping(_hep_in_sample(), "delta_convergence")
     rows = _listing(convergence, "rows")
-    assert len(rows) == len(PAGE_HEP_DELTA_SWEEP)
-    for row, (delta, auc, near_half, ds_profiled, ceiling) in zip(
-        rows, PAGE_HEP_DELTA_SWEEP, strict=True
-    ):
-        assert float(row["delta"]) == pytest.approx(delta)  # type: ignore[arg-type]
-        assert round(float(row["minus_plus_auc"]), 4) == pytest.approx(auc, abs=5e-3)  # type: ignore[arg-type]
-        assert round(float(row["near_half_fraction"]), 3) == pytest.approx(near_half, abs=3e-2)  # type: ignore[arg-type]
-        assert round(float(row["ds_profiled_retention"]), 4) == pytest.approx(ds_profiled, abs=5e-3)  # type: ignore[arg-type]
-        assert round(float(row["ceiling_retention"]), 4) == pytest.approx(ceiling, abs=5e-3)  # type: ignore[arg-type]
-
+    assert [float(row["delta"]) for row in rows] == [0.025, 0.05, 0.10]  # type: ignore[arg-type]
+    for row in rows:
+        assert 0.5 < float(row["minus_plus_auc"]) < 0.7  # type: ignore[arg-type]
+        assert float(row["ds_profiled_retention"]) <= float(row["ceiling_retention"]) + 1e-9  # type: ignore[arg-type]
     agreement = _mapping(convergence, "agreement")
     assert float(agreement["headline_delta"]) == pytest.approx(0.05)  # type: ignore[arg-type]
     assert float(agreement["half_delta"]) == pytest.approx(0.025)  # type: ignore[arg-type]
-    # The retention gap between delta and delta/2 is small: the score is not
-    # noise-limited at fixture scale, so the doc page reports agreement
-    # rather than a caveat.
-    assert float(agreement["retention_gap"]) < 0.01
+    assert float(agreement["retention_gap"]) < 0.01  # type: ignore[arg-type]
 
 
-def test_hep_json_matches_the_published_reusable_rule() -> None:
-    rule = _mapping(_hep_metrics(), "reusable_rule")
-    assert round(float(rule["train_profiled_retention"]), 3) == pytest.approx(1.0, abs=2e-3)  # type: ignore[arg-type]
-    assert float(rule["train_full_retention"]) > 0.9
-    assert abs(float(rule["hardening_gap"])) < 1e-6  # type: ignore[arg-type]
+def test_hep_json_matches_the_published_downstream_uncertainties() -> None:
+    """The count table's own likelihood: tes fixed against tes floating, per rule."""
+    downstream = _mapping(_hep_metrics(), "downstream")
+    rules = _mapping(_mapping(downstream, "all_events"), "rules")
+    assert set(rules) == set(PAGE_HEP_SIGMA)
+    for key, (fixed, floating) in PAGE_HEP_SIGMA.items():
+        row = _mapping(rules, key)
+        assert round(float(row["sigma_mu_tes_fixed"]), 3) == pytest.approx(fixed, abs=2e-3)  # type: ignore[arg-type]
+        if floating is None:
+            assert row["sigma_mu"] is None
+        else:
+            assert round(float(row["sigma_mu"]), 3) == pytest.approx(floating, abs=2e-3)  # type: ignore[arg-type]
+            # Floating a nuisance never helps, and the Monte Carlo statistical
+            # inflation only ever widens the interval.
+            assert float(row["sigma_mu"]) >= float(row["sigma_mu_tes_fixed"])  # type: ignore[arg-type]
+            assert float(row["sigma_mu_mc_inflated"]) > float(row["sigma_mu"])  # type: ignore[arg-type]
+    ds = _mapping(rules, "ds_rule")
+    # The physical-width constraint recorded next to the unconstrained number
+    # changes it by less than one percent here.
+    assert float(ds["sigma_mu_tes_constrained"]) == pytest.approx(float(ds["sigma_mu"]), rel=1e-2)  # type: ignore[arg-type]
+    # The scientific lesson in the reported quantity: the profiled rule loses
+    # a few percent when tes floats, the classifier-output rules lose a
+    # factor of two or more.
+    assert float(ds["sigma_mu"]) / float(ds["sigma_mu_tes_fixed"]) < 1.1  # type: ignore[arg-type]
+    for key in (
+        "classifier_logit_equal_width",
+        "classifier_quantile",
+        "classifier_significance_intervals",
+    ):
+        row = _mapping(rules, key)
+        assert float(row["sigma_mu"]) / float(row["sigma_mu_tes_fixed"]) > 1.7  # type: ignore[arg-type]
+        assert float(ds["sigma_mu"]) < float(row["sigma_mu"])  # type: ignore[arg-type]
+    held_out = _listing(downstream, "held_out")
+    assert len(held_out) == 2
+    for direction in held_out:
+        for key in ("classifier_logit_equal_width", "classifier_quantile"):
+            baseline = _mapping(_mapping(direction, "rules"), key)
+            assert float(_mapping(_mapping(direction, "rules"), "ds_rule")["sigma_mu"]) < float(  # type: ignore[arg-type]
+                baseline["sigma_mu"]  # type: ignore[arg-type]
+            )
 
 
 def test_fast_rerun_reproduces_the_hep_classifier_gap() -> None:
     """A small fast-mode rerun reproduces the qualitative claim, not the pinned numbers."""
-    study = run_hep_study(n_folds=3, max_iter=60, soft_steps=80, budgets=(3, 6))
-    partitions = {str(row["key"]): row for row in _listing(study.metrics, "partitions")}
+    study = run_hep_study(
+        n_folds=3, max_iter=60, soft_steps=80, budgets=(3, 6), bootstrap_replicates=10
+    )
+    in_sample = _mapping(study.metrics, "in_sample")
+    by_key = _mapping(in_sample, "by_key")
 
-    ds_profiled = float(partitions["ds_partition"]["profiled_retention"])  # type: ignore[arg-type]
-    quantile_profiled = float(partitions["classifier_quantile"]["profiled_retention"])  # type: ignore[arg-type]
-    logit_profiled = float(partitions["classifier_logit_equal_width"]["profiled_retention"])  # type: ignore[arg-type]
+    ds_profiled = float(_mapping(by_key, "ds_partition")["profiled_retention"])  # type: ignore[arg-type]
+    quantile_profiled = float(_mapping(by_key, "classifier_quantile")["profiled_retention"])  # type: ignore[arg-type]
+    logit_profiled = float(_mapping(by_key, "classifier_logit_equal_width")["profiled_retention"])  # type: ignore[arg-type]
     assert ds_profiled > max(quantile_profiled, logit_profiled)
 
-    ceiling = _mapping(study.metrics, "ceiling")
+    ceiling = _mapping(in_sample, "ceiling")
     assert ds_profiled <= float(ceiling["ceiling_retention"]) + 1e-9  # type: ignore[arg-type]
 
     classifiers = _mapping(study.metrics, "classifiers")
     assert float(classifiers["tes_minus_plus_auc"]) > 0.5
     assert 0.0 < float(classifiers["signal_fraction"]) < 0.01  # type: ignore[arg-type]
+
+    # Held out, both directions exist and stay under their halves' ceilings.
+    directions = _listing(_mapping(study.metrics, "cross_evaluation"), "directions")
+    assert len(directions) == 2
+    for direction in directions:
+        ds_rule = _mapping(_mapping(direction, "rules"), "ds_rule")
+        value = ds_rule["evaluation_profiled_retention"]
+        assert value is not None
+        assert float(value) <= float(direction["evaluation_ceiling_retention"]) + 1e-9  # type: ignore[arg-type]
 
 
 # --- docs/examples/door3-classifier.md -------------------------------------

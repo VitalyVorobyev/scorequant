@@ -42,6 +42,7 @@ EVIDENCE = (
     "docs/usecases/assets/cell_population.json",
     "docs/usecases/assets/flowcyt_profiled_ds.json",
     "examples/data/flowcyt_fixture.json",
+    "examples/data/flowcyt_walkthrough.json",
     "examples/data/hep_higgsml_fixture.json",
 )
 
@@ -105,6 +106,7 @@ DOOR3 = "docs/examples/assets/door3-classifier.json"
 FLOWCYT_STUDY = "docs/usecases/assets/cell_population.json"
 FLOWCYT_PROFILED = "docs/usecases/assets/flowcyt_profiled_ds.json"
 FLOWCYT_FIXTURE = "examples/data/flowcyt_fixture.json"
+FLOWCYT_WALKTHROUGH = "examples/data/flowcyt_walkthrough.json"
 HEP_FIXTURE = "examples/data/hep_higgsml_fixture.json"
 
 FACTS: tuple[Fact, ...] = (
@@ -212,73 +214,438 @@ FACTS: tuple[Fact, ...] = (
         f"{FLOWCYT_PROFILED}#/fixture_scale/partitions/0/profiled_retention",
         _fixed(4),
     ),
+    # The bin-budget story: five bins are structurally short of the five free
+    # composition coordinates, eight is the knee, and past ten the labels keep
+    # more local information while the fraction estimates get slightly worse.
+    Fact(
+        "flowcyt",
+        "populations",
+        f"{FLOWCYT_STUDY}#/scientific_closure/template_identifiability/soft_voronoi:5/n_classes",
+        _count,
+    ),
+    Fact(
+        "flowcyt",
+        "freeFractions",
+        f"{FLOWCYT_STUDY}#/scientific_closure/template_identifiability/soft_voronoi:5/required_rank",
+        _count,
+    ),
+    Fact(
+        "flowcyt",
+        "fiveBinRankBound",
+        f"{FLOWCYT_STUDY}#/scientific_closure/template_identifiability/soft_voronoi:5/rank_bound",
+        _count,
+    ),
+    Fact(
+        "flowcyt",
+        "fiveBinEfficiency",
+        f"{FLOWCYT_STUDY}#/soft_voronoi:5/held_out_d_efficiency",
+        _fixed(4),
+    ),
+    Fact("flowcyt", "fiveBinRmse", f"{FLOWCYT_STUDY}#/soft_voronoi:5/target_macro_rmse", _fixed(6)),
+    Fact(
+        "flowcyt",
+        "tenBinEfficiency",
+        f"{FLOWCYT_STUDY}#/soft_voronoi:10/held_out_d_efficiency",
+        _fixed(4),
+    ),
+    Fact("flowcyt", "tenBinRmse", f"{FLOWCYT_STUDY}#/soft_voronoi:10/target_macro_rmse", _fixed(6)),
+    Fact(
+        "flowcyt",
+        "thirtyBinEfficiency",
+        f"{FLOWCYT_STUDY}#/soft_voronoi:30/held_out_d_efficiency",
+        _fixed(4),
+    ),
+    Fact(
+        "flowcyt", "thirtyBinRmse", f"{FLOWCYT_STUDY}#/soft_voronoi:30/target_macro_rmse", _fixed(6)
+    ),
+    Fact(
+        "flowcyt",
+        "twoDimensionalGridRmseThirty",
+        f"{FLOWCYT_STUDY}#/two_dimensional_grid:30/target_macro_rmse",
+        _fixed(6),
+    ),
+    Fact(
+        "flowcyt",
+        "heldOutPatients",
+        f"{FLOWCYT_STUDY}#/unbinned_classifier_ratio/likelihood_convergence/total_patients",
+        _count,
+    ),
+    # What the page's own code produces on the committed fixture-scale table,
+    # so the reader who runs it is told what to expect and why it differs
+    # from the full study.
+    Fact("flowcyt", "tablePartitionRows", f"{FLOWCYT_WALKTHROUGH}#/rows/partition", _count),
+    Fact("flowcyt", "tableTemplateRows", f"{FLOWCYT_WALKTHROUGH}#/rows/template", _count),
+    Fact("flowcyt", "tableHeldOutRows", f"{FLOWCYT_WALKTHROUGH}#/rows/held_out", _count),
+    Fact(
+        "flowcyt",
+        "tableSoftVoronoiRmse",
+        f"{FLOWCYT_WALKTHROUGH}#/chain/soft_voronoi/macro_rmse",
+        _fixed(4),
+    ),
+    Fact(
+        "flowcyt",
+        "tableDExchangeRmse",
+        f"{FLOWCYT_WALKTHROUGH}#/chain/d_exchange/macro_rmse",
+        _fixed(4),
+    ),
+    Fact(
+        "flowcyt",
+        "tableUnbinnedRmse",
+        f"{FLOWCYT_WALKTHROUGH}#/chain/unbinned_macro_rmse",
+        _fixed(4),
+    ),
+    Fact(
+        "flowcyt",
+        "tableSoftVoronoiEfficiency",
+        f"{FLOWCYT_WALKTHROUGH}#/chain/soft_voronoi/held_out_d_efficiency",
+        _fixed(4),
+    ),
+    Fact(
+        "flowcyt",
+        "tableDExchangeEfficiency",
+        f"{FLOWCYT_WALKTHROUGH}#/chain/d_exchange/held_out_d_efficiency",
+        _fixed(4),
+    ),
     # -------------------------------------------------------------------- hep
     Fact("hep", "nEvents", f"{HEP}#/fixture/n_events", _count),
+    Fact("hep", "effectiveEvents", f"{HEP}#/fixture/effective_events", _fixed(0)),
     Fact("hep", "signalEvents", f"{HEP}#/fixture/signal_events", _count),
     Fact("hep", "backgroundEvents", f"{HEP}#/fixture/background_events", _count),
     Fact("hep", "bins", f"{HEP}#/n_bins", _count),
+    Fact("hep", "nParameters", f"{HEP}#/n_parameters", _count),
     Fact("hep", "delta", f"{HEP}#/delta", _fixed(3)),
-    Fact("hep", "nFolds", f"{HEP}#/n_folds", _count),
     Fact("hep", "signalAuc", f"{HEP}#/classifiers/signal_weighted_auc", _fixed(4)),
     Fact("hep", "signalFraction", f"{HEP}#/classifiers/signal_fraction", _fixed(5)),
     Fact("hep", "tesAuc", f"{HEP}#/classifiers/tes_minus_plus_auc", _fixed(4)),
-    Fact("hep", "dFullRetention", f"{HEP}#/partitions/0/full_retention", _fixed(4)),
-    Fact("hep", "dProfiledRetention", f"{HEP}#/partitions/0/profiled_retention", _fixed(4)),
-    Fact("hep", "dsFullRetention", f"{HEP}#/partitions/1/full_retention", _fixed(4)),
-    Fact("hep", "dsProfiledRetention", f"{HEP}#/partitions/1/profiled_retention", _fixed(4)),
-    Fact("hep", "quantileProfiledRetention", f"{HEP}#/partitions/2/profiled_retention", _fixed(4)),
-    Fact("hep", "logitProfiledRetention", f"{HEP}#/partitions/3/profiled_retention", _fixed(4)),
-    Fact("hep", "thresholdProfiledRetention", f"{HEP}#/partitions/4/profiled_retention", _fixed(4)),
     Fact(
         "hep",
-        "bestBaselineKey",
-        f"{HEP}#/scorequant_vs_classifier_binning/best_baseline_key",
-        _text,
+        "tesScoreCorrelation",
+        f"{HEP}#/classifiers/tes_reliability/weighted_correlation",
+        _fixed(2),
     ),
+    # In sample, on all events: the finite partitions and the ceiling.
     Fact(
         "hep",
-        "bestBaselineLabel",
-        f"{HEP}#/partitions/3/label",
-        _text,
-    ),
-    Fact(
-        "hep",
-        "headlineGap",
-        f"{HEP}#/scorequant_vs_classifier_binning/profiled_retention_gap",
+        "dsPartitionProfiled",
+        f"{HEP}#/in_sample/by_key/ds_partition/profiled_retention",
         _fixed(4),
     ),
     Fact(
-        "hep",
-        "gapToEqualFrequency",
-        f"{HEP}#/scorequant_vs_classifier_binning/profiled_retention_gap_to_equal_frequency",
-        _fixed(4),
+        "hep", "dsPartitionFull", f"{HEP}#/in_sample/by_key/ds_partition/full_retention", _fixed(4)
     ),
     Fact(
         "hep",
-        "baselineSpread",
-        f"{HEP}#/scorequant_vs_classifier_binning/baseline_spread",
+        "dPartitionProfiled",
+        f"{HEP}#/in_sample/by_key/d_partition/profiled_retention",
         _fixed(4),
     ),
-    Fact("hep", "ceilingRetention", f"{HEP}#/ceiling/ceiling_retention", _fixed(4)),
-    Fact("hep", "gapToCeiling", f"{HEP}#/ceiling/gap_to_ds_partition", _fixed(4)),
+    Fact("hep", "dPartitionFull", f"{HEP}#/in_sample/by_key/d_partition/full_retention", _fixed(4)),
+    Fact(
+        "hep",
+        "dsRuleInSampleProfiled",
+        f"{HEP}#/in_sample/by_key/ds_rule/profiled_retention",
+        _fixed(4),
+    ),
+    Fact("hep", "ceilingRetention", f"{HEP}#/in_sample/ceiling/ceiling_retention", _fixed(4)),
+    Fact(
+        "hep", "gapToCeiling", f"{HEP}#/in_sample/ceiling/gap_to_ds_partition_retention", _fixed(4)
+    ),
     Fact(
         "hep",
         "fullRetentionGivenUp",
-        f"{HEP}#/criterion_trade/full_retention_given_up",
+        f"{HEP}#/in_sample/criterion_trade/full_retention_given_up",
         _fixed(4),
     ),
     Fact(
         "hep",
         "profiledRetentionGained",
-        f"{HEP}#/criterion_trade/profiled_retention_gained",
+        f"{HEP}#/in_sample/criterion_trade/profiled_retention_gained",
         _fixed(4),
     ),
-    # Baseline labels are published rather than retyped: two of them carry a
-    # bin budget and one an operating threshold, so a page that wrote them out
-    # by hand would be printing numbers no run produced.
-    Fact("hep", "equalFrequencyLabel", f"{HEP}#/partitions/2/label", _text),
-    Fact("hep", "thresholdLabel", f"{HEP}#/partitions/4/label", _text),
-    Fact("hep", "thresholdBins", f"{HEP}#/partitions/4/n_bins", _count),
+    # Held out: every reusable rule built on one half and scored on the other,
+    # averaged over both directions, with the spread of the two directions and
+    # the percentile bootstrap envelope.
+    Fact("hep", "referenceEvents", f"{HEP}#/split/halves/0/reference_events", _count),
+    Fact("hep", "evaluationEvents", f"{HEP}#/split/halves/0/evaluation_events", _count),
+    Fact("hep", "bootstrapReplicates", f"{HEP}#/cross_evaluation/bootstrap_replicates", _count),
+    Fact(
+        "hep",
+        "dsRuleHeldOut",
+        f"{HEP}#/cross_evaluation/mean/ds_rule/evaluation_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "dsRuleHeldOutAB",
+        f"{HEP}#/cross_evaluation/directions/0/rules/ds_rule/evaluation_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "dsRuleHeldOutBA",
+        f"{HEP}#/cross_evaluation/directions/1/rules/ds_rule/evaluation_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "dsRuleHeldOutLow",
+        f"{HEP}#/cross_evaluation/mean/ds_rule/evaluation_p05_min",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "dsRuleHeldOutHigh",
+        f"{HEP}#/cross_evaluation/mean/ds_rule/evaluation_p95_max",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "dsRuleReference",
+        f"{HEP}#/cross_evaluation/mean/ds_rule/reference_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "dsPartitionReferenceAB",
+        f"{HEP}#/cross_evaluation/directions/0/ds_partition_reference_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "dsPartitionReferenceBA",
+        f"{HEP}#/cross_evaluation/directions/1/ds_partition_reference_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "evaluationCeilingAB",
+        f"{HEP}#/cross_evaluation/directions/0/evaluation_ceiling_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "evaluationCeilingBA",
+        f"{HEP}#/cross_evaluation/directions/1/evaluation_ceiling_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "dsRuleMinBinEvents",
+        f"{HEP}#/cross_evaluation/mean/ds_rule/evaluation_min_bin_events",
+        _count,
+    ),
+    Fact(
+        "hep",
+        "dRuleHeldOut",
+        f"{HEP}#/cross_evaluation/mean/d_rule/evaluation_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "dRuleHeldOutLow",
+        f"{HEP}#/cross_evaluation/mean/d_rule/evaluation_p05_min",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "dRuleHeldOutHigh",
+        f"{HEP}#/cross_evaluation/mean/d_rule/evaluation_p95_max",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "intervalsHeldOut",
+        f"{HEP}#/cross_evaluation/mean/classifier_significance_intervals/evaluation_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "intervalsHeldOutLow",
+        f"{HEP}#/cross_evaluation/mean/classifier_significance_intervals/evaluation_p05_min",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "intervalsHeldOutHigh",
+        f"{HEP}#/cross_evaluation/mean/classifier_significance_intervals/evaluation_p95_max",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "logitHeldOut",
+        f"{HEP}#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "logitHeldOutLow",
+        f"{HEP}#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_p05_min",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "logitHeldOutHigh",
+        f"{HEP}#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_p95_max",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "quantileHeldOut",
+        f"{HEP}#/cross_evaluation/mean/classifier_quantile/evaluation_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "quantileHeldOutLow",
+        f"{HEP}#/cross_evaluation/mean/classifier_quantile/evaluation_p05_min",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "quantileHeldOutHigh",
+        f"{HEP}#/cross_evaluation/mean/classifier_quantile/evaluation_p95_max",
+        _fixed(4),
+    ),
+    Fact("hep", "thresholdBins", f"{HEP}#/cross_evaluation/mean/threshold_cut/n_bins", _count),
+    Fact(
+        "hep",
+        "heldOutBudgetThree",
+        f"{HEP}#/cross_evaluation/held_out_budget_sweep/0/ds_rule_evaluation_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "heldOutBudgetEight",
+        f"{HEP}#/cross_evaluation/held_out_budget_sweep/3/ds_rule_evaluation_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "inSampleBudgetEight",
+        f"{HEP}#/in_sample/ceiling_sweep/3/ds_profiled_retention",
+        _fixed(4),
+    ),
+    Fact(
+        "hep",
+        "ceilingBudgetEight",
+        f"{HEP}#/in_sample/ceiling_sweep/3/ceiling_retention",
+        _fixed(4),
+    ),
+    # Downstream: the expected relative uncertainty on the signal strength from
+    # the count table's own likelihood, with the simulation's actual energy-
+    # scale response. Rules fitted on all events; the held-out directions are
+    # in the reference study.
+    Fact("hep", "tesConstraintWidth", f"{HEP}#/downstream/tes_constraint_width", _fixed(2)),
+    Fact("hep", "sigmaDsRule", f"{HEP}#/downstream/all_events/rules/ds_rule/sigma_mu", _fixed(3)),
+    Fact(
+        "hep",
+        "sigmaDsRuleFixed",
+        f"{HEP}#/downstream/all_events/rules/ds_rule/sigma_mu_tes_fixed",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "sigmaDsRuleConstrained",
+        f"{HEP}#/downstream/all_events/rules/ds_rule/sigma_mu_tes_constrained",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "sigmaDsRuleInflated",
+        f"{HEP}#/downstream/all_events/rules/ds_rule/sigma_mu_mc_inflated",
+        _fixed(1),
+    ),
+    Fact("hep", "sigmaDRule", f"{HEP}#/downstream/all_events/rules/d_rule/sigma_mu", _fixed(3)),
+    Fact(
+        "hep",
+        "sigmaDRuleFixed",
+        f"{HEP}#/downstream/all_events/rules/d_rule/sigma_mu_tes_fixed",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "sigmaIntervals",
+        f"{HEP}#/downstream/all_events/rules/classifier_significance_intervals/sigma_mu",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "sigmaIntervalsFixed",
+        f"{HEP}#/downstream/all_events/rules/classifier_significance_intervals/sigma_mu_tes_fixed",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "sigmaLogit",
+        f"{HEP}#/downstream/all_events/rules/classifier_logit_equal_width/sigma_mu",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "sigmaLogitFixed",
+        f"{HEP}#/downstream/all_events/rules/classifier_logit_equal_width/sigma_mu_tes_fixed",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "sigmaLogitInflated",
+        f"{HEP}#/downstream/all_events/rules/classifier_logit_equal_width/sigma_mu_mc_inflated",
+        _fixed(1),
+    ),
+    Fact(
+        "hep",
+        "sigmaQuantile",
+        f"{HEP}#/downstream/all_events/rules/classifier_quantile/sigma_mu",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "sigmaQuantileFixed",
+        f"{HEP}#/downstream/all_events/rules/classifier_quantile/sigma_mu_tes_fixed",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "sigmaThresholdFixed",
+        f"{HEP}#/downstream/all_events/rules/threshold_cut/sigma_mu_tes_fixed",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "sigmaDsRuleHeldOutAB",
+        f"{HEP}#/downstream/held_out/0/rules/ds_rule/sigma_mu",
+        _fixed(2),
+    ),
+    Fact(
+        "hep",
+        "sigmaDsRuleHeldOutBA",
+        f"{HEP}#/downstream/held_out/1/rules/ds_rule/sigma_mu",
+        _fixed(2),
+    ),
+    Fact(
+        "hep",
+        "sigmaDRuleHeldOutAB",
+        f"{HEP}#/downstream/held_out/0/rules/d_rule/sigma_mu",
+        _fixed(2),
+    ),
+    Fact(
+        "hep",
+        "sigmaDRuleHeldOutBA",
+        f"{HEP}#/downstream/held_out/1/rules/d_rule/sigma_mu",
+        _fixed(2),
+    ),
+    Fact(
+        "hep",
+        "sigmaLogitHeldOutAB",
+        f"{HEP}#/downstream/held_out/0/rules/classifier_logit_equal_width/sigma_mu",
+        _fixed(2),
+    ),
+    Fact(
+        "hep",
+        "sigmaLogitHeldOutBA",
+        f"{HEP}#/downstream/held_out/1/rules/classifier_logit_equal_width/sigma_mu",
+        _fixed(2),
+    ),
     # Provenance as three separate facts, from the fixture's own record: the
     # bytes, the code repository they came from, and the archival record the
     # licence claim is made under (S08 decision D9). Never collapsed into one
@@ -287,8 +654,6 @@ FACTS: tuple[Fact, ...] = (
     Fact("hep", "license", f"{HEP_FIXTURE}#/source_license", _text),
     Fact("hep", "licenseRecordDoi", f"{HEP_FIXTURE}#/license_record_doi", _text),
     Fact("hep", "licenseRecordUrl", f"{HEP_FIXTURE}#/license_record_url", _text),
-    Fact("hep", "bytesFetchedFrom", f"{HEP_FIXTURE}#/bytes_fetched_from", _text),
-    Fact("hep", "upstreamCommit", f"{HEP_FIXTURE}#/upstream_commit", _text),
     # ----------------------------------------------------------------- ratios
     Fact("ratios", "bins", f"{DOOR3}#/n_bins", _count),
     Fact("ratios", "nTrain", f"{DOOR3}#/n_train", _count),
@@ -750,8 +1115,8 @@ def build() -> dict[str, object]:
 #: ``website/static/walkthrough-scores/<slug>.json`` in exactly the shape a
 #: ``LiveFit`` problem needs (``website/src/components/liveFit/types.ts``):
 #: ``scores``, ``weights``, plus ``schema``, ``label`` and ``detail``.
-#: FlowCyt is not included: it already has an on-demand table at
-#: ``website/static/showcase-data/flowcyt-scores.json``.
+#: Only the walkthroughs whose pages actually fetch a table are built here;
+#: ``get-started.json`` is written by ``generate_snippets.py`` instead.
 SCORE_TABLES_OUTPUT = ROOT / "website/static/walkthrough-scores"
 
 
@@ -783,57 +1148,6 @@ def _round(values: object, digits: int | None = 6) -> object:
     if isinstance(values, int | np.integer):
         return int(values)
     return values
-
-
-def _build_hep_score_table() -> dict[str, object]:
-    """Build the HEP-classifier walkthrough's score table.
-
-    Reuses ``examples/hep_classifier/experiment.py``'s own out-of-fold
-    assembly (`load_fixture`, `event_folds`, `fit_signal_background_oof`,
-    `fit_tes_oof`, `assemble_score_sample`) rather than reimplementing it, at
-    the same full-scale budget the committed study runs unless
-    ``SCOREQUANT_EXAMPLE_FAST`` is set.
-
-    Returns
-    -------
-    dict
-        ``{"schema", "label", "detail", "scores", "weights"}``; 1,000 rows by
-        3 columns at full scale.
-    """
-    sys.path.insert(0, str(ROOT))
-    from examples._env import example_scale
-    from examples.hep_classifier.data import load_fixture
-    from examples.hep_classifier.experiment import FOLD_SEED, HEADLINE_DELTA
-    from examples.hep_classifier.scores import (
-        SCHEMA,
-        assemble_score_sample,
-        event_folds,
-        fit_signal_background_oof,
-        fit_tes_oof,
-    )
-
-    max_iter = example_scale(300, 60)
-    n_folds = example_scale(5, 3)
-    data = load_fixture()
-    fold_ids = event_folds(data.is_signal, n_folds=n_folds, seed=FOLD_SEED)
-    sigbg = fit_signal_background_oof(
-        data, fold_ids=fold_ids, max_iter=max_iter, seed=FOLD_SEED + 100
-    )
-    tes = fit_tes_oof(
-        data, delta=HEADLINE_DELTA, fold_ids=fold_ids, max_iter=max_iter, seed=FOLD_SEED + 500
-    )
-    sample = assemble_score_sample(data, sigbg, tes)
-    rows, columns = sample.scores.shape
-    return {
-        "schema": list(SCHEMA.parameters),
-        "label": "HEP classifier scores",
-        "detail": (
-            f"{rows:,} events × {columns} score dimensions · "
-            "FAIR Universe HiggsML, CC BY 4.0 · cross-fitted out-of-fold classifier scores"
-        ),
-        "scores": _round(sample.scores),
-        "weights": _round(sample.weights),
-    }
 
 
 def _build_michelson_score_table() -> dict[str, object]:
@@ -876,13 +1190,13 @@ def write_walkthrough_score_tables() -> dict[str, int]:
 
     A walkthrough that carries a ``LiveFit`` experiment needs one small,
     deterministic score table, in exactly the shape a ``LiveFit`` problem
-    (``website/src/components/liveFit/types.ts``) needs. Two walkthroughs are
-    absent from the table below for different reasons. FlowCyt already has an
-    on-demand table at ``website/static/showcase-data/flowcyt-scores.json``.
-    The density-ratio page carries no experiment at all: its argument is the
-    gap between a reported and an achieved retention, which a refit of the
-    estimated score cannot show, so it makes its point with a comparison and a
-    figure instead (ADR 0035).
+    (``website/src/components/liveFit/types.ts``) needs. Only the Michelson
+    page carries one. The FlowCyt and HEP pages run their chains in the
+    reader's own Python from committed tables (``examples/data/``), and the
+    density-ratio page carries no experiment at all: its argument is the gap
+    between a reported and an achieved retention, which a refit of the
+    estimated score cannot show, so it makes its point with a comparison and
+    a figure instead (ADR 0035).
 
     Returns
     -------
@@ -890,7 +1204,6 @@ def write_walkthrough_score_tables() -> dict[str, int]:
         Byte size of each written file, keyed by slug.
     """
     builders: dict[str, Callable[[], dict[str, object]]] = {
-        "hep": _build_hep_score_table,
         "michelson": _build_michelson_score_table,
     }
     SCORE_TABLES_OUTPUT.mkdir(parents=True, exist_ok=True)
@@ -906,7 +1219,8 @@ def write_walkthrough_score_tables() -> dict[str, int]:
 #: static tree rather than committed twice. ``pnpm build`` and ``pnpm validate``
 #: both run this generator, so the copies exist wherever the site is built.
 FIGURES = {
-    "hep-classifier.png": "docs/examples/assets/hep-classifier.png",
+    "hep-cells.png": "docs/examples/assets/hep-cells.png",
+    "hep-budget.png": "docs/examples/assets/hep-budget.png",
     "michelson-d-geometry.png": "docs/examples/assets/michelson-d-geometry.png",
     "michelson-profiled-ds.png": "docs/examples/assets/michelson-profiled-ds.png",
     "door3-classifier.png": "docs/examples/assets/door3-classifier.png",

@@ -95,7 +95,7 @@ class RetentionUncertainty:
     estimate
         Plug-in geometric-mean retention, ``None`` when the rule declares too
         few cells or the full moment matrix is rank deficient, and exactly
-        ``0.0`` when the retained matrix is rank deficient.
+        ``0.0`` by convention when the retained matrix is numerically rank deficient.
     standard_error
         Influence-function standard error, ``0.0`` when the influence values
         cancel to rounding noise, and ``None`` whenever no first-order theory
@@ -118,9 +118,11 @@ class RetentionUncertainty:
         directions is undefined and nothing is reported rather than a
         silently projected surrogate. ``"singular_retained_information"``:
         the full matrix is regular but the between-cell matrix is numerically
-        rank deficient on this sample, so the plug-in is zero and the Wald
-        theory does not apply; the verdict does not identify the population
-        rank (``RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE``).
+        rank deficient on this sample, so the diagnostic reports zero by its
+        numerical-rank convention and withholds the interval. The exact
+        plug-in can still be positive below the threshold; the verdict does
+        not identify the population rank
+        (``RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE``).
         ``"degenerate_variance"``: the influence values vanish to rounding,
         so the interval is withheld; this is a numerical guard and does not
         assert that the population variance is zero.

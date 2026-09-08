@@ -370,8 +370,8 @@ conditions — positive cell probabilities, finite fourth moments, positive defi
 between-cell moments, positive asymptotic variance — and none of them can be read off an array: a
 positive empirical rank does not certify a population eigenvalue floor. The theorem is asymptotic. An
 infinite fourth moment puts a law outside it, and heavy tails, including laws that satisfy every
-condition, undercover materially at moderate sample sizes. The reading of the number as the model's
-Fisher retention needs the evaluation law to be the reference law, where the true score has mean
+condition, can cause material undercoverage at moderate sample sizes. The reading of the number as
+Fisher retention needs the evaluation law to be the model's reference law, where the true score has mean
 zero; on rows from another law the same arithmetic estimates an uncentred determinant ratio, not that
 retention. The endpoints are never clipped, so an interval can extend below zero or above one.
 
@@ -381,16 +381,17 @@ reference law whatever the sample rank, the plug-in is the upward-biased endpoin
 nothing is reported. `singular_full_information` means the sample lost one of the supplied score
 directions, so the retention of all of them is undefined; nothing is reported rather than a silently
 projected surrogate, which is what `information_report` would show. `singular_retained_information`
-means the between-cell moment is numerically rank deficient on this sample, which the theorem
-excludes: the estimate is the plug-in's own value, zero, and the Wald theory does not apply. The
-verdict is about the sample and does not identify the population rank; at population rank
-\(r < d\) the plug-in is biased upward at order \(n^{-(d-r)/d}\). `degenerate_variance` means the
+means the between-cell moment is numerically rank deficient on this sample: the diagnostic reports
+zero by its numerical-rank convention and withholds the interval. The exact plug-in can still be
+positive below the threshold; this sample-side refusal does not identify the population rank.
+Population singularity is a separate boundary of the Wald theorem
+(`RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`). `degenerate_variance` means the
 influence values cancelled to rounding noise, so the standard error is zero and the interval is
 withheld. The test is \(\mathrm{rms}(B) \le \tau\,\mathrm{rms}(M)\), with \(B_i\) the bracket of the
 influence value, \(M_i\) the sum of the magnitudes of its three terms, and \(\tau\) the dtype's rank
 threshold, \(10^{-10}\) in float64 and \(10^{-5}\) in float32; `rank_rtol` moves the two rank guards,
-not this threshold. It is a numerical guard: it absorbs a perturbation of a zero-variance law smaller
-than \(\tau\), and it is not a finding that the population variance is zero.
+not this threshold. This numerical guard can suppress small positive influence variance; it is not
+a finding that the population variance is zero.
 
 Scores from a classifier or any other estimator are not true scores. Their reported retention
 carries a separate proxy bias that this error bar never measures; the score-error budget bounds that

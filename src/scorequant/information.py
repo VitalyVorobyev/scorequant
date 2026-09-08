@@ -482,7 +482,7 @@ def retention_uncertainty(
     be verified from an array, and a positive empirical rank does not
     certify a population eigenvalue floor. The theorem is asymptotic: an
     infinite fourth moment puts a law outside it, and heavy tails, including
-    laws that satisfy every condition, produce material undercoverage at
+    laws that satisfy every condition, can cause material undercoverage at
     moderate sample sizes. Reading the number as the model's Fisher
     retention needs the evaluation law to be the reference law, where the
     true score has mean zero; under another law the same arithmetic
@@ -503,21 +503,21 @@ def retention_uncertainty(
     law and the plug-in is the upward-biased endpoint estimator; nothing is
     reported. ``singular_full_information``: the full moment is rank
     deficient at the threshold. ``singular_retained_information``: the
-    between-cell moment is numerically rank deficient on this sample, which
-    the theorem's positive-definiteness condition excludes; the estimate is
-    the plug-in's own value, zero. The verdict is about the sample and does
-    not identify the population rank; at population rank \(r<d\) the plug-in
-    is biased upward at order \(n^{-(d-r)/d}\)
-    (``RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE``), so the Wald theory does not
-    apply there. ``degenerate_variance``: the influence values cancel to
-    rounding noise, the sample-side face of
+    between-cell moment is numerically rank deficient on this sample, so
+    the diagnostic reports zero by its numerical-rank convention and
+    withholds the interval. The exact plug-in can still be positive below
+    the threshold; this sample-side refusal does not identify the population
+    rank. Population singularity is a separate boundary of the Wald theorem
+    (``RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE``).
+    ``degenerate_variance``: the influence values cancel to rounding noise,
+    the sample-side face of
     ``CE-O7-ELLIPSOID-ZERO-VARIANCE-001``. The test is
     \(\mathrm{rms}(B)\le\tau\,\mathrm{rms}(M)\) with \(B_i\) the bracket
     of \(\psi_i\), \(M_i\) the sum of the magnitudes of its three terms and
     \(\tau\) the dtype's rank threshold (\(10^{-10}\) in float64,
     \(10^{-5}\) in float32, not moved by ``rank_rtol``); it is a numerical
-    guard, absorbs perturbations of a zero-variance law below \(\tau\), and
-    never asserts that the population variance is zero. The endpoints of an
+    guard that can suppress small positive influence variance and never
+    asserts that the population variance is zero. The endpoints of an
     ``ok`` interval are not clipped to ``[0, 1]``.
     """
     del execution
@@ -539,9 +539,8 @@ def retention_uncertainty(
         assert outcome.influence is not None and outcome.estimate is not None
         variance = float(np.asarray(jnp.mean(outcome.influence * outcome.influence)))
         standard_error = float(np.sqrt(variance / n_rows))
-        # Evaluated from the tail: 1 - level is exact in floating point on
-        # the accepted range, while 0.5 + 0.5 * level rounds to one for a
-        # level within an ulp of one.
+        # Evaluated from the tail: 1 - level is exact near one, while
+        # 0.5 + 0.5 * level rounds to one for a level within an ulp of one.
         quantile = -NormalDist().inv_cdf(0.5 * (1.0 - confidence_level))
         interval = (
             outcome.estimate - quantile * standard_error,

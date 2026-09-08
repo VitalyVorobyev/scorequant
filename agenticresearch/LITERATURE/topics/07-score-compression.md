@@ -79,3 +79,27 @@ Useful reference: Sugiyama, Suzuki & Kanamori, *Density Ratio Estimation in Mach
 ### Research-agent instruction
 
 When a theorem depends on a density-ratio/classifier assumption, search the ratio-estimation literature separately from the quantization literature. Do not infer exact Fisher preservation merely from classifier discrimination performance.
+
+## Log-determinant concavity
+
+**Key:** Boyd-Vandenberghe-2004
+
+[Author-hosted text](https://stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf), §3.1.5,
+printed p. 74. Supports the spectral log-det calculation in
+`SCORE-ERROR-RETENTION-BUDGET`; it does not state that reporting theorem.
+
+## Margin comparison inequalities
+
+**Key:** Audibert-Tsybakov-2007
+
+[Author manuscript](https://imagine.enpc.fr/~audibert/Mes%20articles/plugin_v3.pdf),
+§5, Lemma 5.2/proof, manuscript pp. 19–20. Supports the split-and-optimize method
+in `SCORE-ERROR-RULE-TRANSFER`; spatial margins and Fisher transfer require a reduction.
+
+## Multiclass proper-score decomposition
+
+**Key:** Brocker-2009
+
+[Author manuscript](https://arxiv.org/pdf/0806.0813), equations (13) and (15).
+Supports the Brier decomposition in `CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ`;
+the chart constants and failure of an unconditional reverse implication are separate.

@@ -5,14 +5,17 @@
 three-line status, and the backlog of unresolved questions. Established results live in the
 claim graph and `KNOWN_RESULTS/`; they are not restated here.
 
-## Status (6 September 2026)
+## Status (8 September 2026)
 
-- Active: nothing. O7 (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`) is proved and independently
-  audited (`AUDITS/AUDIT-RETENTION-PLUGIN-VECTOR-001.md`, 6 September 2026; step 0 done).
-  Next: step 1 below.
-- Parked: OP31 and its packet `WORK/active/DS-TILT-DUAL-EXACT-COMPLEXITY.md`, until an explicit
-  reopening decision; it is not part of the closure programme.
-- Closed programme P1 (deployment verdict, 1 September 2026): `KNOWN_RESULTS/05b-ds-bridge.md`.
+- Active: closure step 1, `WORK/active/RETENTION-ERROR-BAR.md`, selected by the owner after
+  the O8 audit. Next: ship held-out oracle-score error bars, then manuscript step 5.
+  Optional steps 2 and 4 remain inactive; freeze/release step 6 still needs an owner decision.
+- Done: step 0 (O7 audit, PR #59); step 3's corrected verdict plus independent audit
+  (`AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`). The formal-D packet is retired as partial,
+  with its unresolved obligations preserved under the formal-verification backlog below.
+- Parked: OP31 and `WORK/active/DS-TILT-DUAL-EXACT-COMPLEXITY.md`; formal residue below.
+  Neither is selected work. P1 deployment verdict closed on 1 September 2026
+  (`KNOWN_RESULTS/05b-ds-bridge.md`).
 
 ## Closure programme
 
@@ -26,7 +29,7 @@ backlog and goes into the manuscript's future-work section, never into the activ
 | 0 | Independent audit of O7 (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, `RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`, `CE-O7-ELLIPSOID-ZERO-VARIANCE-001`) | P4 | the reported retention may carry an error bar | audit verdict; PR #59 merged |
 | 1 | Ship the error bar: standard error and Wald interval for `geometric_mean_retention` on a held-out oracle-score sample, rank guard at singular \(\hat I_Z\), heavy-tail warning; tests, `docs/api.md`, one walkthrough sentence, one decision record | engineering | users get the number with its uncertainty | full contributor gate |
 | 2 | Refitted rules (OP27 remainder): is \(\sqrt n(\hat\eta_n-\eta^*)\) normal when the rule is fitted on the evaluation sample, under a margin condition, or is there an exact counterexample; order of the in-sample optimism | P4 | the docs sentence "evaluate on held-out data" gains a theorem or a counterexample | verdict; optional, drop first |
-| 3 | Score-error budget (OP17, first order only): bound the retention loss of a frozen rule under an \(L^2\) score error, one classifier example; OP18 only if it falls out as one inequality | P2 | a classifier-quality requirement beyond AUC | verdict plus audit |
+| 3 | Score-error budget (OP17, first order only): bound the retention loss of a frozen rule under an \(L^2\) score error, one classifier example; OP18 only if it falls out as one inequality | P2 | a classifier-quality requirement beyond AUC | **verdict: proved after correction; audited** (8 Sep 2026, `AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`); core bounds retained, unconditional calibration consequences refuted |
 | 4 | Parameter mismatch (OP23): second-order local expansion of a frozen rule's retention at \(\theta_0+\delta\), as a diagnostic | P4 | a story for the reference-point assumption | verdict; optional, drop second |
 | 5 | Manuscript v10: harvest O6, O7, both audits and steps 3–4; the future-work section absorbs the backlog below | publication | the paper | owner review |
 | 6 | Freeze: this file becomes a backlog only, the roadmap marks research closed, release tag | — | — | owner decision |
@@ -47,12 +50,28 @@ into the closure programme.
 
 Assume \(\|\hat s-s\|_{L^2}\le\varepsilon\) or a stronger bound. Control cell moments, \(I_q\),
 the D/\(D_s\) objective, efficiency, and geometric boundaries under a margin condition.
+Settled at first order for a frozen rule (closure step 3, 8 Sep 2026, O8): the reporting gap is
+an exact two-term expansion — alignment \(\propto\sqrt{d-\operatorname{tr}R}\), spurious
+information \(\varepsilon_Z^2/\rho_{\min}\) — with the numerator first-order constant attained and no uniform relative/log bound
+from an upper bound on \(\varepsilon\) alone (`SCORE-ERROR-RETENTION-BUDGET`); the boundary displacement is a
+Markov-plus-margin mislabel bound with an exact Loewner sandwich (`SCORE-ERROR-RULE-TRANSFER`).
+Remaining: uniform-over-rules error control plus a proxy optimization-gap certificate
+(uniform control alone cannot make an exchange-stable solution globally optimal), \(D_s\), refitted rules, sharp
+second-order constants. Target claim: `OPEN-SCORE-PERTURBATION`.
 
 ## OP18. Classifier calibration error → Fisher loss
 
 Relate posterior/ratio calibration error to density-ratio error, score error, pre-quantization
 representation loss, and final D/\(D_s\) efficiency. The target is a classifier-quality
-requirement beyond AUC.
+requirement beyond AUC. Half settled (8 Sep 2026, O8.4, `CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ`):
+the mixture score is Lipschitz in the posterior, so the whitened score error is bounded by the
+excess Brier score, which is reliability plus
+the resolution gap (needs truth). The audit requires an injective chart and explicit
+constants for a reverse score-error bound; calibration error alone does not imply
+retention distortion. Reliability is a population quantity estimated from labelled data,
+not an exact finite-data certificate. AUC does not determine reporting error (`CE-AUC-INVARIANT-PROXY-RETENTION-001`).
+Remaining: certifying the resolution gap without truth scores (with OP19). Target claim:
+`OPEN-CLASSIFIER-CALIBRATION-FI`.
 
 ## OP19. Estimating representation versus quantization loss
 
@@ -223,3 +242,19 @@ arithmetic operations for fixed \(d_\lambda\ge2\). Remaining: a polynomial bit b
 Bidirectional citation snowballing from `LITERATURE/seeds.md` to saturation, per
 `protocols/literature.md`. The claim-by-claim adversarial novelty search runs once, against
 frozen statements, inside closure step 5.
+
+## Formal-verification residue — parked, not a closure step
+
+The `FORMAL-D-CLOSURE` packet (git history) was retired on 8 September 2026 as **partial**,
+not as a completed finite-D formal programme. D6, duplicate inheritance and D8 have
+formal markers. The duplicate node was trimmed as audit 002 required, but inherited
+labels do not establish D5's second duplicate branch. Standing evidence:
+`AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-002.md` and `formal/README.md`.
+
+Unresolved: positive-tolerance `D-COMPILE-TOLERANCE-GUARANTEE` (including its informal
+contract audit); zero-weight samples; D5 duplicate-label constancy; D7's equal-optimum
+half; D12 singleton-refinement bound; frozen `ExchangeVoronoiSpec` importing editable
+`Leverage`; unapplied leverage statement hardenings and the superseded log-det audit's
+bookkeeping. Generic helper proofs do not supply additional registry formal markers.
+These obligations remain parked pending explicit reopening; this housekeeping changes
+no frozen statement, Lean proof, or formal marker. ADR 0037 is the scope authority.

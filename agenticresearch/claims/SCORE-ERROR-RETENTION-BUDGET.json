@@ -1,0 +1,55 @@
+{
+  "id": "SCORE-ERROR-RETENTION-BUDGET",
+  "title": "Reported versus true retention of a frozen label map under a score error: an exact two-term expansion in the Fisher-whitened score error",
+  "criterion": [
+    "D",
+    "general"
+  ],
+  "level": "information_accounting",
+  "status": "project_proved",
+  "publication_status": "internal",
+  "statement": "Let s be the true score with V = E[s s^T] > 0, s_hat = s + e a proxy, Z = q(s_hat) a frozen label map with p_b > 0, c_b = E[s | Z=b], e_b = E[e | Z=b], I_Z = sum_b p_b c_b c_b^T (true retained information), I_tilde_Z = sum_b p_b (c_b + e_b)(c_b + e_b)^T and V_tilde = E[s_hat s_hat^T] (what the library computes from the proxy), eps^2 = E[e^T V^{-1} e], eps_Z^2 = sum_b p_b e_b^T V^{-1} e_b <= eps^2, eps_R^2 = sum_b p_b e_b^T I_Z^{-1} e_b <= eps_Z^2 / rho_min, R = V^{-1/2} I_Z V^{-1/2} with eigenvalues rho_i in [0, 1]. (B1) For every direction a: |a^T (I_tilde_Z - I_Z) a - a^T E_Z a| <= 2 sqrt((a^T I_Z a)(a^T E_Z a)) with E_Z = sum_b p_b e_b e_b^T <= E[e e^T], and the same for V_tilde - V with E[e e^T]. (B2) If I_Z > 0, I_tilde_Z > 0 and V_tilde > 0, the reported geometric-mean retention eta_tilde_D = (det I_tilde_Z / det V_tilde)^(1/d) and the true eta_D = (det I_Z / det V)^(1/d) satisfy log(eta_tilde_D / eta_D) = T_1 + T_2 + r_3 with T_1 = (2/d)(E[e_Z^T I_Z^{-1} c_Z] - E[e^T V^{-1} s]) (alignment term), |T_1| <= (2/d) sqrt(d - tr R) (eps_Z sqrt((1 - rho_min)/rho_min) + sqrt(eps^2 - eps_Z^2)); separately |T_1| <= (2/sqrt d)(eps_R + eps); T_2 = (eps_R^2 - eps^2)/d (spurious-information term); and the curvature remainder r_3 in (1/d)[-U_d(eps_R)^2/(2(1-eps_R)^2), U_d(eps)^2/(2(1-eps)^2)], U_d(x) = 2 sqrt(d) x + x^2, for eps, eps_R < 1. Without expansion, (1/d)[L_d(eps_R) - U_d(eps)] <= log(eta_tilde_D/eta_D) <= (1/d)[U_d(eps_R) - L_d(eps)] with L_d(x) = max(2 d log(1-x), x^2 - 2 sqrt(d) x - U_d(x)^2/(2(1-x)^2)). The numerator log-det first-order constant 2 sqrt(d) is attained (e_b = kappa c_b); this does not assert sharpness for the reporting ratio or an ordering of its two alignment bounds. No finite uniform relative/log reporting bound follows from an upper bound on eps alone (CE-SCORE-ERROR-RHO-MIN-NECESSARY-001): the retention-weighted eps_R is the scale, with eps_Z^2/rho_min an upper bound on eps_R^2, not an identity. For fixed labels, the reported number is invariant under nonsingular linear transformations A of the proxy, not translations; a rule must be transported as q_A(u)=q(A^{-1}u) to preserve labels. Every reporting bound applies with e=A s_hat-s and recomputed errors. The unconstrained least-squares A*=E[s s_hat^T] V_tilde^{-1} has eps_lin^2=d-sum_i r_i^2 for uncentred canonical correlations r_i, but is admissible for retention invariance only if E[s s_hat^T] is nonsingular. Otherwise this value is an infimum over invertible maps, not a usable singular minimizer. The roles of s and s_hat are symmetric, so the truth is bracketed from the reported eta_tilde_D, the reported smallest retention eigenvalue rho_tilde_min and the error measured in the proxy metric. Endpoints: at eta_D = 0 (I_Z singular) the reported number is uncontrolled; at eps_R >= 1 the lower bracket is void and the reported information can vanish.",
+  "assumptions": [
+    "One probability law with finite second moments of s and s_hat; population or empirical. Positive occupied cell masses, with empty terms set to zero. The same finite labels are used for reporting from both arrays.",
+    "V positive definite; the finite logarithmic identity also needs I_Z, V_tilde and I_tilde_Z positive definite. The explicit two-sided curvature brackets require eps, eps_R < 1, which ensure the proxy matrices are positive definite. One-sided bounds can be used on their respective domains.",
+    "The identities concern uncentred second moments; E[s]=0 is not needed algebraically. Interpreting them as Fisher retention requires the true score of a regular model and a quantizer fixed under parameter differentiation. Only in that mean-zero setting does I_Z>0 force K>=d+1.",
+    "R=V^{-1/2} I_Z V^{-1/2}; rho_min>0 for log-retention. eps_R^2<=eps_Z^2/rho_min is an inequality. No library rank projection or ridge is included.",
+    "Both displayed alignment bounds hold independently; take their minimum. The curvature remainder is O(eps_R^2+eps^2), not cubic, and T2 alone is not a complete second-order Taylor coefficient.",
+    "Linear reduction keeps the origin and transports the label map. Least-squares invariance requires a nonsingular cross moment; translations and singular minimizers are excluded.",
+    "Swapping truth and proxy uses error in the proxy metric and its own small-error domain. O8.4 bounds the true metric and does not by itself supply the swapped metric.",
+    "O8.6 requires proxy-objective dominance over the named comparator, positive retentions, and a valid transfer bracket. The over-reporting budget is evaluated at the selected rule and the under-reporting budget at the comparator. No global guarantee follows from exchange stability alone."
+  ],
+  "dependencies": [
+    "PROXY-TRUE-RETAINED-FI",
+    "REPRESENTATION-QUANTIZATION-LOSS",
+    "INFO-RETENTION-SPECTRUM",
+    "INFO-D-EFFICIENCY",
+    "D-REPARAM-INVARIANCE",
+    "FI-QUANT-IDENTITY"
+  ],
+  "implies": [
+    "OPEN-SCORE-PERTURBATION"
+  ],
+  "literature_search_status": "search_gap",
+  "proof_location": {
+    "file": "KNOWN_RESULTS/10-oracle.md",
+    "section": "O8. Score-error budget for a frozen rule: what an estimated score costs, to first order"
+  },
+  "artifact": "py/score_error_budget.py",
+  "role": "the reporting-bias half of OP17: what the number the library prints for a classifier provider (information_kind supplied_score_surrogate) has to do with the true retention; names the two scales that govern it, sqrt(d - tr R) and eps_Z^2/rho_min; the bias companion of the O7 sampling error bar",
+  "warning": "Independently audited with corrections. Project reduction of elementary inequalities, with a targeted literature search gap, not novelty. No public diagnostic computes the truth-dependent error scales. A bound on raw score error is sufficient, not necessary, for accurate retention reporting.",
+  "boundary_counterexamples": [
+    "CE-SCORE-ERROR-RHO-MIN-NECESSARY-001",
+    "CE-AUC-INVARIANT-PROXY-RETENTION-001",
+    "CE-SCORE-ERROR-LOG-LOWER-001",
+    "CE-SCORE-ERROR-ALIGNMENT-ORDER-001",
+    "CE-SCORE-ERROR-TRANSLATION-001",
+    "CE-SCORE-ERROR-SINGULAR-LS-001"
+  ],
+  "programme": "P2",
+  "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
+  "literature": [
+    "Boyd-Vandenberghe-2004",
+    "Barnes-Han-Ozgur-2018"
+  ]
+}

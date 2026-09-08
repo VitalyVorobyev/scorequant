@@ -136,3 +136,15 @@ Communities, venues, or periods suspected under-covered by the current graph.
 - **Serfling §3.3 A/B is still split in the secondary literature** (Beutner
   et al. 2024 say Theorem B; a UW lecture chapter says "theorem A" for the
   real-valued case). Needs the physical book.
+
+## After the SCORE-ERROR-BUDGET audit — 8 September 2026
+
+The mandatory five-source pass is recorded in
+`audits/SCORE-ERROR-RETENTION-BUDGET-2026-09-08.md`. The margin comparison and
+Brier decomposition now cite inspected primary texts. The specific retention expansion
+remains `search_gap`, never a novelty claim. Remaining publication gaps are an inspected
+Ipsen–Rehman/Stewart–Sun comparison and a primary page citation for canonical-correlation
+least squares. The ratio identity is independently checked and does not depend on those
+unread texts. The old proposed calibration-to-score reading was false without chart
+injectivity and constants; the audit records exact counterexamples. Excess-risk and
+mislabel exponents must always specify whether their argument is an L2 norm or its square.

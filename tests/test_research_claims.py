@@ -2926,3 +2926,342 @@ def test_o7_audit_ellipsoid_identity_holds_on_an_anisotropic_rational_law() -> N
             psi_r = ratio * (2 * quad(iz_inv, s, c) - quad(iz_inv, c, c) - quad(v_inv, s, s))
             diff = [s[0] - centre[0], s[1] - centre[1]]
             assert psi_r + ratio * (quad(v_inv, diff, diff) - rhs) == 0
+
+
+# ---------------------------------------------------------------------------
+# O8 — score-error budget for a frozen rule (SCORE-ERROR-BUDGET, closure step 3)
+# ---------------------------------------------------------------------------
+
+
+def _o8_moments(
+    atoms: list[list[Fraction]], weights: list[Fraction], labels: list[int], n_bins: int
+) -> tuple[list[Fraction], list[list[Fraction]], list[list[Fraction]], list[list[Fraction]]]:
+    """p_b, c_b, V = E[s s^T], I_Z = sum_b p_b c_b c_b^T in exact arithmetic."""
+    d = len(atoms[0])
+    p = [Fraction(0)] * n_bins
+    m = [[Fraction(0)] * d for _ in range(n_bins)]
+    v = [[Fraction(0)] * d for _ in range(d)]
+    for s, w, z in zip(atoms, weights, labels, strict=True):
+        p[z] += w
+        for i in range(d):
+            m[z][i] += w * s[i]
+            for j in range(d):
+                v[i][j] += w * s[i] * s[j]
+    c = [[x / p[b] for x in m[b]] if p[b] > 0 else [Fraction(0)] * d for b in range(n_bins)]
+    i_z = [[Fraction(0)] * d for _ in range(d)]
+    for b in range(n_bins):
+        if p[b] > 0:
+            for i in range(d):
+                for j in range(d):
+                    i_z[i][j] += m[b][i] * m[b][j] / p[b]
+    return p, c, v, i_z
+
+
+def _o8_det(m: list[list[Fraction]]) -> Fraction:
+    if len(m) == 1:
+        return m[0][0]
+    return m[0][0] * m[1][1] - m[0][1] * m[1][0]
+
+
+def _o8_fixture(name: str) -> dict:
+    path = RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / f"{name}.json"
+    assert path.is_file(), f"counterexample fixture missing at {path}"
+    return json.loads(path.read_text())
+
+
+def test_o8_rho_min_fixture_fixed_score_error_unbounded_reporting_ratio() -> None:
+    """CE-SCORE-ERROR-RHO-MIN-NECESSARY-001 (SCORE-ERROR-RETENTION-BUDGET).
+
+    d = 2, three cells, E[s] = 0 exactly; the proxy adds (0, kappa) on the
+    singleton cell only. Along delta = 1/2, 1/10, 1/100 the whitened score error
+    eps^2 stays in [0.026, 0.028] while the reported-over-true retention ratio
+    grows 1.75 -> 5.1 -> 42.8, because the least retained eigenvalue rho_min
+    tends to 0. The B1 core inequality holds on every member: the gap is the
+    spurious-information term eps_R^2 = sum_b p_b e_b^T I_Z^{-1} e_b, not eps.
+    """
+    fixture = _o8_fixture("CE-SCORE-ERROR-RHO-MIN-NECESSARY-001")
+    kappa = Fraction(fixture["exact_quantities"]["kappa"])
+    ratios = []
+    for member in fixture["exact_quantities"]["family_by_delta"]:
+        atoms = [[Fraction(x) for x in s] for s in member["atoms"]]
+        weights = [Fraction(w) for w in member["weights"]]
+        labels = list(fixture["labels_before"])
+        assert sum(weights) == 1
+        for i in range(2):
+            assert sum(w * s[i] for s, w in zip(atoms, weights, strict=True)) == 0
+        proxy = [list(s) for s in atoms]
+        proxy[4] = [atoms[4][0], atoms[4][1] + kappa]
+        _, _, v, i_z = _o8_moments(atoms, weights, labels, fixture["K"])
+        _, _, vt, it = _o8_moments(proxy, weights, labels, fixture["K"])
+        true_ratio = _o8_det(i_z) / _o8_det(v)
+        proxy_ratio = _o8_det(it) / _o8_det(vt)
+        assert true_ratio == Fraction(member["det_ratio_true"])
+        assert proxy_ratio == Fraction(member["det_ratio_proxy"])
+        # whitened score error: eps^2 = E[e^T V^{-1} e] = w_5 kappa^2 (V^{-1})_22
+        v_inv_22 = v[0][0] / _o8_det(v)
+        eps2 = weights[4] * kappa * kappa * v_inv_22
+        assert eps2 == Fraction(member["eps2"])
+        assert Fraction(26, 1000) <= eps2 <= Fraction(28, 1000)
+        # B1 core in the second coordinate: (a^T(I~ - I)a - a^T E_Z a)^2 <= 4 (a^T I a)(a^T E_Z a)
+        e_z_22 = weights[4] * kappa * kappa  # only the singleton cell carries e_b
+        lhs = (it[1][1] - i_z[1][1]) - e_z_22
+        assert lhs * lhs <= 4 * i_z[1][1] * e_z_22
+        ratios.append(proxy_ratio / true_ratio)
+        # library agreement: geometric_mean_retention^2 is the determinant ratio
+        report = sq.information_report(
+            np.array([[float(x) for x in s] for s in proxy]),
+            np.array(labels),
+            n_bins=fixture["K"],
+            weights=np.array([float(w) for w in weights]),
+        )
+        retention = float(report.geometric_mean_retention)
+        assert retention**2 == pytest.approx(float(proxy_ratio), rel=1e-10)
+    assert ratios[0] < ratios[1] < ratios[2]
+    assert ratios[2] > 1000  # squared ratio; eta ratio > 30
+
+
+def test_o8_boundary_atom_fixture_mislabel_mass_does_not_vanish() -> None:
+    """CE-SCORE-ERROR-BOUNDARY-ATOM-001 (SCORE-ERROR-RULE-TRANSFER).
+
+    Scalar centred law with an atom of mass 1/2 on the boundary of the threshold
+    rule Z = 1{s > 0}. Any proxy lifting that atom relabels it: pi = 1/2 for every
+    kappa > 0, the true retention of the transferred labels jumps 4/5 -> 1/2, and
+    the Loewner sandwich I_Zhat >= I_Z - Gamma holds with Gamma = 4.
+    """
+    fixture = _o8_fixture("CE-SCORE-ERROR-BOUNDARY-ATOM-001")
+    atoms = [[Fraction(x) for x in s] for s in fixture["scores"]]
+    weights = [Fraction(w) for w in fixture["weights"]]
+    labels = list(fixture["labels_before"])
+    assert sum(w * s[0] for s, w in zip(atoms, weights, strict=True)) == 0
+    for kappa in (Fraction(1, 10**6), Fraction(1, 10), Fraction(3)):
+        proxy = [[s[0] + (kappa if s[0] == 0 else 0)] for s in atoms]
+        labels_hat = [int(s[0] > 0) for s in proxy]
+        assert labels_hat == fixture["labels_after_or_optimum"]
+        pi = sum(w for w, a, b in zip(weights, labels, labels_hat, strict=True) if a != b)
+        assert pi == Fraction(1, 2)
+        _, c, v, i_z = _o8_moments(atoms, weights, labels, 2)
+        _, _, _, i_hat = _o8_moments(atoms, weights, labels_hat, 2)
+        assert i_z[0][0] / v[0][0] == Fraction(4, 5)
+        assert i_hat[0][0] / v[0][0] == Fraction(1, 2)
+        gamma = 2 * sum(
+            w * (s[0] ** 2 + c[b][0] ** 2)
+            for s, w, a, b in zip(atoms, weights, labels, labels_hat, strict=True)
+            if a != b
+        )
+        assert gamma == 4
+        assert i_hat[0][0] >= i_z[0][0] - gamma
+
+
+def test_o8_auc_invariant_fixture_same_ranking_different_reported_retention() -> None:
+    """CE-AUC-INVARIANT-PROXY-RETENTION-001 (SCORE-ERROR-RETENTION-BUDGET, O8.5).
+
+    Two strictly increasing distortions of a four-atom scalar law keep the labels
+    of corresponding rank-cut thresholds and the true retention 9/10, and report 100/101 and
+    5105/10006 through the library's own information_report on the proxy.
+    """
+    fixture = _o8_fixture("CE-AUC-INVARIANT-PROXY-RETENTION-001")
+    atoms = [[Fraction(x) for x in s] for s in fixture["scores"]]
+    weights = [Fraction(w) for w in fixture["weights"]]
+    labels = list(fixture["labels_before"])
+    _, _, v, i_z = _o8_moments(atoms, weights, labels, 2)
+    assert i_z[0][0] / v[0][0] == Fraction(9, 10)
+    expected = {
+        "compress_within_cells": Fraction(100, 101),
+        "stretch_one_atom": Fraction(5105, 10006),
+    }
+    for row in fixture["exact_quantities"]["distortions"]:
+        proxy = [[Fraction(x) for x in s] for s in row["proxy_scores"]]
+        assert all(a[0] < b[0] for a, b in zip(proxy[:-1], proxy[1:], strict=True))
+        # every threshold between consecutive atoms gives the same labels on truth and proxy
+        for k in range(1, 4):
+            true_labels = [int(i >= k) for i in range(4)]
+            assert [int(s[0] > (proxy[k - 1][0] + proxy[k][0]) / 2) for s in proxy] == true_labels
+            assert [int(s[0] > (atoms[k - 1][0] + atoms[k][0]) / 2) for s in atoms] == true_labels
+        _, _, vt, it = _o8_moments(proxy, weights, labels, 2)
+        assert it[0][0] / vt[0][0] == expected[row["distortion"]]
+        report = sq.information_report(
+            np.array([[float(x) for x in s] for s in proxy]), np.array(labels), n_bins=2
+        )
+        assert float(report.geometric_mean_retention) == pytest.approx(
+            float(expected[row["distortion"]]), abs=1e-12
+        )
+
+
+def test_o8_reporting_budget_core_inequalities_on_random_rational_laws() -> None:
+    """SCORE-ERROR-RETENTION-BUDGET, Lemma 2 and the sharpness attainer, exactly.
+
+    On deterministic random rational atomic laws in d = 2 with a random rational
+    proxy error: (tr(I_Z^{-1}(I~_Z - I_Z)) - eps_R^2)^2 <= 4 d eps_R^2 and the
+    same for (V, V~, eps); with e_b = kappa c_b the determinant ratio is exactly
+    (1 + kappa)^{2d} and eps_R^2 = d kappa^2.
+    """
+    rng = np.random.default_rng(20260908)
+    d, n_bins, checked = 2, 3, 0
+    for _ in range(40):
+        n = int(rng.integers(4, 9))
+        atoms = [[Fraction(int(x), 4) for x in rng.integers(-8, 9, size=d)] for _ in range(n)]
+        raw = [Fraction(int(x)) for x in rng.integers(1, 7, size=n)]
+        weights = [w / sum(raw) for w in raw]
+        labels = [int(x) for x in rng.integers(0, n_bins, size=n)]
+        labels[:n_bins] = list(range(n_bins))
+        errors = [[Fraction(int(x), 8) for x in rng.integers(-4, 5, size=d)] for _ in range(n)]
+        p, c, v, i_z = _o8_moments(atoms, weights, labels, n_bins)
+        if _o8_det(v) == 0 or _o8_det(i_z) == 0:
+            continue
+        for err_scale in (None, Fraction(1, 3)):
+            if err_scale is None:
+                errs = errors
+            else:
+                errs = [[err_scale * x for x in c[z]] for z in labels]
+            proxy = [
+                [a + b for a, b in zip(s, e, strict=True)] for s, e in zip(atoms, errs, strict=True)
+            ]
+            _, _, vt, it = _o8_moments(proxy, weights, labels, n_bins)
+            _, e_c, e_full, e_z = _o8_moments(errs, weights, labels, n_bins)
+            for a_mat, at_mat, e_mat in ((i_z, it, e_z), (v, vt, e_full)):
+                det_a = _o8_det(a_mat)
+                inv_a = [
+                    [a_mat[1][1] / det_a, -a_mat[0][1] / det_a],
+                    [-a_mat[1][0] / det_a, a_mat[0][0] / det_a],
+                ]
+                eps2 = sum(inv_a[i][j] * e_mat[j][i] for i in range(d) for j in range(d))
+                tr = sum(
+                    inv_a[i][j] * (at_mat[j][i] - a_mat[j][i]) for i in range(d) for j in range(d)
+                )
+                assert (tr - eps2) ** 2 <= 4 * d * eps2
+                checked += 1
+            if err_scale is not None:
+                assert _o8_det(it) == (1 + err_scale) ** (2 * d) * _o8_det(i_z)
+                det_i = _o8_det(i_z)
+                inv_i = [
+                    [i_z[1][1] / det_i, -i_z[0][1] / det_i],
+                    [-i_z[1][0] / det_i, i_z[0][0] / det_i],
+                ]
+                eps_r2 = sum(inv_i[i][j] * e_z[j][i] for i in range(d) for j in range(d))
+                assert eps_r2 == d * err_scale * err_scale
+    assert checked >= 100
+
+
+def test_o8_audit_log_lower_positive_spectral_floor() -> None:
+    """A rational upper Riemann sum refutes the old scalar lower bound."""
+    fixture = _o8_fixture("CE-SCORE-ERROR-LOG-LOWER-001")
+    q = fixture["exact_quantities"]
+    atoms = [[Fraction(x) for x in row] for row in fixture["scores"]]
+    proxy = [[Fraction(x) for x in row] for row in q["proxy_scores"]]
+    weights = [Fraction(x) for x in fixture["weights"]]
+    _, _, v, _ = _o8_moments(atoms, weights, fixture["labels_before"], 2)
+    _, _, vt, _ = _o8_moments(proxy, weights, fixture["labels_before"], 2)
+    lam = vt[0][0] / v[0][0] - 1
+    assert lam == Fraction(q["lambda"])
+    old_lower = lam - lam**2 / (2 * (1 + lam))
+    assert old_lower == Fraction(q["claimed_log_lower"])
+    # Integral of decreasing 1/t on [1, 1+lambda] is below its left sum.
+    upper_sum = sum((lam / 32) / (1 + j * lam / 32) for j in range(32))
+    assert upper_sum < old_lower
+    # Corrected scalar lower bound uses min(0, lambda_min); a right sum suffices.
+    lower_sum = sum((lam / 32) / (1 + j * lam / 32) for j in range(1, 33))
+    assert lam - lam**2 / 2 < lower_sum
+
+
+def test_o8_audit_alignment_bounds_are_not_ordered() -> None:
+    """Both alignment bounds hold, but the displayed chained ordering is false."""
+    fixture = _o8_fixture("CE-SCORE-ERROR-ALIGNMENT-ORDER-001")
+    q = fixture["exact_quantities"]
+    atoms = [[Fraction(x) for x in row] for row in fixture["scores"]]
+    errors = [[Fraction(x) for x in row] for row in q["errors"]]
+    weights = [Fraction(x) for x in fixture["weights"]]
+    labels = fixture["labels_before"]
+    p, c, v, retained = _o8_moments(atoms, weights, labels, fixture["K"])
+    _, ec, ef, ez = _o8_moments(errors, weights, labels, fixture["K"])
+    assert v[0][1] == retained[0][1] == 0
+    rho = [retained[j][j] / v[j][j] for j in range(2)]
+    eps2 = sum(ef[j][j] / v[j][j] for j in range(2))
+    eps_z2 = sum(ez[j][j] / v[j][j] for j in range(2))
+    eps_r2 = sum(ez[j][j] / retained[j][j] for j in range(2))
+    assert eps2 == eps_z2 == eps_r2 == Fraction(q["eps2"])
+    between = sum(p[b] * ec[b][j] * c[b][j] / retained[j][j] for b in range(3) for j in range(2))
+    total = sum(
+        w * e[j] * s[j] / v[j][j]
+        for s, e, w in zip(atoms, errors, weights, strict=True)
+        for j in range(2)
+    )
+    assert between - total == Fraction(q["T1"]) == 0
+    trace_squared = (2 - sum(rho)) * eps_z2 * (1 - min(rho)) / min(rho)
+    crude_squared = 8 * eps2  # d=2 and eps_R=eps
+    assert trace_squared == Fraction(q["trace_bound_squared"])
+    assert crude_squared == Fraction(q["crude_bound_squared"])
+    assert trace_squared > crude_squared
+
+
+def test_o8_audit_translations_change_uncentred_retention() -> None:
+    """An affine translation changes a positive, nontrivial retention ratio."""
+    fixture = _o8_fixture("CE-SCORE-ERROR-TRANSLATION-001")
+    q = fixture["exact_quantities"]
+    weights = [Fraction(x) for x in fixture["weights"]]
+    for key, rows in (("eta_before", fixture["scores"]), ("eta_after", q["proxy_scores"])):
+        atoms = [[Fraction(x) for x in row] for row in rows]
+        _, _, v, retained = _o8_moments(atoms, weights, fixture["labels_before"], 2)
+        assert retained[0][0] / v[0][0] == Fraction(q[key])
+    assert q["eta_before"] != q["eta_after"]
+
+
+def test_o8_audit_least_squares_map_can_be_singular() -> None:
+    """Positive true and proxy second moments do not ensure an invertible A*."""
+    fixture = _o8_fixture("CE-SCORE-ERROR-SINGULAR-LS-001")
+    q = fixture["exact_quantities"]
+    truth = [Fraction(row[0]) for row in fixture["scores"]]
+    proxy = [Fraction(row[0]) for row in q["proxy_scores"]]
+    weights = [Fraction(x) for x in fixture["weights"]]
+    v = sum(w * s * s for w, s in zip(weights, truth, strict=True))
+    vt = sum(w * h * h for w, h in zip(weights, proxy, strict=True))
+    cross = sum(w * s * h for w, s, h in zip(weights, truth, proxy, strict=True))
+    a = cross / vt
+    assert v == vt == 1
+    assert a == Fraction(q["A_star"]) == 0
+    assert a * a * vt == Fraction(q["transformed_V"]) == 0
+    assert 1 - cross * cross / (v * vt) == Fraction(q["eps_linear2"])
+
+
+@pytest.mark.parametrize("suffix", ["CHART", "RETENTION"])
+def test_o8_audit_calibration_does_not_certify_retention_distortion(suffix: str) -> None:
+    """Recompute posterior, score, reliability and retention under valid mixture laws."""
+    fixture = _o8_fixture(f"CE-CLASSIFIER-CALIBRATION-{suffix}-001")
+    q = fixture["exact_quantities"]
+    weights = [Fraction(x) for x in fixture["weights"]]
+    eta = [[Fraction(x) for x in row] for row in q["posterior"]]
+    hat = [[Fraction(x) for x in row] for row in q["proxy_posterior"]]
+    theta = [Fraction(x) for x in q["theta0"]]
+    prior = [Fraction(x) for x in q["prior"]]
+    chart = [Fraction(x) for x in q["chart"][0]]
+    assert theta == prior
+    assert sum(chart) == 0  # valid tangent of normalized mixture fractions
+    for j, pi in enumerate(prior):
+        assert sum(w * row[j] for w, row in zip(weights, eta, strict=True)) == pi
+    for row in eta + hat:
+        assert sum(row) == 1 and min(row) >= 0
+    assert len({tuple(row) for row in hat}) == len(hat)
+    # Each proxy value identifies X, so E[eta | hat eta]=eta: no resolution gap.
+    reliability = sum(
+        w * sum((a - b) ** 2 for a, b in zip(e, h, strict=True))
+        for w, e, h in zip(weights, eta, hat, strict=True)
+    )
+    assert reliability == Fraction(q["reliability"]) > 0
+
+    def scores(posteriors: list[list[Fraction]]) -> list[list[Fraction]]:
+        output = []
+        for row in posteriors:
+            ratios = [x / pi for x, pi in zip(row, prior, strict=True)]
+            denom = sum(t * r for t, r in zip(theta, ratios, strict=True))
+            output.append([sum(t * r / denom for t, r in zip(chart, ratios, strict=True))])
+        return output
+
+    truth, proxy = scores(eta), scores(hat)
+    assert truth == [[Fraction(row[0])] for row in fixture["scores"]]
+    _, _, v, retained = _o8_moments(truth, weights, fixture["labels_before"], 2)
+    _, _, vt, it = _o8_moments(proxy, weights, fixture["labels_before"], 2)
+    eps2 = (
+        sum(w * (a[0] - b[0]) ** 2 for w, a, b in zip(weights, truth, proxy, strict=True)) / v[0][0]
+    )
+    assert eps2 == Fraction(q["eps2"])
+    assert retained[0][0] / v[0][0] == Fraction(q["eta_true"])
+    assert it[0][0] / vt[0][0] == Fraction(q["eta_reported"]) == 1

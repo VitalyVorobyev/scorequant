@@ -30,9 +30,24 @@ unverified: a Haynsworth 1968 key and the Jakubowski 2021 volume). Results prove
 - O6 `RETENTION-PLUGIN-CLT-FROZEN-SCALAR` (audited 5 September 2026; the \(\sigma^2=0\)
   characterisation was hardened at \(\eta=0\) — carry the hardened statement).
 - O7 `RETENTION-PLUGIN-CLT-FROZEN-VECTOR` with `RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE` and
-  `CE-O7-ELLIPSOID-ZERO-VARIANCE-001` (audit pending). Cite as a bridge from the delta method
+  `CE-O7-ELLIPSOID-ZERO-VARIANCE-001` (audited 6 September 2026;
+  `AUDITS/AUDIT-RETENTION-PLUGIN-VECTOR-001.md`). Cite as a bridge from the delta method
   and the published canonical-correlation influence functions, never as novelty; the measured
   heavy-tail under-coverage is a caveat in any such text.
+- O8 `SCORE-ERROR-RETENTION-BUDGET`, `SCORE-ERROR-RULE-TRANSFER`,
+  `CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ` and their measured/negative companions
+  (audited with corrections 8 September 2026, `AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`).
+  Harvest the corrected statements and five-source literature table, not the original
+  proof snapshot. The original scalar log lower-bound lemma needs a nonpositive floor;
+  the two alignment bounds are separate, not ordered; sharpness is for the numerator.
+  Reduction is invertible linear, not translation invariant, and a singular least-squares
+  minimizer is inadmissible. Calibration only lower-bounds score error with an injective
+  chart and explicit constants and never certifies retention distortion. Transfer rates
+  need their metric/moment/mass domains; O8.6 needs the corrected budget signs and a
+  fixed comparator. AUC preserves rank cuts under corresponding thresholds, not fixed
+  numerical thresholds. O7's sampling interval does not absorb proxy reporting bias.
+  Six new audit fixtures must be included in v10's fixture coverage. The expansion's
+  targeted literature search gap is not novelty.
 
 Earlier snapshots (v8, the HEP companion, the landscape survey, the dated staleness log) are in
 git history.

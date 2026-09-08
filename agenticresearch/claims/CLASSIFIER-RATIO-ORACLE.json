@@ -9,8 +9,8 @@
   "publication_status": "published",
   "statement": "With known class priors, posterior odds recover component density ratios, which can then be transformed into the local mixture score.",
   "assumptions": [
-    "calibrated posterior probabilities",
-    "known training priors"
+    "true full-observation posterior probabilities P(Y=a|X=x), not merely reliability-calibrated probabilities",
+    "known strictly positive training priors; the same class-conditional component laws"
   ],
   "literature": [
     "Cranmer-Pavez-Louppe-2015"
@@ -23,5 +23,6 @@
   "implies": [
     "CLASSIFIER-MIXTURE-SCORE-FORMULA",
     "OPEN-CLASSIFIER-CALIBRATION-FI"
-  ]
+  ],
+  "warning": "Reliability calibration alone identifies density ratios of the forecast representation, not necessarily the full observation; see O8.4 and AUDIT-SCORE-ERROR-BUDGET-001."
 }

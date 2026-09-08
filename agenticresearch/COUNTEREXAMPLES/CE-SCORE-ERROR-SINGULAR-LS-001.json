@@ -1,0 +1,52 @@
+{
+  "id": "CE-SCORE-ERROR-SINGULAR-LS-001",
+  "criterion": "D",
+  "level": "information_accounting",
+  "claim_falsified": "The least-squares map A* is always an admissible nonsingular reporting reparameterization.",
+  "scores": [
+    [
+      "-1"
+    ],
+    [
+      "1"
+    ]
+  ],
+  "weights": [
+    "1/2",
+    "1/2"
+  ],
+  "K": 1,
+  "labels_before": [
+    0,
+    0
+  ],
+  "labels_after_or_optimum": null,
+  "poi_indices": [
+    0
+  ],
+  "nuisance_indices": [],
+  "objective_before": null,
+  "objective_after": null,
+  "exact_quantities": {
+    "proxy_scores": [
+      [
+        "1"
+      ],
+      [
+        "1"
+      ]
+    ],
+    "A_star": "0",
+    "V": "1",
+    "V_tilde": "1",
+    "eps_linear2": "1",
+    "transformed_V": "0"
+  },
+  "verification": {
+    "method": "exact_formula",
+    "notes": "Rational witness; independently recomputed in tests/test_research_claims.py. See audit for the corrected theorem."
+  },
+  "source": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
+  "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
+  "date": "2026-09-08"
+}

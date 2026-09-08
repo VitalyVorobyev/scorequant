@@ -494,5 +494,21 @@
   "TRACE-WHITENED-KMEANS": {
     "title": "Trace retention is whitened k-means",
     "summary": "Maximizing normalized trace is equivalent to minimizing within-cell scatter in Fisher-whitened score space."
+  },
+  "SCORE-ERROR-RETENTION-BUDGET": {
+    "title": "A proxy score misreports retention by a computable two-term budget",
+    "summary": "The gap between the retention reported for an estimated score and the true retention of the same labels is an alignment term scaling with the rule's own information loss plus a spurious-information term set by the weakest retained direction, with explicit constants."
+  },
+  "SCORE-ERROR-RULE-TRANSFER": {
+    "title": "Applying a rule to the proxy instead of the truth costs a margin-controlled amount",
+    "summary": "The mass of events the rule labels differently on the estimated score is bounded through a margin condition at the cell boundaries, and the retained information changes by at most an explicit matrix of the mislabelled mass."
+  },
+  "CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ": {
+    "title": "Calibration error bounds the score error from below, the excess Brier score from above",
+    "summary": "The mixture score is Lipschitz in the classifier posterior, so the score error that drives the reporting budget is controlled by the excess Brier score, only half of which is observable without truth; AUC controls nothing."
+  },
+  "SCORE-ERROR-DOOR3-MEASURED": {
+    "title": "The score-error budget was measured on the classifier example",
+    "summary": "On the logistic-regression rungs and a two-dimensional mixture the budget brackets every measured gap and shows which of its two terms dominates."
   }
 }

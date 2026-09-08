@@ -8,14 +8,15 @@
   "level": "score_oracle",
   "status": "open",
   "publication_status": "open",
-  "statement": "Relate posterior/ratio calibration error to density-ratio error, score error, representation loss, and final D/Ds efficiency.",
+  "statement": "The audited CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ bridge supplies an upper score-error budget from excess Brier error. Reliability and resolution gap split that posterior error; a reverse score-error bound needs an injective chart and explicit constants. Calibration error does not certify retention distortion, and AUC does not determine proxy reporting error. Remaining: certify the resolution gap without truth scores (OP19), sharper constants, and D_s efficiency.",
   "dependencies": [
+    "CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ",
     "CLASSIFIER-RATIO-ORACLE",
     "PROXY-TRUE-RETAINED-FI"
   ],
   "proof_location": {
     "file": "OPEN_PROBLEMS.md",
-    "section": "OP18. Classifier calibration error \u2192 Fisher loss"
+    "section": "OP18. Classifier calibration error → Fisher loss"
   },
   "programme": "P2"
 }

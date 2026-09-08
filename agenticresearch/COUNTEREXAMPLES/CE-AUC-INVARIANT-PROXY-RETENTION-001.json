@@ -1,0 +1,105 @@
+{
+  "id": "CE-AUC-INVARIANT-PROXY-RETENTION-001",
+  "criterion": "D",
+  "level": "information_accounting",
+  "claim_falsified": "A proxy score with the same ranking as the true score (hence the same ROC curve and AUC for every threshold) reports the true retention. Refuted: two strictly monotone distortions of a four-atom scalar law leave the labels of corresponding rank-cut threshold rules (including the fixed zero cut here) and the true retention 9/10 unchanged while the reported (proxy) retention is 100/101 for one and 5105/10006 for the other; ranking quality says nothing about the reported number, the Fisher-whitened score error does (SCORE-ERROR-RETENTION-BUDGET), and it is not observable from a ROC curve.",
+  "scores": [
+    [
+      "-2"
+    ],
+    [
+      "-1"
+    ],
+    [
+      "1"
+    ],
+    [
+      "2"
+    ]
+  ],
+  "weights": [
+    "1/4",
+    "1/4",
+    "1/4",
+    "1/4"
+  ],
+  "K": 2,
+  "labels_before": [
+    0,
+    0,
+    1,
+    1
+  ],
+  "labels_after_or_optimum": null,
+  "poi_indices": [
+    0
+  ],
+  "nuisance_indices": [],
+  "objective_before": "true retention 9/10 (V = 5/2, I_Z = 9/4)",
+  "objective_after": "reported retention 100/101 (compress) and 5105/10006 (stretch) with the same labels",
+  "exact_quantities": {
+    "distortions": [
+      {
+        "distortion": "compress_within_cells",
+        "proxy_scores": [
+          [
+            "-11/10"
+          ],
+          [
+            "-9/10"
+          ],
+          [
+            "9/10"
+          ],
+          [
+            "11/10"
+          ]
+        ],
+        "labels_unchanged": true,
+        "eta_true": "9/10",
+        "eta_proxy": "100/101",
+        "eps2": "41/250",
+        "eps_R2": "1/9",
+        "log_eta_ratio": 0.09541018480465824,
+        "first_order_budget": 1.47660493591933,
+        "bracket_upper": 1.8160617781864836,
+        "bracket_lower": -1.7848684854689922,
+        "checks_all_true": true
+      },
+      {
+        "distortion": "stretch_one_atom",
+        "proxy_scores": [
+          [
+            "-2"
+          ],
+          [
+            "-1"
+          ],
+          [
+            "1"
+          ],
+          [
+            "100"
+          ]
+        ],
+        "labels_unchanged": true,
+        "eta_true": "9/10",
+        "eta_proxy": "5105/10006",
+        "eps2": "4802/5",
+        "eps_R2": "4802/9",
+        "log_eta_ratio": -0.567603945791558,
+        "first_order_budget": 108.17828517682133,
+        "bracket_upper": null,
+        "bracket_lower": null,
+        "checks_all_true": true
+      }
+    ]
+  },
+  "verification": {
+    "method": "exact_formula",
+    "notes": "fractions.Fraction; the distortions are strictly increasing, so the ROC curve of any threshold classifier built on the proxy equals that of the truth; the B1/B2 brackets of SCORE-ERROR-RETENTION-BUDGET hold on both (checks_all_true) - the stretch has eps_R^2 = 4802/9 > 1, outside the lower bracket's domain, and the reported number is indeed far from the truth."
+  },
+  "source": "SCORE-ERROR-BUDGET packet, py/score_error_budget.py fixtures",
+  "date": "2026-09-08",
+  "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md"
+}

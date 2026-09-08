@@ -8,10 +8,12 @@
   "level": "score_oracle",
   "status": "open",
   "publication_status": "open",
-  "statement": "Control cell moments, retained Fisher information, D/Ds objective, efficiency, and boundary displacement from norm bounds on score-proxy error.",
+  "statement": "First-order reporting and rule-transfer bounds for frozen score rules are audited with corrections (SCORE-ERROR-RETENTION-BUDGET, SCORE-ERROR-RULE-TRANSFER; AUDIT-SCORE-ERROR-BUDGET-001). Remaining: uniform error control plus optimization-gap certification, D_s, refitted rules and sharp second-order constants. No uniform relative/log reporting bound follows from an L2 score-error upper bound alone without retention conditioning.",
   "dependencies": [
     "PROXY-TRUE-RETAINED-FI",
-    "REPRESENTATION-QUANTIZATION-LOSS"
+    "REPRESENTATION-QUANTIZATION-LOSS",
+    "SCORE-ERROR-RETENTION-BUDGET",
+    "SCORE-ERROR-RULE-TRANSFER"
   ],
   "proof_location": {
     "file": "OPEN_PROBLEMS.md",

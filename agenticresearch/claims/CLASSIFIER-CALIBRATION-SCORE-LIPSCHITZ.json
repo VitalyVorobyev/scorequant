@@ -1,0 +1,47 @@
+{
+  "id": "CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ",
+  "title": "Posterior error to score error for mixture-fraction scores: one Lipschitz inequality, and the excess Brier score as the classifier requirement",
+  "criterion": [
+    "general",
+    "D"
+  ],
+  "level": "score_oracle",
+  "status": "bridge",
+  "publication_status": "derived_from_published",
+  "statement": "For the mixture score of CLASSIFIER-MIXTURE-SCORE-FORMULA, Phi_a(eta) = (eta_a/pi_a) / sum_b theta0_b eta_b/pi_b on the simplex with theta0 interior: D(eta) >= D_min = min_b theta0_b/pi_b, 0 <= Phi_a <= 1/theta0_a, and |Phi_a(eta') - Phi_a(eta)| <= (|eta'_a - eta_a|/pi_a + (1/theta0_a) sum_b (theta0_b/pi_b) |eta'_b - eta_b|) / D_min, hence ||Phi(eta') - Phi(eta)||_2 <= L ||eta' - eta||_2 with L = (1/pi_min + Q sqrt(m) ||1/theta0||_2) / D_min, Q = max_b theta0_b/pi_b. With s = T Phi for the fixed linear chart T and s_hat = T Phi(eta_hat): the Fisher-whitened score error of SCORE-ERROR-RETENTION-BUDGET satisfies eps^2 <= ||V^{-1}|| ||T||^2 L^2 E_{P_theta0} ||eta_hat - eta||^2 <= ||V^{-1}|| ||T||^2 L^2 Q E_{P_pi} ||eta_hat - eta||^2, and under the training mixture P_pi with one-hot component label Y, E ||eta_hat - eta||^2 = BS(eta_hat) - BS(eta) is the excess Brier score, which splits orthogonally as reliability (calibration error, E||eta_hat - E[eta | eta_hat]||^2, estimable from labelled data) plus resolution gap (E||eta - E[eta | eta_hat]||^2, the posterior-level representation loss of O5, needing the truth). The inverse map eta_a=pi_a Phi_a/sum_b pi_b Phi_b has Lipschitz constant L_inv=Q(pi_max+||pi||_2) on its image. Thus posterior and full component-ratio errors are equivalent. For score error the reverse implication additionally requires sigma_T=inf{||Th||_2: theta0^T h=0, ||h||_2=1}>0. Then eps^2 >= D_min sigma_T^2/(L_inv^2 ||V||_op) E_Ppi||eta_hat-eta||^2 >= the same constant times reliability. Without this chart condition positive reliability can coexist with zero score error. Even with it, positive score/calibration error need not distort retention (invertible score rescalings cancel). Excess Brier error supplies a sufficient upper score-error budget, not a necessary calibration requirement for correct reporting; AUC does not determine the reporting gap.",
+  "assumptions": [
+    "pi and theta0 are positive probability vectors for the same component densities; eta=P_pi(Y|X) is the true full-observation posterior, eta_hat is a fixed simplex-valued function of X. Reliability calibration alone is not posterior correctness.",
+    "D_min>0, Q=max theta0/pi; constants depend on these fractions and priors. The mixture Radon-Nikodym derivative D lies in [D_min,Q]. V is positive definite for Fisher whitening.",
+    "The forward bound holds for any fixed linear chart T. For normalized-mixture Fisher semantics T is a tangent chart with T 1=0. A reverse score bound needs T injective on theta0-perp; a reduced parameter submodel need not satisfy this.",
+    "Brier score here is the sum of squared errors over all one-hot coordinates (no division by m). Reliability and resolution gap are population expectations under P_pi. Estimation from labelled data requires a justified calibration estimator and sampling analysis; the identity is not a finite-data certificate.",
+    "No lower bound on retention distortion follows from a lower bound on score error. The O8.2 reporting bound also needs its retained-rank and small-error conditions.",
+    "The inverse ratio constant is L_inv=Q(pi_max+||pi||_2); combining chart injectivity, D>=D_min and ||Delta s||^2<=||V|| eps-pointwise^2 yields the stated constant-qualified squared-error lower bound."
+  ],
+  "dependencies": [
+    "CLASSIFIER-MIXTURE-SCORE-FORMULA",
+    "CLASSIFIER-RATIO-ORACLE",
+    "SCORE-ERROR-RETENTION-BUDGET"
+  ],
+  "implies": [
+    "OPEN-CLASSIFIER-CALIBRATION-FI"
+  ],
+  "literature_search_status": "prior_art_found",
+  "proof_location": {
+    "file": "KNOWN_RESULTS/10-oracle.md",
+    "section": "O8. Score-error budget for a frozen rule: what an estimated score costs, to first order"
+  },
+  "artifact": "py/score_error_budget.py",
+  "role": "A sufficient classifier posterior-error budget for conditional retention reporting; separates observable reliability from unresolved resolution, without inferring necessary retention distortion.",
+  "warning": "Audited bridge. Forward constants and Brier decomposition survive. The original unconditional calibration-to-score lower bound and claim that bad calibration certifies retention distortion are refuted by exact fixtures.",
+  "boundary_counterexamples": [
+    "CE-AUC-INVARIANT-PROXY-RETENTION-001",
+    "CE-CLASSIFIER-CALIBRATION-CHART-001",
+    "CE-CLASSIFIER-CALIBRATION-RETENTION-001"
+  ],
+  "programme": "P2",
+  "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
+  "literature": [
+    "Brocker-2009",
+    "Cranmer-Pavez-Louppe-2015"
+  ]
+}

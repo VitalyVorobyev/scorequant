@@ -1,0 +1,32 @@
+{
+  "id": "SCORE-ERROR-DOOR3-MEASURED",
+  "title": "Measured score-error budget on the door3 classifier rungs and a d = 2 mixture law",
+  "criterion": [
+    "D"
+  ],
+  "level": "application",
+  "status": "measured",
+  "publication_status": "internal",
+  "statement": "Measured evidence only (py/score_error_budget.py door3 and synthetic2d, 8 Sep 2026; cut-aligned QUADPACK). door3 (examples/door3_classifier.py, logistic-regression rungs 15/60/300 events per class, D-exchange rule with K = 4, rebuilt through the O6 audit's closed forms): true retention of the deployed labels 0.8937 / 0.9557 / 0.9716 against reported 0.9671 / 0.9710 / 0.9738 (log ratio 0.079 / 0.016 / 0.0023); whitened score error eps = 0.500 / 0.289 / 0.096, after the least-squares linear reduction 0.416 / 0.235 / 0.067 (uncentred correlation between true and proxy score 0.909 / 0.972 / 0.998); eps_R = 0.447 / 0.262 / 0.091; exact first-order term T_1 = 0.084 / 0.025 / 0.0028; the sharper alignment bound 0.270 / 0.079 / 0.016 covers T_1 by 3-6x, the crude first-order budget 1.89 / 1.10 / 0.37 by 24x; rule applied to the true score retains 0.947 / 0.971 / 0.973; mislabel mass pi = 0.275 / 0.186 / 0.051; both Loewner sandwiches hold (Gamma = 0.80 / 0.41 / 0.10); the margin bound is vacuous at the two larger errors and 0.45 at rung 300. synthetic2d (the O7 bounded three-component mixture, d = 2, K = 4, eta_D = 0.3303, retention eigenvalues 0.131 and 0.830): a template with all component means shifted by delta = 0.05 / 0.1 / 0.2 / 0.4 has eps = 0.072 / 0.143 / 0.285 / 0.563 and reports log ratios -0.007 / +0.003 / +0.064 / +0.263; an error of the same eps aligned with the weakest retained direction and sign-correlated with the cells reports +0.021 / +0.068 / +0.204 / +0.468 (eps_R = 0.20 / 0.39 / 0.78 / 1.54) against +0.004 / +0.009 / +0.022 / +0.052 for the strongest direction (eps_R = 0.08 / 0.17 / 0.33 / 0.66); every row lies inside the B2 bracket; T_1 <= 0.04 on every row and (eps_R^2 - eps^2)/2 reproduces the weak-direction gap to 0.01 for eps <= 0.29.",
+  "assumptions": [
+    "population quantities by QUADPACK on cut-aligned pieces (epsabs 1e-14) with the door3 mixture truncated at |x| <= 15; the recorded O6/O7 values of eta_D and the proxy retention reproduce to rounding",
+    "the door3 rules are the frozen rungs of the example (deterministic seeds); the synthetic2d rule is the fixed x-cut partition of the O7 mixture; one partition per law",
+    "the adversarial proxies are constructed with the truth (direction and cell signs); they isolate the mechanism, they are not classifiers",
+    "measured, never theorem authority; no statement about other rules, other K, or refitted rules",
+    "Independent replay recorded in WORK/artifacts/AUDIT-SCORE-ERROR-BUDGET-001/replicate.json; historical affine/eps_aff labels mean zero-intercept linear least-squares reduction. Original numeric claims are compared at their published rounding precision."
+  ],
+  "dependencies": [
+    "SCORE-ERROR-RETENTION-BUDGET",
+    "SCORE-ERROR-RULE-TRANSFER"
+  ],
+  "literature_search_status": "not_searched",
+  "proof_location": {
+    "file": "KNOWN_RESULTS/10-oracle.md",
+    "section": "O8. Score-error budget for a frozen rule: what an estimated score costs, to first order"
+  },
+  "artifact": "py/score_error_budget.py",
+  "role": "falsification and calibration experiment for O8.2-O8.3 on the one library example that has both a classifier and the analytic score, plus the mechanism isolation in d = 2; did not falsify, and showed which term dominates where (alignment on door3, spurious information on the synthetic law)",
+  "warning": "Measured only. The door3 classifier's score error (30-50% at the small rungs) is far outside the range where the rule-transfer bound says anything; the reporting budget still brackets the gap there because the error is mostly linear and the rule nearly lossless.",
+  "programme": "P2",
+  "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md"
+}

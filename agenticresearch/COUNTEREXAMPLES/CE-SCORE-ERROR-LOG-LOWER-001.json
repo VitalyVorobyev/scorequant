@@ -1,0 +1,50 @@
+{
+  "id": "CE-SCORE-ERROR-LOG-LOWER-001",
+  "criterion": "D",
+  "level": "information_accounting",
+  "claim_falsified": "Lemma 4 scalar inequality with positive lambda_min; the final epsilon-based curvature bound survives.",
+  "scores": [
+    [
+      "-2"
+    ],
+    [
+      "2"
+    ]
+  ],
+  "weights": [
+    "1/2",
+    "1/2"
+  ],
+  "K": 2,
+  "labels_before": [
+    0,
+    1
+  ],
+  "labels_after_or_optimum": null,
+  "poi_indices": [
+    0
+  ],
+  "nuisance_indices": [],
+  "objective_before": null,
+  "objective_after": null,
+  "exact_quantities": {
+    "proxy_scores": [
+      [
+        "-3"
+      ],
+      [
+        "3"
+      ]
+    ],
+    "lambda": "5/4",
+    "claimed_log_lower": "65/72",
+    "eps2": "1/4"
+  },
+  "verification": {
+    "method": "exact_formula",
+    "notes": "Rational witness; independently recomputed in tests/test_research_claims.py. See audit for the corrected theorem."
+  },
+  "source": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
+  "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
+  "date": "2026-09-08"
+}

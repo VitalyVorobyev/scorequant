@@ -394,3 +394,10 @@ geometric-mean statement on a fixed partition with uncentred moments,
 \(0/0:=0\), the plug-in variance and the endpoint treatment is a search
 gap. The packet packet `RETENTION-PLUGIN-VECTOR` (git history) was rewritten to
 cite the first and derive only the second.
+
+## O8 independent audit — 8 September 2026
+
+Five primary sources inspected, with theorem/section locations and transfer boundaries in
+`audits/SCORE-ERROR-RETENTION-BUDGET-2026-09-08.md`. The margin and Brier ingredients have
+prior art; the exact frozen-label reporting expansion remains a search gap. This closes
+the mandatory triangulation, not the broad field-coverage or novelty search.

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated": "2026-09-05",
+  "updated": "2026-09-08",
   "purpose": "Reproducible literature-discovery state for citation snowballing (protocols/literature.md). One record per paper; papers link to claim ids, never merely to 'ScoreQuant'.",
   "record_schema": {
     "id": "short-slug",
@@ -383,6 +383,13 @@
       "relevant_added": 20,
       "saturation": false,
       "table": "audits/RETENTION-PLUGIN-CLT-FROZEN-VECTOR-5-September-2026.md"
+    },
+    {
+      "round": 12,
+      "date": "2026-09-08",
+      "mode": "targeted-audit-search",
+      "scope": "O8 five-source triangulation; primary sections inspected. Not a citation-saturation round. LITERATURE/audits/SCORE-ERROR-RETENTION-BUDGET-2026-09-08.md records transfer limits.",
+      "primary_texts_inspected": 5
     }
   ],
   "papers": [
@@ -466,7 +473,8 @@
       "research_area": "fisher-quantization",
       "relevant_claims": [
         "FI-QUANT-IDENTITY",
-        "TRACE-WHITENED-KMEANS"
+        "TRACE-WHITENED-KMEANS",
+        "SCORE-ERROR-RETENTION-BUDGET"
       ],
       "status": "deeply_reviewed"
     },
@@ -3022,6 +3030,59 @@
       ],
       "status": "irrelevant",
       "note": "Rank-based nonparametric Lambda; Statist. Probab. Lett. 81(10):1502-1506; different statistic; rejected."
+    },
+    {
+      "id": "boyd-vandenberghe-2004",
+      "title": "Convex Optimization",
+      "year": 2004,
+      "authors": [
+        "Stephen Boyd",
+        "Lieven Vandenberghe"
+      ],
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "SCORE-ERROR-RETENTION-BUDGET"
+      ],
+      "status": "deeply_reviewed",
+      "bibliography_key": "Boyd-Vandenberghe-2004"
+    },
+    {
+      "id": "audibert-tsybakov-2007",
+      "title": "Fast learning rates for plug-in classifiers",
+      "year": 2007,
+      "authors": [
+        "Jean-Yves Audibert",
+        "Alexandre B. Tsybakov"
+      ],
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "SCORE-ERROR-RULE-TRANSFER"
+      ],
+      "status": "deeply_reviewed",
+      "bibliography_key": "Audibert-Tsybakov-2007"
+    },
+    {
+      "id": "brocker-2009",
+      "title": "Reliability, sufficiency, and the decomposition of proper scores",
+      "year": 2009,
+      "authors": [
+        "Jochen Broecker"
+      ],
+      "source_of_discovery": "concept-search",
+      "cites_relevant": [],
+      "cited_by_relevant": [],
+      "research_area": "other",
+      "relevant_claims": [
+        "CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ"
+      ],
+      "status": "deeply_reviewed",
+      "bibliography_key": "Brocker-2009"
     }
   ]
 }

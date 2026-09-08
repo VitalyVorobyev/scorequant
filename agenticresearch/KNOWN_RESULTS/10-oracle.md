@@ -40,7 +40,7 @@ s_\alpha(x)=
 }
 \]
 
-Estimated classifiers solve the exact score problem only to the extent that they recover calibrated ratios.
+Here the posterior means the true conditional probability given the full observation, not merely a reliability-calibrated forecast. For normalized mixture fractions, apply the tangent chart (for example, component-minus-reference differences) to these ratios to obtain a mean-zero score. Reliability calibration alone recovers ratios of the compressed representation, not necessarily the full observation; see O8.4.
 
 ## O4. True retained FI under an estimated score — [BRIDGE]
 
@@ -835,18 +835,16 @@ exact two-term expansion with an explicit curvature remainder (O8.2), the rule-t
 loss is a Markov-plus-margin bound composed with an exact Loewner sandwich (O8.3), and
 the classifier-calibration chain is one Lipschitz inequality plus the Brier identity
 (O8.4). Instrument `py/score_error_budget.py`; artifacts under
-`WORK/artifacts/SCORE-ERROR-BUDGET/`. Not yet independently audited (closure step 3's
-gate is "verdict plus audit"; the audit is the next session).*
+`WORK/artifacts/SCORE-ERROR-BUDGET/`. Independently audited and corrected on 8 September 2026:
+`AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`. The core budget survives; the alignment-bound ordering,
+linear-reduction domain, and classifier lower-bound/deployment readings required correction.*
 
-**Cite versus derive.** No literature pass has run for this section
-(`literature_search_status: not_searched`; targets in `LITERATURE/gaps.md`). Everything
-below is elementary: conditional Cauchy–Schwarz, the rank-one Loewner inequality, the
-concavity of \(\log\det\), Pythagoras for conditional expectations, Markov's inequality
-and a margin condition of the Mammen–Tsybakov type, and the Brier-score decomposition
-of a proper score. None of it is claimed as novel; what is project content is the
-reduction to the library's objects — the uncentred cell moments, the retention matrix
-\(R\), the geometric-mean retention — and the identification of the two scales that
-govern the gap, \(\sqrt{d-\operatorname{tr}R}\) and \(\varepsilon_R\).
+**Cite versus derive.** The independent five-source triangulation is in
+`LITERATURE/audits/SCORE-ERROR-RETENTION-BUDGET-2026-09-08.md`.
+Boyd–Vandenberghe supplies log-det concavity; Audibert–Tsybakov supplies the
+margin/Markov comparison method; Bröcker supplies the proper-score decomposition;
+Barnes–Han–Özgür and Cranmer–Pavez–Louppe supply the information and classifier
+reductions. The specific retention expansion has a search gap, not a novelty claim.
 
 ### O8.0 Normalized target (protocol A)
 
@@ -855,7 +853,7 @@ govern the gap, \(\sqrt{d-\operatorname{tr}R}\) and \(\varepsilon_R\).
   retention, `INFO-D-EFFICIENCY`) for O8.2; every direction (`INFO-RETENTION-SPECTRUM`)
   for O8.1; the trace and the determinant for O8.3.
 - **Frozen:** provider \(\hat s\), rule \(q\) on score space, reference point
-  \(\theta_0\), \(K\). **Nothing is random.** Every statement is an inequality
+  \(\theta_0\), \(K\). **No sampling limit is taken.** Every statement is an inequality
   between functionals of one law \(P\) on \(x\)-space — population or empirical.
   For the empirical law of a sample on which both \(s\) and \(\hat s\) exist the
   inequalities hold *sample-wise, exactly*; combined with O7 the reported number
@@ -910,10 +908,10 @@ line is the same with \((s,e)\) in place of \((c_Z,e_Z)\). \(\square\)
 
 *Reading.* In whitened coordinates a direction \(u\) that retains \(\rho=u^\top Ru\) is
 misreported by at most \(2\sqrt\rho\,\varepsilon_Z+\varepsilon_Z^2\), the full information by
-at most \(2\varepsilon+\varepsilon^2\). A proxy can *invent* retained information only in a
-direction the truth barely retains, and then only at second order — the mechanism
-behind O8.2's \(\varepsilon_R\). Equality holds iff \(e_b=\kappa c_b\) for all \(b\) with one
-constant \(\kappa\) (in the direction \(a\)).
+at most \(2\varepsilon+\varepsilon^2\). The quadratic error term can add information in any direction; its relative effect is amplified
+where true retention is small. For a fixed direction with nonzero projected true second moment,
+equality in Cauchy–Schwarz requires \(a^\top e_b=\kappa a^\top c_b\) almost surely;
+if that second moment vanishes, equality is automatic. This is not vector proportionality.
 
 ### O8.2 D-retention reporting budget — [PROJECT_PROVED]
 
@@ -931,15 +929,22 @@ a.s. for a constant \(\kappa\).
 \((c+e)(c+e)^\top\succeq(1-t)cc^\top-\frac{1-t}{t}ee^\top\) (the difference is
 \((\sqrt t\,c+e/\sqrt t)(\sqrt t\,c+e/\sqrt t)^\top\)). Hence
 \(\tilde A\succeq(1-t)A-\frac{1-t}{t}\mathcal E_A\), and since
-\(\|A^{-1/2}\mathcal E_AA^{-1/2}\|_{\rm op}\le\varepsilon_A^2\), at \(t=\varepsilon_A<1\):
+\(\|A^{-1/2}\mathcal E_AA^{-1/2}\|_{\rm op}\le\varepsilon_A^2\), at \(t=\varepsilon_A\in(0,1)\) (zero error is exact equality):
 \(A^{-1/2}\tilde AA^{-1/2}\succeq(1-\varepsilon_A)^2I\).
 
 **Lemma 4 (log-det brackets).** Let \(\lambda_i\) be the eigenvalues of
 \(A^{-1/2}(\tilde A-A)A^{-1/2}\) (all \(\ge-1\)). Concavity gives
 \(\sum\log(1+\lambda_i)\le\operatorname{tr}(A^{-1}(\tilde A-A))\le U_d(\varepsilon_A)\).
 For \(\varepsilon_A<1\): Lemma 3 gives \(\sum\log(1+\lambda_i)\ge2d\log(1-\varepsilon_A)\); and
-\(\log(1+\lambda)\ge\lambda-\lambda^2/(2(1+\lambda_{\min}))\) for \(\lambda\ge\lambda_{\min}>-1\)
-with \(1+\lambda_{\min}\ge(1-\varepsilon_A)^2\) and
+put \(m=\min(0,\lambda_{\min})\). The exact integral identity
+\[
+\log(1+\lambda)-\lambda=-\lambda^2\int_0^1\frac{t}{1+t\lambda}\,dt
+\]
+gives \(0\ge\log(1+\lambda)-\lambda\ge-\lambda^2/[2(1+m)]\), because
+\(1+t\lambda\ge1+m\ge(1-\varepsilon_A)^2\) throughout the interpolation.
+The original scalar assertion with positive \(\lambda_{\min}\) was false
+(`CE-SCORE-ERROR-LOG-LOWER-001`); the final epsilon-based bound is unchanged.
+Together with
 \(\|A^{-1/2}(\tilde A-A)A^{-1/2}\|_F\le2E[\|c'\|\|e'\|]+\operatorname{tr}E[e'e'^\top]\le U_d(\varepsilon_A)\)
 (primes: \(A^{-1/2}\)-whitened) gives the second member of \(L_d\). So
 \[
@@ -949,7 +954,7 @@ L_d(\varepsilon_A)\ \le\ \log\det\tilde A-\log\det A\ \le\ U_d(\varepsilon_A),
 \]
 
 **Theorem B2 (two-term expansion with curvature remainder).** Let \(I_Z\succ0\)
-(\(\eta_D>0\)) and \(\tilde V\succ0\). Then
+(\(\eta_D>0\)), \(\tilde V\succ0\), and \(\tilde I_Z\succ0\). Then
 \[
 \boxed{\ \log\frac{\tilde\eta_D}{\eta_D}=T_1+T_2+r_3,\qquad
 T_1=\frac2d\Big(E[e_Z^\top I_Z^{-1}c_Z]-E[e^\top V^{-1}s]\Big),\qquad
@@ -964,8 +969,13 @@ with the bounds
 (a) *alignment term:*
 \[
 |T_1|\ \le\ \frac2d\sqrt{d-\operatorname{tr}R}\;\Big(\varepsilon_Z\sqrt{\tfrac{1-\rho_{\min}}{\rho_{\min}}}+\sqrt{\varepsilon^2-\varepsilon_Z^2}\Big)
-\ \le\ \frac{2}{\sqrt d}\,(\varepsilon_R+\varepsilon);
+\qquad |T_1|\ \le\ \frac{2}{\sqrt d}\,(\varepsilon_R+\varepsilon);
 \]
+
+The two bounds are independent: use their minimum, not a chained ordering
+(`CE-SCORE-ERROR-ALIGNMENT-ORDER-001`). The curvature term \(r_3\) is second order,
+not a cubic Taylor remainder; \(T_2\) is not the entire quadratic Taylor coefficient.
+The small-error conditions imply positive definiteness of both proxy matrices.
 
 (b) *spurious-information term:* \(0\le\varepsilon_R^2\le\varepsilon_Z^2/\rho_{\min}\), so
 \(T_2\le(\varepsilon_Z^2/\rho_{\min}-\varepsilon^2)/d\) and \(T_2\ge-\varepsilon^2/d\);
@@ -986,36 +996,43 @@ T_1=\frac2d\Big(E\big[e_Z'^\top(R^{-1}-I)c'_Z\big]-E\big[(e'-e'_Z)^\top(w-c'_Z)\
 in the \((R^{-1}-I)\) inner product bounds the first expectation by
 \(\varepsilon_Z\sqrt{(1-\rho_{\min})/\rho_{\min}}\cdot\sqrt{d-\operatorname{tr}R}\). For the second,
 \(E\|e'-e'_Z\|^2=\varepsilon^2-\varepsilon_Z^2\) and \(E\|w-c'_Z\|^2=\operatorname{tr}(I-R)=d-\operatorname{tr}R\)
-(Pythagoras). The right inequality of (a) is Lemma 2 applied to each expectation
+(Pythagoras). The separate crude inequality of (a) is Lemma 2 applied to each expectation
 separately. For (b), \(I_Z\succeq\rho_{\min}V\) by definition of \(\rho_{\min}\), so
 \(I_Z^{-1}\preceq V^{-1}/\rho_{\min}\). (c) is Lemma 4 twice. \(\square\)
 
-**Sharpness of the first-order constant.** With \(e_b=\kappa c_b\) for every cell (the
+**Sharpness of the numerator first-order constant (not the retention-ratio bound).** With \(e_b=\kappa c_b\) for every cell (the
 proxy stretches each cell mean by the same factor), Lemma 2 is an equality,
 \(\det\tilde I_Z=(1+\kappa)^{2d}\det I_Z\) and \(\varepsilon_R^2=d\kappa^2\), so the numerator gap
 \(2d\log(1+\kappa)\) attains \(2\sqrt d\,\varepsilon_R\) to first order, in both signs of
 \(\kappa\). The instrument verifies both identities exactly in \(d=1,2,3\) (`selftest`).
 
-**Necessity of the retention scale.** No bound in \(\varepsilon\) alone exists:
+**Necessity of the retention scale.** No finite uniform relative/log reporting bound from an upper bound on \(\varepsilon\) alone exists:
 `CE-SCORE-ERROR-RHO-MIN-NECESSARY-001` is a \(d=2\), three-cell, centred atomic family with
-\(\varepsilon^2\in[0.026,0.028]\) fixed in which \(\tilde\eta_D/\eta_D\) runs
+\(\varepsilon^2\in[0.026,0.028]\) uniformly bounded in which \(\tilde\eta_D/\eta_D\) runs
 \(1.75\to5.10\to42.8\) as \(\rho_{\min}\) runs \(0.034\to0.0014\to1.4\cdot10^{-5}\); the
-gap is the \(T_2\) term, \(\varepsilon_R^2=4/5,\ 20,\ 2000\). A proxy error of \(16\%\) in the
+weak-direction error scale is \(\varepsilon_R^2=4/5,\ 20,\ 2000\). A proxy error of \(16\%\) in the
 whitened metric, aligned with a direction the rule barely retains, reports \(75\%\) more
 retention than there is.
 
-**Affine reduction (free).** \(\tilde\eta_D\) is the same number for \(\hat s\) and for
-\(A\hat s\), \(A\) nonsingular, and so are the labels; hence every statement of O8.1–O8.2
-holds with \(e\) replaced by \(e_A=A\hat s-s\) for any \(A\), in particular the
-least-squares \(A^*=E[s\hat s^\top]\tilde V^{-1}\), for which
+**Invertible linear reduction.** For fixed labels, \(\tilde\eta_D\) is unchanged by
+\(\hat s\mapsto A\hat s\) with \(A\) nonsingular. Transform a rule as
+\(q_A(u)=q(A^{-1}u)\) to preserve its labels; feeding transformed scores to an
+unchanged rule does not do this. Translations are not invariances of uncentred moments
+(`CE-SCORE-ERROR-TRANSLATION-001`). Every reporting bound therefore applies with
+\(e_A=A\hat s-s\), with all error scales recomputed for those same labels.
+The unconstrained least-squares matrix is \(A^*=E[s\hat s^\top]\tilde V^{-1}\), and
 \[
-\varepsilon_{\rm aff}^2=\operatorname{tr}(V^{-1}E[e_{A^*}e_{A^*}^\top])=d-\operatorname{tr}\big(V^{-1}E[s\hat s^\top]\tilde V^{-1}E[\hat ss^\top]\big)=\sum_{i\le d}(1-r_i^2),
+\varepsilon_{\rm lin}^2=d-\operatorname{tr}\big(V^{-1}E[s\hat s^\top]\tilde V^{-1}E[\hat ss^\top]\big)
+=\sum_{i=1}^d(1-r_i^2),
 \]
-\(r_i\) the uncentred canonical correlations between \(s\) and \(\hat s\). The reported
-retention depends on the proxy only through its affine class, and the budget's
-natural scale is the proxy's *linear representation loss* — the linear counterpart of
-O5's \(I_R\). Verified exactly in `selftest` (identity, \(\varepsilon_{\rm aff}\le\varepsilon\), and
-the invariance of the reported number).
+where \(r_i\) are uncentred canonical correlations. This identity holds even when
+\(A^*\) is singular; applying the unchanged-retention budget at \(A^*\) requires
+\(E[s\hat s^\top]\) nonsingular. Otherwise it only gives the infimum error over
+invertible maps (by approximation), not an admissible minimizer or a finite bracket
+at the singular limit (`CE-SCORE-ERROR-SINGULAR-LS-001`). If
+\(\varepsilon_{\rm lin}<1\), the cross moment is necessarily full rank: one zero
+canonical correlation would already contribute one unit. The original measured
+artifact keys `eps_aff` and table notation denote this linear, zero-intercept reduction.
 
 **The deployable direction.** The roles of \(s\) and \(\hat s\) are symmetric
 (\(s=\hat s+(-e)\)); with \(\tilde\varepsilon^2=\operatorname{tr}(\tilde V^{-1}\mathcal E)\),
@@ -1023,8 +1040,10 @@ the invariance of the reported number).
 \(\tilde\rho_{\min}\) is the smallest *reported* retention eigenvalue (the library's
 directional diagnostic, `INFO-DIRECTIONAL-DIAGNOSTICS`), the same expansion bounds
 \(\log(\eta_D/\tilde\eta_D)\). So a user with a reported \(\tilde\eta_D\), a reported
-\(\tilde\rho_{\min}\), a reported trace loss, and a score-error scale (O8.4, or a
-simulation hold-out) has a bracket for the truth. Verified exactly in `selftest`
+\(\tilde\rho_{\min}\), a reported trace loss, and an error budget in the **proxy metric** has a bracket
+for the truth when the stated small-error conditions hold. O8.4 directly bounds the
+true metric; converting it requires additional spectral control or evaluation of both
+metrics on a truth-labelled simulation hold-out. Verified exactly in `selftest`
 (`backward`).
 
 **Endpoints.** At \(\eta_D=0\) (\(I_Z\) singular, e.g. \(K\le d\) at the reference law,
@@ -1041,7 +1060,8 @@ computed from the true \(s\). \(M=\{Z\ne\hat Z\}\), \(\pi=P(M)\).
 **Proposition B3 (i) (mislabel mass).** If \(q(\hat s)\ne q(s)\) then
 \(\operatorname{dist}(s,\partial C_{q(s)})\le\|e\|\) in any norm — the segment
 \([s,\hat s]\) is connected, meets \(C_{q(s)}\) and its complement, hence its boundary.
-For a nearest-centre rule with metric \(G\) the distance from \(s\) in cell \(b\) to the
+For a nearest-centre rule with positive-definite metric \(G\) and distinct centres,
+in that same metric the distance from \(s\) in cell \(b\) to the
 boundary of \(b\) is \(\min_{b'\ne b}\big(\|s-\mu_{b'}\|_G^2-\|s-\mu_b\|_G^2\big)/(2\|\mu_b-\mu_{b'}\|_G)\),
 so its square is rational on rational data and the instrument checks the pointwise
 statement exactly in the \(V^{-1}\) metric. Markov's inequality then gives, with the
@@ -1050,13 +1070,18 @@ statement exactly in the \(V^{-1}\) metric. Markov's inequality then gives, with
 \pi\ \le\ \inf_{t>0}\Big\{M_q(t)+\frac{\varepsilon^2}{t^2}\Big\},\qquad
 M_q(t)\le Ct^\alpha\ \Rightarrow\ \pi\le\Big(1+\tfrac\alpha2\Big)\Big(\tfrac2\alpha\Big)^{\frac{\alpha}{\alpha+2}}C^{\frac2{\alpha+2}}\,\varepsilon^{\frac{2\alpha}{\alpha+2}}
 \]
-(\(\alpha=1\): \(\pi\le1.89\,C^{2/3}\varepsilon^{2/3}\)). The exponent is the Markov-plus-margin
-exponent of plug-in classification; the excess-risk exponent of that literature differs
-because excess risk weights a mislabelled point by its margin — a literature item, not
-re-derived here.
+(\(\alpha=1\): \(\pi\le1.89\,C^{2/3}\varepsilon^{2/3}\)). Here \(C,\alpha>0\),
+and the minimizing \(t_*=(2\varepsilon^2/(\alpha C))^{1/(\alpha+2)}\) must lie in the
+range of the margin hypothesis; otherwise minimize over the admissible range and cap
+by one. Zero error gives zero disagreement directly. The powers are correct for
+\(\varepsilon=\|e\|_{L^2(V^{-1})}\); if the input is the squared error, its exponent is
+\(\alpha/(\alpha+2)\). This is the comparison method of Audibert–Tsybakov, §5,
+with spatial cell-boundary distance replacing posterior distance to the Bayes boundary.
+Their excess-risk exponent concerns a different, margin-weighted loss.
 
 **Proposition B3 (ii) (label-perturbation sandwich).** With \(c_b\) the \(Z\)-cell means
-and \(\hat c_b\) the \(\hat Z\)-cell means of the true score,
+and \(\hat c_b\) the \(\hat Z\)-cell means of the true score, set either centroid
+to zero when its own cell has zero mass; use the same finite label alphabet. Then
 \[
 I_{\hat Z}\ \succeq\ I_Z-\Gamma,\qquad I_Z\ \succeq\ I_{\hat Z}-\hat\Gamma,\qquad
 \Gamma=2E\big[(ss^\top+c_{\hat Z}c_{\hat Z}^\top)\mathbf 1_M\big],\quad
@@ -1074,12 +1099,20 @@ side. \(\square\)
 (whitened). Determinant: with \(\gamma_R=\operatorname{tr}(I_Z^{-1}\Gamma)<1\),
 \(\log\eta_D(\hat Z)-\log\eta_D(Z)\ge\log(1-\gamma_R)\), and symmetrically above;
 \(\gamma_R\le\operatorname{tr}(V^{-1}\Gamma)/\rho_{\min}\) with
-\(\operatorname{tr}(V^{-1}\Gamma)=2E[(\|w\|^2+\|c'_{\hat Z}\|^2)\mathbf 1_M]\). Orders: bounded
-whitened scores (\(\|w\|\le B\), the mixture-fraction case) give \(O(\pi)\); a fourth
-moment gives \(E[\|w\|^2\mathbf 1_M]\le(E\|w\|^4)^{1/2}\sqrt\pi\), i.e. \(O(\sqrt\pi)\), and
-the square root is real (an atom of mass \(\pi\) at distance \(\pi^{-1/2}\) moves a cell
-mean by \(\sqrt\pi\)). Composed with (i) under \(\alpha=1\): retention transfer loss
-\(O(\varepsilon^{2/3})\) bounded, \(O(\varepsilon^{1/3})\) with a fourth moment.
+\(\operatorname{tr}(V^{-1}\Gamma)=2E[(\|w\|^2+\|c'_{\hat Z}\|^2)\mathbf 1_M]\). Orders: bounded whitened scores \(\|w\|\le B\) give \(O(\pi)\) for the
+trace loss (constant \(4B^2\)). For a fixed base law and frozen rule with finitely
+many positive-mass occupied cells, a fourth moment and a uniform bound on the
+centroids of the compared rules give \(O(\sqrt\pi)\) by Cauchy–Schwarz. The centroid
+condition holds for small perturbations of this fixed partition: original occupied
+masses remain bounded below; labels originally empty receive only mislabelled points,
+whose fitted centroid is only used on the reverse side for original points of that
+label, a null event. Across varying laws or rules, require uniform fourth moments
+and a common positive lower bound on nonempty base-cell masses. The determinant
+orders additionally require a uniform retained eigenvalue floor and eventually
+\(\gamma_R<1\). Composing at \(\alpha=1\) gives \(O(\varepsilon^{2/3})\) for bounded
+scores and \(O(\varepsilon^{1/3})\) with these fourth-moment conditions.
+The earlier atom-at-\(\pi^{-1/2}\) illustration has diverging fourth moment and
+establishes no sharpness of this fourth-moment rate.
 
 **Necessity of the margin.** `CE-SCORE-ERROR-BOUNDARY-ATOM-001`: a scalar centred law
 with an atom of mass \(1/2\) on the boundary of the threshold rule; any proxy lifting it
@@ -1102,8 +1135,8 @@ under training priors \(\pi\), \(r_\alpha=\eta_\alpha/\pi_\alpha\),
 \]
 from \(\Phi'-\Phi=[(r'-r)-\Phi(\eta)(D'-D)]/D'\). Hence \(\|\Phi(\eta')-\Phi(\eta)\|_2\le L\|\eta'-\eta\|_2\) with
 \(L=\frac1{D_{\min}}\big(\frac1{\pi_{\min}}+Q\sqrt m\,\|1/\theta_0\|_2\big)\), \(Q=\max_\beta\theta_{0\beta}/\pi_\beta\).
-The score is a fixed linear image \(s=T\Phi\) (drop the reference coordinate, or the
-free-fraction chart), so with \(\hat s=T\Phi(\hat\eta)\):
+The score is a fixed linear image \(s=T\Phi\) (for a normalized mixture, use
+the tangent chart, e.g. component-minus-reference differences; \(T\mathbf1=0\)), so with \(\hat s=T\Phi(\hat\eta)\):
 \[
 \varepsilon^2\ \le\ \|V^{-1}\|_{\rm op}\,\|T\|_{\rm op}^2\,L^2\;E_{P_{\theta_0}}\|\hat\eta-\eta\|^2
 \ \le\ \|V^{-1}\|_{\rm op}\,\|T\|_{\rm op}^2\,L^2\,Q\;E_{P_\pi}\|\hat\eta-\eta\|^2,
@@ -1116,32 +1149,50 @@ Under the training mixture \(P_\pi\) with one-hot component label \(Y\),
 E\|\hat\eta-\eta\|^2=\underbrace{E\|\hat\eta-E[\eta\mid\hat\eta]\|^2}_{\text{reliability (calibration error)}}
 +\underbrace{E\|\eta-E[\eta\mid\hat\eta]\|^2}_{\text{resolution gap}} .
 \]
-The reliability term is estimable from labelled data without the truth (binned or
-isotonic recalibration); the resolution gap needs \(\eta\) (simulation) and is the
-posterior-level representation loss of O5. The inverse map \(\Phi\mapsto\eta\),
-\(\eta_\alpha=\pi_\alpha\Phi_\alpha/\sum_\beta\pi_\beta\Phi_\beta\), is Lipschitz on the image
-(\(\sum_\beta\pi_\beta\Phi_\beta=1/D\in[1/Q,1/D_{\min}]\)), so the two \(L^2\) errors are
-equivalent metrics with explicit constants.
+Reliability is a population functional that can be estimated from independent labelled
+data using a justified calibration estimator; naive finite binning/isotonic fits are
+not an exact certificate. Excess Brier error requires the Bayes reference score or
+truth posteriors, which simulation can supply.
 
-*Consequence (the classifier requirement beyond AUC).* A **measured calibration error
-is a lower bound** on the score error, so a badly calibrated classifier certifiably
-distorts the reported retention; a **well calibrated classifier is not certified**,
-because the resolution gap is invisible without truth scores. The requirement that
-controls the reported number is the excess Brier score, on simulation, converted to
-\(\varepsilon\) (better: \(\varepsilon_{\rm aff}\)) through the constants above — not the AUC
-(O8.5). The Lipschitz inequality is verified exactly on 940 random rational simplex pairs
-(`selftest`, `B4_pairs`). Recorded as a bridge: the Brier decomposition is textbook
-(DeGroot–Fienberg; Bröcker), only the constants are project content.
+For completeness, the inverse map on the image is
+\(\eta_a=\pi_a\Phi_a/h\), \(h=\sum_b\pi_b\Phi_b\in[1/Q,1/D_{\min}]\).
+Subtracting two ratios gives the explicit bound
+\[
+\|\eta'-\eta\|_2\le L_{\rm inv}\|\Phi'-\Phi\|_2,\qquad
+L_{\rm inv}=Q(\pi_{\max}+\|\pi\|_2),
+\]
+using \(\|\eta\|_2\le1\). Thus posterior and **full component-ratio** errors are
+equivalent. They are not equivalent to score error for an arbitrary chart. Write
+\(H=\{h:\theta_0^\top h=0\}\) and
+\(\sigma_T=\inf_{h\in H,\|h\|_2=1}\|Th\|_2\). Only if \(\sigma_T>0\) and \(V\succ0\),
+\[
+\varepsilon^2\ge
+\frac{D_{\min}\sigma_T^2}{L_{\rm inv}^2\|V\|_{\rm op}}
+ E_{P_\pi}\|\hat\eta-\eta\|^2
+\ge\frac{D_{\min}\sigma_T^2}{L_{\rm inv}^2\|V\|_{\rm op}}\,\mathrm{reliability}.
+\]
+The full free-fraction chart is injective on \(H\); reduced parameter submodels
+need not be (`CE-CLASSIFIER-CALIBRATION-CHART-001`). This lower bound includes
+constants and concerns squared error, not retention distortion.
+
+*Consequence.* Excess Brier error gives an upper score-error budget, which O8.2
+converts into a conditional reporting bound. Calibration alone does not certify small
+error because the resolution gap is unobserved. Conversely, bad calibration does not
+certify distortion of reported retention: even a full chart can produce an invertible
+rescaling of the true score (`CE-CLASSIFIER-CALIBRATION-RETENTION-001`). The forward
+constants remain valid. The original selftest tested 300 simplex pairs / 940 coordinates,
+not 940 pairs, and did not test either false lower-bound inference. This is a bridge
+from the published Brier decomposition, with explicitly checked project constants.
 
 ### O8.5 AUC is not enough — [COUNTEREXAMPLE]
 
 `CE-AUC-INVARIANT-PROXY-RETENTION-001`: the scalar law \(s\in\{-2,-1,1,2\}\), equal
 weights, threshold rule at \(0\), true retention \(9/10\). Two strictly increasing
 distortions of the score — the same ranking, the same ROC curve for every threshold,
-the same labels for every threshold rule, the same true retention — report \(100/101\)
-(compress within cells) and \(5105/10006\) (stretch one atom). In \(d=1\) a monotone
-\(g\) leaves every threshold rule's labels unchanged and moves the reported retention
-\(\operatorname{Var}\)-ratio of \(g(s)\) across an interval; with unequal atom weights
+the same family of rank-cut labels under corresponding thresholds (and the same fixed zero-threshold labels), the same true retention — report \(100/101\)
+(compress within cells) and \(5105/10006\) (stretch one atom). In \(d=1\) a strictly monotone
+\(g\) preserves rank cuts after the thresholds are transformed; it need not preserve
+a fixed numerical threshold. It moves the reported uncentred second-moment ratio of \(g(s)\) across an interval; with unequal atom weights
 arbitrarily close to \(0\). Ranking quality is not the relevant classifier metric;
 the whitened \(L^2\) error is (O8.2), and it is not a function of the ROC curve.
 
@@ -1153,17 +1204,24 @@ their true retention and \(\eta_D(q\circ s)\) the true retention of \(q(s)\). Fo
 \(s\)) with \(\tilde\eta_D(\hat q)\ge\tilde\eta_D(q)\) — true of the global proxy optimum, and of an
 exchange-stable solution only if it happens to beat \(q\) on the proxy objective —
 \[
-\log\eta_D(\hat q\circ\hat s)\ \ge\ \log\eta_D(q\circ s)\;-\;\beta^-(\hat q)\;-\;\beta^+(q)\;+\;\log\big(1-\gamma_R(q)\big),
+\log\eta_D(\hat q\circ\hat s)\ \ge\ \log\eta_D(q\circ s)\;-\;\beta^+(\hat q)\;-\;\beta^-(q)\;+\;\log\big(1-\gamma_R(q)\big),
 \]
-where \(\beta^\mp\) are the lower/upper O8.2 budgets of the named rule (each first order
-\(\frac2{\sqrt d}(\varepsilon_R+\varepsilon)\), or the sharper (a)+(b) forms) and \(\gamma_R(q)\) the
-O8.3 transfer budget of \(q\) between \(q(s)\) and \(q(\hat s)\). Chain:
-\(\eta_D(\hat q\circ\hat s)\ge\tilde\eta_D(\hat q)e^{-\beta^-(\hat q)}\ge\tilde\eta_D(q)e^{-\beta^-(\hat q)}\ge\eta_D(q\circ\hat s)e^{-\beta^-(\hat q)-\beta^+(q)}\ge\eta_D(q\circ s)(1-\gamma_R(q))e^{-\beta^-(\hat q)-\beta^+(q)}\).
-The affine freedom applies to the transfer step too: compare \(q(\hat s)\) with
-\(q(As)\) for the \(A\) that minimises the mislabel mass, since the class of Mahalanobis
-rules is affine-closed. This is the statement OP17 asked for — "the retention loss of
-a frozen rule under an \(L^2\) score error" — with every constant explicit; its
-weakness is that it needs \(\varepsilon_R\) and \(\gamma_R\) of *two* rules, i.e. the truth.
+where, for \(g(q)=\log(\tilde\eta_D(q)/\eta_D(q\circ\hat s))\), define
+\(-\beta^-(q)\le g(q)\le\beta^+(q)\) using O8.2, and assume all retentions in
+this chain are positive and the transfer budget \(\gamma_R(q)<1\). The correct
+chain is
+\[
+\log\eta_D(\hat q\circ\hat s)
+\ge\log\tilde\eta_D(\hat q)-\beta^+(\hat q)
+\ge\log\tilde\eta_D(q)-\beta^+(\hat q)
+\ge\log\eta_D(q\circ\hat s)-\beta^-(q)-\beta^+(\hat q).
+\]
+Apply O8.3 to finish. The over-reporting budget belongs to the selected rule;
+the under-reporting budget belongs to the comparator. There is no free substitution
+\(q(s)\mapsto q(As)\) for a fixed oracle comparator. A change of score coordinates
+must transport the rule, the metric, and the comparator together; otherwise it is a
+new comparison with a new target. The corollary still needs truth-based budgets for
+two rules and proxy-objective dominance; exchange stability alone supplies neither.
 
 ### O8.7 Measured (protocol D, run before and after the derivation) — [MEASURED]
 
@@ -1174,10 +1232,10 @@ Instrument `py/score_error_budget.py`; records in `WORK/artifacts/SCORE-ERROR-BU
   three error scales; 22 942 checks; \(0\) failures): Lemma 1, B1 on axis and random
   directions, the Lemma 2 cores for numerator and denominator, Lemma 3 at
   \(t\in\{1/4,1/2,3/4\}\), the float brackets of Lemma 4 and of B2(c), the exact \(T_1\)
-  against B2(a) in both forms and the remainder bracket, \(\varepsilon_R^2\le\varepsilon_Z^2/\rho_{\min}\),
-  the affine identity and invariance, the backward direction, B3 (i) pointwise on
+  against each B2(a) bound separately and the remainder bracket, \(\varepsilon_R^2\le\varepsilon_Z^2/\rho_{\min}\),
+  the linear identity and admissible invariance, the backward direction, B3 (i) pointwise on
   nearest-centre rules in the \(V^{-1}\) metric, B3 (ii) both sandwiches and the trace
-  corollary on random second labellings, B4 on 940 simplex pairs; the sharpness
+  corollary on random second labellings, B4 on 300 simplex pairs (940 coordinate checks); the sharpness
   attainer identities in \(d=1,2,3\) (\(\kappa=\pm1/5\)).
 - **`door3`** (the classifier example; `examples/door3_classifier.py` rungs rebuilt through the
   O6 audit's closed forms; all population quantities by cut-aligned QUADPACK; \(d=1\), \(K=4\)):
@@ -1190,7 +1248,7 @@ Instrument `py/score_error_budget.py`; records in `WORK/artifacts/SCORE-ERROR-BU
 
   Reading: the door3 classifier's whitened score error is *large* (50% at the smallest
   rung) while the reported retention is only 8% off — the two cancellations of B2(a) at
-  work (a mostly affine error, uncentred correlation \(0.909\to0.998\); a nearly lossless
+  work (a mostly linear error, uncentred correlation \(0.909\to0.998\); a nearly lossless
   rule, \(\sqrt{1-\eta_D}=0.33\)). The crude first-order budget over-covers by \(24\times\),
   the sharper alignment bound by \(3\)–\(6\times\), and \(T_1\) itself tracks the gap to
   within the curvature remainder. The rule applied to the *true* score retains more
@@ -1209,7 +1267,7 @@ Instrument `py/score_error_budget.py`; records in `WORK/artifacts/SCORE-ERROR-BU
   strong-direction proxy at the same \(\varepsilon\) — the gap here is the \(T_2\) term
   (\(\varepsilon_R=0.20,0.39,0.78,1.54\) versus \(0.08,0.17,0.33,0.66\)), \(T_1\) stays below
   \(0.04\) on every row, and \((\varepsilon_R^2-\varepsilon^2)/2\) reproduces the weak-direction gap
-  to \(0.01\) at \(\varepsilon\le0.29\). The template shift is nearly affine
+  to \(0.01\) at \(\varepsilon\le0.29\). The template shift admits a linear least-squares reduction
   (\(\varepsilon_{\rm aff}\approx\varepsilon\), canonical correlations \(\ge0.79\)) and reports within
   \(\pm0.06\) up to \(\varepsilon=0.29\).
 
@@ -1218,7 +1276,7 @@ Instrument `py/score_error_budget.py`; records in `WORK/artifacts/SCORE-ERROR-BU
 - *Ties, duplicates, singleton cells:* all statements are about laws; the instrument's
   grid includes duplicate atoms and singleton cells. Empty cells contribute nothing
   (\(0/0:=0\)) and are excluded from every sum. *Singular information:* B1 and B3 need
-  nothing; B2 needs \(I_Z\succ0\) and \(\tilde V\succ0\) (endpoints above); the library's
+  nothing beyond finite second moments; a finite B2 logarithm needs \(I_Z,\tilde I_Z,\tilde V\succ0\) (endpoints above); the library's
   rank projection is outside every statement, as in O7. *Nuisance/\(D_s\):* not covered.
   *Atomic laws:* the proofs are for arbitrary laws; every fixture is atomic. *Hidden
   compactness:* none in B1, B2, B3 (ii); B3 (i)'s exponent needs a margin function, and
@@ -1239,10 +1297,9 @@ Instrument `py/score_error_budget.py`; records in `WORK/artifacts/SCORE-ERROR-BU
   deployed-versus-oracle loss. Train-only versus held-out is not the axis here (O7 is).
 - **Verdict.** *Proved* (B1, B2, B3, B6 project level; B4 bridge; B5 fixture).
   OP17 is settled at first order for a frozen rule; OP18 is half-settled: the chain from
-  posterior error to score error is one inequality, and calibration error is a lower
-  bound only. Open remainder, backlog not programme: a uniform-over-rules budget (to
-  make O8.6 hold for the library's exchange-stable solution rather than the proxy
-  optimum); the \(D_s\)/profiled retention; refitted rules; second-order sharp
+  posterior error to score error is one inequality, and a calibration-to-score lower
+  bound needs an injective chart and explicit constants; it is not a lower bound on retention distortion. Open remainder, backlog not programme: a uniform-over-rules budget together with a proxy optimization-gap certificate
+  (uniform perturbation control alone does not make an exchange-stable solution globally optimal); the \(D_s\)/profiled retention; refitted rules; second-order sharp
   constants for \(r_3\); the resolution gap without truth scores (OP19's cross-fitting).
 - **Product consequence.** Closure step 1's docs sentence must say: the printed
   retention for a classifier provider is the *reported* number; its distance to the

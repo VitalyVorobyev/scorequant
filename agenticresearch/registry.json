@@ -1,7 +1,7 @@
 {
   "schema_version": "4.1",
   "project": "ScoreQuant",
-  "updated": "2026-09-06",
+  "updated": "2026-09-08",
   "canonical_problem_file": "PROBLEM.md",
   "human_readable_ledger": "KNOWN_RESULTS/",
   "open_problem_ledger": "OPEN_PROBLEMS.md",
@@ -10,7 +10,7 @@
   "status_definitions": {
     "literature": "Established published result used directly.",
     "bridge": "Direct synthesis or translation of established results into ScoreQuant notation/problem.",
-    "project_proved": "Derived in the project and currently treated as proved internally; not yet publication-audited.",
+    "project_proved": "Derived and treated as proved internally; independent audit and publication status are tracked separately.",
     "counterexample": "An explicit example falsifies the stated/generalized claim.",
     "conjecture": "Precise unproved conjecture.",
     "open": "Unresolved research question.",
@@ -88,6 +88,12 @@
       "title": "An Introduction to Multivariate Statistical Analysis",
       "note": "T. W. Anderson, Wiley, 3rd ed. 2003 (2nd ed. 1984). Generalized variance s7.5, LR criterion s8.3-8.5, MANOVA s8.9, canonical correlations ch. 12, asymptotic roots s13.5-13.6. Registered 5 Sep 2026; 2nd-ed. contents scan (papers/local/); 3rd-ed. numbering unverified."
     },
+    "Audibert-Tsybakov-2007": {
+      "title": "Fast learning rates for plug-in classifiers",
+      "doi": "10.1214/009053606000001217",
+      "pdf": "https://imagine.enpc.fr/~audibert/Mes%20articles/plugin_v3.pdf",
+      "note": "Jean-Yves Audibert and Alexandre B. Tsybakov; section 5 comparison inequalities inspected in author manuscript, pp. 19–20. Journal pagination not inferred."
+    },
     "Barnes-Han-Ozgur-2018": {
       "title": "A Geometric Characterization of Fisher Information from Quantized Samples with Applications to Distributed Statistical Estimation",
       "doi": "10.1109/ALLERTON.2018.8635899",
@@ -111,6 +117,17 @@
       "title": "Consistency and inconsistency in k-means clustering",
       "arxiv": "2507.06226",
       "note": "Empirical k-means centers can fail to converge under finite first moment even with a unique population optimum (extreme cluster imbalance); consistency restored by an a priori balance constraint. Closest published structure to DS15 Proposition 6 (constraints at negligible asymptotic cost), but repairs a moment pathology rather than the optimizer-driven degeneracy DS15 proves; scalar distortion only. Engage before publication."
+    },
+    "Boyd-Vandenberghe-2004": {
+      "title": "Convex Optimization",
+      "pdf": "https://stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf",
+      "note": "Stephen Boyd and Lieven Vandenberghe, Cambridge University Press, 2004; section 3.1.5, printed p. 74 inspected during O8 audit."
+    },
+    "Brocker-2009": {
+      "title": "Reliability, sufficiency, and the decomposition of proper scores",
+      "doi": "10.1002/qj.456",
+      "arxiv": "0806.0813",
+      "note": "Jochen Broecker; equations (13) and (15) inspected in author manuscript."
     },
     "Bucklew-Wise-1982": {
       "title": "Multidimensional Asymptotic Quantization Theory with rth Power Distortion Measures",

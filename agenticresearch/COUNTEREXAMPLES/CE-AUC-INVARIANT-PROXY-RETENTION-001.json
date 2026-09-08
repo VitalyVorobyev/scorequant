@@ -2,7 +2,7 @@
   "id": "CE-AUC-INVARIANT-PROXY-RETENTION-001",
   "criterion": "D",
   "level": "information_accounting",
-  "claim_falsified": "A proxy score with the same ranking as the true score (hence the same ROC curve and AUC for every threshold) reports the true retention. Refuted: two strictly monotone distortions of a four-atom scalar law leave the labels of every threshold rule and the true retention 9/10 unchanged while the reported (proxy) retention is 100/101 for one and 5105/10006 for the other; ranking quality says nothing about the reported number, the Fisher-whitened score error does (SCORE-ERROR-RETENTION-BUDGET), and it is not observable from a ROC curve.",
+  "claim_falsified": "A proxy score with the same ranking as the true score (hence the same ROC curve and AUC for every threshold) reports the true retention. Refuted: two strictly monotone distortions of a four-atom scalar law leave the labels of corresponding rank-cut threshold rules (including the fixed zero cut here) and the true retention 9/10 unchanged while the reported (proxy) retention is 100/101 for one and 5105/10006 for the other; ranking quality says nothing about the reported number, the Fisher-whitened score error does (SCORE-ERROR-RETENTION-BUDGET), and it is not observable from a ROC curve.",
   "scores": [
     [
       "-2"
@@ -100,5 +100,6 @@
     "notes": "fractions.Fraction; the distortions are strictly increasing, so the ROC curve of any threshold classifier built on the proxy equals that of the truth; the B1/B2 brackets of SCORE-ERROR-RETENTION-BUDGET hold on both (checks_all_true) - the stretch has eps_R^2 = 4802/9 > 1, outside the lower bracket's domain, and the reported number is indeed far from the truth."
   },
   "source": "SCORE-ERROR-BUDGET packet, py/score_error_budget.py fixtures",
-  "date": "2026-09-08"
+  "date": "2026-09-08",
+  "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md"
 }

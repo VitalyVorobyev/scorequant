@@ -137,32 +137,14 @@ Communities, venues, or periods suspected under-covered by the current graph.
   et al. 2024 say Theorem B; a UW lecture chapter says "theorem A" for the
   real-valued case). Needs the physical book.
 
-## After the SCORE-ERROR-BUDGET derivation — 8 September 2026
+## After the SCORE-ERROR-BUDGET audit — 8 September 2026
 
-No literature pass ran before this packet (owner's call: derive first, cite after);
-O8 in `KNOWN_RESULTS/10-oracle.md` and its four claims carry
-`literature_search_status: not_searched`. Targets for the pass, with what each is
-expected to settle:
-
-- **Log-det and determinant perturbation.** Ipsen & Rehman (2008, SIAM J. Matrix Anal.
-  Appl. 30, "Perturbation bounds for determinants and characteristic polynomials");
-  Stewart & Sun (1990) ch. IV; Weyl/Ostrowski. Expected: the O8.2 brackets are
-  special cases of known relative-perturbation bounds; the project content is the
-  Gram-matrix structure that makes the first-order term \(\sqrt{d-\operatorname{tr}R}\).
-- **Plug-in classification under a margin condition.** Mammen & Tsybakov (1999),
-  Tsybakov (2004), Audibert & Tsybakov (2007). Expected: the Markov-plus-margin
-  argument of O8.3 (i) is theirs; their excess-risk exponent \((1+\alpha)/(2+\alpha)\)
-  differs from the mislabel-mass exponent \(2\alpha/(\alpha+2)\) used here — verify.
-- **Classifier-based ratio and score estimation error.** Cranmer, Pavez & Louppe
-  (2015); Brehmer, Cranmer, Louppe & Pavez (2018); Brehmer, Louppe, Pavez & Cranmer
-  (2020, "Mining gold"); Sugiyama, Suzuki & Kanamori (2012). Expected: no statement
-  about the Fisher information retained by a hard partition of an estimated score;
-  possibly an \(L^2\) score-error bound in terms of the ratio error that supersedes
-  O8.4's constants.
-- **Calibration as an \(L^2\) posterior error.** DeGroot & Fienberg (1983), Bröcker
-  (2009), Kull & Flach (2015), Guo et al. (2017). Expected: the reliability–resolution
-  decomposition used in O8.4 verbatim; the "calibration is a lower bound only"
-  reading may be stated somewhere.
-- **Canonical correlations as a linear representation loss.** The affine reduction
-  of O8.2 (\(\varepsilon_{\rm aff}^2=\sum(1-r_i^2)\)) is classical multivariate analysis
-  (Anderson 2003 ch. 12); a page cite is enough.
+The mandatory five-source pass is recorded in
+`audits/SCORE-ERROR-RETENTION-BUDGET-2026-09-08.md`. The margin comparison and
+Brier decomposition now cite inspected primary texts. The specific retention expansion
+remains `search_gap`, never a novelty claim. Remaining publication gaps are an inspected
+Ipsen–Rehman/Stewart–Sun comparison and a primary page citation for canonical-correlation
+least squares. The ratio identity is independently checked and does not depend on those
+unread texts. The old proposed calibration-to-score reading was false without chart
+injectivity and constants; the audit records exact counterexamples. Excess-risk and
+mislabel exponents must always specify whether their argument is an L2 norm or its square.

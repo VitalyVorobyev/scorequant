@@ -1,0 +1,78 @@
+{
+  "id": "CE-SCORE-ERROR-ALIGNMENT-ORDER-001",
+  "criterion": "D",
+  "level": "information_accounting",
+  "claim_falsified": "The trace-loss alignment bound is always <= the crude bound; both separately bound |T1|.",
+  "scores": [
+    [
+      "-1",
+      "-9"
+    ],
+    [
+      "1",
+      "-9"
+    ],
+    [
+      "-1",
+      "1"
+    ],
+    [
+      "1",
+      "1"
+    ]
+  ],
+  "weights": [
+    "1/20",
+    "1/20",
+    "9/20",
+    "9/20"
+  ],
+  "K": 3,
+  "labels_before": [
+    0,
+    1,
+    2,
+    2
+  ],
+  "labels_after_or_optimum": null,
+  "poi_indices": [
+    0,
+    1
+  ],
+  "nuisance_indices": [],
+  "objective_before": null,
+  "objective_after": null,
+  "exact_quantities": {
+    "errors": [
+      [
+        "0",
+        "-9/10"
+      ],
+      [
+        "0",
+        "-9/10"
+      ],
+      [
+        "0",
+        "1/10"
+      ],
+      [
+        "0",
+        "1/10"
+      ]
+    ],
+    "rho_min": "1/10",
+    "eps2": "1/100",
+    "eps_R2": "1/100",
+    "trace_bound_squared": "81/1000",
+    "crude_bound_squared": "2/25",
+    "T1": "0"
+  },
+  "verification": {
+    "method": "exact_formula",
+    "notes": "Rational witness; independently recomputed in tests/test_research_claims.py. See audit for the corrected theorem."
+  },
+  "source": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
+  "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
+  "date": "2026-09-08"
+}

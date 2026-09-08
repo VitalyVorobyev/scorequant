@@ -28,7 +28,7 @@ fixtures   the three exact fixtures: CE-SCORE-ERROR-RHO-MIN-NECESSARY-001
            CE-SCORE-ERROR-BOUNDARY-ATOM-001 (an atom on a cell boundary: the
            mislabel mass does not vanish with epsilon), and
            CE-AUC-INVARIANT-PROXY-RETENTION-001 (a monotone distortion keeps
-           every threshold rule and the true retention, and moves the
+           every corresponding rank cut and the true retention, and moves the
            reported one).
 door3      the classifier example: the door3 logistic-regression rungs rebuilt
            through the O6 audit instrument's closed forms; epsilon, epsilon_Z,
@@ -419,11 +419,11 @@ def reporting_budget_both_ways(
     return forward, backward
 
 
-def affine_reduction(atoms: list[Vec], errors: list[Vec], weights: Vec) -> dict[str, object]:
+def linear_reduction(atoms: list[Vec], errors: list[Vec], weights: Vec) -> dict[str, object]:
     """Least-squares matrix A* = E[s s_hat^T] E[s_hat s_hat^T]^{-1} and the reduced error A* s_hat - s.
 
     The reported retention is invariant under s_hat -> A s_hat (D-REPARAM-INVARIANCE), so every
-    reporting inequality may be applied to the proxy A* s_hat instead; eps_aff^2 = tr(V^{-1} E[e_A e_A^T])
+    reporting inequality may be applied to A* s_hat only when A* is nonsingular; eps_aff^2 = tr(V^{-1} E[e_A e_A^T])
     equals d minus the sum of the squared uncentred canonical correlations between s and s_hat.
     """
     d = len(atoms[0])
@@ -440,7 +440,7 @@ def affine_reduction(atoms: list[Vec], errors: list[Vec], weights: Vec) -> dict[
     # canonical-correlation identity: eps_aff^2 = d - tr(V^{-1} C V_tilde^{-1} C^T)
     ct = [[c[j][i] for j in range(d)] for i in range(d)]
     cc = trace(matmul(matmul(inv(v), c), matmul(inv(vt), ct)))
-    return {"A_star": a_star, "errors": reduced, "eps_aff2": eps_aff2, "identity": eps_aff2 == d - cc, "sum_r2": cc}
+    return {"A_star": a_star, "errors": reduced, "eps_aff2": eps_aff2, "identity": eps_aff2 == d - cc, "sum_r2": cc, "admissible": det(a_star) != 0}
 
 
 # --------------------------------------------------------------------------
@@ -602,23 +602,24 @@ def stage_selftest(trials: int = 400, seed: int = 20260908) -> dict[str, object]
             counts["nonsingular_I_Z"] += 1
         prox_v = moments(shifted(case["atoms"], case["errors"]), case["weights"], case["labels"], case["K"])["V"]
         if det(prox_v) != 0:
-            red = affine_reduction(case["atoms"], case["errors"], case["weights"])
+            red = linear_reduction(case["atoms"], case["errors"], case["weights"])
             counts["checks"] += 2
             if not red["identity"]:
                 failures.append({"direction": "affine", "check": "canonical_correlation_identity", "case": serialize_case(case)})
             if red["eps_aff2"] > fwd["eps2"]:
                 failures.append({"direction": "affine", "check": "eps_aff_le_eps", "case": serialize_case(case)})
-            aff = reporting_budget(case["atoms"], red["errors"], case["weights"], case["labels"], case["K"], case["directions"])
-            for name, ok in aff["checks"].items():
-                counts["checks"] += 1
-                if not ok:
-                    failures.append({"direction": "affine_reduced", "check": name, "case": serialize_case(case)})
-            if "eps_R2" in aff and "eps_R2" in fwd:
-                counts["checks"] += 1
-                # the reported retention is the same number for s_hat and A* s_hat
-                same = aff["det_I_tilde_Z"] * fwd["det_V_tilde"] == fwd["det_I_tilde_Z"] * aff["det_V_tilde"]
-                if not same:
-                    failures.append({"direction": "affine_reduced", "check": "reported_retention_invariant", "case": serialize_case(case)})
+            if red["admissible"]:
+                aff = reporting_budget(case["atoms"], red["errors"], case["weights"], case["labels"], case["K"], case["directions"])
+                for name, ok in aff["checks"].items():
+                    counts["checks"] += 1
+                    if not ok:
+                        failures.append({"direction": "affine_reduced", "check": name, "case": serialize_case(case)})
+                if "eps_R2" in aff and "eps_R2" in fwd:
+                    counts["checks"] += 1
+                    # the reported retention is the same number for s_hat and A* s_hat
+                    same = aff["det_I_tilde_Z"] * fwd["det_V_tilde"] == fwd["det_I_tilde_Z"] * aff["det_V_tilde"]
+                    if not same:
+                        failures.append({"direction": "affine_reduced", "check": "reported_retention_invariant", "case": serialize_case(case)})
         for tag, rec in (("forward", fwd), ("backward", bwd)):
             for name, ok in rec["checks"].items():
                 counts["checks"] += 1
@@ -771,7 +772,7 @@ def fixture_rho_min() -> dict[str, object]:
         "id": "CE-SCORE-ERROR-RHO-MIN-NECESSARY-001",
         "criterion": "D",
         "level": "information_accounting",
-        "claim_falsified": "The gap between the reported (proxy) geometric-mean retention and the true retention of the same frozen label map admits a bound that depends on the Fisher-whitened score error epsilon alone, uniformly over laws and rules. Refuted: in the family below epsilon^2 = 4 kappa^2 / (10 V_22) stays within [0.026, 0.028] while the proxy-to-true retention ratio grows without bound as the least retained eigenvalue rho_min -> 0 (delta -> 0). The retention-weighted error epsilon_R^2 = E[e_Z^T I_Z^{-1} e_Z] <= epsilon_Z^2 / rho_min of SCORE-ERROR-RETENTION-BUDGET is the right scale.",
+        "claim_falsified": "The relative/log reporting gap between the reported (proxy) geometric-mean retention and the true retention of the same frozen label map admits a bound that depends only on an upper bound on the Fisher-whitened score error epsilon, uniformly over laws and rules. Refuted: in the family below epsilon^2 = kappa^2 / (10 V_22) = kappa^2/(9+delta^2) stays within [0.026, 0.028] while the proxy-to-true retention ratio grows without bound as the least retained eigenvalue rho_min -> 0 (delta -> 0). The retention-weighted error epsilon_R^2 = E[e_Z^T I_Z^{-1} e_Z] <= epsilon_Z^2 / rho_min of SCORE-ERROR-RETENTION-BUDGET is the right scale.",
         "scores": [fr_vec(s) for s in primary["atoms"]],
         "proxy_scores": [fr_vec(s) for s in shifted(primary["atoms"], primary["errors"])],
         "weights": fr_vec(primary["weights"]),
@@ -788,6 +789,7 @@ def fixture_rho_min() -> dict[str, object]:
             "notes": "All moments in fractions.Fraction; E[s] = 0 exactly in every member; eta_D and the ratio are square roots of exact rationals (d = 2). The B1/B2 inequalities of SCORE-ERROR-RETENTION-BUDGET hold on every member (checks_all_true); only their epsilon-alone reading fails.",
         },
         "source": "SCORE-ERROR-BUDGET packet, py/score_error_budget.py fixtures",
+        "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
         "date": DATE,
     }
 
@@ -838,6 +840,7 @@ def fixture_boundary_atom() -> dict[str, object]:
             "notes": "fractions.Fraction throughout; E[s] = 0; the Loewner sandwich of SCORE-ERROR-RULE-TRANSFER holds with Gamma of order one, which is the point: the budget is a function of the mislabel mass, and nothing makes the mass small here.",
         },
         "source": "SCORE-ERROR-BUDGET packet, py/score_error_budget.py fixtures",
+        "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
         "date": DATE,
     }
 
@@ -883,7 +886,7 @@ def fixture_auc_invariant() -> dict[str, object]:
         "id": "CE-AUC-INVARIANT-PROXY-RETENTION-001",
         "criterion": "D",
         "level": "information_accounting",
-        "claim_falsified": "A proxy score with the same ranking as the true score (hence the same ROC curve and AUC for every threshold) reports the true retention. Refuted: two strictly monotone distortions of a four-atom scalar law leave the labels of every threshold rule and the true retention 9/10 unchanged while the reported (proxy) retention is 100/101 for one and 5105/10006 for the other; ranking quality says nothing about the reported number, the Fisher-whitened score error does (SCORE-ERROR-RETENTION-BUDGET), and it is not observable from a ROC curve.",
+        "claim_falsified": "A proxy score with the same ranking as the true score (hence the same ROC curve and AUC for every threshold) reports the true retention. Refuted: two strictly monotone distortions of a four-atom scalar law leave the labels of every corresponding rank cut and the true retention 9/10 unchanged while the reported (proxy) retention is 100/101 for one and 5105/10006 for the other; ranking quality says nothing about the reported number, the Fisher-whitened score error does (SCORE-ERROR-RETENTION-BUDGET), and it is not observable from a ROC curve.",
         "scores": [fr_vec(s) for s in atoms],
         "weights": fr_vec(weights),
         "K": 2,
@@ -899,6 +902,7 @@ def fixture_auc_invariant() -> dict[str, object]:
             "notes": "fractions.Fraction; the distortions are strictly increasing, so the ROC curve of any threshold classifier built on the proxy equals that of the truth; the B1/B2 brackets of SCORE-ERROR-RETENTION-BUDGET hold on both (checks_all_true) - the stretch has eps_R^2 = 4802/9 > 1, outside the lower bracket's domain, and the reported number is indeed far from the truth.",
         },
         "source": "SCORE-ERROR-BUDGET packet, py/score_error_budget.py fixtures",
+        "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
         "date": DATE,
     }
 

@@ -9,14 +9,14 @@
   "level": "information_accounting",
   "status": "project_proved",
   "publication_status": "internal",
-  "statement": "Frozen rule q on score space, Z = q(s), Z_hat = q(s_hat), s_hat = s + e, both retained informations computed from the true s; M = {Z != Z_hat}, pi = P(M). (i) If q(s_hat) != q(s) then dist(s, boundary of the cell of q(s)) <= ||e|| in any norm (the segment [s, s_hat] is connected); for a nearest-centre rule with metric G the squared distance is min_{b' != b} (||s - mu_b'||_G^2 - ||s - mu_b||_G^2)^2 / (4 ||mu_b - mu_b'||_G^2), rational on rational data. Hence with the margin function M_q(t) = P(dist_V(s, boundary q) <= t) and eps^2 = E[e^T V^{-1} e]: pi <= inf_t {M_q(t) + eps^2 / t^2}; if M_q(t) <= C t^alpha then pi <= (1 + alpha/2)(2/alpha)^(alpha/(alpha+2)) C^(2/(alpha+2)) eps^(2 alpha/(alpha+2)), i.e. pi <= 1.89 C^(2/3) eps^(2/3) at alpha = 1. (ii) With c_b the Z-cell means and c_hat_b the Z_hat-cell means of s: I_Zhat >= I_Z - Gamma and I_Z >= I_Zhat - Gamma_hat in the Loewner order, Gamma = 2 E[(s s^T + c_{Z_hat} c_{Z_hat}^T) 1_M], Gamma_hat = 2 E[(s s^T + c_hat_Z c_hat_Z^T) 1_M]. Corollaries: |tr R_Z - tr R_Zhat| <= 2 E[||w||^2 1_M] + 2 pi max_b max(||c'_b||^2, ||c_hat'_b||^2) (whitened); log eta_D(Z_hat) - log eta_D(Z) >= log(1 - gamma_R) with gamma_R = tr(I_Z^{-1} Gamma) <= tr(V^{-1} Gamma)/rho_min and tr(V^{-1} Gamma) = 2 E[(||w||^2 + ||c'_{Z_hat}||^2) 1_M], symmetrically above; order O(pi) for bounded whitened scores, O(sqrt pi) under a fourth moment (the square root is real). Composed with (i) at alpha = 1: O(eps^(2/3)) bounded, O(eps^(1/3)) with a fourth moment. Without a margin condition nothing holds: CE-SCORE-ERROR-BOUNDARY-ATOM-001 has an atom of mass 1/2 on a cell boundary, pi = 1/2 for every eps > 0 and the retention jumps 4/5 -> 1/2.",
+  "statement": "Frozen rule q on score space, Z = q(s), Z_hat = q(s_hat), s_hat = s + e, both retained informations computed from the true s; M = {Z != Z_hat}, pi = P(M). (i) If q(s_hat) != q(s) then dist(s, boundary of the cell of q(s)) <= ||e|| in any norm (the segment [s, s_hat] is connected); for a nearest-centre rule with positive-definite metric G, distinct centres and distance measured in G the squared distance is min_{b' != b} (||s - mu_b'||_G^2 - ||s - mu_b||_G^2)^2 / (4 ||mu_b - mu_b'||_G^2), rational on rational data. Hence with the margin function M_q(t) = P(dist_V(s, boundary q) <= t) and eps^2 = E[e^T V^{-1} e]: pi <= inf_t {M_q(t) + eps^2 / t^2}; if M_q(t) <= C t^alpha then pi <= (1 + alpha/2)(2/alpha)^(alpha/(alpha+2)) C^(2/(alpha+2)) eps^(2 alpha/(alpha+2)), i.e. pi <= 1.89 C^(2/3) eps^(2/3) at alpha = 1. (ii) With c_b the Z-cell means and c_hat_b the Z_hat-cell means of s: I_Zhat >= I_Z - Gamma and I_Z >= I_Zhat - Gamma_hat in the Loewner order, Gamma = 2 E[(s s^T + c_{Z_hat} c_{Z_hat}^T) 1_M], Gamma_hat = 2 E[(s s^T + c_hat_Z c_hat_Z^T) 1_M]. Corollaries: |tr R_Z - tr R_Zhat| <= 2 E[||w||^2 1_M] + 2 pi max_b max(||c'_b||^2, ||c_hat'_b||^2) (whitened); log eta_D(Z_hat) - log eta_D(Z) >= log(1 - gamma_R) with gamma_R = tr(I_Z^{-1} Gamma) <= tr(V^{-1} Gamma)/rho_min and tr(V^{-1} Gamma) = 2 E[(||w||^2 + ||c'_{Z_hat}||^2) 1_M], symmetrically above; order O(pi) for uniformly bounded whitened scores; O(sqrt pi) under a uniform fourth moment and stable positive base-cell masses as specified in the assumptions. Determinant rates also require a retained eigenvalue floor. Composed with (i) at alpha = 1: O(eps^(2/3)) bounded, O(eps^(1/3)) with a fourth moment. Without a margin condition nothing holds: CE-SCORE-ERROR-BOUNDARY-ATOM-001 has an atom of mass 1/2 on a cell boundary, pi = 1/2 for every eps > 0 and the retention jumps 4/5 -> 1/2.",
   "assumptions": [
-    "one law on x-space; the rule's cells are measurable sets whose topological boundaries carry the margin function; the margin function M_q is a property of the law and the rule, not estimable from the proxy alone",
-    "(i) is Markov's inequality on ||e||_V plus the pointwise boundary-distance fact; the power-law form needs M_q(t) <= C t^alpha on the relevant range of t; the exponent is the Markov-plus-margin exponent, not the excess-risk exponent of the plug-in classification literature (unread; LITERATURE/gaps.md)",
-    "(ii) needs nothing beyond finite second moments; it is Pythagoras for conditional expectations in matrix form applied to the Z_hat-measurable relabelling of the Z-cell means",
-    "the determinant corollary needs I_Z > 0 and gamma_R < 1; the trace corollary needs nothing",
-    "measured on the door3 rungs: both sandwiches hold (Gamma = 0.80, 0.41, 0.10), the margin bound (i) is vacuous at eps >= 0.29 and 0.45 against pi = 0.051 at eps = 0.096 - informative only for eps <~ 0.1",
-    "verified exactly on the selftest grid: (i) pointwise on nearest-centre rules in the V^{-1} metric, (ii) both sandwiches and the trace corollary on random second labellings (py/score_error_budget.py selftest, 8 Sep 2026); no independent audit yet"
+    "One law on x-space with finite second moments; fixed measurable cells with topological boundary distance in the same positive-definite norm used for the error. Distinct centres are required only for the Voronoi distance formula; ties follow a fixed convention.",
+    "The margin power law has C>0, alpha>0 and must hold at t*=(2 eps^2/(alpha C))^(1/(alpha+2)); otherwise optimize only over its valid range. Cap probability bounds by one. Zero error gives no disagreement. The exponent 2 alpha/(alpha+2) is for the L2 norm, not its square.",
+    "Both label maps take values in the same finite alphabet. A conditional centroid of a zero-mass cell is set to zero, including when reused by the other labeling; the Loewner inequalities need only finite second moments.",
+    "The determinant comparison requires I_Z positive definite and gamma_R<1; a reverse finite logarithmic comparison requires the corresponding proxy-label matrix and budget. The trace comparison needs no retained-rank condition.",
+    "Asymptotic O(sqrt pi) transfer: fixed law, finite base partition with minimum positive occupied mass p*>0, finite fourth whitened moment, pi->0. On original occupied cells p_hat>=p*/2 eventually, bounding their new centroids; original empty cells are null in the reverse cross-centroid term. Uniform statements over changing laws/rules require uniform fourth moments and p*. Determinant rates additionally require a uniform retained eigenvalue floor.",
+    "Measured quadrature values and finite exact searches are evidence only. This is a deterministic rule-transfer inequality, not a refitted-rule CLT or an excess Bayes-risk theorem."
   ],
   "dependencies": [
     "PROXY-TRUE-RETAINED-FI",
@@ -26,16 +26,20 @@
   "implies": [
     "OPEN-SCORE-PERTURBATION"
   ],
-  "literature_search_status": "not_searched",
+  "literature_search_status": "prior_art_found",
   "proof_location": {
     "file": "KNOWN_RESULTS/10-oracle.md",
     "section": "O8. Score-error budget for a frozen rule: what an estimated score costs, to first order"
   },
   "artifact": "py/score_error_budget.py",
   "role": "the boundary-displacement half of OP17: the loss of deploying a frozen rule on the proxy instead of the truth; with SCORE-ERROR-RETENTION-BUDGET it composes into the deployed-versus-oracle budget of O8.6",
-  "warning": "Project-level proposition; the exponent bookkeeping is the plug-in-classification argument (Mammen-Tsybakov margin, Audibert-Tsybakov plug-in rates) reduced to the mislabel mass, not read for this packet. Weak in practice: the door3 classifier's 30-50% score error is outside the informative range. Not audited.",
+  "warning": "Audited after explicit metric, empty-cell, margin-range and rate assumptions. The Markov/margin argument is published comparison machinery; the Loewner sandwich is the project reduction. The bound is often vacuous at measured door3 error scales.",
   "boundary_counterexamples": [
     "CE-SCORE-ERROR-BOUNDARY-ATOM-001"
   ],
-  "programme": "P2"
+  "programme": "P2",
+  "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
+  "literature": [
+    "Audibert-Tsybakov-2007"
+  ]
 }

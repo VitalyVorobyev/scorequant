@@ -2,7 +2,7 @@
   "id": "CE-SCORE-ERROR-RHO-MIN-NECESSARY-001",
   "criterion": "D",
   "level": "information_accounting",
-  "claim_falsified": "The gap between the reported (proxy) geometric-mean retention and the true retention of the same frozen label map admits a bound that depends on the Fisher-whitened score error epsilon alone, uniformly over laws and rules. Refuted: in the family below epsilon^2 = 4 kappa^2 / (10 V_22) stays within [0.026, 0.028] while the proxy-to-true retention ratio grows without bound as the least retained eigenvalue rho_min -> 0 (delta -> 0). The retention-weighted error epsilon_R^2 = E[e_Z^T I_Z^{-1} e_Z] <= epsilon_Z^2 / rho_min of SCORE-ERROR-RETENTION-BUDGET is the right scale.",
+  "claim_falsified": "The relative/log reporting gap between the reported (proxy) geometric-mean retention and the true retention of the same frozen label map admits a bound that depends only on an upper bound on the Fisher-whitened score error epsilon, uniformly over laws and rules. Refuted: in the family below epsilon^2 = kappa^2 / (10 V_22) = kappa^2/(9+delta^2) stays within [0.026, 0.028] while the proxy-to-true retention ratio grows without bound as the least retained eigenvalue rho_min -> 0 (delta -> 0). The retention-weighted error epsilon_R^2 = E[e_Z^T I_Z^{-1} e_Z] <= epsilon_Z^2 / rho_min of SCORE-ERROR-RETENTION-BUDGET is the right scale.",
   "scores": [
     [
       "1",
@@ -344,8 +344,9 @@
   },
   "verification": {
     "method": "exact_formula",
-    "notes": "All moments in fractions.Fraction; E[s] = 0 exactly in every member; eta_D and the ratio are square roots of exact rationals (d = 2). The B1/B2 inequalities of SCORE-ERROR-RETENTION-BUDGET hold on every member (checks_all_true); only their epsilon-alone reading fails."
+    "notes": "All moments in fractions.Fraction; E[s] = 0 exactly in every member; eta_D and the ratio are square roots of exact rationals (d = 2). The B1/B2 inequalities of SCORE-ERROR-RETENTION-BUDGET hold on every member (checks_all_true); only their epsilon-alone reading fails. For fixed kappa>0 and delta->0, I_Z,22=delta^2/8, V_22=(9+delta^2)/10; det I_tilde_Z tends to 9 kappa^2/100 and det V_tilde tends to 9/10+9 kappa^2/100. Thus the ratio diverges while eps<=kappa/3. This refutes relative/log control, not the universal absolute bound |eta_tilde-eta|<=1."
   },
   "source": "SCORE-ERROR-BUDGET packet, py/score_error_budget.py fixtures",
-  "date": "2026-09-08"
+  "date": "2026-09-08",
+  "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md"
 }

@@ -1,0 +1,23 @@
+{
+  "provenance": {
+    "mode": "independent-audit",
+    "parameters": {
+      "seed": 650022
+    },
+    "git_revision": "22af4866d9b4eaf7e2772fcdfb9bbed7c8b19af0",
+    "script_sha256": "216966b8bf0b7b721ec96f1420eb37570b4d40852da5f2532b3a076c4140c182",
+    "python": "3.13.12",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "counts": {
+    "laws": 12,
+    "partitions": 1884,
+    "positive_retained": 1856,
+    "projection_checks": 9364,
+    "log_screen_checks": 2629,
+    "sandwich_checks": 3768,
+    "simplex_pairs": 180
+  },
+  "limitations": "12 finite laws, exhaustive K=d+1 partitions, N=6/7; not all N<=10 laws. Rational projection/sandwich/simplex checks; 60-digit Decimal log screening, not a proof.",
+  "audit_script_sha256": "6704b68e1e4816e1dc1628fa5e6f8a8111b1a9cc28d01b9c2017cd3875f6e5fa"
+}

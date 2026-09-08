@@ -8,7 +8,7 @@
   "level": "score_oracle",
   "status": "open",
   "publication_status": "open",
-  "statement": "Relate posterior/ratio calibration error to density-ratio error, score error, representation loss, and final D/Ds efficiency. Half settled (8 Sep 2026, SCORE-ERROR-BUDGET; not yet audited): the mixture score is Lipschitz in the posterior on the simplex with explicit L(theta0, pi), so the whitened score error is bounded by the excess Brier score of the classifier under the training mixture, which splits into reliability (calibration error, observable, a lower bound on the score error) plus the resolution gap (the posterior-level representation loss of O5, needing the truth); the two L^2 errors are equivalent metrics (CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ); the score error then enters the reported retention through SCORE-ERROR-RETENTION-BUDGET; AUC controls nothing (CE-AUC-INVARIANT-PROXY-RETENTION-001). Still open, backlog: certifying the resolution gap without truth scores (OP19's cross-fitted estimators); sharper constants; the D_s efficiency.",
+  "statement": "The audited CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ bridge supplies an upper score-error budget from excess Brier error. Reliability and resolution gap split that posterior error; a reverse score-error bound needs an injective chart and explicit constants. Calibration error does not certify retention distortion, and AUC does not determine proxy reporting error. Remaining: certify the resolution gap without truth scores (OP19), sharper constants, and D_s efficiency.",
   "dependencies": [
     "CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ",
     "CLASSIFIER-RATIO-ORACLE",

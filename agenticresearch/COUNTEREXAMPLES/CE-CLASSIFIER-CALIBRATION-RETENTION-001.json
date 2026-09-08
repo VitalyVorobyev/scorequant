@@ -1,0 +1,77 @@
+{
+  "id": "CE-CLASSIFIER-CALIBRATION-RETENTION-001",
+  "criterion": "D",
+  "level": "information_accounting",
+  "claim_falsified": "Bad calibration necessarily distorts reported retention, even with a full identifiable fraction chart.",
+  "scores": [
+    [
+      "1"
+    ],
+    [
+      "-1"
+    ]
+  ],
+  "weights": [
+    "1/2",
+    "1/2"
+  ],
+  "K": 2,
+  "labels_before": [
+    0,
+    1
+  ],
+  "labels_after_or_optimum": null,
+  "poi_indices": [
+    0
+  ],
+  "nuisance_indices": [],
+  "objective_before": null,
+  "objective_after": null,
+  "exact_quantities": {
+    "prior": [
+      "1/2",
+      "1/2"
+    ],
+    "theta0": [
+      "1/2",
+      "1/2"
+    ],
+    "chart": [
+      [
+        "1",
+        "-1"
+      ]
+    ],
+    "posterior": [
+      [
+        "3/4",
+        "1/4"
+      ],
+      [
+        "1/4",
+        "3/4"
+      ]
+    ],
+    "proxy_posterior": [
+      [
+        "5/8",
+        "3/8"
+      ],
+      [
+        "3/8",
+        "5/8"
+      ]
+    ],
+    "reliability": "1/32",
+    "eps2": "1/4",
+    "eta_true": "1",
+    "eta_reported": "1"
+  },
+  "verification": {
+    "method": "exact_formula",
+    "notes": "Rational witness; independently recomputed in tests/test_research_claims.py. See audit for the corrected theorem."
+  },
+  "source": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
+  "audit": "AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md",
+  "date": "2026-09-08"
+}

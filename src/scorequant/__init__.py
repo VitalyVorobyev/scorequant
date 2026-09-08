@@ -28,6 +28,7 @@ from .information import (
     fractional_fisher_information,
     information_report,
     profiled_information_report,
+    retention_uncertainty,
 )
 from .partition import exchange_stability_report
 from .providers import (
@@ -44,7 +45,7 @@ from .ratios import (
     ratio_closure_report,
     ratios_from_posteriors,
 )
-from .reports import RatioClosureReport
+from .reports import RatioClosureReport, RetentionUncertainty
 from .result import (
     EfficientScoreBound,
     GeometryReport,
@@ -110,6 +111,7 @@ __all__ = [
     "RatioClosureReport",
     "RatioProvenance",
     "RefusalError",
+    "RetentionUncertainty",
     "ScalarDPConfig",
     "ScoreFunction",
     "ScoreProvenance",
@@ -137,5 +139,6 @@ __all__ = [
     "profiled_information_report",
     "ratio_closure_report",
     "ratios_from_posteriors",
+    "retention_uncertainty",
     "scores_from_components",
 ]

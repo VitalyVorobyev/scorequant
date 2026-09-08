@@ -60,6 +60,95 @@ class InformationReport:
         )
 
 
+type RetentionUncertaintyStatus = Literal[
+    "ok",
+    "singular_full_information",
+    "singular_retained_information",
+    "degenerate_variance",
+]
+
+
+@dataclass(frozen=True, slots=True)
+class RetentionUncertainty:
+    r"""Sampling uncertainty of a frozen rule's geometric-mean retention on held-out true scores.
+
+    Produced by ``retention_uncertainty``. The point estimate is the same
+    uncentred plug-in \(\hat\eta_D=(\det\hat I_Z/\det\hat V)^{1/d}\) that
+    ``information_report`` reports as ``geometric_mean_retention`` on a
+    full-rank sample; the standard error is the influence-function estimate
+    of ``RETENTION-PLUGIN-CLT-FROZEN-VECTOR`` (scalar case
+    ``RETENTION-PLUGIN-CLT-FROZEN-SCALAR``), and the interval is the
+    untruncated two-sided Wald interval
+    \(\hat\eta_D\pm z_{1-\alpha/2}\,\widehat{\mathrm{SE}}\). It is never
+    clipped, so an endpoint can fall below zero or above one; that is a
+    property of the first-order interval, not a claim about the retention.
+
+    The interval covers sampling variability only: the rule is frozen, the
+    rows are independent and equally weighted draws, and the scores are the
+    model's true scores. A classifier or other estimated score adds a separate
+    reporting bias that no error bar on the proxy sample measures.
+
+    Attributes
+    ----------
+    estimate
+        Plug-in geometric-mean retention, ``None`` when the full moment matrix
+        is rank deficient and the target is undefined, and exactly ``0.0``
+        when the retained matrix is rank deficient.
+    standard_error
+        Influence-function standard error, ``0.0`` when the influence values
+        cancel to rounding noise, and ``None`` whenever no first-order theory
+        applies.
+    confidence_interval
+        ``(lower, upper)`` Wald endpoints, or ``None`` when the interval is
+        unavailable.
+    confidence_level
+        Nominal two-sided level the interval was built for.
+    n_observations
+        Number of evaluation rows the moments were formed from.
+    status
+        ``"ok"``: estimate, standard error and interval are all available.
+        ``"singular_full_information"``: the supplied scores lose a direction
+        at the rank threshold, so the geometric-mean retention of all ``d``
+        directions is undefined and nothing is reported rather than a
+        silently projected surrogate. ``"singular_retained_information"``:
+        the full matrix is regular but the between-cell matrix is numerically
+        rank deficient, so the plug-in is zero and the Wald theory does not
+        apply (``RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE``).
+        ``"degenerate_variance"``: the influence values vanish to rounding,
+        so the interval is withheld; this is a numerical guard and does not
+        assert that the population variance is zero.
+    """
+
+    estimate: float | None
+    standard_error: float | None
+    confidence_interval: tuple[float, float] | None
+    confidence_level: float
+    n_observations: int
+    status: RetentionUncertaintyStatus
+
+    def to_dict(self) -> dict[str, JsonValue]:
+        """Return a JSON-compatible representation without non-finite sentinels."""
+        return json_ready(asdict(self))
+
+    def __str__(self) -> str:
+        """Format the estimate, its standard error and the interval, when available."""
+        estimate = "unavailable" if self.estimate is None else f"{self.estimate:.6f}"
+        error = "unavailable" if self.standard_error is None else f"{self.standard_error:.6f}"
+        if self.confidence_interval is None:
+            interval = "unavailable"
+        else:
+            lower, upper = self.confidence_interval
+            interval = f"[{lower:.6f}, {upper:.6f}]"
+        return (
+            "ScoreQuant retention uncertainty\n"
+            f"  status: {self.status}\n"
+            f"  estimate: {estimate}\n"
+            f"  standard error: {error}\n"
+            f"  {self.confidence_level:.0%} Wald interval: {interval}\n"
+            f"  observations: {self.n_observations}"
+        )
+
+
 @dataclass(frozen=True, slots=True)
 class RatioClosureReport:
     """Report how far model density ratios are from unit normalization.

@@ -1,6 +1,6 @@
 # RETENTION-ERROR-BAR — ship held-out oracle-score retention uncertainty
 
-**Programme:** closure step 1 (engineering; P4 evidence) · **Opened:** 8 September 2026 · **Status:** active
+**Programme:** closure step 1 (engineering; P4 evidence) · **Opened:** 8 September 2026 · **Status:** closed 8 September 2026
 
 ## Goal
 
@@ -118,3 +118,49 @@ After step 1: can manuscript v10 incorporate the audited O6–O8 results without
 refuted calibration, affine-invariance, singular-Wald or novelty claims?
 This is closure step 5; `OPEN-RETENTION-UNCERTAINTY` still holds the deferred statistical
 extensions, which belong in future work rather than the active queue.
+
+## Outcome
+
+**Delivered.** `retention_uncertainty(scores, assignments, *, n_bins=None, confidence_level=0.95,
+rank_rtol=None, execution=None)` and the immutable `RetentionUncertainty` report, exported through
+the package facade, on branch `codex/retention-error-bar`. The estimate is the uncentred O7 plug-in
+(identical to `information_report` on a full-rank sample); the standard error is the O7.3
+influence-function estimate evaluated in the \(\hat V\)-whitened coordinates
+(\(\hat V^{-1}=WW^\top\), \(\hat I_Z^{-1}=WR^{-1}W^\top\), one symmetric solve per cell);
+the interval is the untruncated two-sided Wald interval with the standard-library normal quantile.
+
+**Guards, in order.** (1) `fisher_transform` on \(\hat V\) at the selected `rank_rtol`: any lost
+direction returns `singular_full_information` with no estimate, standard error or interval
+(`CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001` is the pinned witness where `information_report`
+projects and reports 1). (2) The library's scale-free eigenvalue rank test on
+\(R=W^\top\hat I_Z W\), taken before any determinant root or solve, returns
+`singular_retained_information` with estimate 0 and no interval; testing \(R\) rather than
+\(\hat I_Z\) keeps the verdict reparameterization-invariant. (3) A cancellation guard on the
+influence bracket: with \(B_i\) the bracket and \(M_i\) the sum of the absolute values of its three
+terms, `degenerate_variance` (standard error 0, no interval) is returned when
+\(\mathrm{rms}(B)\le\tau\,\mathrm{rms}(M)\) with \(\tau\) the dtype rank threshold (1e-10
+float64, 1e-5 float32). The guard is documented as numerical, not as a population statement;
+`CE-O7-ELLIPSOID-ZERO-VARIANCE-001` (eight equal-weight atoms) and the lossless three-cell law both
+land there on both backends.
+
+**Tests** (`tests/test_retention_uncertainty.py`, plus conformance and float32 cases): O6 closed
+form at d = 1; exact rational O7 influence values (helper moved to `tests/_oracles.py`) on a sample
+with ties, a duplicate atom, a singleton and an empty declared cell, with \(\sum_i\hat\psi_i=0\);
+agreement with `information_report` in d = 2, 3 on both backends; reparameterization, row-order and
+relabel invariance, with row duplication pinned as *not* invariant; empty bins; malformed inputs
+and confidence levels; both singular statuses; both zero-variance examples; strict JSON for every
+status. Seeded coverage on a bounded nine-atom law (N = 200, 400 replicates, NumPy backend): 0.9475
+against 0.95 within three Monte Carlo standard errors. Heavy-tail limitation on Student-t(3) under
+the sign rule, exact \(\eta=4/\pi^2\): coverage 0.545 at N = 200 (0.46 at N = 100), asserted as
+below nominal by more than three Monte Carlo standard errors and below 0.75 at the pinned seed.
+
+**Limitations (unchanged from the packet).** Oracle scores, iid equally weighted rows and a frozen
+rule are caller obligations. No weights, no refitted rules, no profiled \(D_s\), no truth-free
+statement, no bias correction, no bootstrap; endpoints are not clipped. A positive empirical rank
+does not certify a population eigenvalue floor. Proxy scores add a reporting bias the interval
+never measures (`SCORE-ERROR-RETENTION-BUDGET`); AUC or calibration alone does not certify it.
+
+**Records.** `docs/api.md` section "Held-out retention uncertainty"; one sentence and an executed
+call in `docs/user-workflow.md`; ADR 0039; roadmap row D and its deferral sentence; `CHANGELOG.md`;
+the `information_report` docstring now states the uncentred convention. No claim node changed;
+`OPEN-RETENTION-UNCERTAINTY` keeps the deferred extensions. No Lean change.

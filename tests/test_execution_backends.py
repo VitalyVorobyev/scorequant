@@ -56,6 +56,7 @@ def test_information_partition_and_prediction_conform(backend: str) -> None:
         n_bins=3,
         execution=execution,
     )
+    uncertainty = sq.retention_uncertainty(scores, labels, n_bins=3, execution=execution)
     partition = sq.optimize_partition(
         scores,
         weights=weights,
@@ -69,7 +70,9 @@ def test_information_partition_and_prediction_conform(backend: str) -> None:
     assert partition.execution.backend == backend
     assert quantizer.execution == partition.execution
     assert isinstance(quantizer.predict_scores(scores), np.ndarray)
+    assert uncertainty.status == "ok"
     _assert_public_arrays_are_numpy(report)
+    _assert_public_arrays_are_numpy(uncertainty)
     _assert_public_arrays_are_numpy(partition)
     _assert_public_arrays_are_numpy(quantizer)
 
@@ -172,6 +175,19 @@ def test_hard_backend_parity() -> None:
         atol=1e-12,
     )
     assert results["jax"].objective == pytest.approx(results["numpy"].objective, abs=1e-12)
+    uncertainties = {
+        backend: sq.retention_uncertainty(
+            scores, np.repeat(np.arange(3), 12), execution=_execution(backend)
+        )
+        for backend in ("jax", "numpy")
+    }
+    assert uncertainties["jax"].status == uncertainties["numpy"].status == "ok"
+    assert uncertainties["jax"].estimate == pytest.approx(
+        uncertainties["numpy"].estimate, rel=1e-12
+    )
+    assert uncertainties["jax"].standard_error == pytest.approx(
+        uncertainties["numpy"].standard_error, rel=1e-10
+    )
 
 
 @pytest.mark.parametrize("criterion", [sq.DOptimality(), sq.ProfiledDOptimality((0,))])

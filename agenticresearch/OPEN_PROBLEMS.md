@@ -7,12 +7,13 @@ claim graph and `KNOWN_RESULTS/`; they are not restated here.
 
 ## Status (8 September 2026)
 
-- Active: closure step 1, `WORK/active/RETENTION-ERROR-BAR.md`, selected by the owner after
-  the O8 audit. Next: ship held-out oracle-score error bars, then manuscript step 5.
-  Optional steps 2 and 4 remain inactive; freeze/release step 6 still needs an owner decision.
+- Active: none. Next: manuscript step 5. Optional steps 2 and 4 remain inactive;
+  freeze/release step 6 still needs an owner decision.
 - Done: step 0 (O7 audit, PR #59); step 3's corrected verdict plus independent audit
-  (`AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`). The formal-D packet is retired as partial,
-  with its unresolved obligations preserved under the formal-verification backlog below.
+  (`AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`); step 1 shipped on 8 September 2026 as
+  `retention_uncertainty` (branch `codex/retention-error-bar`, ADR 0039). The formal-D packet is
+  retired as partial, with its unresolved obligations preserved under the formal-verification
+  backlog below.
 - Parked: OP31 and `WORK/active/DS-TILT-DUAL-EXACT-COMPLEXITY.md`; formal residue below.
   Neither is selected work. P1 deployment verdict closed on 1 September 2026
   (`KNOWN_RESULTS/05b-ds-bridge.md`).
@@ -27,7 +28,7 @@ backlog and goes into the manuscript's future-work section, never into the activ
 | Step | Packet | Programme | Product consequence | Gate |
 |---|---|---|---|---|
 | 0 | Independent audit of O7 (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, `RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`, `CE-O7-ELLIPSOID-ZERO-VARIANCE-001`) | P4 | the reported retention may carry an error bar | audit verdict; PR #59 merged |
-| 1 | Ship the error bar: standard error and Wald interval for `geometric_mean_retention` on a held-out oracle-score sample, rank guard at singular \(\hat I_Z\), heavy-tail warning; tests, `docs/api.md`, one walkthrough sentence, one decision record | engineering | users get the number with its uncertainty | full contributor gate |
+| 1 | Ship the error bar: standard error and Wald interval for `geometric_mean_retention` on a held-out oracle-score sample, rank guard at singular \(\hat I_Z\), heavy-tail warning; tests, `docs/api.md`, one walkthrough sentence, one decision record | engineering | users get the number with its uncertainty | **shipped** (8 Sep 2026, `retention_uncertainty`, ADR 0039; full contributor gate passed) |
 | 2 | Refitted rules (OP27 remainder): is \(\sqrt n(\hat\eta_n-\eta^*)\) normal when the rule is fitted on the evaluation sample, under a margin condition, or is there an exact counterexample; order of the in-sample optimism | P4 | the docs sentence "evaluate on held-out data" gains a theorem or a counterexample | verdict; optional, drop first |
 | 3 | Score-error budget (OP17, first order only): bound the retention loss of a frozen rule under an \(L^2\) score error, one classifier example; OP18 only if it falls out as one inequality | P2 | a classifier-quality requirement beyond AUC | **verdict: proved after correction; audited** (8 Sep 2026, `AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`); core bounds retained, unconditional calibration consequences refuted |
 | 4 | Parameter mismatch (OP23): second-order local expansion of a frozen rule's retention at \(\theta_0+\delta\), as a diagnostic | P4 | a story for the reference-point assumption | verdict; optional, drop second |
@@ -115,6 +116,7 @@ bootstrap intervals for retention functionals, handling the non-smoothness of ha
 at cell boundaries. Settled for a frozen rule on an iid oracle-score sample: scalar O6
 (`RETENTION-PLUGIN-CLT-FROZEN-SCALAR`, audited) and vector O7
 (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, audited 6 Sep 2026, `AUDIT-RETENTION-PLUGIN-VECTOR`), both in `KNOWN_RESULTS/10-oracle.md`.
+Shipped as the library diagnostic `retention_uncertainty` (closure step 1, 8 Sep 2026, ADR 0039).
 Remaining: rules refitted on the evaluation sample (closure step 2); weights; no oracle; the
 profiled \(D_s\) retention; the degenerate limits when \(\sigma^2=0\); a second-order-corrected
 interval for heavy-tailed scores. Target claim: `OPEN-RETENTION-UNCERTAINTY`.

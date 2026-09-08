@@ -10,6 +10,8 @@
 
 ::: scorequant.ProfiledInformationReport
 
+::: scorequant.RetentionUncertainty
+
 ::: scorequant.GeometryReport
 
 ::: scorequant.ProfiledGeometryReport

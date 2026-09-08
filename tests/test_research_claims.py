@@ -13,7 +13,7 @@ import scorequant as sq
 from scorequant import api
 from scorequant.information import binned_information_is_degenerate
 
-from ._oracles import _exhaustive_d_oracle
+from ._oracles import _exhaustive_d_oracle, _o7_exact_plugin
 
 # The research workspace holding the counterexample bank; if it moves, update
 # this constant and tests/test_research_registry.py together.
@@ -2656,52 +2656,6 @@ def test_o6_audit_two_atom_law_has_zero_variance_and_upward_biased_plugin() -> N
             assert eta_hat >= eta
             if eta_hat == eta:
                 assert sigma2_hat == 0
-
-
-def _o7_exact_plugin(
-    scores: list[list[Fraction]], labels: list[int], weights: list[Fraction], n_bins: int
-) -> tuple[Fraction, list[Fraction], list[list[Fraction]], list[list[Fraction]]]:
-    """Exact O7 plug-in on a weighted atom sample in d = 2.
-
-    Returns the determinant ratio r = eta_D^2, the influence values of r
-    (psi_r = 2 eta_D psi), V and I_Z. The 2x2 inverse is explicit so the test
-    carries no linear-algebra helper of its own.
-    """
-    d = 2
-    p = [sum(w for w, z in zip(weights, labels, strict=True) if z == b) for b in range(n_bins)]
-    m = [
-        [
-            sum(w * s[i] for s, w, z in zip(scores, weights, labels, strict=True) if z == b)
-            for i in range(d)
-        ]
-        for b in range(n_bins)
-    ]
-    v = [
-        [sum(w * s[i] * s[j] for s, w in zip(scores, weights, strict=True)) for j in range(d)]
-        for i in range(d)
-    ]
-    i_z = [
-        [sum(m[b][i] * m[b][j] / p[b] for b in range(n_bins) if p[b]) for j in range(d)]
-        for i in range(d)
-    ]
-
-    def det(a: list[list[Fraction]]) -> Fraction:
-        return a[0][0] * a[1][1] - a[0][1] * a[1][0]
-
-    def inv(a: list[list[Fraction]]) -> list[list[Fraction]]:
-        dd = det(a)
-        return [[a[1][1] / dd, -a[0][1] / dd], [-a[1][0] / dd, a[0][0] / dd]]
-
-    def quad(a: list[list[Fraction]], x: list[Fraction], y: list[Fraction]) -> Fraction:
-        return sum(x[i] * a[i][j] * y[j] for i in range(d) for j in range(d))
-
-    ratio = det(i_z) / det(v)
-    iz_inv, v_inv = inv(i_z), inv(v)
-    psi_r = []
-    for s, z in zip(scores, labels, strict=True):
-        c = [x / p[z] for x in m[z]]
-        psi_r.append(ratio * (2 * quad(iz_inv, s, c) - quad(iz_inv, c, c) - quad(v_inv, s, s)))
-    return ratio, psi_r, v, i_z
 
 
 def test_o7_vector_plugin_influence_function_matches_exact_gateaux_differences() -> None:

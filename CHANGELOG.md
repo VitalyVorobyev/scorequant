@@ -11,6 +11,18 @@ once already, which retroactively asserted that unshipped work had shipped.
 
 ## [Unreleased]
 
+### Diagnostics
+
+- `retention_uncertainty` and `RetentionUncertainty` (ADR 0039): the audited plug-in standard error
+  and untruncated Wald interval for a frozen rule's `geometric_mean_retention` on an independent,
+  equally weighted sample of true scores from the reference law. A rule with at most \(d\) declared
+  cells, a rank-deficient full moment, a rank-deficient between-cell moment and influence values that
+  cancel to rounding each return a named status with the interval withheld. Sampling uncertainty
+  only, under the conditions stated in `docs/api.md`; proxy-score bias is documented as a separate
+  quantity.
+- `information_report`'s docstring now states its uncentred second-moment convention instead of a
+  variance shorthand.
+
 ### Site
 
 - The FlowCyt and HEP walkthroughs are rebuilt as linear scientific walkthroughs (ADR 0038).

@@ -3,6 +3,7 @@ from __future__ import annotations
 import jax
 import jax.numpy as jnp
 import numpy as np
+import pytest
 
 import scorequant
 from tests._fit import fit_test_quantizer
@@ -35,6 +36,29 @@ def test_float32_ratio_algebra_promotes_low_precision() -> None:
     assert ratios.dtype == jnp.float32
     assert scores.dtype == jnp.float32
     assert np.isfinite(np.asarray(scores)).all()
+
+
+def test_float32_retention_uncertainty_is_regular_on_both_backends() -> None:
+    rng = np.random.default_rng(23)
+    scores = (rng.normal(size=(200, 2)) + 0.3).astype(np.float32)
+    labels = (scores[:, 0] > 0).astype(int) + 2 * (scores[:, 1] > 0.2).astype(int)
+    reports = {
+        backend: scorequant.retention_uncertainty(
+            scores,
+            labels,
+            execution=scorequant.ExecutionConfig(
+                backend=backend, precision="float32", device="cpu"
+            ),
+        )
+        for backend in ("jax", "numpy")
+    }
+    for report in reports.values():
+        assert report.status == "ok"
+        assert np.isfinite(report.standard_error) and report.standard_error > 0
+        lower, upper = report.confidence_interval
+        assert lower < report.estimate < upper
+    assert reports["jax"].estimate == pytest.approx(reports["numpy"].estimate, rel=1e-4)
+    assert reports["jax"].standard_error == pytest.approx(reports["numpy"].standard_error, rel=1e-3)
 
 
 def test_float32_backend_parity_of_continuous_quantities() -> None:

@@ -10,6 +10,8 @@
 
 ::: scorequant.profiled_information_report
 
+::: scorequant.retention_uncertainty
+
 ::: scorequant.efficient_scores
 
 ::: scorequant.efficient_score_bound

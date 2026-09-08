@@ -11,10 +11,10 @@ deploy.
 
 **Advanced.** Certificates and bounds (`certify_partition`, `exchange_stability_report`,
 `efficient_score_bound`), the information algebra (`fisher_information`,
-`binned_fisher_information`, `information_report`, `profiled_information_report`), the ratio
-algebra (`ratios_from_posteriors`, `mixture_scores_from_ratios`, `ratio_closure_report`),
-`FisherTransform`, the report types, and the plotting helpers. Each answers a question you will
-know you have; none is needed to fit anything.
+`binned_fisher_information`, `information_report`, `profiled_information_report`), the held-out
+error bar (`retention_uncertainty`), the ratio algebra (`ratios_from_posteriors`,
+`mixture_scores_from_ratios`, `ratio_closure_report`), `FisherTransform`, the report types, and the
+plotting helpers. Each answers a question you will know you have; none is needed to fit anything.
 
 The sections below follow that order. The generated [reference](symbols/index.md) covers every
 public object.
@@ -344,6 +344,60 @@ returns the remaining slack and is nonnegative up to floating-point error; `labe
 `initial_labels` initializer for profiled exchange. More than one interest column raises
 `NotImplementedError`, because a multivariate efficient score would need a multivariate solver and
 the result would no longer be certified.
+
+## Held-out retention uncertainty
+
+<!-- snippet: skip -->
+```python
+retention_uncertainty(
+    scores,
+    assignments,
+    *,
+    n_bins=None,
+    confidence_level=0.95,
+    rank_rtol=None,
+) -> RetentionUncertainty
+```
+
+A retention number is a point estimate. `retention_uncertainty` attaches a standard error and a
+two-sided Wald interval to the geometric-mean retention of a *frozen* rule evaluated on rows it never
+saw: independent, equally weighted draws from the reference law at which the model's true scores are
+evaluated, whose `scores` are those true scores and whose `assignments` come from `predict_scores`.
+The estimate is the same uncentred plug-in that `information_report` reports on a full-rank sample;
+the standard error is the influence-function estimate of the audited central limit theorem for that
+plug-in. The interval covers the sampling variability of the evaluation draw under that theorem's
+conditions — positive cell probabilities, finite fourth moments, positive definite full and
+between-cell moments, positive asymptotic variance — and none of them can be read off an array: a
+positive empirical rank does not certify a population eigenvalue floor. The theorem is asymptotic. An
+infinite fourth moment puts a law outside it, and heavy tails, including laws that satisfy every
+condition, can cause material undercoverage at moderate sample sizes. The reading of the number as
+Fisher retention needs the evaluation law to be the model's reference law, where the true score has mean
+zero; on rows from another law the same arithmetic estimates an uncentred determinant ratio, not that
+retention. The endpoints are never clipped, so an interval can extend below zero or above one.
+
+Read `status` before the numbers. `ok` gives all three. `insufficient_cells` means the rule declares
+at most \(d\) cells, empty ones included: the rank ceiling makes the population retention zero at the
+reference law whatever the sample rank, the plug-in is the upward-biased endpoint estimator, and
+nothing is reported. `singular_full_information` means the sample lost one of the supplied score
+directions, so the retention of all of them is undefined; nothing is reported rather than a silently
+projected surrogate, which is what `information_report` would show. `singular_retained_information`
+means the between-cell moment is numerically rank deficient on this sample: the diagnostic reports
+zero by its numerical-rank convention and withholds the interval. The exact plug-in can still be
+positive below the threshold; this sample-side refusal does not identify the population rank.
+Population singularity is a separate boundary of the Wald theorem
+(`RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`). `degenerate_variance` means the
+influence values cancelled to rounding noise, so the standard error is zero and the interval is
+withheld. The test is \(\mathrm{rms}(B) \le \tau\,\mathrm{rms}(M)\), with \(B_i\) the bracket of the
+influence value, \(M_i\) the sum of the magnitudes of its three terms, and \(\tau\) the dtype's rank
+threshold, \(10^{-10}\) in float64 and \(10^{-5}\) in float32; `rank_rtol` moves the two rank guards,
+not this threshold. This numerical guard can suppress small positive influence variance; it is not
+a finding that the population variance is zero.
+
+Scores from a classifier or any other estimator are not true scores. Their reported retention
+carries a separate proxy bias that this error bar never measures; the score-error budget bounds that
+bias only under truth-dependent error and conditioning assumptions, and AUC or calibration alone does
+not certify it. Weighted samples, rules refitted on the evaluation rows and profiled \(D_s\)
+retention are outside this diagnostic.
 
 ## Certificates
 

@@ -141,6 +141,16 @@ soft_fit = {
 }
 ```
 
+The validation number is a point estimate. On a held-out sample of true scores the frozen rule's
+retention carries a sampling standard error and a Wald interval — sampling variability only, for
+true scores drawn from the reference law, never the bias an estimated score adds; the conditions and
+the statuses that withhold the interval are in [the API guide](api.md#held-out-retention-uncertainty):
+
+```python
+uncertainty = sq.retention_uncertainty(holdout, quantizer.predict_scores(holdout), n_bins=5)
+error_bar = (uncertainty.status, uncertainty.estimate, uncertainty.confidence_interval)
+```
+
 The hardening gap is the difference between the last soft objective and the retention of the final
 hard labels. A large gap means the annealed surrogate did not commit; judge the run by the hard
 number, never by the soft one.

@@ -1,0 +1,70 @@
+{
+ "provenance": {
+  "mode": "selftest",
+  "parameters": {
+   "trials": 400,
+   "seed": 20260908
+  },
+  "git_revision": "41077b6e644b86a4d6466fdc1be582caf86ec751",
+  "script_sha256": "4fe6f20356b84c95631723a4ac88e9c2aa0ae08cabbc53e6b0b8c60f8efdcd57",
+  "python": "3.13.12",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+ },
+ "counts": {
+  "cases": 400,
+  "nonsingular_I_Z": 354,
+  "checks": 22942,
+  "B4_pairs": 940
+ },
+ "failures": [],
+ "sharpness_attainers": [
+  {
+   "d": 1,
+   "kappa": "1/5",
+   "det_ratio_numerator": "36/25",
+   "det_ratio_expected": "36/25",
+   "identity": true,
+   "eps_R2": "1/25",
+   "eps_R2_expected": "1/25",
+   "eps_R_identity": true,
+   "first_order_numerator_bound": 0.4,
+   "actual_numerator_gap": 0.3646431135879093
+  },
+  {
+   "d": 2,
+   "kappa": "1/5",
+   "det_ratio_numerator": "1296/625",
+   "det_ratio_expected": "1296/625",
+   "identity": true,
+   "eps_R2": "2/25",
+   "eps_R2_expected": "2/25",
+   "eps_R_identity": true,
+   "first_order_numerator_bound": 0.8,
+   "actual_numerator_gap": 0.7292862271758186
+  },
+  {
+   "d": 3,
+   "kappa": "1/5",
+   "det_ratio_numerator": "46656/15625",
+   "det_ratio_expected": "46656/15625",
+   "identity": true,
+   "eps_R2": "3/25",
+   "eps_R2_expected": "3/25",
+   "eps_R_identity": true,
+   "first_order_numerator_bound": 1.2,
+   "actual_numerator_gap": 1.0939293407637278
+  },
+  {
+   "d": 2,
+   "kappa": "-1/5",
+   "det_ratio_numerator": "256/625",
+   "det_ratio_expected": "256/625",
+   "identity": true,
+   "eps_R2": "2/25",
+   "eps_R2_expected": "2/25",
+   "eps_R_identity": true,
+   "first_order_numerator_bound": 0.8,
+   "actual_numerator_gap": -0.8925742052568391
+  }
+ ]
+}

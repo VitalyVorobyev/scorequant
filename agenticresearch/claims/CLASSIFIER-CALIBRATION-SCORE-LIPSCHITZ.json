@@ -1,0 +1,38 @@
+{
+  "id": "CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ",
+  "title": "Posterior error to score error for mixture-fraction scores: one Lipschitz inequality, and the excess Brier score as the classifier requirement",
+  "criterion": [
+    "general",
+    "D"
+  ],
+  "level": "score_oracle",
+  "status": "bridge",
+  "publication_status": "derived_from_published",
+  "statement": "For the mixture score of CLASSIFIER-MIXTURE-SCORE-FORMULA, Phi_a(eta) = (eta_a/pi_a) / sum_b theta0_b eta_b/pi_b on the simplex with theta0 interior: D(eta) >= D_min = min_b theta0_b/pi_b, 0 <= Phi_a <= 1/theta0_a, and |Phi_a(eta') - Phi_a(eta)| <= (|eta'_a - eta_a|/pi_a + (1/theta0_a) sum_b (theta0_b/pi_b) |eta'_b - eta_b|) / D_min, hence ||Phi(eta') - Phi(eta)||_2 <= L ||eta' - eta||_2 with L = (1/pi_min + Q sqrt(m) ||1/theta0||_2) / D_min, Q = max_b theta0_b/pi_b. With s = T Phi for the fixed linear chart T and s_hat = T Phi(eta_hat): the Fisher-whitened score error of SCORE-ERROR-RETENTION-BUDGET satisfies eps^2 <= ||V^{-1}|| ||T||^2 L^2 E_{P_theta0} ||eta_hat - eta||^2 <= ||V^{-1}|| ||T||^2 L^2 Q E_{P_pi} ||eta_hat - eta||^2, and under the training mixture P_pi with one-hot component label Y, E ||eta_hat - eta||^2 = BS(eta_hat) - BS(eta) is the excess Brier score, which splits orthogonally as reliability (calibration error, E||eta_hat - E[eta | eta_hat]||^2, estimable from labelled data) plus resolution gap (E||eta - E[eta | eta_hat]||^2, the posterior-level representation loss of O5, needing the truth). The inverse map eta_a = pi_a Phi_a / sum_b pi_b Phi_b is Lipschitz on the image, so the two L^2 errors are equivalent metrics. Consequence: a measured calibration error is a lower bound on the score error; a calibrated classifier is not certified; the excess Brier score on simulation is the requirement that controls the reported retention, and AUC is not (CE-AUC-INVARIANT-PROXY-RETENTION-001).",
+  "assumptions": [
+    "theta0 interior (all theta0_b > 0) and all training priors pi_b > 0; the constants blow up as a component fraction or prior tends to 0",
+    "the training law P_pi and the reference law P_theta0 are mixtures of the same components; the prior correction of the library's ratios.py is what turns P_pi posteriors into the reference-law ratios",
+    "the Brier identity and its reliability-resolution decomposition are textbook (DeGroot-Fienberg 1983 binary; Broecker 2009 multiclass), cited by name and not re-derived; the literature keys are not yet in the bibliography (LITERATURE/gaps.md)",
+    "verified exactly on 940 random rational simplex pairs with m in {2, 3, 4} (py/score_error_budget.py selftest B4_pairs, 8 Sep 2026); no independent audit yet"
+  ],
+  "dependencies": [
+    "CLASSIFIER-MIXTURE-SCORE-FORMULA",
+    "CLASSIFIER-RATIO-ORACLE",
+    "SCORE-ERROR-RETENTION-BUDGET"
+  ],
+  "implies": [
+    "OPEN-CLASSIFIER-CALIBRATION-FI"
+  ],
+  "literature_search_status": "not_searched",
+  "proof_location": {
+    "file": "KNOWN_RESULTS/10-oracle.md",
+    "section": "O8. Score-error budget for a frozen rule: what an estimated score costs, to first order"
+  },
+  "artifact": "py/score_error_budget.py",
+  "role": "the OP18 chain in one inequality: from a classifier's posterior error to the score-error scale that SCORE-ERROR-RETENTION-BUDGET converts into a reporting bias; says which classifier metric matters (excess Brier, not AUC) and which half is observable (reliability, as a lower bound)",
+  "warning": "Bridge: elementary Lipschitz constants around a textbook decomposition. The constants are crude (sqrt(m), operator norms) and not optimised. Half of OP18 stays open: nothing certifies the resolution gap without truth scores.",
+  "boundary_counterexamples": [
+    "CE-AUC-INVARIANT-PROXY-RETENTION-001"
+  ],
+  "programme": "P2"
+}

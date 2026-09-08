@@ -1,0 +1,46 @@
+{
+  "id": "SCORE-ERROR-RETENTION-BUDGET",
+  "title": "Reported versus true retention of a frozen label map under a score error: an exact two-term expansion in the Fisher-whitened score error",
+  "criterion": [
+    "D",
+    "general"
+  ],
+  "level": "information_accounting",
+  "status": "project_proved",
+  "publication_status": "internal",
+  "statement": "Let s be the true score with V = E[s s^T] > 0, s_hat = s + e a proxy, Z = q(s_hat) a frozen label map with p_b > 0, c_b = E[s | Z=b], e_b = E[e | Z=b], I_Z = sum_b p_b c_b c_b^T (true retained information), I_tilde_Z = sum_b p_b (c_b + e_b)(c_b + e_b)^T and V_tilde = E[s_hat s_hat^T] (what the library computes from the proxy), eps^2 = E[e^T V^{-1} e], eps_Z^2 = sum_b p_b e_b^T V^{-1} e_b <= eps^2, eps_R^2 = sum_b p_b e_b^T I_Z^{-1} e_b <= eps_Z^2 / rho_min, R = V^{-1/2} I_Z V^{-1/2} with eigenvalues rho_i in [0, 1]. (B1) For every direction a: |a^T (I_tilde_Z - I_Z) a - a^T E_Z a| <= 2 sqrt((a^T I_Z a)(a^T E_Z a)) with E_Z = sum_b p_b e_b e_b^T <= E[e e^T], and the same for V_tilde - V with E[e e^T]. (B2) If I_Z > 0 and V_tilde > 0, the reported geometric-mean retention eta_tilde_D = (det I_tilde_Z / det V_tilde)^(1/d) and the true eta_D = (det I_Z / det V)^(1/d) satisfy log(eta_tilde_D / eta_D) = T_1 + T_2 + r_3 with T_1 = (2/d)(E[e_Z^T I_Z^{-1} c_Z] - E[e^T V^{-1} s]) (alignment term), |T_1| <= (2/d) sqrt(d - tr R) (eps_Z sqrt((1 - rho_min)/rho_min) + sqrt(eps^2 - eps_Z^2)) <= (2/sqrt d)(eps_R + eps); T_2 = (eps_R^2 - eps^2)/d (spurious-information term); and the curvature remainder r_3 in (1/d)[-U_d(eps_R)^2/(2(1-eps_R)^2), U_d(eps)^2/(2(1-eps)^2)], U_d(x) = 2 sqrt(d) x + x^2, for eps, eps_R < 1. Without expansion, (1/d)[L_d(eps_R) - U_d(eps)] <= log(eta_tilde_D/eta_D) <= (1/d)[U_d(eps_R) - L_d(eps)] with L_d(x) = max(2 d log(1-x), x^2 - 2 sqrt(d) x - U_d(x)^2/(2(1-x)^2)). The first-order constant 2 sqrt(d) is attained (e_b = kappa c_b). No bound in eps alone exists (CE-SCORE-ERROR-RHO-MIN-NECESSARY-001): the retention-weighted eps_R, i.e. eps_Z^2/rho_min, is the necessary scale. The reported number depends on the proxy only through its affine class, so every statement holds with e replaced by A s_hat - s for any nonsingular A, in particular the least-squares A* with eps_aff^2 = d - sum_i r_i^2, r_i the uncentred canonical correlations between s and s_hat (the proxy's linear representation loss). The roles of s and s_hat are symmetric, so the truth is bracketed from the reported eta_tilde_D, the reported smallest retention eigenvalue rho_tilde_min and the error measured in the proxy metric. Endpoints: at eta_D = 0 (I_Z singular) the reported number is uncontrolled; at eps_R >= 1 the lower bracket is void and the reported information can vanish.",
+  "assumptions": [
+    "one law P on x-space (population or the empirical law of a sample; then every inequality holds sample-wise and exactly); p_b > 0 for the occupied cells, empty cells contribute nothing (0/0 := 0)",
+    "V = E[s s^T] positive definite; for B2 also I_Z > 0 (so K >= d + 1 at the reference law by FI-RANK-CEILING) and V_tilde > 0; the library's rank_rtol projection at singular V_tilde is outside the statement, as in O7",
+    "E[s] = 0 is never used; it is only what makes eta_D the Fisher retention (FI-QUANT-IDENTITY, PROXY-TRUE-RETAINED-FI); E[e] != 0 is allowed; weights are the law; scores are never centred",
+    "the label map is frozen and the same for s and s_hat (labels are labels): nothing here compares q(s) with q(s_hat), which is SCORE-ERROR-RULE-TRANSFER",
+    "rho_min is the smallest eigenvalue of V^{-1/2} I_Z V^{-1/2}; eps_R^2 <= eps_Z^2 / rho_min follows from I_Z >= rho_min V",
+    "the brackets are non-asymptotic; the 'first-order' readings are the eps -> 0 forms; the curvature remainder bound is crude (a factor 2d looser than the second-order term it sits beside)",
+    "no independent audit yet (closure step 3 gate: verdict plus audit); no literature pass (targets in LITERATURE/gaps.md): the ingredients are conditional Cauchy-Schwarz, the rank-one Loewner bound, concavity of log det and Pythagoras for conditional expectations, none claimed as novel",
+    "verified exactly (fractions.Fraction) on 400 random atomic laws, d = 1..3, K = 2..4, N <= 8 with duplicates, singleton cells, unequal weights, constant shifts and three error scales: 22 942 checks, 0 failures, plus the attainer identities in d = 1, 2, 3 (py/score_error_budget.py selftest, 8 Sep 2026)"
+  ],
+  "dependencies": [
+    "PROXY-TRUE-RETAINED-FI",
+    "REPRESENTATION-QUANTIZATION-LOSS",
+    "INFO-RETENTION-SPECTRUM",
+    "INFO-D-EFFICIENCY",
+    "D-REPARAM-INVARIANCE",
+    "FI-QUANT-IDENTITY"
+  ],
+  "implies": [
+    "OPEN-SCORE-PERTURBATION"
+  ],
+  "literature_search_status": "not_searched",
+  "proof_location": {
+    "file": "KNOWN_RESULTS/10-oracle.md",
+    "section": "O8. Score-error budget for a frozen rule: what an estimated score costs, to first order"
+  },
+  "artifact": "py/score_error_budget.py",
+  "role": "the reporting-bias half of OP17: what the number the library prints for a classifier provider (information_kind supplied_score_surrogate) has to do with the true retention; names the two scales that govern it, sqrt(d - tr R) and eps_Z^2/rho_min; the bias companion of the O7 sampling error bar",
+  "warning": "Project-level proposition. Everything is elementary and the method is textbook; the reduction to the library's uncentred cell moments, the exact first-order term with its sqrt(trace-loss) factor, the retention-weighted scale eps_R, the affine reduction to canonical correlations and the rho_min necessity fixture are project content. Not audited. Not a library feature: no public diagnostic computes eps or eps_R (they need the truth or a simulation hold-out).",
+  "boundary_counterexamples": [
+    "CE-SCORE-ERROR-RHO-MIN-NECESSARY-001",
+    "CE-AUC-INVARIANT-PROXY-RETENTION-001"
+  ],
+  "programme": "P2"
+}

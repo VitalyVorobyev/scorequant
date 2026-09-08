@@ -1,0 +1,351 @@
+{
+  "id": "CE-SCORE-ERROR-RHO-MIN-NECESSARY-001",
+  "criterion": "D",
+  "level": "information_accounting",
+  "claim_falsified": "The gap between the reported (proxy) geometric-mean retention and the true retention of the same frozen label map admits a bound that depends on the Fisher-whitened score error epsilon alone, uniformly over laws and rules. Refuted: in the family below epsilon^2 = 4 kappa^2 / (10 V_22) stays within [0.026, 0.028] while the proxy-to-true retention ratio grows without bound as the least retained eigenvalue rho_min -> 0 (delta -> 0). The retention-weighted error epsilon_R^2 = E[e_Z^T I_Z^{-1} e_Z] <= epsilon_Z^2 / rho_min of SCORE-ERROR-RETENTION-BUDGET is the right scale.",
+  "scores": [
+    [
+      "1",
+      "1"
+    ],
+    [
+      "1",
+      "-1"
+    ],
+    [
+      "-1",
+      "1"
+    ],
+    [
+      "-1",
+      "-1"
+    ],
+    [
+      "-1",
+      "1/2"
+    ]
+  ],
+  "proxy_scores": [
+    [
+      "1",
+      "1"
+    ],
+    [
+      "1",
+      "-1"
+    ],
+    [
+      "-1",
+      "1"
+    ],
+    [
+      "-1",
+      "-1"
+    ],
+    [
+      "-1",
+      "1"
+    ]
+  ],
+  "weights": [
+    "1/4",
+    "1/4",
+    "7/40",
+    "9/40",
+    "1/10"
+  ],
+  "K": 3,
+  "labels_before": [
+    0,
+    0,
+    1,
+    1,
+    2
+  ],
+  "labels_after_or_optimum": null,
+  "poi_indices": [
+    0,
+    1
+  ],
+  "nuisance_indices": [],
+  "objective_before": "true det ratio 5/148 (eta_D = 0.183804)",
+  "objective_after": "proxy det ratio 83/798 (eta_tilde_D = 0.322506)",
+  "exact_quantities": {
+    "kappa": "1/2",
+    "family_by_delta": [
+      {
+        "delta": "1/2",
+        "weights": [
+          "1/4",
+          "1/4",
+          "7/40",
+          "9/40",
+          "1/10"
+        ],
+        "atoms": [
+          [
+            "1",
+            "1"
+          ],
+          [
+            "1",
+            "-1"
+          ],
+          [
+            "-1",
+            "1"
+          ],
+          [
+            "-1",
+            "-1"
+          ],
+          [
+            "-1",
+            "1/2"
+          ]
+        ],
+        "eps2": "1/37",
+        "eps_Z2": "1/37",
+        "eps_R2": "4/5",
+        "rho": [
+          0.03378378378378378,
+          1.0
+        ],
+        "det_ratio_true": "5/148",
+        "det_ratio_proxy": "83/798",
+        "eta_D_true": 0.18380365552345193,
+        "eta_D_proxy": 0.3225058527572122,
+        "eta_ratio_proxy_over_true": 1.754621538068719,
+        "eta_ratio_squared_exact": "6142/1995",
+        "log_eta_ratio": 0.562253185838402,
+        "first_order_budget": 1.49740634155499,
+        "bracket_upper": 1.9705697215915374,
+        "I_Z": [
+          [
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "1/32"
+          ]
+        ],
+        "I_tilde_Z": [
+          [
+            "1",
+            "-1/20"
+          ],
+          [
+            "-1/20",
+            "17/160"
+          ]
+        ],
+        "V": [
+          [
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "37/40"
+          ]
+        ],
+        "V_tilde": [
+          [
+            "1",
+            "-1/20"
+          ],
+          [
+            "-1/20",
+            "1"
+          ]
+        ],
+        "checks_all_true": true
+      },
+      {
+        "delta": "1/10",
+        "weights": [
+          "1/4",
+          "1/4",
+          "39/200",
+          "41/200",
+          "1/10"
+        ],
+        "atoms": [
+          [
+            "1",
+            "1"
+          ],
+          [
+            "1",
+            "-1"
+          ],
+          [
+            "-1",
+            "1"
+          ],
+          [
+            "-1",
+            "-1"
+          ],
+          [
+            "-1",
+            "1/10"
+          ]
+        ],
+        "eps2": "25/901",
+        "eps_Z2": "25/901",
+        "eps_R2": "20",
+        "rho": [
+          0.0013873473917869034,
+          1.0
+        ],
+        "det_ratio_true": "5/3604",
+        "det_ratio_proxy": "135/3734",
+        "eta_D_true": 0.03724711252952238,
+        "eta_D_proxy": 0.19014273104219434,
+        "eta_ratio_proxy_over_true": 5.104898558015351,
+        "eta_ratio_squared_exact": "48654/1867",
+        "log_eta_ratio": 1.630200580315445,
+        "first_order_budget": 6.560126744052532,
+        "bracket_upper": 16.635834148758217,
+        "I_Z": [
+          [
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "1/800"
+          ]
+        ],
+        "I_tilde_Z": [
+          [
+            "1",
+            "-1/20"
+          ],
+          [
+            "-1/20",
+            "29/800"
+          ]
+        ],
+        "V": [
+          [
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "901/1000"
+          ]
+        ],
+        "V_tilde": [
+          [
+            "1",
+            "-1/20"
+          ],
+          [
+            "-1/20",
+            "117/125"
+          ]
+        ],
+        "checks_all_true": true
+      },
+      {
+        "delta": "1/100",
+        "weights": [
+          "1/4",
+          "1/4",
+          "399/2000",
+          "401/2000",
+          "1/10"
+        ],
+        "atoms": [
+          [
+            "1",
+            "1"
+          ],
+          [
+            "1",
+            "-1"
+          ],
+          [
+            "-1",
+            "1"
+          ],
+          [
+            "-1",
+            "-1"
+          ],
+          [
+            "-1",
+            "1/100"
+          ]
+        ],
+        "eps2": "2500/90001",
+        "eps_Z2": "2500/90001",
+        "eps_R2": "2000",
+        "rho": [
+          1.3888734569615892e-05,
+          1.0
+        ],
+        "det_ratio_true": "5/360004",
+        "det_ratio_proxy": "9405/369404",
+        "eta_D_true": 0.003726759258339059,
+        "eta_D_proxy": 0.15956168101861148,
+        "eta_ratio_proxy_over_true": 42.8151297032599,
+        "eta_ratio_squared_exact": "169291881/92351",
+        "log_eta_ratio": 3.756891537861862,
+        "first_order_budget": 63.481254154317014,
+        "bracket_upper": 1063.5570700364146,
+        "I_Z": [
+          [
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "1/80000"
+          ]
+        ],
+        "I_tilde_Z": [
+          [
+            "1",
+            "-1/20"
+          ],
+          [
+            "-1/20",
+            "2081/80000"
+          ]
+        ],
+        "V": [
+          [
+            "1",
+            "0"
+          ],
+          [
+            "0",
+            "90001/100000"
+          ]
+        ],
+        "V_tilde": [
+          [
+            "1",
+            "-1/20"
+          ],
+          [
+            "-1/20",
+            "92601/100000"
+          ]
+        ],
+        "checks_all_true": true
+      }
+    ]
+  },
+  "verification": {
+    "method": "exact_formula",
+    "notes": "All moments in fractions.Fraction; E[s] = 0 exactly in every member; eta_D and the ratio are square roots of exact rationals (d = 2). The B1/B2 inequalities of SCORE-ERROR-RETENTION-BUDGET hold on every member (checks_all_true); only their epsilon-alone reading fails."
+  },
+  "source": "SCORE-ERROR-BUDGET packet, py/score_error_budget.py fixtures",
+  "date": "2026-09-08"
+}

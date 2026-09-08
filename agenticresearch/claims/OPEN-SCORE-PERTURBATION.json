@@ -8,10 +8,12 @@
   "level": "score_oracle",
   "status": "open",
   "publication_status": "open",
-  "statement": "Control cell moments, retained Fisher information, D/Ds objective, efficiency, and boundary displacement from norm bounds on score-proxy error.",
+  "statement": "Control cell moments, retained Fisher information, D/Ds objective, efficiency, and boundary displacement from norm bounds on score-proxy error. Settled at first order for a frozen rule (8 Sep 2026, SCORE-ERROR-BUDGET, closure step 3; not yet audited): the reporting gap log(eta_tilde_D/eta_D) between the number the library computes from the proxy and the true retention of the same labels is an exact two-term expansion with a curvature remainder in the Fisher-whitened score error - an alignment term bounded by (2/d) sqrt(d - tr R)(eps_Z sqrt((1-rho_min)/rho_min) + sqrt(eps^2 - eps_Z^2)) and a spurious-information term (eps_R^2 - eps^2)/d with eps_R^2 <= eps_Z^2/rho_min - with the first-order constant attained, no bound in eps alone (CE-SCORE-ERROR-RHO-MIN-NECESSARY-001), a free affine reduction to the canonical correlations between truth and proxy, and a symmetric bracket from the reported side (SCORE-ERROR-RETENTION-BUDGET); the boundary displacement is a Markov-plus-margin mislabel bound pi <= inf_t {M_q(t) + eps^2/t^2} composed with an exact Loewner sandwich I_Zhat >= I_Z - Gamma (SCORE-ERROR-RULE-TRANSFER), vacuous without a margin (CE-SCORE-ERROR-BOUNDARY-ATOM-001); both compose into a deployed-versus-oracle budget (O8.6). Still open, backlog: a uniform-over-rules budget so that O8.6 holds for an exchange-stable (non-global) solution; the D_s/profiled retention; refitted rules; sharp second-order constants; anything without truth scores on a simulation hold-out.",
   "dependencies": [
     "PROXY-TRUE-RETAINED-FI",
-    "REPRESENTATION-QUANTIZATION-LOSS"
+    "REPRESENTATION-QUANTIZATION-LOSS",
+    "SCORE-ERROR-RETENTION-BUDGET",
+    "SCORE-ERROR-RULE-TRANSFER"
   ],
   "proof_location": {
     "file": "OPEN_PROBLEMS.md",

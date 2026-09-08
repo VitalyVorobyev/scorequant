@@ -1,0 +1,15 @@
+{
+ "provenance": {
+  "mode": "fixtures",
+  "parameters": {},
+  "git_revision": "41077b6e644b86a4d6466fdc1be582caf86ec751",
+  "script_sha256": "4fe6f20356b84c95631723a4ac88e9c2aa0ae08cabbc53e6b0b8c60f8efdcd57",
+  "python": "3.13.12",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+ },
+ "written": [
+  "CE-SCORE-ERROR-RHO-MIN-NECESSARY-001",
+  "CE-SCORE-ERROR-BOUNDARY-ATOM-001",
+  "CE-AUC-INVARIANT-PROXY-RETENTION-001"
+ ]
+}

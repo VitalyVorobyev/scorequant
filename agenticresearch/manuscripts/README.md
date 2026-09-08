@@ -33,6 +33,14 @@ unverified: a Haynsworth 1968 key and the Jakubowski 2021 volume). Results prove
   `CE-O7-ELLIPSOID-ZERO-VARIANCE-001` (audit pending). Cite as a bridge from the delta method
   and the published canonical-correlation influence functions, never as novelty; the measured
   heavy-tail under-coverage is a caveat in any such text.
+- O8 `SCORE-ERROR-RETENTION-BUDGET`, `SCORE-ERROR-RULE-TRANSFER`,
+  `CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ` with the three `CE-SCORE-ERROR-*` /
+  `CE-AUC-INVARIANT-*` fixtures (8 September 2026; audit pending; no literature pass yet —
+  cite the perturbation, margin and Brier sources named in `LITERATURE/gaps.md` before any
+  novelty wording). The paper's "estimated scores" paragraph gains a theorem: the reported
+  retention is off by an alignment term \(\propto\sqrt{d-\operatorname{tr}R}\) plus a
+  spurious-information term \(\varepsilon_Z^2/\rho_{\min}\), and AUC is the wrong classifier
+  metric.
 
 Earlier snapshots (v8, the HEP companion, the landscape survey, the dated staleness log) are in
 git history.

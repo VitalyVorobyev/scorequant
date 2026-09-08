@@ -253,14 +253,19 @@ never quoted as an out-of-sample result. Consequences, in force on the FlowCyt a
 
 `retention_uncertainty` ships the audited plug-in standard error and untruncated Wald interval for
 `geometric_mean_retention` of a frozen rule on an independent, equally weighted sample of true scores
-(`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, `RETENTION-PLUGIN-CLT-FROZEN-SCALAR`). It never clips,
-bootstraps or bias-corrects, takes no weights, and is never attached to a training or validation
-history. Where the first-order theory does not apply it withholds the interval under a named status
-instead of reporting one: a rank-deficient full moment returns no estimate rather than a projected
-surrogate, a rank-deficient between-cell moment returns zero with no interval
-(`RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`), and influence values that cancel to rounding return a
-zero standard error with no interval (`CE-O7-ELLIPSOID-ZERO-VARIANCE-001`); each guard is numerical
-and asserts nothing about the population. The documented conditions are caller obligations. Proxy
+drawn from the reference law (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`,
+`RETENTION-PLUGIN-CLT-FROZEN-SCALAR`). It never clips, bootstraps or bias-corrects, takes no weights,
+and is never attached to a training or validation history. Where the first-order theory does not
+apply it withholds the interval under a named status instead of reporting one: a rule with at most
+\(d\) declared cells returns nothing, because the rank ceiling makes its reference-law retention zero
+and the plug-in the biased endpoint estimator (`FI-RANK-CEILING`); a rank-deficient full moment
+returns no estimate rather than a projected surrogate; a rank-deficient between-cell moment returns
+zero with no interval (`RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`); and influence values that cancel
+to rounding return a zero standard error with no interval (`CE-O7-ELLIPSOID-ZERO-VARIANCE-001`). The
+first guard is structural; the other three are numerical verdicts on the sample and assert nothing
+about the population. The between-cell moment is aggregated from whitened rows so that its rank
+verdict survives an ill-conditioned reparameterization. The documented conditions are caller
+obligations. Proxy
 scores add a reporting bias that this interval does not measure and that the score-error budget
 bounds only with truth-dependent assumptions; the guide says so wherever the number appears.
 

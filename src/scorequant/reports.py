@@ -62,6 +62,7 @@ class InformationReport:
 
 type RetentionUncertaintyStatus = Literal[
     "ok",
+    "insufficient_cells",
     "singular_full_information",
     "singular_retained_information",
     "degenerate_variance",
@@ -84,16 +85,17 @@ class RetentionUncertainty:
     property of the first-order interval, not a claim about the retention.
 
     The interval covers sampling variability only: the rule is frozen, the
-    rows are independent and equally weighted draws, and the scores are the
-    model's true scores. A classifier or other estimated score adds a separate
-    reporting bias that no error bar on the proxy sample measures.
+    rows are independent and equally weighted draws from the reference law,
+    and the scores are the model's true scores. A classifier or other
+    estimated score adds a separate reporting bias that no error bar on the
+    proxy sample measures.
 
     Attributes
     ----------
     estimate
-        Plug-in geometric-mean retention, ``None`` when the full moment matrix
-        is rank deficient and the target is undefined, and exactly ``0.0``
-        when the retained matrix is rank deficient.
+        Plug-in geometric-mean retention, ``None`` when the rule declares too
+        few cells or the full moment matrix is rank deficient, and exactly
+        ``0.0`` when the retained matrix is rank deficient.
     standard_error
         Influence-function standard error, ``0.0`` when the influence values
         cancel to rounding noise, and ``None`` whenever no first-order theory
@@ -107,13 +109,18 @@ class RetentionUncertainty:
         Number of evaluation rows the moments were formed from.
     status
         ``"ok"``: estimate, standard error and interval are all available.
+        ``"insufficient_cells"``: the rule declares at most ``d`` cells, so
+        the population retention is zero at the reference law
+        (``FI-RANK-CEILING``) and the plug-in is the biased endpoint
+        estimator; nothing is reported.
         ``"singular_full_information"``: the supplied scores lose a direction
         at the rank threshold, so the geometric-mean retention of all ``d``
         directions is undefined and nothing is reported rather than a
         silently projected surrogate. ``"singular_retained_information"``:
         the full matrix is regular but the between-cell matrix is numerically
-        rank deficient, so the plug-in is zero and the Wald theory does not
-        apply (``RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE``).
+        rank deficient on this sample, so the plug-in is zero and the Wald
+        theory does not apply; the verdict does not identify the population
+        rank (``RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE``).
         ``"degenerate_variance"``: the influence values vanish to rounding,
         so the interval is withheld; this is a numerical guard and does not
         assert that the population variance is zero.

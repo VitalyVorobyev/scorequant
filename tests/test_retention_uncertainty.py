@@ -175,6 +175,19 @@ def test_confidence_level_sets_the_normal_quantile() -> None:
     assert half_wide == pytest.approx(2.5758293035489004 * wide.standard_error, rel=1e-10)
 
 
+def test_confidence_level_within_an_ulp_of_one_is_accepted() -> None:
+    """Regression for the review of PR #66: the quantile is evaluated from
+    the tail, so a level the contract accepts never rounds its argument to one."""
+    scores, labels = _regular_sample(17)
+    level = float(np.nextafter(1.0, 0.0))
+    report = sq.retention_uncertainty(scores, labels, confidence_level=level)
+    assert report.status == "ok"
+    assert report.confidence_level == level
+    lower, upper = report.confidence_interval
+    assert math.isfinite(lower) and math.isfinite(upper)
+    assert upper - lower > 2 * 8 * report.standard_error
+
+
 def test_interval_is_not_clipped_to_the_unit_interval() -> None:
     # Six rows spread over three cells at unit retention minus a small
     # perturbation: the standard error dwarfs the distance to one.
@@ -234,7 +247,9 @@ def test_singular_full_information_is_refused_not_projected() -> None:
 
     # CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001: both draws in one cell of a
     # lossless law. The library's projected report says 1; the plug-in's own
-    # convention says 0; the diagnostic reports neither.
+    # convention says 0; the diagnostic reports neither. Its two-cell rule
+    # is refused structurally; declared under a third cell the same rows
+    # reach the full-moment guard.
     fixture = _fixture("CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001")
     sample = np.asarray(fixture["scores"], dtype=float)
     sample_labels = np.asarray(fixture["labels_before"])
@@ -242,32 +257,99 @@ def test_singular_full_information_is_refused_not_projected() -> None:
     assert projected.effective_rank == 1
     assert projected.geometric_mean_retention == pytest.approx(1.0)
     withheld = sq.retention_uncertainty(sample, sample_labels, n_bins=fixture["K"])
-    assert withheld.status == "singular_full_information"
+    assert withheld.status == "insufficient_cells"
     assert withheld.estimate is None
+    singular = sq.retention_uncertainty(sample, sample_labels, n_bins=fixture["K"] + 1)
+    assert singular.status == "singular_full_information"
+    assert singular.estimate is None
 
 
 def test_all_zero_scores_are_singular_full_information() -> None:
-    report = sq.retention_uncertainty(np.zeros((4, 2)), np.array([0, 1, 0, 1]))
+    report = sq.retention_uncertainty(np.zeros((6, 2)), np.array([0, 1, 2, 0, 1, 2]))
     assert report.status == "singular_full_information"
+
+
+# Six rows in three cells whose means are c, -c and 0: the full moment is
+# positive definite while the between-cell moment has exact rank one.
+_COLLINEAR_CELLS = np.array([[1, 0], [2, 3], [-1, 0], [-2, -3], [0, 1], [0, -1]], dtype=float)
+_COLLINEAR_LABELS = np.array([0, 0, 1, 1, 2, 2])
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_a_rule_with_at_most_d_cells_is_refused_before_any_moment(backend: str) -> None:
+    """FI-RANK-CEILING: with K <= d declared cells the population retention is
+    zero at the reference law whatever the empirical rank, and the audit
+    requires the interval to be refused rather than built on the biased
+    plug-in (AUDIT-RETENTION-PLUGIN-VECTOR-001, sections 10 and 11)."""
+    execution = _execution(backend)
+    rng = np.random.default_rng(31)
+    half = rng.normal(size=(60, 2))
+    centred = sq.retention_uncertainty(
+        np.concatenate([half, -half]), np.repeat([0, 1], 60), execution=execution
+    )
+    fewer_cells = sq.retention_uncertainty(
+        rng.normal(size=(50, 3)), np.arange(50) % 2, execution=execution
+    )
+    # A constant scalar rule (K = d = 1) whose uncentred sample plug-in is
+    # positive: information_report shows that number, the diagnostic does not.
+    constant = sq.retention_uncertainty(
+        np.array([[-2.0], [-1.0], [1.0], [3.0]]),
+        np.zeros(4, dtype=int),
+        n_bins=1,
+        execution=execution,
+    )
+    for report in (centred, fewer_cells, constant):
+        assert report.status == "insufficient_cells"
+        assert report.estimate is None
+        assert report.standard_error is None
+        assert report.confidence_interval is None
+    # The declared count decides, empty cells included: the same rows under a
+    # three-cell rule pass this guard and fall to the retained-rank guard.
+    declared = sq.retention_uncertainty(
+        np.concatenate([half, -half]), np.repeat([0, 1], 60), n_bins=3, execution=execution
+    )
+    assert declared.status == "singular_retained_information"
 
 
 @pytest.mark.parametrize("backend", BACKENDS)
 def test_singular_retained_information_is_caught_before_any_root(backend: str) -> None:
-    # A centred sample with K = d cells has rank(I_Z) <= K - 1 < d exactly;
-    # in floating point the lost eigenvalue is rounding noise whose square
+    # In floating point the lost eigenvalue is rounding noise whose square
     # root the plug-in would otherwise report as a regular endpoint.
-    rng = np.random.default_rng(31)
-    half = rng.normal(size=(60, 2))
-    scores = np.concatenate([half, -half])
-    labels = np.concatenate([np.zeros(60, dtype=int), np.ones(60, dtype=int)])
-    report = sq.retention_uncertainty(scores, labels, execution=_execution(backend))
+    report = sq.retention_uncertainty(
+        _COLLINEAR_CELLS, _COLLINEAR_LABELS, execution=_execution(backend)
+    )
     assert report.status == "singular_retained_information"
     assert report.estimate == 0.0
     assert report.standard_error is None
     assert report.confidence_interval is None
 
-    fewer_cells = sq.retention_uncertainty(rng.normal(size=(50, 3)), np.arange(50) % 2)
-    assert fewer_cells.status == "singular_retained_information"
+
+@pytest.mark.parametrize(
+    ("backend", "precision", "delta"),
+    [
+        ("numpy", "float64", 2.0**-9),
+        ("jax", "float64", 2.0**-9),
+        ("numpy", "float32", 2.0**-2),
+        ("jax", "float32", 2.0**-3),
+    ],
+)
+def test_retained_rank_guard_survives_an_ill_conditioned_reparameterization(
+    backend: str, precision: str, delta: float
+) -> None:
+    """Regression for the review of PR #66: a nonsingular coordinate change
+    whose full moment stays above the rank threshold must not turn the exact
+    rank-one between-cell moment into a regular-looking interval. The retained
+    matrix is therefore aggregated from whitened rows, not whitened after
+    being formed in the supplied coordinates."""
+    execution = sq.ExecutionConfig(backend=backend, precision=precision, device="cpu")
+    mixing = np.array([[1.0, 1.0], [1.0, 1.0 + delta]])
+    before = sq.retention_uncertainty(_COLLINEAR_CELLS, _COLLINEAR_LABELS, execution=execution)
+    after = sq.retention_uncertainty(
+        _COLLINEAR_CELLS @ mixing, _COLLINEAR_LABELS, execution=execution
+    )
+    assert before.status == after.status == "singular_retained_information"
+    assert after.estimate == 0.0
+    assert after.confidence_interval is None
 
 
 def test_rank_rtol_override_moves_the_retained_guard() -> None:
@@ -312,16 +394,16 @@ def test_every_status_serializes_to_strict_json() -> None:
     fixture = _fixture("CE-O7-ELLIPSOID-ZERO-VARIANCE-001")
     reports = [
         sq.retention_uncertainty(scores, labels),
+        sq.retention_uncertainty(scores, labels % 2),
         sq.retention_uncertainty(np.column_stack([scores[:, 0], scores[:, 0]]), labels),
-        sq.retention_uncertainty(
-            np.concatenate([scores, -scores]), np.repeat([0, 1], scores.shape[0])
-        ),
+        sq.retention_uncertainty(_COLLINEAR_CELLS, _COLLINEAR_LABELS),
         sq.retention_uncertainty(
             np.asarray(fixture["scores"], dtype=float), np.asarray(fixture["labels_before"])
         ),
     ]
     assert [report.status for report in reports] == [
         "ok",
+        "insufficient_cells",
         "singular_full_information",
         "singular_retained_information",
         "degenerate_variance",
@@ -393,8 +475,12 @@ def _coverage(
 
 
 def test_wald_coverage_on_a_bounded_regular_law_matches_the_nominal_level() -> None:
-    """A bounded atom law with three atoms per cell satisfies every O7 condition,
-    so the seeded coverage should sit within Monte Carlo error of 95%."""
+    """A bounded atom law with three atoms per cell satisfies every O7 condition.
+    The theorem is asymptotic, so this pins what was measured for this law,
+    N = 200 and seed 11: the finite-sample coverage sits within three binomial
+    Monte Carlo standard errors of 95%. The atoms have nonzero mean, so the
+    test exercises the uncentred plug-in algebra, not the reference-law
+    reading of the number as a Fisher retention."""
     target = _population_retention(_ATOMS, _CELLS, _MASSES)
 
     def draw(rng: np.random.Generator, n_rows: int) -> tuple[np.ndarray, np.ndarray]:

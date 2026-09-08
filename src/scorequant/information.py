@@ -339,14 +339,26 @@ def _retention_influence(
     because \(\hat I_Z^{-1}=WR^{-1}W^\top\). One symmetric solve per cell
     replaces both inverses, and every rank decision is taken on \(R\), whose
     spectrum is invariant under a linear reparameterization of the scores.
+
+    \(R\) is formed from the cell means of the whitened rows, never as
+    \(W^\top\hat I_Z W\) from a retained matrix assembled in the supplied
+    coordinates: on an ill-conditioned but regular full moment the latter
+    amplifies the rounding of \(\hat I_Z\) by the condition number of
+    \(\hat V\) and can invent a spurious smallest eigenvalue on an exactly
+    rank-deficient between-cell matrix, which the rank guard then misses.
     """
     scores = sample.effective_scores
     n_rows, dimension = scores.shape
+    # A rule with at most d cells retains no D-information at the reference
+    # law: FI-RANK-CEILING bounds the population rank of I_Z by K - 1, so the
+    # target is zero there and the sample plug-in is the upward-biased
+    # endpoint estimator whatever the empirical rank happens to be. This is
+    # decided on the declared cell count, empty cells included, before any
+    # moment is formed.
+    if n_bins <= dimension:
+        return _RetentionInfluence("insufficient_cells", None, None)
     unit_weights = jnp.ones(n_rows, dtype=scores.dtype)
     full_moment = jnp.einsum("np,nq->pq", scores, scores) / n_rows
-    cells = scatter_bin_statistics(labels, unit_weights, scores, n_bins)
-    # Empty cells have zero weight and a zero mean, so they add nothing here.
-    retained_moment = jnp.einsum("b,bp,bq->pq", cells.weights, cells.means, cells.means) / n_rows
 
     # A supplied direction that the sample loses makes the d-dimensional
     # target undefined. ``information_report`` would project it out and report
@@ -361,7 +373,13 @@ def _retention_influence(
     if transform.rank < dimension:
         return _RetentionInfluence("singular_full_information", None, None)
     basis = jnp.asarray(transform.matrix, dtype=scores.dtype)
-    whitened_retained = basis.T @ retained_moment @ basis
+    coordinates = scores @ basis
+    cells = scatter_bin_statistics(labels, unit_weights, coordinates, n_bins)
+    cell_coordinates = cells.means
+    # Empty cells have zero weight and a zero mean, so they add nothing here.
+    whitened_retained = (
+        jnp.einsum("b,bp,bq->pq", cells.weights, cell_coordinates, cell_coordinates) / n_rows
+    )
     whitened_retained = 0.5 * (whitened_retained + whitened_retained.T)
 
     # Decided before any determinant root or solve: on an exactly deficient
@@ -374,8 +392,6 @@ def _retention_influence(
     eigenvalues = np.asarray(jnp.linalg.eigvalsh(whitened_retained), dtype=np.float64)
     estimate = float(np.exp(np.mean(np.log(eigenvalues))))
 
-    coordinates = scores @ basis
-    cell_coordinates = cells.means @ basis
     cell_solutions = jnp.linalg.solve(whitened_retained, cell_coordinates.T).T
     cell_norms = jnp.sum(cell_coordinates * cell_solutions, axis=1)
     cross = jnp.sum(coordinates * cell_solutions[labels], axis=1)
@@ -390,7 +406,9 @@ def _retention_influence(
     # variance is declared degenerate when the root-mean-square bracket is
     # below the dtype's rank threshold times the root-mean-square magnitude.
     # This is a numerical guard on the sample; it does not decide whether the
-    # population variance is zero.
+    # population variance is zero, and a perturbation of the ellipsoid law
+    # smaller than the threshold is absorbed by it. The user's ``rank_rtol``
+    # does not move this threshold.
     magnitude = 2.0 * jnp.abs(cross) + cell_norms[labels] + own
     bracket_scale = float(np.sqrt(np.asarray(jnp.mean(bracket * bracket))))
     magnitude_scale = float(np.sqrt(np.asarray(jnp.mean(magnitude * magnitude))))
@@ -412,8 +430,9 @@ def retention_uncertainty(
     r"""Estimate the sampling uncertainty of a frozen rule's held-out retention.
 
     The rows are an evaluation sample the rule never saw: independent,
-    equally weighted draws whose ``scores`` are the model's true scores and
-    whose ``assignments`` are the frozen rule's labels for them. The estimate
+    equally weighted draws from the reference law at which the model's true
+    scores are evaluated, whose ``scores`` are those true scores and whose
+    ``assignments`` are the frozen rule's labels for them. The estimate
     is the uncentred plug-in geometric-mean retention
     \(\hat\eta_D=(\det\hat I_Z/\det\hat V)^{1/d}\), the same number
     ``information_report`` reports on a full-rank sample. Its standard error
@@ -445,7 +464,8 @@ def retention_uncertainty(
         Two-sided nominal level, strictly between zero and one.
     rank_rtol
         Relative eigenvalue threshold for both rank guards. A dtype-aware
-        default is used when omitted.
+        default is used when omitted. It does not move the cancellation
+        threshold of the ``degenerate_variance`` guard.
 
     Returns
     -------
@@ -460,11 +480,16 @@ def retention_uncertainty(
     finite fourth moments of the score, positive definite full and
     between-cell moments, and positive asymptotic variance. None of these can
     be verified from an array, and a positive empirical rank does not
-    certify a population eigenvalue floor. Heavy-tailed scores violate the
-    fourth-moment condition and produce material undercoverage at moderate
-    sample sizes. Weighted samples, rules refitted on the evaluation rows,
-    profiled \(D_s\) retention and any statement without true scores are
-    outside this diagnostic (``OPEN-RETENTION-UNCERTAINTY``).
+    certify a population eigenvalue floor. The theorem is asymptotic: an
+    infinite fourth moment puts a law outside it, and heavy tails, including
+    laws that satisfy every condition, produce material undercoverage at
+    moderate sample sizes. Reading the number as the model's Fisher
+    retention needs the evaluation law to be the reference law, where the
+    true score has mean zero; under another law the same arithmetic
+    estimates an uncentred determinant ratio that is not that retention.
+    Weighted samples, rules refitted on the evaluation rows, profiled
+    \(D_s\) retention and any statement without true scores are outside
+    this diagnostic (``OPEN-RETENTION-UNCERTAINTY``).
 
     Scores from a classifier or another estimator are not the true scores.
     Their reported retention carries a separate proxy bias that the
@@ -472,14 +497,28 @@ def retention_uncertainty(
     truth-dependent error and conditioning assumptions; AUC or calibration
     alone does not certify that bias, and this error bar never measures it.
 
-    Three outcomes withhold the interval rather than report an unsupported
-    one: a rank-deficient full moment (``singular_full_information``), a
-    rank-deficient between-cell moment (``singular_retained_information``,
-    where the plug-in is biased upward at a rate slower than
-    \(n^{-1/2}\), ``RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE``), and
-    influence values that cancel to rounding noise (``degenerate_variance``,
-    the sample-side face of ``CE-O7-ELLIPSOID-ZERO-VARIANCE-001``). The
-    endpoints of an ``ok`` interval are not clipped to ``[0, 1]``.
+    Four outcomes withhold the interval rather than report an unsupported
+    one. ``insufficient_cells``: the rule declares at most \(d\) cells, so
+    ``FI-RANK-CEILING`` makes the population retention zero at the reference
+    law and the plug-in is the upward-biased endpoint estimator; nothing is
+    reported. ``singular_full_information``: the full moment is rank
+    deficient at the threshold. ``singular_retained_information``: the
+    between-cell moment is numerically rank deficient on this sample, which
+    the theorem's positive-definiteness condition excludes; the estimate is
+    the plug-in's own value, zero. The verdict is about the sample and does
+    not identify the population rank; at population rank \(r<d\) the plug-in
+    is biased upward at order \(n^{-(d-r)/d}\)
+    (``RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE``), so the Wald theory does not
+    apply there. ``degenerate_variance``: the influence values cancel to
+    rounding noise, the sample-side face of
+    ``CE-O7-ELLIPSOID-ZERO-VARIANCE-001``. The test is
+    \(\mathrm{rms}(B)\le\tau\,\mathrm{rms}(M)\) with \(B_i\) the bracket
+    of \(\psi_i\), \(M_i\) the sum of the magnitudes of its three terms and
+    \(\tau\) the dtype's rank threshold (\(10^{-10}\) in float64,
+    \(10^{-5}\) in float32, not moved by ``rank_rtol``); it is a numerical
+    guard, absorbs perturbations of a zero-variance law below \(\tau\), and
+    never asserts that the population variance is zero. The endpoints of an
+    ``ok`` interval are not clipped to ``[0, 1]``.
     """
     del execution
     _validate_finite("confidence_level", confidence_level, positive=True)
@@ -500,7 +539,10 @@ def retention_uncertainty(
         assert outcome.influence is not None and outcome.estimate is not None
         variance = float(np.asarray(jnp.mean(outcome.influence * outcome.influence)))
         standard_error = float(np.sqrt(variance / n_rows))
-        quantile = NormalDist().inv_cdf(0.5 + 0.5 * confidence_level)
+        # Evaluated from the tail: 1 - level is exact in floating point on
+        # the accepted range, while 0.5 + 0.5 * level rounds to one for a
+        # level within an ulp of one.
+        quantile = -NormalDist().inv_cdf(0.5 * (1.0 - confidence_level))
         interval = (
             outcome.estimate - quantile * standard_error,
             outcome.estimate + quantile * standard_error,

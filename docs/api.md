@@ -361,24 +361,36 @@ retention_uncertainty(
 
 A retention number is a point estimate. `retention_uncertainty` attaches a standard error and a
 two-sided Wald interval to the geometric-mean retention of a *frozen* rule evaluated on rows it never
-saw: independent, equally weighted draws whose `scores` are the model's true scores and whose
-`assignments` come from `predict_scores`. The estimate is the same uncentred plug-in that
-`information_report` reports on a full-rank sample; the standard error is the influence-function
-estimate of the audited central limit theorem for that plug-in. The interval covers the sampling
-variability of the evaluation draw under that theorem's conditions — positive cell probabilities,
-finite fourth moments, positive definite full and between-cell moments, positive asymptotic variance —
-and none of them can be read off an array: a positive empirical rank does not certify a population
-eigenvalue floor, and heavy-tailed scores undercover materially at moderate sample sizes. The
-endpoints are never clipped, so an interval can extend below zero or above one.
+saw: independent, equally weighted draws from the reference law at which the model's true scores are
+evaluated, whose `scores` are those true scores and whose `assignments` come from `predict_scores`.
+The estimate is the same uncentred plug-in that `information_report` reports on a full-rank sample;
+the standard error is the influence-function estimate of the audited central limit theorem for that
+plug-in. The interval covers the sampling variability of the evaluation draw under that theorem's
+conditions — positive cell probabilities, finite fourth moments, positive definite full and
+between-cell moments, positive asymptotic variance — and none of them can be read off an array: a
+positive empirical rank does not certify a population eigenvalue floor. The theorem is asymptotic. An
+infinite fourth moment puts a law outside it, and heavy tails, including laws that satisfy every
+condition, undercover materially at moderate sample sizes. The reading of the number as the model's
+Fisher retention needs the evaluation law to be the reference law, where the true score has mean
+zero; on rows from another law the same arithmetic estimates an uncentred determinant ratio, not that
+retention. The endpoints are never clipped, so an interval can extend below zero or above one.
 
-Read `status` before the numbers. `ok` gives all three. `singular_full_information` means the sample
-lost one of the supplied score directions, so the retention of all of them is undefined; nothing is
-reported rather than a silently projected surrogate, which is what `information_report` would show.
-`singular_retained_information` means the between-cell moment is numerically rank deficient: the
-estimate is zero, and the Wald theory does not apply because the plug-in is then biased upward at a
-rate slower than \(n^{-1/2}\). `degenerate_variance` means the influence values cancelled to
-rounding noise, so the standard error is zero and the interval is withheld; this is a numerical
-guard, not a finding that the population variance is zero.
+Read `status` before the numbers. `ok` gives all three. `insufficient_cells` means the rule declares
+at most \(d\) cells, empty ones included: the rank ceiling makes the population retention zero at the
+reference law whatever the sample rank, the plug-in is the upward-biased endpoint estimator, and
+nothing is reported. `singular_full_information` means the sample lost one of the supplied score
+directions, so the retention of all of them is undefined; nothing is reported rather than a silently
+projected surrogate, which is what `information_report` would show. `singular_retained_information`
+means the between-cell moment is numerically rank deficient on this sample, which the theorem
+excludes: the estimate is the plug-in's own value, zero, and the Wald theory does not apply. The
+verdict is about the sample and does not identify the population rank; at population rank
+\(r < d\) the plug-in is biased upward at order \(n^{-(d-r)/d}\). `degenerate_variance` means the
+influence values cancelled to rounding noise, so the standard error is zero and the interval is
+withheld. The test is \(\mathrm{rms}(B) \le \tau\,\mathrm{rms}(M)\), with \(B_i\) the bracket of the
+influence value, \(M_i\) the sum of the magnitudes of its three terms, and \(\tau\) the dtype's rank
+threshold, \(10^{-10}\) in float64 and \(10^{-5}\) in float32; `rank_rtol` moves the two rank guards,
+not this threshold. It is a numerical guard: it absorbs a perturbation of a zero-variance law smaller
+than \(\tau\), and it is not a finding that the population variance is zero.
 
 Scores from a classifier or any other estimator are not true scores. Their reported retention
 carries a separate proxy bias that this error bar never measures; the score-error budget bounds that

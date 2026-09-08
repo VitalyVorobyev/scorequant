@@ -31,6 +31,14 @@
     "title": "Singleton refinement bounds unfinished D assignments",
     "summary": "Singleton refinement supplies an upper bound for branch-and-bound certification on small finite problems."
   },
+  "D-CLOSURE-DUPLICATE-INHERITANCE": {
+    "title": "Repeated events inherit their group's label",
+    "summary": "Rows sharing a score are grouped before fitting; the compiled rule gives each of them the label its group received."
+  },
+  "D-COMPILE-TOLERANCE-GUARANTEE": {
+    "title": "A solver that stops early promises less",
+    "summary": "Stopping at a positive tolerance weakens the compile guarantee to one stamped with that tolerance, so ties are broken by convention rather than ruled out."
+  },
   "D-EXCHANGE-IMPLIES-VORONOI": {
     "title": "Stable D partitions have a geometric rule",
     "summary": "Under the theorem’s hypotheses, exact exchange stability forces strict self-consistent nearest-centre geometry."

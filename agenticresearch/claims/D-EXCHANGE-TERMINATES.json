@@ -17,5 +17,18 @@
   "proof_location": {
     "file": "KNOWN_RESULTS/04-d-optimality.md",
     "section": "D8. Monotone exact one-point exchange"
+  },
+  "assumptions": [
+    "finite labeling set",
+    "only exact positive gains accepted, at zero tolerance",
+    "one-point relocations preserving nonempty source cells",
+    "the determinant objective det I, matching ExchangeStable's convention; the log det run is a different run"
+  ],
+  "formal_proof": {
+    "system": "Lean 4.33.1 + Mathlib 4.33.1",
+    "spec": "formal/ScoreQuantFormal/TerminationSpec.lean",
+    "file": "formal/ScoreQuantFormal/Termination.lean",
+    "declaration": "ScoreQuantFormal.d_exchange_terminates",
+    "statement_audit": "AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-002.md"
   }
 }

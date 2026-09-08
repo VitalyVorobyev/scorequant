@@ -7,7 +7,7 @@
   "level": "empirical_inductive_quantizer",
   "status": "project_proved",
   "publication_status": "internal",
-  "statement": "Every exact zero-tolerance one-point-exchange-stable positive-definite finite D solution on merged distinct positive-weight score atoms compiles to q_hat(s)=argmin_b (s-\u03bc_b)^T I_hat^{-1}(s-\u03bc_b), reproducing all merged-atom training labels strictly; original duplicate rows inherit the merged label. Positive solver tolerance gives only a tolerance-stamped boundary-disagreement guarantee.",
+  "statement": "For distinct positive-weight score atoms obtained by merging duplicate rows, positive-definite retained information, exactly K nonempty cells, and zero-tolerance exact one-point exchange stability, a nearest-centroid rule q_hat(s)=argmin_b (s-mu_b)^T I_hat^{-1}(s-mu_b) exists in positive score dimension, and every such rule reproduces all merged-atom training labels strictly, without a tie breaker.",
   "dependencies": [
     "D-EXCHANGE-IMPLIES-VORONOI"
   ],
@@ -17,6 +17,26 @@
   },
   "role": "bridge from finite assignment to deployable classifier",
   "implies": [
+    "D-CLOSURE-DUPLICATE-INHERITANCE",
     "OPEN-D-EXCHANGE-CONSISTENCY"
-  ]
+  ],
+  "assumptions": [
+    "strictly positive atom weights",
+    "coincident score rows merged into distinct atoms",
+    "I_q positive definite",
+    "exactly K nonempty cells",
+    "no relocation constraints beyond preserving nonempty cells",
+    "exact zero-gain-tolerance exchange stability",
+    "positive score dimension, for the existence half only"
+  ],
+  "boundary_counterexamples": [
+    "CE-D-UNMERGED-DUPLICATES-001"
+  ],
+  "formal_proof": {
+    "system": "Lean 4.33.1 + Mathlib 4.33.1",
+    "spec": "formal/ScoreQuantFormal/ClosureSpec.lean",
+    "file": "formal/ScoreQuantFormal/Closure.lean",
+    "declaration": "ScoreQuantFormal.closure_reproduces_labels",
+    "statement_audit": "AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-002.md"
+  }
 }

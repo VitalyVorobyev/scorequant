@@ -1,0 +1,31 @@
+{
+  "id": "D-CLOSURE-DUPLICATE-INHERITANCE",
+  "title": "Duplicate rows inherit the merged atom's compiled label",
+  "criterion": [
+    "D"
+  ],
+  "level": "empirical_inductive_quantizer",
+  "status": "project_proved",
+  "publication_status": "internal",
+  "statement": "Under the hypotheses of D-FINITE-INDUCTIVE-CLOSURE on the merged atoms, a nearest-centroid rule built from the unmerged sample and its inherited labeling assigns every original duplicate row the label its atom carries.",
+  "assumptions": [
+    "the merge sends each original row to an atom carrying its score",
+    "each atom's weight is the total weight of the rows merging into it",
+    "the hypotheses of D-FINITE-INDUCTIVE-CLOSURE hold on the merged atoms"
+  ],
+  "dependencies": [
+    "D-FINITE-INDUCTIVE-CLOSURE"
+  ],
+  "proof_location": {
+    "file": "KNOWN_RESULTS/04-d-optimality.md",
+    "section": "D6. Exact finite inductive closure / compiler"
+  },
+  "role": "deployment of the compiled rule on unmerged data",
+  "formal_proof": {
+    "system": "Lean 4.33.1 + Mathlib 4.33.1",
+    "spec": "formal/ScoreQuantFormal/ClosureSpec.lean",
+    "file": "formal/ScoreQuantFormal/Closure.lean",
+    "declaration": "ScoreQuantFormal.closure_duplicates",
+    "statement_audit": "AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-002.md"
+  }
+}

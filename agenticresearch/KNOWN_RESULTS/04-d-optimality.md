@@ -233,9 +233,10 @@ Exact-rational regression: `py/audit_d_exchange_voronoi.py`.
 
 ## D6. Exact finite inductive closure / compiler — [PROJECT-PROVED]
 
-**Claims:** D-FINITE-INDUCTIVE-CLOSURE
+**Claims:** D-FINITE-INDUCTIVE-CLOSURE, D-CLOSURE-DUPLICATE-INHERITANCE, D-COMPILE-TOLERANCE-GUARANTEE
 
-Every one-point-exchange-stable positive-definite finite D solution can be compiled to
+Every one-point-exchange-stable positive-definite finite D solution with exactly
+\(K\) nonempty cells can be compiled to
 
 \[
 \boxed{
@@ -246,11 +247,47 @@ Every one-point-exchange-stable positive-definite finite D solution can be compi
 
 For merged distinct positive-weight score atoms at exact zero-tolerance
 stability, this predictor reproduces **all training labels exactly**, without a
-tie breaker. Original duplicate rows inherit the merged atom's label. Therefore
-an exact terminal D exchange solution is not merely transductive: it has a
-canonical deployable extension. A finite numerical solver using a positive gain
-tolerance has the weaker, explicitly tolerance-stamped compiler guarantee
-documented by `GeometryReport`.
+tie breaker. Therefore an exact terminal D exchange solution is not merely
+transductive: it has a canonical deployable extension.
+
+The nonempty-cell hypothesis is load-bearing, not bookkeeping. An empty cell has
+zero mass, hence the degenerate centroid \(0\), and a training row at the origin
+is exactly as near to it as to its own centroid: at \(d=1\), \(N=2\), \(K=3\)
+with scores \((-2,0)\), unit weights and \(z=(0,1)\), the configuration is
+stable, positive definite and has injective scores, yet row 1 ties between its own
+cell and the empty one, so a conforming rule may return the empty cell. The
+statement of `D-FINITE-INDUCTIVE-CLOSURE` was amended on 7 September 2026 to
+carry this hypothesis, which D5's node already had.
+
+Original duplicate rows inherit the merged atom's label
+(`D-CLOSURE-DUPLICATE-INHERITANCE`): merging preserves cell masses, cell sums,
+centroids and the retained information, so a rule built from the *unmerged* data
+is the same rule. That direction is the content — the unmerged scores are not
+distinct, so D5 does not apply to them directly.
+
+A finite numerical solver using a positive gain tolerance has the weaker,
+explicitly tolerance-stamped compiler guarantee documented by `GeometryReport`
+(`D-COMPILE-TOLERANCE-GUARANTEE`). The derivation is D5's quantitative bound read
+backwards: a nearest-centroid disagreement from a non-singleton source has exact
+gain at least \(\log(1+\alpha\beta q_\delta^2/4)>0\), so a solver that
+accepted no move of gain above \(\varepsilon\) leaves only disagreements whose
+guaranteed gain is at most \(\varepsilon\). Strictness is gone with it, which is
+why prediction keeps a deterministic tie-break. That regime is where every real
+solver lives, and it is not formalized.
+
+**Machine-checked.** The exact zero-tolerance statements are
+`ScoreQuantFormal.closure_reproduces_labels` and
+`ScoreQuantFormal.closure_duplicates`, resting on
+`ScoreQuantFormal.merge_invariance` (`formal/ScoreQuantFormal/Merge.lean`) for the
+preservation of masses, sums, centroids and information under merging — which is
+the proof mechanism, carried by no claim node of its own. All in
+`formal/ScoreQuantFormal/Closure.lean`,
+frozen in `ClosureSpec.lean` and `MergeSpec.lean` and audited in
+`AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-001.md`. Not covered: the
+positive-tolerance guarantee; D5's second duplicate branch, since
+`ClosureDuplicateConclusion` *assumes* the inherited labeling rather than
+deriving that labels are constant on a duplicate class; and any behaviour of the
+rule away from the training scores.
 
 ## D7. Every finite global D optimum is geometrically realizable — [PROJECT-PROVED COROLLARY]
 
@@ -277,12 +314,22 @@ Accepting only exact positive D gains gives:
 - a terminal one-point exchange-stable solution;
 - by D5/D6, a canonical deployable D quantizer.
 
-The strict-ascent and no-infinite-run core is machine-checked as
-`ScoreQuantFormal.no_infinite_strict_ascent`, and the existence of a terminal
-exchange-stable state as `ScoreQuantFormal.exists_exchangeStable`, both in
-`formal/ScoreQuantFormal/Corollaries.lean`. The claim's "terminates at a
-one-point exchange-stable state" phrasing is not itself a frozen statement, so
-this claim carries no `formal_proof` field.
+**Machine-checked.** All three clauses are now frozen in
+`formal/ScoreQuantFormal/TerminationSpec.lean` and discharged by
+`ScoreQuantFormal.d_exchange_terminates`, audited in
+`AUDITS/FORMALIZATION-D-EXCHANGE-TERMINATES-001.md`. The argument is generic in
+the objective, so `ScoreQuantFormal.terminates`, `ascent_strict` and `no_cycle`
+also cover the termination sentences of DS3 and A1 — but neither \(F_s\) nor
+\(F_A\) exists as a Lean object in that tree, so those two claims carry no
+`formal_proof` and this note is their record.
+
+Two cautions. The \(\det\) and \(\log\det\) runs are different runs: a
+\(\det\)-stable state can still admit a \(\log\det\)-improving move, so both
+instances are stated and proved separately. And nothing formal chains a terminal
+stable state back to D5 — the fifth bullet above is prose, not a machine-checked
+consequence. `ScoreQuantFormal.no_infinite_strict_ascent` and
+`exists_exchangeStable` in `Corollaries.lean` remain as the earlier, weaker
+fragments.
 
 ## D9. Adaptive Mahalanobis Lloyd is not monotone — [COUNTEREXAMPLE]
 

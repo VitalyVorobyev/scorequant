@@ -372,6 +372,25 @@
       ]
     },
     {
+      "module": "Merge",
+      "result": "Merging repeated rows changes none of the statistics the rule is built from"
+    },
+    {
+      "module": "Closure",
+      "result": "A stable assignment compiles into a nearest-centre rule that reproduces every training label",
+      "claims": [
+        "D-FINITE-INDUCTIVE-CLOSURE",
+        "D-CLOSURE-DUPLICATE-INHERITANCE"
+      ]
+    },
+    {
+      "module": "Termination",
+      "result": "Accepting only exact gains ascends, cannot cycle, and stops at a stable assignment",
+      "claims": [
+        "D-EXCHANGE-TERMINATES"
+      ]
+    },
+    {
       "module": "Corollaries",
       "result": "Realizability of global optima and termination of exchange, in part",
       "claims": [
@@ -388,7 +407,8 @@
   "formalOutside": [
     "Profiled Ds-optimality, whose finite geometry fails and whose certificates are brackets.",
     "Population measure theory and every sample-to-population limit.",
-    "Realizability and termination are covered only in part, so their claims carry no machine-checked mark.",
+    "A solver stopping at a positive tolerance: the exact statements assume no gain is left on the table.",
+    "Geometric realizability is covered only in part, so its claim carries no machine-checked mark.",
     "The Python and JAX implementation: a Lean build certifies a statement, never the code that computes it."
   ],
   "axioms": [

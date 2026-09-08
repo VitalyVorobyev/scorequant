@@ -15,6 +15,13 @@ G_A=I^{-2}.
 **Claims:** A-EXACT-MOVE-ORACLE, A-EXCHANGE-TERMINATES
 
 The universal rank-two \(\Delta I\) plus Woodbury gives an exact \(O(d^2)\)-type A move oracle; exact positive-gain exchange is monotone and finitely terminating.
+The termination sentence is machine-checked generically, as
+`ScoreQuantFormal.terminates` with `ascent_strict` and `no_cycle`, in
+`formal/ScoreQuantFormal/Termination.lean`: the argument uses only that the
+objective is real-valued and the labeling set finite. `A-EXCHANGE-TERMINATES` carries no
+`formal_proof` all the same, because \(F_A\) exists as no Lean object in that tree
+and no frozen conclusion instantiates it — see
+`AUDITS/FORMALIZATION-D-EXCHANGE-TERMINATES-001.md`.
 
 ## A2. D-style finite geometry theorem fails — [COUNTEREXAMPLE]
 

@@ -1138,7 +1138,9 @@
         },
         {
           "claims": [
-            "D-FINITE-INDUCTIVE-CLOSURE"
+            "D-FINITE-INDUCTIVE-CLOSURE",
+            "D-CLOSURE-DUPLICATE-INHERITANCE",
+            "D-COMPILE-TOLERANCE-GUARANTEE"
           ],
           "label": "D6",
           "title": "Exact finite inductive closure / compiler"
@@ -1637,7 +1639,7 @@
       "proof": {
         "file": "KNOWN_RESULTS/07-a-optimality.md",
         "label": "A1",
-        "markdown": "The universal rank-two $\\Delta I$ plus Woodbury gives an exact $O(d^2)$-type A move oracle; exact positive-gain exchange is monotone and finitely terminating.",
+        "markdown": "The universal rank-two $\\Delta I$ plus Woodbury gives an exact $O(d^2)$-type A move oracle; exact positive-gain exchange is monotone and finitely terminating.\nThe termination sentence is machine-checked generically, as\n`ScoreQuantFormal.terminates` with `ascent_strict` and `no_cycle`, in\n`formal/ScoreQuantFormal/Termination.lean`: the argument uses only that the\nobjective is real-valued and the labeling set finite. `A-EXCHANGE-TERMINATES` carries no\n`formal_proof` all the same, because $F_A$ exists as no Lean object in that tree\nand no frozen conclusion instantiates it — see\n`AUDITS/FORMALIZATION-D-EXCHANGE-TERMINATES-001.md`.",
         "title": "Exact finite move oracle",
         "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/KNOWN_RESULTS/07-a-optimality.md"
       },
@@ -1683,7 +1685,7 @@
       "proof": {
         "file": "KNOWN_RESULTS/07-a-optimality.md",
         "label": "A1",
-        "markdown": "The universal rank-two $\\Delta I$ plus Woodbury gives an exact $O(d^2)$-type A move oracle; exact positive-gain exchange is monotone and finitely terminating.",
+        "markdown": "The universal rank-two $\\Delta I$ plus Woodbury gives an exact $O(d^2)$-type A move oracle; exact positive-gain exchange is monotone and finitely terminating.\nThe termination sentence is machine-checked generically, as\n`ScoreQuantFormal.terminates` with `ascent_strict` and `no_cycle`, in\n`formal/ScoreQuantFormal/Termination.lean`: the argument uses only that the\nobjective is real-valued and the labeling set finite. `A-EXCHANGE-TERMINATES` carries no\n`formal_proof` all the same, because $F_A$ exists as no Lean object in that tree\nand no frozen conclusion instantiates it — see\n`AUDITS/FORMALIZATION-D-EXCHANGE-TERMINATES-001.md`.",
         "title": "Exact finite move oracle",
         "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/KNOWN_RESULTS/07-a-optimality.md"
       },
@@ -2526,6 +2528,122 @@
       "theme": null,
       "title": "Singleton-refinement branch-and-bound upper bound for D"
     },
+    "D-CLOSURE-DUPLICATE-INHERITANCE": {
+      "artifact": null,
+      "assumptions": [
+        "the merge sends each original row to an atom carrying its score",
+        "each atom's weight is the total weight of the rows merging into it",
+        "the hypotheses of D-FINITE-INDUCTIVE-CLOSURE hold on the merged atoms"
+      ],
+      "audit": null,
+      "chapter": {
+        "file": "KNOWN_RESULTS/04-d-optimality.md",
+        "label": "D-optimality",
+        "section": "D6",
+        "slug": "d-optimality"
+      },
+      "criterion": [
+        "D"
+      ],
+      "editorial": {
+        "summary": "Rows sharing a score are grouped before fitting; the compiled rule gives each of them the label its group received.",
+        "title": "Repeated events inherit their group's label"
+      },
+      "enforcedBy": [],
+      "id": "D-CLOSURE-DUPLICATE-INHERITANCE",
+      "implementedBy": [],
+      "kind": "result",
+      "level": "empirical_inductive_quantizer",
+      "literature": [],
+      "machineChecked": {
+        "declaration": "ScoreQuantFormal.closure_duplicates",
+        "proof": {
+          "path": "formal/ScoreQuantFormal/Closure.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/Closure.lean"
+        },
+        "spec": {
+          "path": "formal/ScoreQuantFormal/ClosureSpec.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/ClosureSpec.lean"
+        },
+        "statementAudit": {
+          "file": "AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-002.md",
+          "kind": "formalization",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-002.md",
+          "verdict": "fixes verified with residue"
+        },
+        "system": "Lean 4.33.1 + Mathlib 4.33.1"
+      },
+      "note": null,
+      "parked": false,
+      "priorArt": [],
+      "proof": {
+        "file": "KNOWN_RESULTS/04-d-optimality.md",
+        "label": "D6",
+        "markdown": "Every one-point-exchange-stable positive-definite finite D solution with exactly\n$K$ nonempty cells can be compiled to\n\n$$\n\\boxed{\n\\hat q_D(s)=\n\\arg\\min_b(s-\\mu_b)^\\top\\widehat I^{-1}(s-\\mu_b).\n}\n$$\n\nFor merged distinct positive-weight score atoms at exact zero-tolerance\nstability, this predictor reproduces **all training labels exactly**, without a\ntie breaker. Therefore an exact terminal D exchange solution is not merely\ntransductive: it has a canonical deployable extension.\n\nThe nonempty-cell hypothesis is load-bearing, not bookkeeping. An empty cell has\nzero mass, hence the degenerate centroid $0$, and a training row at the origin\nis exactly as near to it as to its own centroid: at $d=1$, $N=2$, $K=3$\nwith scores $(-2,0)$, unit weights and $z=(0,1)$, the configuration is\nstable, positive definite and has injective scores, yet row 1 ties between its own\ncell and the empty one, so a conforming rule may return the empty cell. The\nstatement of `D-FINITE-INDUCTIVE-CLOSURE` was amended on 7 September 2026 to\ncarry this hypothesis, which D5's node already had.\n\nOriginal duplicate rows inherit the merged atom's label\n(`D-CLOSURE-DUPLICATE-INHERITANCE`): merging preserves cell masses, cell sums,\ncentroids and the retained information, so a rule built from the *unmerged* data\nis the same rule. That direction is the content — the unmerged scores are not\ndistinct, so D5 does not apply to them directly.\n\nA finite numerical solver using a positive gain tolerance has the weaker,\nexplicitly tolerance-stamped compiler guarantee documented by `GeometryReport`\n(`D-COMPILE-TOLERANCE-GUARANTEE`). The derivation is D5's quantitative bound read\nbackwards: a nearest-centroid disagreement from a non-singleton source has exact\ngain at least $\\log(1+\\alpha\\beta q_\\delta^2/4)>0$, so a solver that\naccepted no move of gain above $\\varepsilon$ leaves only disagreements whose\nguaranteed gain is at most $\\varepsilon$. Strictness is gone with it, which is\nwhy prediction keeps a deterministic tie-break. That regime is where every real\nsolver lives, and it is not formalized.\n\n**Machine-checked.** The exact zero-tolerance statements are\n`ScoreQuantFormal.closure_reproduces_labels` and\n`ScoreQuantFormal.closure_duplicates`, resting on\n`ScoreQuantFormal.merge_invariance` (`formal/ScoreQuantFormal/Merge.lean`) for the\npreservation of masses, sums, centroids and information under merging — which is\nthe proof mechanism, carried by no claim node of its own. All in\n`formal/ScoreQuantFormal/Closure.lean`,\nfrozen in `ClosureSpec.lean` and `MergeSpec.lean` and audited in\n`AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-001.md`. Not covered: the\npositive-tolerance guarantee; D5's second duplicate branch, since\n`ClosureDuplicateConclusion` *assumes* the inherited labeling rather than\nderiving that labels are constant on a duplicate class; and any behaviour of the\nrule away from the training scores.",
+        "title": "Exact finite inductive closure / compiler",
+        "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/KNOWN_RESULTS/04-d-optimality.md"
+      },
+      "provenance": "proved",
+      "publicationStatus": "internal",
+      "role": "deployment of the compiled rule on unmerged data",
+      "scope": null,
+      "searchStatus": null,
+      "slug": "d-closure-duplicate-inheritance",
+      "statement": "Under the hypotheses of D-FINITE-INDUCTIVE-CLOSURE on the merged atoms, a nearest-centroid rule built from the unmerged sample and its inherited labeling assigns every original duplicate row the label its atom carries.",
+      "status": "project_proved",
+      "strip": "d",
+      "theme": null,
+      "title": "Duplicate rows inherit the merged atom's compiled label"
+    },
+    "D-COMPILE-TOLERANCE-GUARANTEE": {
+      "artifact": null,
+      "assumptions": [
+        "positive gain tolerance",
+        "the hypotheses of D-FINITE-INDUCTIVE-CLOSURE otherwise"
+      ],
+      "audit": null,
+      "chapter": {
+        "file": "KNOWN_RESULTS/04-d-optimality.md",
+        "label": "D-optimality",
+        "section": "D6",
+        "slug": "d-optimality"
+      },
+      "criterion": [
+        "D"
+      ],
+      "editorial": {
+        "summary": "Stopping at a positive tolerance weakens the compile guarantee to one stamped with that tolerance, so ties are broken by convention rather than ruled out.",
+        "title": "A solver that stops early promises less"
+      },
+      "enforcedBy": [],
+      "id": "D-COMPILE-TOLERANCE-GUARANTEE",
+      "implementedBy": [],
+      "kind": "result",
+      "level": "empirical_inductive_quantizer",
+      "literature": [],
+      "machineChecked": null,
+      "note": null,
+      "parked": false,
+      "priorArt": [],
+      "proof": {
+        "file": "KNOWN_RESULTS/04-d-optimality.md",
+        "label": "D6",
+        "markdown": "Every one-point-exchange-stable positive-definite finite D solution with exactly\n$K$ nonempty cells can be compiled to\n\n$$\n\\boxed{\n\\hat q_D(s)=\n\\arg\\min_b(s-\\mu_b)^\\top\\widehat I^{-1}(s-\\mu_b).\n}\n$$\n\nFor merged distinct positive-weight score atoms at exact zero-tolerance\nstability, this predictor reproduces **all training labels exactly**, without a\ntie breaker. Therefore an exact terminal D exchange solution is not merely\ntransductive: it has a canonical deployable extension.\n\nThe nonempty-cell hypothesis is load-bearing, not bookkeeping. An empty cell has\nzero mass, hence the degenerate centroid $0$, and a training row at the origin\nis exactly as near to it as to its own centroid: at $d=1$, $N=2$, $K=3$\nwith scores $(-2,0)$, unit weights and $z=(0,1)$, the configuration is\nstable, positive definite and has injective scores, yet row 1 ties between its own\ncell and the empty one, so a conforming rule may return the empty cell. The\nstatement of `D-FINITE-INDUCTIVE-CLOSURE` was amended on 7 September 2026 to\ncarry this hypothesis, which D5's node already had.\n\nOriginal duplicate rows inherit the merged atom's label\n(`D-CLOSURE-DUPLICATE-INHERITANCE`): merging preserves cell masses, cell sums,\ncentroids and the retained information, so a rule built from the *unmerged* data\nis the same rule. That direction is the content — the unmerged scores are not\ndistinct, so D5 does not apply to them directly.\n\nA finite numerical solver using a positive gain tolerance has the weaker,\nexplicitly tolerance-stamped compiler guarantee documented by `GeometryReport`\n(`D-COMPILE-TOLERANCE-GUARANTEE`). The derivation is D5's quantitative bound read\nbackwards: a nearest-centroid disagreement from a non-singleton source has exact\ngain at least $\\log(1+\\alpha\\beta q_\\delta^2/4)>0$, so a solver that\naccepted no move of gain above $\\varepsilon$ leaves only disagreements whose\nguaranteed gain is at most $\\varepsilon$. Strictness is gone with it, which is\nwhy prediction keeps a deterministic tie-break. That regime is where every real\nsolver lives, and it is not formalized.\n\n**Machine-checked.** The exact zero-tolerance statements are\n`ScoreQuantFormal.closure_reproduces_labels` and\n`ScoreQuantFormal.closure_duplicates`, resting on\n`ScoreQuantFormal.merge_invariance` (`formal/ScoreQuantFormal/Merge.lean`) for the\npreservation of masses, sums, centroids and information under merging — which is\nthe proof mechanism, carried by no claim node of its own. All in\n`formal/ScoreQuantFormal/Closure.lean`,\nfrozen in `ClosureSpec.lean` and `MergeSpec.lean` and audited in\n`AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-001.md`. Not covered: the\npositive-tolerance guarantee; D5's second duplicate branch, since\n`ClosureDuplicateConclusion` *assumes* the inherited labeling rather than\nderiving that labels are constant on a duplicate class; and any behaviour of the\nrule away from the training scores.",
+        "title": "Exact finite inductive closure / compiler",
+        "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/KNOWN_RESULTS/04-d-optimality.md"
+      },
+      "provenance": "proved",
+      "publicationStatus": "internal",
+      "role": "what a real solver can actually claim",
+      "scope": null,
+      "searchStatus": null,
+      "slug": "d-compile-tolerance-guarantee",
+      "statement": "A finite D solver that stops at a positive gain tolerance yields only a tolerance-stamped guarantee: the compiled nearest-centroid rule reproduces every training label except on rows whose relocation gain is at most that tolerance. Strictness of the argmin is not available in this regime, so prediction retains a deterministic tie-break and the guarantee is stamped with the tolerance that produced it.",
+      "status": "project_proved",
+      "strip": "d",
+      "theme": null,
+      "title": "Positive solver tolerance gives only a tolerance-stamped compile guarantee"
+    },
     "D-EXCHANGE-IMPLIES-VORONOI": {
       "artifact": null,
       "assumptions": [
@@ -2702,7 +2820,12 @@
     },
     "D-EXCHANGE-TERMINATES": {
       "artifact": null,
-      "assumptions": [],
+      "assumptions": [
+        "finite labeling set",
+        "only exact positive gains accepted, at zero tolerance",
+        "one-point relocations preserving nonempty source cells",
+        "the determinant objective det I, matching ExchangeStable's convention; the log det run is a different run"
+      ],
       "audit": null,
       "chapter": {
         "file": "KNOWN_RESULTS/04-d-optimality.md",
@@ -2725,14 +2848,31 @@
       "kind": "result",
       "level": "finite_assignment",
       "literature": [],
-      "machineChecked": null,
+      "machineChecked": {
+        "declaration": "ScoreQuantFormal.d_exchange_terminates",
+        "proof": {
+          "path": "formal/ScoreQuantFormal/Termination.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/Termination.lean"
+        },
+        "spec": {
+          "path": "formal/ScoreQuantFormal/TerminationSpec.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/TerminationSpec.lean"
+        },
+        "statementAudit": {
+          "file": "AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-002.md",
+          "kind": "formalization",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-002.md",
+          "verdict": "fixes verified with residue"
+        },
+        "system": "Lean 4.33.1 + Mathlib 4.33.1"
+      },
       "note": null,
       "parked": false,
       "priorArt": [],
       "proof": {
         "file": "KNOWN_RESULTS/04-d-optimality.md",
         "label": "D8",
-        "markdown": "Accepting only exact positive D gains gives:\n\n- strict objective ascent;\n- no cycles;\n- finite termination because the labeling set is finite;\n- a terminal one-point exchange-stable solution;\n- by D5/D6, a canonical deployable D quantizer.\n\nThe strict-ascent and no-infinite-run core is machine-checked as\n`ScoreQuantFormal.no_infinite_strict_ascent`, and the existence of a terminal\nexchange-stable state as `ScoreQuantFormal.exists_exchangeStable`, both in\n`formal/ScoreQuantFormal/Corollaries.lean`. The claim's \"terminates at a\none-point exchange-stable state\" phrasing is not itself a frozen statement, so\nthis claim carries no `formal_proof` field.",
+        "markdown": "Accepting only exact positive D gains gives:\n\n- strict objective ascent;\n- no cycles;\n- finite termination because the labeling set is finite;\n- a terminal one-point exchange-stable solution;\n- by D5/D6, a canonical deployable D quantizer.\n\n**Machine-checked.** All three clauses are now frozen in\n`formal/ScoreQuantFormal/TerminationSpec.lean` and discharged by\n`ScoreQuantFormal.d_exchange_terminates`, audited in\n`AUDITS/FORMALIZATION-D-EXCHANGE-TERMINATES-001.md`. The argument is generic in\nthe objective, so `ScoreQuantFormal.terminates`, `ascent_strict` and `no_cycle`\nalso cover the termination sentences of DS3 and A1 — but neither $F_s$ nor\n$F_A$ exists as a Lean object in that tree, so those two claims carry no\n`formal_proof` and this note is their record.\n\nTwo cautions. The $\\det$ and $\\log\\det$ runs are different runs: a\n$\\det$-stable state can still admit a $\\log\\det$-improving move, so both\ninstances are stated and proved separately. And nothing formal chains a terminal\nstable state back to D5 — the fifth bullet above is prose, not a machine-checked\nconsequence. `ScoreQuantFormal.no_infinite_strict_ascent` and\n`exists_exchangeStable` in `Corollaries.lean` remain as the earlier, weaker\nfragments.",
         "title": "Monotone exact one-point exchange",
         "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/KNOWN_RESULTS/04-d-optimality.md"
       },
@@ -2813,7 +2953,15 @@
     },
     "D-FINITE-INDUCTIVE-CLOSURE": {
       "artifact": null,
-      "assumptions": [],
+      "assumptions": [
+        "strictly positive atom weights",
+        "coincident score rows merged into distinct atoms",
+        "I_q positive definite",
+        "exactly K nonempty cells",
+        "no relocation constraints beyond preserving nonempty cells",
+        "exact zero-gain-tolerance exchange stability",
+        "positive score dimension, for the existence half only"
+      ],
       "audit": null,
       "chapter": {
         "file": "KNOWN_RESULTS/04-d-optimality.md",
@@ -2836,14 +2984,31 @@
       "kind": "result",
       "level": "empirical_inductive_quantizer",
       "literature": [],
-      "machineChecked": null,
+      "machineChecked": {
+        "declaration": "ScoreQuantFormal.closure_reproduces_labels",
+        "proof": {
+          "path": "formal/ScoreQuantFormal/Closure.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/Closure.lean"
+        },
+        "spec": {
+          "path": "formal/ScoreQuantFormal/ClosureSpec.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/ClosureSpec.lean"
+        },
+        "statementAudit": {
+          "file": "AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-002.md",
+          "kind": "formalization",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-002.md",
+          "verdict": "fixes verified with residue"
+        },
+        "system": "Lean 4.33.1 + Mathlib 4.33.1"
+      },
       "note": "Because a stable terminal state is a Voronoi partition, it compiles: the nearest-centre rule built from the terminal centres and metric reproduces every training label. Duplicate rows inherit the label of the merged atom they belong to.\n\nThis is the bridge from asking which labels a fixed sample of observations should get to asking which rule should label an observation not yet seen. It is bookkeeping rather than a second fit: no new optimization runs, and the resulting rule is not an approximation of the partition, it is the partition.\n\nThis follows from `D-EXCHANGE-IMPLIES-VORONOI` by a routine argument. It also carries a weakening the theorem statement itself does not: a real solver stops at a positive gain tolerance, not at zero, so the deployable guarantee is self-consistency at that tolerance — the rule reproduces every training label except on rows whose relocation is worth no more than the tolerance the partition was certified at.",
       "parked": false,
       "priorArt": [],
       "proof": {
         "file": "KNOWN_RESULTS/04-d-optimality.md",
         "label": "D6",
-        "markdown": "Every one-point-exchange-stable positive-definite finite D solution can be compiled to\n\n$$\n\\boxed{\n\\hat q_D(s)=\n\\arg\\min_b(s-\\mu_b)^\\top\\widehat I^{-1}(s-\\mu_b).\n}\n$$\n\nFor merged distinct positive-weight score atoms at exact zero-tolerance\nstability, this predictor reproduces **all training labels exactly**, without a\ntie breaker. Original duplicate rows inherit the merged atom's label. Therefore\nan exact terminal D exchange solution is not merely transductive: it has a\ncanonical deployable extension. A finite numerical solver using a positive gain\ntolerance has the weaker, explicitly tolerance-stamped compiler guarantee\ndocumented by `GeometryReport`.",
+        "markdown": "Every one-point-exchange-stable positive-definite finite D solution with exactly\n$K$ nonempty cells can be compiled to\n\n$$\n\\boxed{\n\\hat q_D(s)=\n\\arg\\min_b(s-\\mu_b)^\\top\\widehat I^{-1}(s-\\mu_b).\n}\n$$\n\nFor merged distinct positive-weight score atoms at exact zero-tolerance\nstability, this predictor reproduces **all training labels exactly**, without a\ntie breaker. Therefore an exact terminal D exchange solution is not merely\ntransductive: it has a canonical deployable extension.\n\nThe nonempty-cell hypothesis is load-bearing, not bookkeeping. An empty cell has\nzero mass, hence the degenerate centroid $0$, and a training row at the origin\nis exactly as near to it as to its own centroid: at $d=1$, $N=2$, $K=3$\nwith scores $(-2,0)$, unit weights and $z=(0,1)$, the configuration is\nstable, positive definite and has injective scores, yet row 1 ties between its own\ncell and the empty one, so a conforming rule may return the empty cell. The\nstatement of `D-FINITE-INDUCTIVE-CLOSURE` was amended on 7 September 2026 to\ncarry this hypothesis, which D5's node already had.\n\nOriginal duplicate rows inherit the merged atom's label\n(`D-CLOSURE-DUPLICATE-INHERITANCE`): merging preserves cell masses, cell sums,\ncentroids and the retained information, so a rule built from the *unmerged* data\nis the same rule. That direction is the content — the unmerged scores are not\ndistinct, so D5 does not apply to them directly.\n\nA finite numerical solver using a positive gain tolerance has the weaker,\nexplicitly tolerance-stamped compiler guarantee documented by `GeometryReport`\n(`D-COMPILE-TOLERANCE-GUARANTEE`). The derivation is D5's quantitative bound read\nbackwards: a nearest-centroid disagreement from a non-singleton source has exact\ngain at least $\\log(1+\\alpha\\beta q_\\delta^2/4)>0$, so a solver that\naccepted no move of gain above $\\varepsilon$ leaves only disagreements whose\nguaranteed gain is at most $\\varepsilon$. Strictness is gone with it, which is\nwhy prediction keeps a deterministic tie-break. That regime is where every real\nsolver lives, and it is not formalized.\n\n**Machine-checked.** The exact zero-tolerance statements are\n`ScoreQuantFormal.closure_reproduces_labels` and\n`ScoreQuantFormal.closure_duplicates`, resting on\n`ScoreQuantFormal.merge_invariance` (`formal/ScoreQuantFormal/Merge.lean`) for the\npreservation of masses, sums, centroids and information under merging — which is\nthe proof mechanism, carried by no claim node of its own. All in\n`formal/ScoreQuantFormal/Closure.lean`,\nfrozen in `ClosureSpec.lean` and `MergeSpec.lean` and audited in\n`AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-001.md`. Not covered: the\npositive-tolerance guarantee; D5's second duplicate branch, since\n`ClosureDuplicateConclusion` *assumes* the inherited labeling rather than\nderiving that labels are constant on a duplicate class; and any behaviour of the\nrule away from the training scores.",
         "title": "Exact finite inductive closure / compiler",
         "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/KNOWN_RESULTS/04-d-optimality.md"
       },
@@ -2853,7 +3018,7 @@
       "scope": null,
       "searchStatus": null,
       "slug": "d-finite-inductive-closure",
-      "statement": "Every exact zero-tolerance one-point-exchange-stable positive-definite finite D solution on merged distinct positive-weight score atoms compiles to q_hat(s)=argmin_b (s-μ_b)^T I_hat^{-1}(s-μ_b), reproducing all merged-atom training labels strictly; original duplicate rows inherit the merged label. Positive solver tolerance gives only a tolerance-stamped boundary-disagreement guarantee.",
+      "statement": "For distinct positive-weight score atoms obtained by merging duplicate rows, positive-definite retained information, exactly K nonempty cells, and zero-tolerance exact one-point exchange stability, a nearest-centroid rule q_hat(s)=argmin_b (s-mu_b)^T I_hat^{-1}(s-mu_b) exists in positive score dimension, and every such rule reproduces all merged-atom training labels strictly, without a tie breaker.",
       "status": "project_proved",
       "strip": "d",
       "theme": null,
@@ -3674,7 +3839,7 @@
       "proof": {
         "file": "KNOWN_RESULTS/05a-ds-core.md",
         "label": "DS3",
-        "markdown": "The same rank-two full-information update applies. The exact profiled gain is\n\n$$\n\\boxed{\n\\Delta F_s\n=\n\\Delta\\log\\det I\n-\n\\Delta\\log\\det I_{\\lambda\\lambda},\n}\n$$\n\nwith each term evaluable by low-rank determinant algebra when blocks remain nonsingular. Exact positive-gain $D_s$ exchange is therefore monotone and finitely terminating on a finite sample.",
+        "markdown": "The same rank-two full-information update applies. The exact profiled gain is\n\n$$\n\\boxed{\n\\Delta F_s\n=\n\\Delta\\log\\det I\n-\n\\Delta\\log\\det I_{\\lambda\\lambda},\n}\n$$\n\nwith each term evaluable by low-rank determinant algebra when blocks remain nonsingular. Exact positive-gain $D_s$ exchange is therefore monotone and finitely terminating on a finite sample.\nThe termination sentence is machine-checked generically, as\n`ScoreQuantFormal.terminates` with `ascent_strict` and `no_cycle`, in\n`formal/ScoreQuantFormal/Termination.lean`: the argument uses only that the\nobjective is real-valued and the labeling set finite. `DS-EXCHANGE-TERMINATES` carries no\n`formal_proof` all the same, because $F_s$ exists as no Lean object in that tree\nand no frozen conclusion instantiates it — see\n`AUDITS/FORMALIZATION-D-EXCHANGE-TERMINATES-001.md`.",
         "title": "Exact finite one-point objective oracle",
         "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/KNOWN_RESULTS/05a-ds-core.md"
       },
@@ -3775,7 +3940,7 @@
       "proof": {
         "file": "KNOWN_RESULTS/05a-ds-core.md",
         "label": "DS3",
-        "markdown": "The same rank-two full-information update applies. The exact profiled gain is\n\n$$\n\\boxed{\n\\Delta F_s\n=\n\\Delta\\log\\det I\n-\n\\Delta\\log\\det I_{\\lambda\\lambda},\n}\n$$\n\nwith each term evaluable by low-rank determinant algebra when blocks remain nonsingular. Exact positive-gain $D_s$ exchange is therefore monotone and finitely terminating on a finite sample.",
+        "markdown": "The same rank-two full-information update applies. The exact profiled gain is\n\n$$\n\\boxed{\n\\Delta F_s\n=\n\\Delta\\log\\det I\n-\n\\Delta\\log\\det I_{\\lambda\\lambda},\n}\n$$\n\nwith each term evaluable by low-rank determinant algebra when blocks remain nonsingular. Exact positive-gain $D_s$ exchange is therefore monotone and finitely terminating on a finite sample.\nThe termination sentence is machine-checked generically, as\n`ScoreQuantFormal.terminates` with `ascent_strict` and `no_cycle`, in\n`formal/ScoreQuantFormal/Termination.lean`: the argument uses only that the\nobjective is real-valued and the labeling set finite. `DS-EXCHANGE-TERMINATES` carries no\n`formal_proof` all the same, because $F_s$ exists as no Lean object in that tree\nand no frozen conclusion instantiates it — see\n`AUDITS/FORMALIZATION-D-EXCHANGE-TERMINATES-001.md`.",
         "title": "Exact finite one-point objective oracle",
         "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/KNOWN_RESULTS/05a-ds-core.md"
       },
@@ -9164,6 +9329,16 @@
       "type": "raises"
     },
     {
+      "source": "D-CLOSURE-DUPLICATE-INHERITANCE",
+      "target": "D-FINITE-INDUCTIVE-CLOSURE",
+      "type": "rests_on"
+    },
+    {
+      "source": "D-COMPILE-TOLERANCE-GUARANTEE",
+      "target": "D-FINITE-INDUCTIVE-CLOSURE",
+      "type": "rests_on"
+    },
+    {
       "source": "D-EXCHANGE-IMPLIES-VORONOI",
       "target": "D-LOGDET-GAIN",
       "type": "rests_on"
@@ -9245,8 +9420,18 @@
     },
     {
       "source": "D-FINITE-INDUCTIVE-CLOSURE",
+      "target": "D-CLOSURE-DUPLICATE-INHERITANCE",
+      "type": "enables"
+    },
+    {
+      "source": "D-FINITE-INDUCTIVE-CLOSURE",
       "target": "OPEN-D-EXCHANGE-CONSISTENCY",
       "type": "raises"
+    },
+    {
+      "source": "D-FINITE-INDUCTIVE-CLOSURE",
+      "target": "CE-D-UNMERGED-DUPLICATES-001",
+      "type": "bounded_by"
     },
     {
       "source": "D-GLOBAL-GEOMETRIC-REALIZABILITY",
@@ -12037,6 +12222,10 @@
           "type": "bounded_by"
         },
         {
+          "claim": "D-FINITE-INDUCTIVE-CLOSURE",
+          "type": "bounded_by"
+        },
+        {
           "claim": "D-UNMERGED-DUPLICATES-FAIL",
           "type": "refuted_by"
         }
@@ -14007,6 +14196,50 @@
         }
       },
       {
+        "claims": [],
+        "module": "Merge",
+        "proof": {
+          "path": "formal/ScoreQuantFormal/Merge.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/Merge.lean"
+        },
+        "result": "Merging repeated rows changes none of the statistics the rule is built from",
+        "spec": {
+          "path": "formal/ScoreQuantFormal/MergeSpec.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/MergeSpec.lean"
+        }
+      },
+      {
+        "claims": [
+          "D-FINITE-INDUCTIVE-CLOSURE",
+          "D-CLOSURE-DUPLICATE-INHERITANCE"
+        ],
+        "module": "Closure",
+        "proof": {
+          "path": "formal/ScoreQuantFormal/Closure.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/Closure.lean"
+        },
+        "result": "A stable assignment compiles into a nearest-centre rule that reproduces every training label",
+        "spec": {
+          "path": "formal/ScoreQuantFormal/ClosureSpec.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/ClosureSpec.lean"
+        }
+      },
+      {
+        "claims": [
+          "D-EXCHANGE-TERMINATES"
+        ],
+        "module": "Termination",
+        "proof": {
+          "path": "formal/ScoreQuantFormal/Termination.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/Termination.lean"
+        },
+        "result": "Accepting only exact gains ascends, cannot cycle, and stops at a stable assignment",
+        "spec": {
+          "path": "formal/ScoreQuantFormal/TerminationSpec.lean",
+          "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/TerminationSpec.lean"
+        }
+      },
+      {
         "claims": [
           "D-GLOBAL-GEOMETRIC-REALIZABILITY",
           "D-EXCHANGE-TERMINATES"
@@ -14034,7 +14267,8 @@
     "outside": [
       "Profiled Ds-optimality, whose finite geometry fails and whose certificates are brackets.",
       "Population measure theory and every sample-to-population limit.",
-      "Realizability and termination are covered only in part, so their claims carry no machine-checked mark.",
+      "A solver stopping at a positive tolerance: the exact statements assume no gain is left on the table.",
+      "Geometric realizability is covered only in part, so its claim carries no machine-checked mark.",
       "The Python and JAX implementation: a Lean build certifies a statement, never the code that computes it."
     ],
     "readme": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/README.md"
@@ -14214,7 +14448,7 @@
       "CE-D-UNMERGED-DUPLICATES-001": {
         "lane": "D",
         "x": 2,
-        "y": 12
+        "y": 11
       },
       "CE-D-VORONOI-CONVERSE-001": {
         "lane": "D",
@@ -14336,10 +14570,20 @@
         "x": 2,
         "y": 7
       },
+      "D-CLOSURE-DUPLICATE-INHERITANCE": {
+        "lane": "D",
+        "x": 3,
+        "y": 5
+      },
+      "D-COMPILE-TOLERANCE-GUARANTEE": {
+        "lane": "D",
+        "x": 3,
+        "y": 6
+      },
       "D-EXCHANGE-IMPLIES-VORONOI": {
         "lane": "D",
         "x": 2,
-        "y": 8
+        "y": 9
       },
       "D-EXCHANGE-SCALAR-CORE": {
         "lane": "D",
@@ -14359,7 +14603,7 @@
       "D-FINITE-INDUCTIVE-CLOSURE": {
         "lane": "D",
         "x": 3,
-        "y": 6
+        "y": 8
       },
       "D-GLOBAL-GEOMETRIC-REALIZABILITY": {
         "lane": "D",
@@ -14639,7 +14883,7 @@
       "GENERAL-REFINEMENT-BB": {
         "lane": "D",
         "x": 2,
-        "y": 9
+        "y": 8
       },
       "GENERAL-SUPERGRADIENT-SCREENING": {
         "lane": "D",
@@ -14654,7 +14898,7 @@
       "HARD-GEOMETRIC-EMPIRICAL-PIECEWISE-CONSTANT": {
         "lane": "D",
         "x": 3,
-        "y": 5
+        "y": 7
       },
       "INFO-D-EFFICIENCY": {
         "lane": "D",
@@ -14689,7 +14933,7 @@
       "OPEN-ATOMIC-RANDOMIZATION-GAP": {
         "lane": "D",
         "x": 5,
-        "y": 9
+        "y": 10
       },
       "OPEN-CLASSIFIER-CALIBRATION-FI": {
         "lane": "D",
@@ -14719,7 +14963,7 @@
       "OPEN-D-HIGH-RATE": {
         "lane": "D",
         "x": 5,
-        "y": 10
+        "y": 9
       },
       "OPEN-D-PARAMETERIZED-COMPLEXITY": {
         "lane": "D",
@@ -14829,7 +15073,7 @@
       "OPEN-SOFT-HARD-ZEROTEMP": {
         "lane": "D",
         "x": 3,
-        "y": 7
+        "y": 9
       },
       "OPEN-STRONGER-BB": {
         "lane": "D",
@@ -14889,7 +15133,7 @@
       "SOFT-FIXED-TEMP-STATIONARY": {
         "lane": "D",
         "x": 3,
-        "y": 8
+        "y": 10
       },
       "SOFT-HARD-ATOMLESS-EQUIVALENCE": {
         "lane": "D",
@@ -14899,7 +15143,7 @@
       "SOFT-RANDOMIZED-FIM": {
         "lane": "D",
         "x": 2,
-        "y": 11
+        "y": 12
       },
       "TRACE-WHITENED-KMEANS": {
         "lane": "controls",
@@ -19169,6 +19413,8 @@
     {
       "claims": [
         "D-BB-SINGLETON-BOUND",
+        "D-CLOSURE-DUPLICATE-INHERITANCE",
+        "D-COMPILE-TOLERANCE-GUARANTEE",
         "D-EXCHANGE-IMPLIES-VORONOI",
         "D-EXCHANGE-SCALAR-CORE",
         "D-EXCHANGE-TERMINATES",

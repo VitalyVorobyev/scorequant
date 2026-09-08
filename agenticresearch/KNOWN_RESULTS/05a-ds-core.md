@@ -59,6 +59,13 @@ The same rank-two full-information update applies. The exact profiled gain is
 \]
 
 with each term evaluable by low-rank determinant algebra when blocks remain nonsingular. Exact positive-gain \(D_s\) exchange is therefore monotone and finitely terminating on a finite sample.
+The termination sentence is machine-checked generically, as
+`ScoreQuantFormal.terminates` with `ascent_strict` and `no_cycle`, in
+`formal/ScoreQuantFormal/Termination.lean`: the argument uses only that the
+objective is real-valued and the labeling set finite. `DS-EXCHANGE-TERMINATES` carries no
+`formal_proof` all the same, because \(F_s\) exists as no Lean object in that tree
+and no frozen conclusion instantiates it — see
+`AUDITS/FORMALIZATION-D-EXCHANGE-TERMINATES-001.md`.
 
 ## DS4. D-style finite geometry theorem fails — [COUNTEREXAMPLE]
 

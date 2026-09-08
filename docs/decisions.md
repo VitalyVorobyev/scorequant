@@ -151,15 +151,40 @@ figure reference against the lane that owns it.
 
 ## ADR 0030 · A bounded formal-verification track
 
-The Lean track covers the finite D chain in general dimension (D2 relocation identity, D3
+The Lean track began at the finite D chain in general dimension (D2 relocation identity, D3
 determinant gain, D4 leverage inequalities, D5 with its quantitative bound, the D7/D8
-corollaries) and nothing beyond it until a further decision; profiled \(D_s\), population measure
-theory and asymptotics are out. A claim carries `formal_proof` only when its statement is
+corollaries). **ADR 0037 replaces that scope clause** with the finite theory as a whole; the
+marking rules and trust gate below are unchanged and still govern. A claim carries `formal_proof` only when its statement is
 separately frozen in a `*Spec.lean` and independently audited; the freeze is closed under
 definitional dependency, and the marked declaration's type is the frozen conclusion. Counterexample
 claims never carry the field. Trust gate: `lake build --wfail` on a pinned toolchain,
 `leanchecker`, and an axiom allowlist of `propext`, `Classical.choice`, `Quot.sound` pinned by
 `AxiomAudit.lean`. No Lean result certifies the Python/JAX implementation.
+
+## ADR 0037 · The formal track covers the finite theory, and nothing measure-theoretic
+
+Supersedes ADR 0030's scope clause; its trust gate and marking rules stand unchanged.
+
+The Lean track's scope is **the finite theory**: any statement expressible over finitely many
+weighted rows, finitely many labels and real matrices. That admits the whole finite D chain
+including D6, the compiled predictor, and D12; the universal information algebra of chapter 1;
+criterion-agnostic screening; the exact counterexample witnesses; the finite profiled \(D_s\)
+core; the E and A move oracles; and the soft-assignment identities.
+
+Population measure theory and asymptotics are **permanently out**, not deferred: Mathlib has no
+matrix-valued conditional expectation with Loewner order, no multivariate central limit theorem,
+no delta method and no empirical-process theory, so formalizing D1, the DS14–DS19 bridge, C1/C2
+or the O6/O7 plug-in limits would mean building a statistics library rather than checking this
+project's mathematics. Those results stay prose plus independent audit.
+
+A claim is marked only where protocol step C actually happened, and one `formal_proof.declaration`
+names one theorem whose type is one frozen conclusion — so a node whose statement bundles several
+theorems is split before marking, never marked on its strongest half. Where Lean covers a claim
+only in part, `KNOWN_RESULTS/` prose names the declaration and says what is missing.
+
+Frozen files import only frozen files. Definitional closure alone is not enough: a proof module
+in a frozen file's import graph can introduce an instance, notation or macro that changes how an
+audited statement elaborates, without touching an audited file.
 
 ## ADR 0033 · The research atlas is generated from the registry
 
@@ -239,3 +264,4 @@ never quoted as an out-of-sample result. Consequences, in force on the FlowCyt a
 | ADR 0025 portal at the site root | superseded by ADR 0027, then restored by ADR 0035 |
 | ADR 0027 hand-written landing page at the root | superseded by ADR 0035; `landing/` and `tests/test_landing.py` are deleted |
 | ADR 0028 focused research and teaching, ADR 0029 lessons replace the Lab | ADR 0031 and `agenticresearch/README.md` |
+| ADR 0030 scope clause: the finite D chain only | superseded by ADR 0037 (the finite theory); ADR 0030's marking rules and trust gate stand |

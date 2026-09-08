@@ -35,16 +35,25 @@ follows the slash.
 | `LeverageSpec.lean` / `Leverage.lean` | D4, both leverage inequalities |
 | `ScalarExchangeSpec.lean` / `ScalarExchange.lean` | the frozen scalar core inside D5 |
 | `ExchangeVoronoiSpec.lean` / `ExchangeVoronoi.lean` | D5, exchange stability ⇒ strict `I⁻¹`-Voronoi |
-| `Corollaries.lean` | D7 realizability, D8 termination |
+| `MergeSpec.lean` / `Merge.lean` | merge invariance: merging duplicate rows preserves masses, sums, centroids and `I` |
+| `ClosureSpec.lean` / `Closure.lean` | D6, the compiled nearest-centroid rule and duplicate inheritance |
+| `TerminationSpec.lean` / `Termination.lean` | D8, strict ascent, no cycles, termination at a stable state |
+| `Corollaries.lean` | D7 realizability, and the earlier weaker D8 fragments |
 | `Counterexamples.lean` | two exact boundary witnesses for D5 |
 | `AxiomAudit.lean` | a guarded `#print axioms` per exported theorem |
 
 Not covered: profiled `D_s`, population or atomless statements, anything
-asymptotic, positive gain tolerances, singular objectives, capacity or balance
-constraints, and the compiled predictor `D-FINITE-INDUCTIVE-CLOSURE`. The
-converse `D-VORONOI-NOT-EXCHANGE` is covered only as the explicit witness in
-`Counterexamples.lean`, not as a general statement. Each frozen spec lists its
-own non-coverage; ADR 0030 governs the scope.
+asymptotic, positive gain tolerances (`D-COMPILE-TOLERANCE-GUARANTEE`), singular
+objectives, capacity or balance constraints, and D5's second duplicate branch —
+`ClosureDuplicateConclusion` assumes the inherited labeling rather than deriving
+that labels are constant on a duplicate class. The converse
+`D-VORONOI-NOT-EXCHANGE` is covered only as the explicit witness in
+`Counterexamples.lean`, not as a general statement. The termination argument is
+generic in the objective, so it also covers §DS3's and §A1's termination
+sentences — but neither `F_s` nor `F_A` exists as a Lean object here, so those
+claims are recorded in `KNOWN_RESULTS/` prose and carry no marker. Each frozen
+spec lists its own non-coverage; ADR 0037 governs the scope, and ADR 0030 the
+marking rules.
 
 ## Trust policy
 
@@ -52,6 +61,12 @@ own non-coverage; ADR 0030 governs the scope.
   hypotheses, conclusion **and the implication between them**. A prover may edit
   the corresponding proof module but may not change the specification without a
   new statement audit.
+- **A frozen file imports only frozen files.** Definitional closure is not
+  enough on its own: a proof module anywhere in a frozen file's import graph can
+  introduce an instance, notation or `macro_rules` that changes how an audited
+  statement elaborates, without touching an audited file. `ExchangeVoronoiSpec.lean`
+  still imports `Leverage.lean` and is the one remaining exception, owed a fix
+  under its own audit.
 - The freeze is closed under definitional dependency: every definition a frozen
   statement is written in lives in a frozen file too, which is what
   `ConfigSpec.lean` exists for. A frozen conclusion mentioning `fisher` or

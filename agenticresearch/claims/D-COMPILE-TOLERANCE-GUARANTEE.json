@@ -1,0 +1,23 @@
+{
+  "id": "D-COMPILE-TOLERANCE-GUARANTEE",
+  "title": "Positive solver tolerance gives only a tolerance-stamped compile guarantee",
+  "criterion": [
+    "D"
+  ],
+  "level": "empirical_inductive_quantizer",
+  "status": "project_proved",
+  "publication_status": "internal",
+  "statement": "A finite D solver that stops at a positive gain tolerance yields only a tolerance-stamped guarantee: the compiled nearest-centroid rule reproduces every training label except on rows whose relocation gain is at most that tolerance. Strictness of the argmin is not available in this regime, so prediction retains a deterministic tie-break and the guarantee is stamped with the tolerance that produced it.",
+  "assumptions": [
+    "positive gain tolerance",
+    "the hypotheses of D-FINITE-INDUCTIVE-CLOSURE otherwise"
+  ],
+  "dependencies": [
+    "D-FINITE-INDUCTIVE-CLOSURE"
+  ],
+  "proof_location": {
+    "file": "KNOWN_RESULTS/04-d-optimality.md",
+    "section": "D6. Exact finite inductive closure / compiler"
+  },
+  "role": "what a real solver can actually claim"
+}

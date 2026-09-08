@@ -127,6 +127,9 @@ def test_formal_proof_is_attached_only_where_a_spec_is_frozen(tool: ModuleType) 
         "D-RANK2-MOVE": "ScoreQuantFormal.rank_two_relocation",
         "D-LOGDET-GAIN": "ScoreQuantFormal.det_relocation_gain",
         "D-LEVERAGE": "ScoreQuantFormal.leverage_inequality",
+        "D-FINITE-INDUCTIVE-CLOSURE": "ScoreQuantFormal.closure_reproduces_labels",
+        "D-CLOSURE-DUPLICATE-INHERITANCE": "ScoreQuantFormal.closure_duplicates",
+        "D-EXCHANGE-TERMINATES": "ScoreQuantFormal.d_exchange_terminates",
     }
     for claim_id, declaration in expected.items():
         assert marked[claim_id]["declaration"] == declaration, claim_id
@@ -140,8 +143,18 @@ def test_formal_proof_is_attached_only_where_a_spec_is_frozen(tool: ModuleType) 
         body = source.split(f"theorem {local}", 1)[1].split(":= by", 1)[0]
         assert "Conclusion" in body, f"{claim_id}: {local} does not name a frozen conclusion"
 
-    # Claims whose statement is only partly formalized must stay unmarked.
-    for unmarked in ("D-GLOBAL-GEOMETRIC-REALIZABILITY", "D-EXCHANGE-TERMINATES"):
+    # Claims whose statement is only partly formalized, or which nothing
+    # formalizes, must stay unmarked. ``D-EXCHANGE-TERMINATES`` left this set on
+    # 7 September 2026 when ``TerminationSpec.lean`` froze all three of its
+    # clauses; ``D-GLOBAL-GEOMETRIC-REALIZABILITY`` is still missing its
+    # equal-optimum-value half. The two termination claims below are covered by
+    # the same generic theorem, but neither objective exists as a Lean object.
+    for unmarked in (
+        "D-GLOBAL-GEOMETRIC-REALIZABILITY",
+        "D-COMPILE-TOLERANCE-GUARANTEE",
+        "DS-EXCHANGE-TERMINATES",
+        "A-EXCHANGE-TERMINATES",
+    ):
         assert index[unmarked].get("formal_proof") is None, unmarked
 
     rendered = tool.render_index(registry)

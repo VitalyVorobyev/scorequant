@@ -14241,8 +14241,7 @@
       },
       {
         "claims": [
-          "D-GLOBAL-GEOMETRIC-REALIZABILITY",
-          "D-EXCHANGE-TERMINATES"
+          "D-GLOBAL-GEOMETRIC-REALIZABILITY"
         ],
         "module": "Corollaries",
         "partial": true,
@@ -14250,7 +14249,7 @@
           "path": "formal/ScoreQuantFormal/Corollaries.lean",
           "url": "https://github.com/VitalyVorobyev/scorequant/blob/main/agenticresearch/formal/ScoreQuantFormal/Corollaries.lean"
         },
-        "result": "Realizability of global optima and termination of exchange, in part",
+        "result": "Realizability of global optima, in part, and the earlier weaker termination fragments",
         "spec": null
       },
       {

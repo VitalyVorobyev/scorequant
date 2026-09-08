@@ -392,10 +392,9 @@
     },
     {
       "module": "Corollaries",
-      "result": "Realizability of global optima and termination of exchange, in part",
+      "result": "Realizability of global optima, in part, and the earlier weaker termination fragments",
       "claims": [
-        "D-GLOBAL-GEOMETRIC-REALIZABILITY",
-        "D-EXCHANGE-TERMINATES"
+        "D-GLOBAL-GEOMETRIC-REALIZABILITY"
       ],
       "partial": true
     },

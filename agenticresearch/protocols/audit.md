@@ -28,7 +28,8 @@ size and rigor.
 13. Updated status
 14. Registry patch under `claims/` (including `assumptions` made fully explicit)
 15. Counterexample/regression artifact (exact fixture + test) if applicable
-16. Next dependency-blocking question
+16. Closing status line for `OPEN_PROBLEMS.md` (a new question is a backlog
+    edit, never a new packet)
 
 ## Result of an audit
 
@@ -38,6 +39,6 @@ size and rigor.
   "search_gap"` (never a novelty claim).
 - Boundary failures discovered during the audit become
   `boundary_counterexamples` with fixtures.
-- Any statement the manuscripts now contradict is appended to the staleness
-  list in `manuscripts/README.md`. A re-attribution to prior art especially:
-  that is the kind of change that must not reach a submission unnoticed.
+- Any statement the manuscript now contradicts is listed under § State in
+  `manuscripts/README.md`; a re-attribution to prior art especially must not
+  reach a submission unnoticed.

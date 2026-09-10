@@ -39,7 +39,7 @@ information-preserving partitioning.
 
 ## Field coverage: bidirectional citation snowballing
 
-- Seed from the anchor papers in `LITERATURE/seeds.md` (and `papers/`).
+- Seed from the anchor papers in `LITERATURE/seeds.md`.
 - For each paper follow references (backward) and citing papers (forward);
   recursively inspect anything mathematically relevant.
 - Maintain separate graphs per community (Fisher-information quantization,

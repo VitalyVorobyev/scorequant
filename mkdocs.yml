@@ -13,9 +13,7 @@ exclude_docs: |
   development.md
   roadmap.md
   system-design.md
-  playbook.md
   decisions.md
-  programme/**
 
 theme:
   name: material

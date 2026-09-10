@@ -61,8 +61,8 @@ Two directories under `static/`, with opposite rules (ADR 0032):
 putting a file in the wrong one fails the suite instead of shipping a broken image.
 
 Full instructions, including the generated files you must not hand-edit and the checks CI runs, are
-in [`docs/playbook.md`](../docs/playbook.md). The design contract is
-[ADR 0019](../docs/decisions.md); the backend contract is
+in [`docs/development.md`](../docs/development.md). The surface contract is
+[ADR 0031](../docs/decisions.md); the backend contract is
 [ADR 0018](../docs/decisions.md).
 
 ### Research editorial layer

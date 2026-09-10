@@ -49,51 +49,17 @@ public registry or provisional backend class.
 
 ## Research workflow
 
-- `agenticresearch/` is the mathematical scientific memory (claim registry, counterexample bank, open-problem queue). It governs itself through its own `agenticresearch/README.md` (operating contract, finite closure programme in `OPEN_PROBLEMS.md`) and is excluded from the Ruff gate.
-- The library crosses into it at exactly two points: `tests/test_research_claims.py` reads counterexample fixtures from `agenticresearch/COUNTEREXAMPLES/`, and `tests/test_research_registry.py` runs `agenticresearch/py/registry.py validate` plus the index-freshness check. Research results become library behavior only by being copied into deterministic regression tests or theorem-cited code paths.
-- Selected claims carry `formal_proof`: a machine-checked Lean proof of a *separately frozen and
-  independently audited* statement, under `agenticresearch/formal/` and governed by
-  `protocols/formalization.md` and ADR 0030. Partial or unfrozen Lean coverage is recorded in
-  `KNOWN_RESULTS/` prose instead, never as a registry marker, and no Lean result certifies the
-  Python/JAX implementation. Lean and Lake are the only language workspace beside Python/uv and
-  Node/pnpm; run `(cd agenticresearch/formal && lake build --wfail)` when formal evidence changes.
-- The registry is one file per claim under `agenticresearch/claims/`, with vocabularies in `registry.json`. Every index is generated — never hand-edit `claims/INDEX.md`, `COUNTEREXAMPLES/INDEX.md`, or `LITERATURE/BIBLIOGRAPHY.md`; run `python agenticresearch/py/registry.py reindex`.
-- Code in `src/` that relies on a theorem names it; code that refuses a capability names the counterexample forcing the refusal. Keep both in sync with the registry.
+- `agenticresearch/` governs itself through its own `agenticresearch/README.md` and `OPEN_PROBLEMS.md`, and is excluded from the Ruff gate.
+- The library crosses into it at exactly two points: `tests/test_research_claims.py` reads counterexample fixtures from `agenticresearch/COUNTEREXAMPLES/`, and `tests/test_research_registry.py` runs `agenticresearch/py/registry.py validate` plus the index-freshness check.
+- Research results become library behaviour only by being copied into deterministic regression tests or theorem-cited code paths.
+- Code in `src/` that relies on a theorem names it; code that refuses a capability names the counterexample forcing the refusal.
+- Selected claims carry a machine-checked Lean `formal_proof` under `agenticresearch/formal/` (ADR 0030/0037); no Lean result certifies the Python/JAX implementation.
 
 ## Tooling: use uv
 
-`uv` is the only supported Python environment, dependency, build, and command runner. Do not
-introduce pip, Conda, Poetry, or manually edit `uv.lock`. The isolated `website/` workspace uses
-its pinned Node and pnpm versions.
-
-```bash
-uv sync --all-extras --all-groups --locked
-uv run ruff check .
-uv run ruff format --check .
-uv run ty check src
-JAX_ENABLE_X64=1 MPLBACKEND=Agg uv run pytest -n auto
-JAX_ENABLE_X64=0 MPLBACKEND=Agg uv run pytest tests/test_float32.py
-uv build
-uv run mkdocs build --strict
-```
-
-`pytest` is tiered by what a test is for, not by how long it takes, so a bare
-`uv run pytest` still runs everything. `tests/conftest.py` marks the modules
-that execute published prose -- documentation snippets, README fences,
-notebooks -- as `docs_execution`, and CI runs the two tiers as parallel jobs:
-
-```bash
-JAX_ENABLE_X64=1 MPLBACKEND=Agg uv run pytest -n auto -m "not docs_execution"  # library
-JAX_ENABLE_X64=1 MPLBACKEND=Agg uv run pytest -n auto -m docs_execution        # prose
-```
-
-Add `-n auto` for a full run and leave it off for a targeted one. Under xdist,
-`tests/conftest.py` pins each worker to a single compute thread: XLA sizes its
-pool from the host core count, so unpinned workers oversubscribe the machine
-and parallelism becomes a net loss. Benchmarks deliberately run unpinned and
-single-process, because that is how `benchmarks/baselines.json` was measured.
-
-Use `uv add`, `uv remove`, and `uv lock` for dependency changes. Run commands through `uv run` so local and CI environments stay aligned.
+- `uv` is the only supported Python environment, dependency, build, and command runner: no pip, Conda, or Poetry, and never hand-edit `uv.lock` — use `uv add`, `uv remove`, and `uv lock` instead.
+- The isolated `website/` workspace uses its own pinned Node and pnpm versions.
+- Every command, test tier, and the handoff gate live in [`docs/development.md`](docs/development.md); run commands through `uv run` so local and CI environments stay aligned.
 
 ## Engineering and documentation practices
 
@@ -102,12 +68,10 @@ Use `uv add`, `uv remove`, and `uv lock` for dependency changes. Run commands th
 - Use type annotations, meaningful names, and NumPy-style docstrings for every public object. Comments should explain why, especially for numerical choices, rather than narrate code.
 - Use explicit array-like and recursive JSON contracts at conversion boundaries. `typing.Any` is prohibited in `src/`; Ruff `ANN401`, a banned-import rule, and `ty` enforce this.
 - Add deterministic tests for changed behavior and numerical edge cases. Use fixed seeds and measurable assertions; avoid brittle pixel snapshots.
-- Validate in proportion to risk: targeted tests while iterating, then the full commands above before handoff.
+- Validate in proportion to risk: targeted tests while iterating, then the handoff gate in `docs/development.md` before handoff.
 - Update user guides when workflows change. Run MkDocs in strict mode so broken navigation, links, or reference collection fail CI.
 - Keep durable decisions in `docs/decisions.md` (one short entry each, never a narrative record) and executable phase gates in `docs/roadmap.md`; do not create parallel planning files.
-- Completed programmes and session packets are deleted when they close; git history is their
-  record. Only the current milestone, `docs/decisions.md` and dated reviews under
-  `docs/programme/` are standing text.
+- Completed programmes, session packets and dated reviews are deleted when they close; git history is their record. Standing planning text is the current milestone in `docs/roadmap.md` and `docs/decisions.md`.
 - Do not commit caches, local environments, build output, or `site/`. Commit gallery images only when intentionally regenerated and visually inspected.
 - Do not push, merge, tag, publish, or deploy unless the user authorizes that action.
 
@@ -117,4 +81,4 @@ by M9/M10 and ADRs 0018/0019.
 
 ## Completion checklist
 
-Before finishing, run the relevant tests plus Ruff, the strict documentation build, and the package build. Report the exact validation performed and explain any check that could not be run.
+Before finishing, run the handoff gate in `docs/development.md` (or the targeted subset the change warrants) and report exactly which checks ran and any that could not.

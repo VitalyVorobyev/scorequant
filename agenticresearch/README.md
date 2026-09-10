@@ -34,7 +34,7 @@ Do not load `PROBLEM.md` beyond the section a definition needs, `NUMERICAL_EVIDE
 | `WORK/active/`, `WORK/artifacts/` | the current packet; instrument outputs cited by claims or ledger rows | the packet |
 | `py/` | `registry.py` and the exact-arithmetic instruments behind measured rows | by name |
 | `formal/` | pinned Lean 4 + Mathlib workspace (`formal/README.md`) | formal packets |
-| `manuscripts/` | the v9 article snapshot and its novelty ledger (`manuscripts/README.md`) | paper tasks |
+| `manuscripts/` | the v10 article snapshot and its novelty ledger (`manuscripts/README.md`) | paper tasks |
 
 Generated, never hand-edited: `claims/INDEX.md`, `COUNTEREXAMPLES/INDEX.md`,
 `LITERATURE/BIBLIOGRAPHY.md`, `website/src/generated/atlas.json`.

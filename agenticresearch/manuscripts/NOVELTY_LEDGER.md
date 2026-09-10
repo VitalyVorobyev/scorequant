@@ -1,6 +1,6 @@
-# Novelty ledger — manuscript v8 → v9
+# Novelty ledger — manuscripts v8 → v9 → v10
 
-**Version:** 1.0 · 3 September 2026 · programme M12 session S2
+**Version:** 1.1 · 10 September 2026 (§5 added for v10; 1.0 · 3 September 2026 wrote v9) · programme M12 session S2
 (the M12 manuscript session, recorded in git history; companion packet
 packet `MANUSCRIPT-V9-RECONCILIATION` (git history)).
 
@@ -24,7 +24,7 @@ record rather than a result: it carries no novelty determination and is cited as
 (author–year sources the statement rests on or must cite) · Notes (scope, hardened wording v9
 must carry, what v9 must not say; ≤40 words).
 
-**Summary.** 103 rows: direct corollary 34 · unresolved 31 · known 20 · adaptation 10 · apparently new 8.
+**Summary.** 133 rows: direct corollary 45 · unresolved 38 · known 23 · adaptation 14 · apparently new 9 · audit records 4.
 
 **How to use for v9.** Rows labelled `known` are cited, not claimed. Rows labelled `apparently
 new` may be presented as contributions only with the conservative wording "we found no direct
@@ -243,3 +243,40 @@ Manuscript v8 (26 Aug 2026) has no A-optimality material and predates the I1–I
 - A4-1 (OPEN-A-QUANTITATIVE-BOUND, OP2, P7): open; no A analogue of the Ds O(w) bound derived or disproved.
 - I1-3 (OPEN-D-EFFICIENCY-VS-K, OP14): open; no distribution-dependent or distribution-free η_D(K) bound exists.
 - I3-2 (OPEN-D-DIRECTIONAL-BOUND, OP16): open; only the trivial AM–GM ordering of the retention summaries is available.
+
+## 5. Frozen rules: score error and sampling uncertainty (v10, closure step 5)
+
+Source of truth: `KNOWN_RESULTS/10-oracle.md` §§ O6–O8, the audits `AUDIT-SCORE-ORACLE-ROBUSTNESS-001`, `AUDIT-RETENTION-PLUGIN-VECTOR-001`, `AUDIT-SCORE-ERROR-BUDGET-001`, and the literature files `LITERATURE/audits/RETENTION-PLUGIN-CLT-FROZEN-{SCALAR,VECTOR}-5-September-2026.md`, `AUDIT-RETENTION-PLUGIN-VECTOR-6-September-2026.md`, `SCORE-ERROR-RETENTION-BUDGET-2026-09-08.md`, `NOVELTY-STEP5-10-September-2026.md`. The "v8 location" column reads "v10 §…" for these rows.
+
+| Row | Item | v8 location | Claim ids | Evidence | Novelty | Attribution | Notes |
+|---|---|---|---|---|---|---|---|
+| O6-1 | Scalar finite-sample identity: plug-in retention is one minus within-cell RSS over uncentred total SS | v10 §8.4 | RETENTION-PLUGIN-CLT-FROZEN-SCALAR (O6.1) | `show RETENTION-PLUGIN-CLT-FROZEN-SCALAR --deps --proof` | known | Kendall & Stuart 1961 (correlation ratio) | Cite, do not claim; uncentred form and 0/0:=0 convention stated. |
+| O6-2 | Scalar plug-in CLT with explicit influence function | v10 §8.4 | RETENTION-PLUGIN-CLT-FROZEN-SCALAR (O6.2) | as above | known | van der Vaart 1998 Thm 3.1 | Bridge; stated as the \(d=1\) case of Theorem 16. Needs (A1)–(A3), fourth moment. |
+| O6-3 | Consistent implementable variance; Wald interval level | v10 §8.4 | RETENTION-PLUGIN-CLT-FROZEN-SCALAR (O6.3–O6.4) | as above | direct corollary | Slutsky | "if \(\sigma^2>0\)", never "iff"; no finite-sample guarantee. |
+| O6-4 | \(\sigma^2=0\) iff two-root support per cell for \(0<\eta<1\); at \(\eta=0\) every zero-cell-mean law | v10 §8.4 | RETENTION-PLUGIN-CLT-FROZEN-SCALAR (O6.4, audit-hardened), CE-O6-ETA-ZERO-MULTIATOM-VARIANCE-001 | as above | direct corollary | — | Fixture G21 carries the \(\eta=0\) hardening; atomless remark needs \(\eta>0\). |
+| O6-5 | Interval is for the true retention; excludes the proxy value w.p. → 1 | v10 §8.5 | RETENTION-PLUGIN-CLT-FROZEN-SCALAR (O6.5), PROXY-TRUE-RETAINED-FI | as above | direct corollary | — | Requires an oracle-score evaluation sample; nothing without one. |
+| O6-6 | Measured scalar coverage on the door3 rule | v10 §8.4 | RETENTION-PLUGIN-COVERAGE-DOOR3 | `show RETENTION-PLUGIN-COVERAGE-DOOR3 --proof` | unresolved | — | Measured, no theorem; numbers only (0.913 → 0.949). |
+| O7-1 | Vector finite-sample identity and library agreement | v10 §8.4 | RETENTION-PLUGIN-CLT-FROZEN-VECTOR (O7.1) | `show RETENTION-PLUGIN-CLT-FROZEN-VECTOR --deps --proof` | known | Kendall & Stuart 1961 (26.50) | Two caveats (projection, \(\varepsilon^{1/d}\) rounding) stated in Appendix I. |
+| O7-2 | Vector plug-in CLT of the geometric-mean retention; canonical-correlation form of \(\psi\) | v10 §8.4 (Theorem 16) | RETENTION-PLUGIN-CLT-FROZEN-VECTOR (O7.2) | as above | adaptation | van der Vaart 1998; Magnus & Neudecker 1999; Radhakrishnan & Kshirsagar 1981; Romanazzi 1992; Muirhead & Waternaux 1980; Fang & Krishnaiah 1982; Taskinen et al. 2006 | Method published; uncentred fixed-partition form on cell moments, \(d=1\) reduction and repeated-root robustness are project algebra. Never "novel". |
+| O7-3 | Plug-in variance: exact zero sum, a.s. consistency | v10 §8.4 | RETENTION-PLUGIN-CLT-FROZEN-VECTOR (O7.3) | as above | direct corollary | — | Strong law on within-cell moments of order ≤ 4. |
+| O7-4 | \(\sigma^2=0\) iff per-cell ellipsoid support; a.c. cell forces (A4) | v10 §8.4 (Proposition 17) | RETENTION-PLUGIN-CLT-FROZEN-VECTOR (O7.4a) | as above | direct corollary | — | Completing the square; degenerate one-point ellipsoid named (H4). |
+| O7-5 | Atomless law with \(\sigma^2=0\) in \(d=2\) | v10 §8.4 | CE-O7-ELLIPSOID-ZERO-VARIANCE-001 | fixture + `tests/test_research_claims.py` | unresolved | — | Fixture G22; witness, no novelty; verified by the audit. |
+| O7-6 | \(\eta_D=1\) plug-in is 1 only on spanning samples | v10 §8.4 | RETENTION-PLUGIN-CLT-FROZEN-VECTOR (H1), CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001 | fixture | unresolved | — | Fixture G23; library projection returns 1 where the exact plug-in is 0. |
+| O7-7 | Singular endpoint: \(\hat\eta_D=O_p(n^{-(d-r)/d})\) with positive limit law | v10 §8.4 (Proposition 18) | RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE | `show RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE --proof` | adaptation | Hsu 1941; Glynn & Muirhead 1978; Seo, Kanda & Fujikoshi 1995; Robin & Smith 2000 | 10 Sep novelty pass: the rate is classical for zero canonical correlations (secondary sources; primary texts unread, registry stays `search_gap` until read). Determinant form, Schur-complement limit and bias reading are project-level. Coverage constant measured only (H3). |
+| O7-8 | Measured vector coverage; heavy-tail under-coverage | v10 §8.4 | RETENTION-PLUGIN-COVERAGE-VECTOR | `show RETENTION-PLUGIN-COVERAGE-VECTOR --proof` | unresolved | — | Second-order effect governed by \(E\|S\|^4\); replicated on fresh seeds; no claim beyond the numbers. |
+| O7-9 | Independent audit of O7 | v10 §8.4, Appendix I.5 | AUDIT-RETENTION-PLUGIN-VECTOR | `show AUDIT-RETENTION-PLUGIN-VECTOR` | n/a — audit record | — | Cited as evidence only; H1–H4 listed in Appendix I.5. |
+| O7-10 | Interval excludes the proxy value; silent on worst direction | v10 §8.5 | RETENTION-PLUGIN-CLT-FROZEN-VECTOR (O7.5), OPEN-D-DIRECTIONAL-BOUND | as above | direct corollary | — | Verbatim lift of O6-5. |
+| O8-1 | Directional reporting budget \(2\sqrt\rho\,\varepsilon_Z+\varepsilon_Z^2\) | v10 §8.1 | SCORE-ERROR-RETENTION-BUDGET (O8.1) | `show SCORE-ERROR-RETENTION-BUDGET --deps --proof` | direct corollary | — | Conditional Jensen plus Cauchy–Schwarz; equality condition stated correctly (not vector proportionality). |
+| O8-2 | Two-term reporting expansion with curvature remainder; two alignment bounds; spurious term; crude bracket | v10 §8.1 (Theorem 13) | SCORE-ERROR-RETENTION-BUDGET (O8.2) | as above | apparently new | Boyd & Vandenberghe 2004 (log-det concavity); Barnes, Han & Özgür 2018 | `search_gap` reinforced 10 Sep 2026 (Ipsen–Rehman, Stewart–Sun unread beyond abstracts). Wording: "we found no direct precedent". Numerator constant sharp, ratio bound not. |
+| O8-3 | Corrected scalar log lower bound; alignment bounds unordered | v10 §8.1, Appendix I.1 | SCORE-ERROR-RETENTION-BUDGET (audit), CE-SCORE-ERROR-LOG-LOWER-001, CE-SCORE-ERROR-ALIGNMENT-ORDER-001 | fixtures | direct corollary | — | Fixtures G26, G27; integral identity with floor \(m=\min(0,\lambda_{\min})\). |
+| O8-4 | No uniform relative reporting bound from \(\varepsilon\) alone | v10 §8.1 | CE-SCORE-ERROR-RHO-MIN-NECESSARY-001 | fixture | unresolved | — | Fixture G24; prose formula \(\varepsilon^2=\kappa^2/(9+\delta^2)\) as corrected by the audit. |
+| O8-5 | Invertible linear reduction with rule transport; translation not an invariance; singular LS inadmissible | v10 §8.1, Appendix I.1 | SCORE-ERROR-RETENTION-BUDGET, D-REPARAM-INVARIANCE, CE-SCORE-ERROR-TRANSLATION-001, CE-SCORE-ERROR-SINGULAR-LS-001 | fixtures | direct corollary | — | Fixtures G28, G29; \(\varepsilon_{\rm lin}<1\) forces a nonsingular cross moment. |
+| O8-6 | Mislabel-mass bound under a margin, exponent \(2\alpha/(\alpha+2)\) | v10 §8.2 (Proposition 14 i) | SCORE-ERROR-RULE-TRANSFER (O8.3 i) | `show SCORE-ERROR-RULE-TRANSFER --deps --proof` | adaptation | Audibert & Tsybakov 2007 §5 | Spatial boundary distance replaces posterior margin; exponent is for the norm, not its square. |
+| O8-7 | Label-perturbation Loewner sandwich; trace and determinant corollaries with orders | v10 §8.2 (Proposition 14 ii) | SCORE-ERROR-RULE-TRANSFER (O8.3 ii) | as above | direct corollary | — | Pythagoras on conditional expectations; explicit metric/moment/mass domains from the audit. |
+| O8-8 | Margin necessity: boundary atom | v10 §8.2 | CE-SCORE-ERROR-BOUNDARY-ATOM-001 | fixture | unresolved | — | Fixture G25; witness only. |
+| O8-9 | Posterior error bounds score error; excess Brier splits; reverse bound needs injective chart | v10 §8.3 (Proposition 15) | CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ (O8.4) | `show CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ --deps --proof` | adaptation | Bröcker 2009; Cranmer, Pavez & Louppe 2015 | Bridge; constants checked; requires full-observation posteriors (hardened prerequisite). |
+| O8-10 | Calibration does not lower-bound score error for an arbitrary chart, nor distort retention | v10 §8.3 | CE-CLASSIFIER-CALIBRATION-CHART-001, CE-CLASSIFIER-CALIBRATION-RETENTION-001 | fixtures | unresolved | — | Fixtures G30, G31; the two refuted classifier consequences. |
+| O8-11 | AUC is not enough | v10 §8.3 | CE-AUC-INVARIANT-PROXY-RETENTION-001 | fixture | unresolved | — | Fixture G32; corresponding rank-cut thresholds, not fixed numerical thresholds. |
+| O8-12 | Deployment corollary: deployed-versus-oracle loss from two budgets and the transfer term | v10 §8.5 | SCORE-ERROR-RETENTION-BUDGET (O8.6) | as above | direct corollary | — | Over-reporting budget on the selected rule, under-reporting on the comparator; no free comparator substitution; needs proxy-objective dominance. |
+| O8-13 | Measured door3 and synthetic-2d budgets | v10 §8.5 | SCORE-ERROR-DOOR3-MEASURED | `show SCORE-ERROR-DOOR3-MEASURED --proof` | unresolved | — | Numbers only; replicated exactly by the audit. |
+| O8-14 | Independent audit of O8 | v10 Appendix I.5 | AUDIT-SCORE-ERROR-BUDGET (audit file) | `AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md` | n/a — audit record | — | Cited as evidence only; corrections listed in Appendix I.5. |

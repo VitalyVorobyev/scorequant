@@ -121,18 +121,13 @@ compared by parameter name when both sides declare one.
 
 ## ADR 0026 / 0027 / 0035 · Site topology and its one workflow
 
-Two surfaces in one assembled tree since 7 September 2026 (ADR 0035): `/` is the Docusaurus
-portal, `/docs/` is the MkDocs documentation and book. The hand-written landing page ADR 0027 put
-at the root is deleted with its guards -- the portal's home page is the front door, and its
-primary navigation carries the Reference entry into `/docs/` that the landing page used to carry.
-The portal's `404.html` therefore serves the whole domain. `website/src/lib/site.ts` and
-`mkdocs.yml` state the topology and must move together. One workflow, `site.yml`, runs the strict
-MkDocs build, the portal checks, `pnpm assemble:site` and the deploy. Pre-cut URLs are stubbed by
-`website/redirects.json`, and the portal must never emit a `docs/` route, which would be
-overwritten silently; `assemble-site.mjs` refuses that build and resolves every
-`/scorequant/docs/` href in the built portal against the assembled tree, which is the one class of
-link Docusaurus's `onBrokenLinks` cannot see. The two days the portal spent at `/portal/` are
-deliberately not stubbed, for the reason ADR 0027 gave for not stubbing its one day at the root.
+Two surfaces in one assembled tree since 7 September 2026: `/` is the Docusaurus portal, `/docs/`
+is the MkDocs documentation and book; the portal's home page is the front door and its `404.html`
+serves the whole domain. `website/src/lib/site.ts` and `mkdocs.yml` state the topology and must
+move together. One workflow, `site.yml`, runs the strict MkDocs build, the portal checks,
+`pnpm assemble:site` and the deploy. Pre-cut URLs are stubbed by `website/redirects.json`; the
+portal must never emit a `docs/` route, and `assemble-site.mjs` refuses such a build and resolves
+every `/scorequant/docs/` href against the assembled tree.
 
 ## ADR 0031 / 0032 / 0028 / 0029 · The portal is four surfaces, and its pages are articles
 
@@ -224,50 +219,42 @@ inferred from passing automated checks.
 ## ADR 0038 · Walkthrough evidence: held-out rules, downstream metrics, one honest headline
 
 An applied walkthrough leads with a quantity its domain reports, measured on data the rule never
-saw, and says which of three things every number is: a finite partition of a fixed table (a
-labelling of those rows, with no predict method), a reusable rule scored on the rows it was
-fitted on, or a reusable rule applied to held-out rows. Local Fisher retention is the
-explanation, not the headline; a partition's in-sample retention is a methodological reference,
-never quoted as an out-of-sample result. Consequences, in force on the FlowCyt and HEP pages:
-
-- The FlowCyt page's code runs the reference-to-held-out chain (fit, freeze, `predict_scores`,
-  per-patient counts, mixture fit, unbinned comparison) on a committed fixture-scale table,
-  `examples/data/flowcyt_walkthrough.npz`, whose sidecar records what that run produces so the
-  page can state its own outcome next to the full study's. The learned categories are shown
-  as \(P(\text{population}\mid\text{bin})\), never as a projection.
-- The HEP study splits the events once, stratified, into two halves; every reusable rule is
-  built on one half and evaluated on the other, in both directions, with percentile bootstrap
-  envelopes and the evaluation half's own certified ceiling. The primary applied result is the
-  expected signal-strength uncertainty from each rule's own count-table likelihood, built from the
-  simulation's energy-scale-shifted copies, reported with the nuisance fixed and floating. The
-  `tes` classifier trains under the Monte Carlo weights (an unweighted one estimates the ratio of
-  a one-third-signal population and reverses the downstream conclusion), and the energy scale is
-  stated to be unconstrained wherever it is profiled. The two-bin significance cut is reported as
-  not identified under three floating parameters, not as zero retention. A label-tuned
-  classifier baseline requires a minimum simulated background count per interval.
-- A rule's held-out retention is computed outside the fit from `predict_scores` and checked
-  against `fit_quantizer`'s validation report; the in-sample finite partition and its ceiling
-  stay on the page, labelled in sample.
+saw, and says which of three things every number is: a finite partition of a fixed table (no
+predict method), a reusable rule scored on its own fitting rows, or a reusable rule applied to
+held-out rows. Local Fisher retention is the explanation, not the headline; in-sample retention is
+never quoted as an out-of-sample result. A rule's held-out retention is computed outside the fit
+from `predict_scores` and checked against the fit's validation report. In force on FlowCyt (the
+reference-to-held-out chain runs on a committed fixture-scale table) and HEP (stratified half/half
+split cross-evaluated both ways; the classifier trains under the Monte Carlo weights; the energy
+scale is stated unconstrained wherever profiled).
 
 ## ADR 0039 · The held-out retention error bar reports sampling uncertainty only
 
 `retention_uncertainty` ships the audited plug-in standard error and untruncated Wald interval for
-`geometric_mean_retention` of a frozen rule on an independent, equally weighted sample of true scores
-drawn from the reference law (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`,
-`RETENTION-PLUGIN-CLT-FROZEN-SCALAR`). It never clips, bootstraps or bias-corrects, takes no weights,
-and is never attached to a training or validation history. Where the first-order theory does not
-apply it withholds the interval under a named status instead of reporting one: a rule with at most
-\(d\) declared cells returns nothing, because the rank ceiling makes its reference-law retention zero
-and the plug-in the biased endpoint estimator (`FI-RANK-CEILING`); a rank-deficient full moment
-returns no estimate rather than a projected surrogate; a rank-deficient between-cell moment returns
-zero with no interval (`RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`); and influence values that cancel
-to rounding return a zero standard error with no interval (`CE-O7-ELLIPSOID-ZERO-VARIANCE-001`). The
-first guard is structural; the other three are numerical verdicts on the sample and assert nothing
-about the population. The between-cell moment is aggregated from whitened rows so that its rank
-verdict survives an ill-conditioned reparameterization. The documented conditions are caller
-obligations. Proxy
-scores add a reporting bias that this interval does not measure and that the score-error budget
-bounds only with truth-dependent assumptions; the guide says so wherever the number appears.
+`geometric_mean_retention` of a frozen rule on an independent, equally weighted sample of true
+scores from the reference law (`RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, `-SCALAR`). It never clips,
+bootstraps or bias-corrects, takes no weights, and is never attached to a training or validation
+history. Where the first-order theory does not apply it withholds the interval under a named
+status: at most \(d\) declared cells (structural, `FI-RANK-CEILING`); a rank-deficient full moment;
+a rank-deficient between-cell moment (`RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE`); influence
+values that cancel to rounding (`CE-O7-ELLIPSOID-ZERO-VARIANCE-001`). The between-cell moment is
+aggregated from whitened rows so the rank verdict survives an ill-conditioned reparameterization.
+Proxy scores add a reporting bias this interval does not measure; the guide says so wherever the
+number appears.
+
+## ADR 0040 · Versioning and the stability classes on the road to 1.0
+
+Adopted 10 September 2026. Versions follow semantic versioning; before 1.0 a minor release may
+break the public API, and each break is listed under Removed in `CHANGELOG.md`. From 1.0 the
+stable contract is: the two task functions, the criterion and configuration types and their
+closed table (ADR 0011), the source and provider types, `Quantizer` with `predict_scores`,
+`save` and `load`, the error hierarchy (ADR 0024), and `ExecutionConfig`. Report dataclasses and
+every `to_dict()` are diagnostics: fields may be added in a minor release, never removed or
+renamed without a deprecation. A deprecation lives one minor release with a warning before
+removal. The artifact `format_version` 1 stays readable by every 1.x release; a new format is a
+new number, never a silent change. Private modules (`_`-prefixed and `solvers/`) carry no
+promise, and the `quantizers.py` façade is removed at the 1.0 API audit (roadmap phase H). The
+package classifier moves to Beta at 0.3 and to Production/Stable at 1.0.
 
 ## Absorbed and superseded records
 

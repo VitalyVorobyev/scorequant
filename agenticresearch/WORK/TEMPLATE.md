@@ -30,7 +30,8 @@ Registry patches, fixtures, tests, ledger rows, audit report if publication-crit
 
 Proved / disproved / reduced to explicitly listed unresolved assumptions — or a scientific branch worth its own packet.
 
-## Next dependency-blocking question
+## Outcome
 
-The single question the next session should attack, named with its claim id.
-Required by `protocols/theorem.md`; do not close a packet without it.
+Proved / refuted / reduced (name the one missing statement). One status line
+for `OPEN_PROBLEMS.md`. Any further question is a backlog edit there, never a
+new packet.

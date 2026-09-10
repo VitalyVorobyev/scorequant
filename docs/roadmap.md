@@ -1,35 +1,39 @@
 # ScoreQuant development roadmap
 
 The sole executable development plan. Research work selection is in
-`agenticresearch/OPEN_PROBLEMS.md`; proof packets do not create library commitments.
+`agenticresearch/OPEN_PROBLEMS.md`; proof packets do not create library commitments. Dated
+reviews are not kept as files; git history holds them, and a phase cites the pull request that
+acted on one.
 
-## M13 — Focused research and teaching
+## M13 — Focused research and teaching, then the road to 1.0
 
-**Current:** PR #52 reduces the portal and revises Michelson; reader acceptance is still pending.
-[The 5 September review](programme/2026-09-05-user-docs-review.md) corrected factual
-overstatements, shortened entry documents, and its remaining editorial remarks (the classifier
-ratio statement, the FlowCyt and HEP openings, attribution narration, entry-page overlap, the
-walkthrough cards) are addressed in the same PR. Do not replicate the article form until the
-revised Michelson explanation passes review. Two routes, `/` and `/docs/`
-(ADRs 0031, 0035); no new API, solver or site stack.
+**Current (10 September 2026):** the research closure programme is at step 5 (manuscript v10);
+the human reader gates on the walkthroughs and the Research Atlas are still open; phase H names
+what a 1.0 release needs. Two routes, `/` and `/docs/` (ADRs 0031, 0035); no new API, solver or
+site stack before phase H's audit.
 
 | Phase | Status and next action | Gate / stop |
 | --- | --- | --- |
-| A — Geometry and interpretation | Geometry overlay retired in PR #52. This review fixes remaining optical, periodicity, compilation and information claims. | Equations, chart labels and prose agree; facts/snippets and frontend checks pass. |
-| B — Michelson exemplar | Revised 6 September 2026 as a two-act article: instrument → model and analytic score → D-optimal quantization and its compiled rule → nuisance profiling and the profiled D_s partition, with its fragmentation diagnosed → the reusable profiled rule → one experiment. Reader gate pending. | A fresh reader explains the physical quantity, nuisance, allowed labels and finite-table certificate. Resolve misunderstandings before C. |
-| C — Remaining articles | Ratios rewritten 7 September 2026 as an article opening on a two-lane schematic, with every number routed through the fact contract. FlowCyt and HEP openings corrected in PR #52; their full article form is queued after B acceptance. | Each starts with subject, source and an explanatory figure. One result comparison, and one useful interaction unless the page's argument does not admit one — ratios is that exception by decision (ADR 0035): a refit of the estimated score cannot show the reported-versus-achieved gap, so it carries the comparison and the figure and no experiment. Move exhaustive evidence to reference pages. Existing facts/snippets, desktop/mobile e2e and links pass. |
-| D — Frozen-rule uncertainty | Scalar O6 proved and audited (PR #53); vector O7 proved and audited (PR #59); O8 score-error budget audited with corrections (PR #65). Closure step 1 shipped `retention_uncertainty` (ADR 0039) on 8 September 2026: the O7 standard error and Wald interval for a frozen rule on held-out true scores from the reference law, with named unavailable statuses for a rule with at most \(d\) cells, singular full or between-cell moments and degenerate variance; sampling uncertainty only, under the conditions stated in `docs/api.md`. The remaining research is the finite closure programme in `agenticresearch/OPEN_PROBLEMS.md`. | Public estimator delivered under the full contributor gate with seeded coverage and heavy-tail tests. Weighted, refitted, profiled and truth-free uncertainty stay research questions; the manuscript step follows. |
-| E — Formal verification | PR #28 superseded: its Lean tree ported onto main, its integration re-authored, ADR numbering reconciled to 0030. ADR 0037 now governs finite-theory scope; D6, duplicate inheritance and D8 have audited formal evidence. The formal packet closed as partial; remaining freeze and coverage obligations are parked in `agenticresearch/OPEN_PROBLEMS.md`. | Build, statement correspondence, allowed axioms and checker pass. Finite profiled `D_s` is within ADR 0037 scope but lacks the necessary frozen evidence; population measure theory and asymptotics remain outside scope. |
-| F — Claim graph | Deferred until D handoff and E metadata are settled. Separate proof prerequisites from audit/evidence links, preserving IDs and statuses. | Review moved edges; mathematical DAG, lookup, generated indexes and fixture checks pass. No bulk proof rewrite. |
-| G — Research Atlas | Editorial redesign (ADR 0036): bounded home narrative, theme-first Explore, neighbourhood-first Graph, searchable literature and authors, concise Frontier, and fragment-aware evidence disclosure. Registry and entity routes retained. | Editorial coverage and selection validation, atlas unit tests, URL/deep-link and mobile e2e, accessibility, strict docs and package checks. A fresh researcher must identify the contribution, boundary, and open question, then find theorem and prior art; human acceptance pending. |
+| A — Geometry and interpretation | Done: the false boundary overlay retired and the optical, periodicity, compilation and information claims corrected (PRs #52, #56). | Equations, chart labels and prose agree; facts/snippets and frontend checks pass. |
+| B — Michelson exemplar | Revised 6 September 2026 (PR #56) as a two-act article: instrument → model and analytic score → D-optimal quantization and its compiled rule → nuisance profiling and the profiled \(D_s\) partition → the reusable profiled rule → one experiment. **Human reader gate open.** | A fresh reader explains the physical quantity, nuisance, allowed labels and finite-table certificate. |
+| C — Remaining articles | Ratios rewritten 7 September 2026 (PR #62); FlowCyt and HEP rebuilt as held-out-evidence walkthroughs 7 September 2026 (PR #63, ADR 0038). **Human reader gate open.** | Each starts with subject, source and an explanatory figure; one result comparison; one experiment unless the page's argument does not admit one (ratios, by ADR 0035). Facts/snippets, desktop/mobile e2e and links pass. |
+| D — Frozen-rule uncertainty | Done: scalar O6 (PR #53), vector O7 (PR #59), score-error budget O8 (PR #65), all independently audited; `retention_uncertainty` shipped 8 September 2026 (PR #66, ADR 0039). The manuscript harvest is closure step 5. | Public estimator under the full contributor gate with seeded coverage and heavy-tail tests. Weighted, refitted, profiled and truth-free uncertainty stay backlog. |
+| E — Formal verification | Parked as partial (PR #64): D2–D8 and the compiled predictor are machine-checked under ADR 0037; the residue (positive tolerance, zero weights, D5 duplicate branch, D7 equal-optimum half, D12, one frozen-file import) is listed in `agenticresearch/OPEN_PROBLEMS.md`. | Build, statement correspondence, allowed axioms and checker pass. Reopened only by owner decision. |
+| F — Claim graph | Deferred. Separate proof prerequisites from audit/evidence links, preserving ids and statuses. | Mathematical DAG, lookup, generated indexes and fixture checks pass; no bulk proof rewrite. |
+| G — Research Atlas | Editorial redesign delivered (PR #57, ADR 0036). **Human acceptance open.** | A fresh researcher identifies the contribution, boundary and open question, then finds theorem and prior art. |
+| H — The 1.0 gate | Not started. In order: (1) research closed — closure step 5 merged and the owner's step 6 freeze; (2) 0.3.0 tagged from the Unreleased changelog; (3) one API-surface audit session sorting the public names into stable results, opt-in diagnostics and internals, removing `quantizers.py`, and recording the sort as a table in `docs/api.md`; (4) a committed format-1 `Quantizer` artifact fixture with a load-and-predict test; (5) the classifier moved to Beta at 0.3 and to Production/Stable at 1.0; (6) the human gates of B, C and G accepted and the manuscript public so the docs can cite it. Policy: ADR 0040. | Handoff gate green; no `src/` capability added; every public name has a docstring, an `api.md` row and a stability class. |
+
+Not needed for 1.0, by decision: samplers, streaming aggregation, moment-oracle evaluation, a
+multivariate efficient-score certificate, generic profiled compilation, more solvers or criteria,
+a compiled extension.
 
 ## Reader gate
 
 Without author hints, ask a fresh reader to explain what is observed and estimated, what K
 constrains, which labels can be deployed, what the reference model is, and what the reported
 metric and comparison establish. Then reproduce the result and change the experiment control.
-Record misunderstandings, not a long review transcript. Agent review rehearses this gate;
-actual reader feedback remains pending until obtained.
+Record misunderstandings, not a review transcript. Agent review rehearses this gate; it does not
+close it.
 
 ## Editorial rules
 
@@ -44,18 +48,18 @@ actual reader feedback remains pending until obtained.
 ## Session contract and deferrals
 
 One owner, one bounded outcome, one handoff: verdict, evidence, checks, limitation, next action.
-Derivation and independent promotion audit use separate contexts. No automatic follow-up tree,
-model tiers or manuscript update after every result.
+Derivation and independent promotion audit use separate contexts. No automatic follow-up tree
+and no manuscript update after every result.
 
-Park exact Ds bit complexity, broader calibration/refitting theory, new criteria/backends,
-samplers, streaming, signed weights and universal bin-budget selection. Generic profiled
-compilation remains unsupported. Formal residue remains parked in the research backlog. The audited oracle-score uncertainty API is shipped (closure step 1, ADR 0039); wider uncertainty guarantees need new evidence.
-The current API and shared numerical core remain intact.
+Parked: exact \(D_s\) bit complexity, broader calibration/refitting theory, new criteria or
+backends, samplers, streaming, signed weights, universal bin-budget selection, generic profiled
+compilation, the formal residue. The current API and shared numerical core remain intact until
+phase H's audit.
 
 ## Delivered milestones
 
 One row per milestone. Nothing here is a standing instruction; the durable decisions are the
-ADRs named in the last column.
+entries named in the last column.
 
 | Milestone | Delivered | Durable record |
 | --- | --- | --- |
@@ -68,26 +72,15 @@ ADRs named in the last column.
 | M7 Certificates, scale and persistence | Exchange-stability and geometry reports, branch-and-bound `certify_partition`, tolerance-consistent verification, the versioned `Quantizer` artifact. | ADR 0014, 0016, 0023 |
 | M8 Density ratios | Exact densities, model density ratios and scores named as the representation layer; `DensityRatioScore`, `CentralLogRatioScore`, ratio provenance and the closure diagnostic. | ADR 0017 |
 | M9 Explicit multi-backend execution | `ExecutionConfig`; JAX and NumPy behind one mathematical core; one conformance suite; the browser wheel. | ADR 0018 |
-| M10 React portal and browser Lab | The Docusaurus shell, generated data contracts, the Pyodide Lab, the development blog. | ADR 0019, 0020 |
+| M10 React portal and browser runtime | The Docusaurus shell, generated data contracts, the Pyodide runtime. | ADR 0031, 0035 |
 | M11 First public releases | 0.1.0 on 30 August 2026 and 0.2.0 on 4 September 2026 through PyPI Trusted Publishing, gated on the full handoff gate. | `CHANGELOG.md`, `.github/workflows/release.yml` |
-| M12 Consolidation programme | Novelty ledger and manuscript v9; the error hierarchy and one fit pipeline; the HEP classifier showcase; the four walkthroughs; the portal launch, whose root placement was then reversed. Closed 4 September 2026. | ADR 0024–0027, `CHANGELOG.md` |
+| M12 Consolidation programme | Novelty ledger and manuscript v9; the error hierarchy and one fit pipeline; the HEP classifier showcase; the four walkthroughs; the portal launch. Closed 4 September 2026. | ADR 0024–0027, `CHANGELOG.md` |
 
 ## Standing checks
 
 Published code executes; reported numbers trace to committed evidence. Certificates and geometry
 state their tolerances. A compiled rule reproduces positive-weight training labels. Research
-fixtures and registry remain valid; backend conformance remains the numerical contract.
-For portal changes also run pinned-toolchain `pnpm validate`, `pnpm test:e2e` and
-`pnpm assemble:site`. Do not treat green automation as reader acceptance.
-
-## Full handoff gate
-
-```bash
-uv run ruff check .
-uv run ruff format --check .
-uv run ty check src
-JAX_ENABLE_X64=1 MPLBACKEND=Agg uv run pytest -n auto
-JAX_ENABLE_X64=0 MPLBACKEND=Agg uv run pytest tests/test_float32.py
-uv build
-uv run mkdocs build --strict
-```
+fixtures and registry remain valid; backend conformance remains the numerical contract. The
+handoff gate is the command block in `docs/development.md`; portal changes add
+`corepack pnpm validate`, `test:e2e` and `assemble:site`. Green automation is not reader
+acceptance.

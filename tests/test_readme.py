@@ -43,15 +43,8 @@ _UNPUBLISHED = {
     Path("docs/development.md"),
     Path("docs/roadmap.md"),
     Path("docs/system-design.md"),
-    Path("docs/playbook.md"),
     Path("docs/decisions.md"),
 }
-
-# Whole directories mkdocs.yml keeps out of the published site. These hold
-# working material -- programme packets -- which is allowed to use internal
-# planning vocabulary the front door must not. (The per-decision record
-# directory was retired in favour of docs/decisions.md, which is published.)
-_UNPUBLISHED_DIRS = ("programme",)
 
 
 def _readme_blocks() -> list[Snippet]:
@@ -85,7 +78,6 @@ def test_published_markdown_has_no_internal_or_malformed_content() -> None:
         path
         for path in (REPO_ROOT / "docs").rglob("*.md")
         if path.relative_to(REPO_ROOT) not in _UNPUBLISHED
-        and not any(part in _UNPUBLISHED_DIRS for part in path.parts)
     ]
     assert published
     for path in published:
@@ -99,9 +91,7 @@ def test_published_markdown_has_no_internal_or_malformed_content() -> None:
         "development.md",
         "roadmap.md",
         "system-design.md",
-        "playbook.md",
         "decisions.md",
-        *(f"{directory}/**" for directory in _UNPUBLISHED_DIRS),
     )
     for excluded in excluded_paths:
         assert excluded in mkdocs

@@ -19,7 +19,8 @@ Before any mathematics, write down:
 
 ## B. Query the claim graph
 
-Use the claim graph per the lookup protocol in `README.md`. List established
+Query the claim graph with `uv run python agenticresearch/py/registry.py show
+<ID> --deps --proof` (see `README.md`). List established
 prerequisites, unresolved dependencies, and known counterexamples nearby.
 Do not prove something already recorded `project_proved` unless the task is
 explicitly an audit.
@@ -91,6 +92,7 @@ After every investigation:
 3. update `LITERATURE/` with exact theorem/page metadata for new prior art;
 4. state whether `PROBLEM.md` assumptions change;
 5. add numerical regression tests if the claim is computational;
-6. update the WORK packet and identify the next dependency-blocking question;
-7. note the manuscript impact in `manuscripts/README.md` — the staleness list
-   has no other updater, and the paper is harvested from this ledger.
+6. write the packet's Outcome section and the one status line for
+   `OPEN_PROBLEMS.md`; a new question is a backlog edit, never a new packet;
+7. note the manuscript impact under § State in `manuscripts/README.md`; the
+   paper is harvested from the registry at closure step 5.

@@ -4,9 +4,10 @@ Use this to machine-check a claim that is already stable. Formalization is a
 verification lane, not a way to settle open mathematics: a claim whose status is
 `open`, `conjecture`, `measured` or `counterexample` is not a target.
 
-Scope is set by [ADR 0030](../../docs/decisions.md):
-the finite D chain in general dimension. Profiled \(D_s\), population measure
-theory and asymptotics need a new ADR, not a prover's discretion.
+Scope is set by [ADR 0037](../../docs/decisions.md): the finite theory — any
+statement over finitely many weighted rows, finitely many labels and real
+matrices. Population measure theory and asymptotics are permanently out of
+scope; ADR 0030's marking rules and trust gate stand unchanged.
 
 ## A. Select and normalize
 

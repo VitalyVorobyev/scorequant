@@ -30,10 +30,11 @@ inside that tolerance.
 hardening gap, trace, criterion/configuration, source kind, and provenance. There is deliberately
 no ambiguous `predict` method.
 
-## Stable first-wave combinations
+## Criterion and configuration pairs
 
-`api.py` validates every `(config, criterion)` pair against one declarative table instead of
-scattered isinstance chains; this is the complete current matrix.
+`api.py` validates every `(config, criterion, task)` combination against one declarative table
+instead of scattered isinstance chains. The closed table is [ADR 0011 / 0014](decisions.md); this
+is what each supported pair computes.
 
 | Task | Criterion | Configuration | Meaning |
 | --- | --- | --- | --- |
@@ -48,17 +49,14 @@ scattered isinstance chains; this is the complete current matrix.
 | reusable quantizer | `DOptimality` | `ScalarDPConfig` | exact interval dynamic program on one retained score dimension |
 | reusable quantizer | `NormalizedTrace` | `KMeansConfig` | Fisher-whitened weighted k-means baseline |
 
-Unsupported criterion/configuration pairs fail before optimization: a config type absent from a
-task's own signature raises `TypeError`, and a config/criterion pair the task does not implement
-raises `ValueError`. There is no generic criterion plugin until multiple implementations demonstrate
-a stable common contract. A profiled finite partition never compiles into a quantizer: no same-label
-profiled rule is canonical away from the training rows. See
-[ADR 0014](decisions.md).
+A config type absent from a task's signature raises `TypeError`; a config/criterion pair the task
+does not implement raises `ValueError`, before optimization. A profiled finite partition never
+compiles into a quantizer: no same-label profiled rule is canonical away from the training rows.
 
-## Execution architecture and quality audit
+## Execution architecture
 
-The browser lab is the approved second-runtime use case from
-[ADR 0018](decisions.md). The target dependency direction is:
+The browser runtime is the approved second-runtime use case from [ADR 0018](decisions.md).
+Dependency direction:
 
 ```text
 domain contracts/config/results (canonical NumPy arrays)
@@ -72,33 +70,17 @@ solver orchestration and stopping rules
 public task API
 ```
 
-The pre-refactor audit found five structural liabilities that are now explicit gates:
-
-| Finding | Risk | Required resolution |
-| --- | --- | --- |
-| JAX imports in sources, reports, results, JSON conversion, and providers | backend types leak through stable contracts and importing without JAX fails | domain modules use NumPy only; execution imports stay private |
-| partition and quantizer modules combine dispatch, geometry, exchange, Lloyd, k-means, DP, soft optimization, and diagnostics | oversized functions accumulate hidden coupling | split by stable responsibility after the backend seam is green |
-| scatter, random, JIT, and optimizer choices are embedded in equations | NumPy parity would require conditionals or copied mathematics | adapters own primitives; kernels and solver flow contain no backend-name branches |
-| result/config/report state is constructed in multiple paths | serialization and backend provenance can drift | each public state type has one definition and canonicalization path |
-| JAX-only tests are organized by implementation module | a second suite would duplicate coverage | parameterize one capability-driven conformance suite over backends |
-
 Import-boundary tests enforce that domain, execution, kernels, solvers, public API,
-visualization, and `website/` cannot reverse the declared direction. Architecture review is an
-exit gate after the JAX extraction and again after complete NumPy parity. Optimized backend
-kernels are permitted only behind an adapter and must match the shared reference implementation.
-
-Both reviews are now recorded. The extraction review found no direct JAX/Optax import outside
-`_execution.py`, no backend tensor in recursively inspected public results, and no frontend concern
-inside `src/`. The parity review runs every declared partition and quantizer solver family through
-one backend-parameterized matrix and compares their partitions up to bin relabeling, checks the
-shared analytic soft gradient against JAX autodiff and finite differences, holds the default JAX
-path to the committed benchmark quality baselines, and imports the package in a subprocess that
-actively blocks JAX and Optax -- with a companion test asserting that the blocker really blocks, so
-the claim cannot pass vacuously.
+visualization, and `website/` cannot reverse this direction; no direct JAX/Optax import exists
+outside `_execution.py`, and no backend tensor appears in a public result. One backend-parameterized
+conformance suite runs every declared solver family on both backends, compares partitions up to
+relabeling, checks the shared analytic soft gradient against autodiff and finite differences, and
+imports the package in a subprocess that blocks JAX. Optimized backend kernels are permitted only
+behind an adapter and must match the shared reference implementation.
 
 ## Module ownership
 
-- `information.py`: Fisher and retained-information algebra.
+- `information.py`: Fisher and retained-information algebra, including `retention_uncertainty`.
 - `transforms.py`: informative subspace and whitening.
 - `partition.py`: the unified exchange engine (D and profiled-\(D_s\) share one determinant-lemma
   scan through a private `_ExchangeObjective` protocol), the guarded batch Mahalanobis-Lloyd solver,
@@ -109,8 +91,8 @@ the claim cannot pass vacuously.
 - `_execution.py`: the only backend resolver and the private JAX/NumPy primitive adapters.
 - `solvers/common.py`: shared assignment, distance, trace, and solver result contracts;
   `solvers/kmeans.py`, `solvers/scalar.py`, and `solvers/soft.py`: responsibility-specific shared
-  solver orchestration. `quantizers.py` is now only a thin compatibility façade for established
-  private test seams.
+  solver orchestration. `quantizers.py` is a private re-export façade kept for established test
+  seams; it is scheduled for removal at the v1.0 API audit (roadmap phase H).
 - `sources.py`: empirical and quadrature measures plus provenance (`ScoreProvenance` and the
   nested `RatioProvenance`).
 - `providers.py`: framework-neutral observation-to-score adapters, including the ratio-backed
@@ -120,35 +102,35 @@ the claim cannot pass vacuously.
 - `components.py`: linear models and the intensity score adapter.
 - `reports.py`: diagnostic and certificate dataclasses (`InformationReport`,
   `ProfiledInformationReport`, `GeometryReport`, `ProfiledGeometryReport`, `StabilityReport`,
-  `PartitionCertificate`, `EfficientScoreBound`). It depends on nothing that depends back on it,
-  which is what lets `result.py` and `information.py` both build on it without importing each other.
+  `PartitionCertificate`, `EfficientScoreBound`, `RetentionUncertainty`). It depends on nothing
+  that depends back on it, which is what lets `result.py` and `information.py` both build on it
+  without importing each other.
 - `criteria.py`, `config.py`, `result.py`: backend-free public contracts. `api.py`: public
-  orchestration. `api.py`
-  validates every `(config, criterion, task)` combination against one declarative table instead of
-  scattered isinstance chains.
+  orchestration. `artifact.py`: the versioned `Quantizer` rule and its non-pickle archive.
+  `_predict.py`: the leaf prediction kernel.
 - `_binstats.py`, `_chunking.py`, `_validation.py`, `_json.py`, `_typing.py`: private helpers shared
   across modules (weighted per-bin scatter-add statistics, the shared memory-bounded row-chunking
   budget used by exchange scans and assignment kernels, input validation including dtype promotion,
   `to_dict()` JSON conversion, and the shared `ArrayLike`/`JsonValue` type aliases).
 - `visualization.py`: optional Matplotlib views over `PartitionResult`/`QuantizerResult`, imported
   lazily so the core package carries no hard visualization dependency.
-- `examples/`, tests, and `research/`: datasets, tuning, counterexample search, and application logic.
+- `examples/`, `tests/`, `benchmarks/`, `agenticresearch/`: datasets, tuning, counterexample
+  search, and application logic. Research exploration is provenance, excluded from the product
+  Ruff gate; every relied-upon identity or counterexample is copied into a deterministic
+  regression test.
 
 JAX is the default execution backend and Optax supplies its soft-optimizer updates. NumPy is the
 portable CPU backend and supplies every declared solver, including an analytic-gradient soft
 optimizer with a private Adam state. Mathematical kernels are shared. Optional visualization and
-both execution stacks remain lazy at their public boundaries. Research exploration is provenance
-and is excluded from the product Ruff gate; every relied-upon identity or counterexample is copied
-into a deterministic regression test.
+both execution stacks remain lazy at their public boundaries.
 
 ## Learning and reference sites
 
-Per [ADR 0019](decisions.md), MkDocs remains the exhaustive Python,
-developer, and ADR reference. `website/` is an isolated Docusaurus/React learning portal owning
-curated journeys, theory reading, examples, benchmark exploration, public research storytelling,
-and the browser Lab. Source adapters read canonical Markdown, Griffe API data, benchmark JSON, and
-an explicit research-publication allowlist. Browser schemas, workers, plotting, and marimo embeds
-never enter `src/scorequant`.
+MkDocs at `/docs/` is the exhaustive Python, developer and decision reference; `website/` is an
+isolated Docusaurus portal at the site root owning Get started, the walkthroughs, the Research
+Atlas and the browser runtime behind walkthrough experiments ([ADR 0031 / 0035](decisions.md)).
+Source adapters read canonical Markdown, Griffe API data, benchmark JSON and the registry export.
+Browser schemas, workers, plotting and marimo embeds never enter `src/scorequant`.
 
 ## Source/provider rules
 
@@ -166,31 +148,10 @@ never share an argument: the former enter through providers, the latter through 
 
 ## Complexity and durability
 
-The current exact exchange scan is \(O(NKP^2)\) per accepted move and avoids \(O(N^2)\) storage.
-Geometric solvers materialize \([N,K]\) distances. Histories store aggregate metrics and center
-snapshots, never per-event responsibilities. `to_dict()` is JSON-ready diagnostic state, not a
-versioned persistence format; that role belongs to `Quantizer.save`, which writes a versioned
-non-pickle artifact holding the rule alone.
-
-## Pre-1.0 API audit
-
-The current two-function boundary is sound: it prevents a fixed labeling from masquerading as a
-rule and keeps observation-to-score conversion visible. The main weaknesses are capability gaps,
-not a need for a generic facade:
-
-| Need | Incorrect shortcut | Chosen contract | Status |
-| --- | --- | --- | --- |
-| same-label nuisance profiling | compile finite labels with an efficient metric | explicit `ProfiledDOptimality`; finite and inductive solvers remain separate | implemented |
-| certified profiled ceiling | trust profiled exchange with no upper bound | `efficient_score_bound`/`EfficientScoreBound`, an exact scalar-DP ceiling on the profiled objective | implemented |
-| global guarantee | imply exchange stability is global | explicit bounded branch-and-bound certificate | implemented as `certify_partition`/`PartitionCertificate` (D-only) |
-| local stability of any labeling | trust a solver's own termination claim | one exact scan via `exchange_stability_report`/`StabilityReport` | implemented |
-| estimated density ratios | treat the classifier as the abstraction | named ratio representation: `ratios_from_posteriors`/`mixture_scores_from_ratios`, decomposed providers, `ratio_closure_report`, structured `RatioProvenance` | implemented |
-| Voronoi self-consistency of a D result | assume exchange stability implies Voronoi geometry | measured `GeometryReport`/`ProfiledGeometryReport`, judged at the solver's own `gain_tolerance` | implemented |
-| Monte Carlo population law | pass an unrecorded callback as a score table | deterministic score/observation sampler source | not yet implemented |
-| analytic cell integrals | pretend an oracle contains rows | moment-oracle evaluation of an existing rule | not yet implemented |
-| large transported data | call minibatch fitting exact | streaming aggregation for a frozen rule | not yet implemented |
-| reuse across processes | treat `to_dict()` as a schema | versioned non-pickle quantizer artifact | implemented as `Quantizer.save`/`Quantizer.load`, a zip of `manifest.json` plus `allow_pickle=False` arrays; loads and predicts with no JAX present |
-
-The revision deliberately does not add `predict`, a generic criterion plugin, classifier training,
-or a universal streaming optimizer. See [ADR 0013](decisions.md) and
-[ADR 0014](decisions.md) for the complete decisions.
+The exact exchange scan is \(O(NKP^2)\) per accepted move and avoids \(O(N^2)\) storage; the
+exact rank-one interval DP is the one intentional quadratic exception, capped by
+`ScalarDPConfig.max_rows`. Geometric solvers materialize \([N,K]\) distances. Histories store
+aggregate metrics and center snapshots, never per-event responsibilities. `to_dict()` is JSON-ready
+diagnostic state, not a versioned persistence format; that role belongs to `Quantizer.save`, which
+writes a versioned non-pickle artifact holding the rule alone ([ADR 0023](decisions.md),
+[ADR 0040](decisions.md)).

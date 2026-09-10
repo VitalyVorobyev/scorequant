@@ -1,19 +1,21 @@
 # Open problems — the closure programme and the backlog
 
-**Version:** 5.0 · 6 September 2026
+**Version:** 5.1 · 10 September 2026
 **Rule:** this file selects work. It holds the finite programme that ends the research, a
 three-line status, and the backlog of unresolved questions. Established results live in the
 claim graph and `KNOWN_RESULTS/`; they are not restated here.
 
-## Status (8 September 2026)
+## Status (10 September 2026)
 
-- Active: none. Next: manuscript step 5. Optional steps 2 and 4 remain inactive;
-  freeze/release step 6 still needs an owner decision.
+- Active: none. Next: step 6, the freeze, which needs the owner's decision. Optional steps 2 and 4
+  were dropped; the manuscript's future-work section records them.
 - Done: step 0 (O7 audit, PR #59); step 3's corrected verdict plus independent audit
   (`AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`); step 1 shipped on 8 September 2026 as
-  `retention_uncertainty` (branch `codex/retention-error-bar`, ADR 0039). The formal-D packet is
-  retired as partial, with its unresolved obligations preserved under the formal-verification
-  backlog below.
+  `retention_uncertainty` (PR #66, ADR 0039); step 5, manuscript v10 (10 September 2026,
+  `manuscripts/README.md`), harvesting O6–O8 and both audits, with §10.2 absorbing this backlog and
+  the bounded novelty pass `LITERATURE/audits/NOVELTY-STEP5-10-September-2026.md`. The formal-D
+  packet is retired as partial, with its unresolved obligations preserved under the
+  formal-verification backlog below.
 - Parked: OP31 and `WORK/active/DS-TILT-DUAL-EXACT-COMPLEXITY.md`; formal residue below.
   Neither is selected work. P1 deployment verdict closed on 1 September 2026
   (`KNOWN_RESULTS/05b-ds-bridge.md`).
@@ -32,7 +34,7 @@ backlog and goes into the manuscript's future-work section, never into the activ
 | 2 | Refitted rules (OP27 remainder): is \(\sqrt n(\hat\eta_n-\eta^*)\) normal when the rule is fitted on the evaluation sample, under a margin condition, or is there an exact counterexample; order of the in-sample optimism | P4 | the docs sentence "evaluate on held-out data" gains a theorem or a counterexample | verdict; optional, drop first |
 | 3 | Score-error budget (OP17, first order only): bound the retention loss of a frozen rule under an \(L^2\) score error, one classifier example; OP18 only if it falls out as one inequality | P2 | a classifier-quality requirement beyond AUC | **verdict: proved after correction; audited** (8 Sep 2026, `AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`); core bounds retained, unconditional calibration consequences refuted |
 | 4 | Parameter mismatch (OP23): second-order local expansion of a frozen rule's retention at \(\theta_0+\delta\), as a diagnostic | P4 | a story for the reference-point assumption | verdict; optional, drop second |
-| 5 | Manuscript v10: harvest O6, O7, both audits and steps 3–4; the future-work section absorbs the backlog below | publication | the paper | owner review |
+| 5 | Manuscript v10: harvest O6, O7, both audits and step 3; the future-work section absorbs the backlog below | publication | the paper | **written** (10 September 2026, `manuscripts/score_space_quantization_article_v10.md`); owner review |
 | 6 | Freeze: this file becomes a backlog only, the roadmap marks research closed, release tag | — | — | owner decision |
 
 Steps 2 and 4 are optional; without them the programme is six sessions. Bin-count theory (P3),

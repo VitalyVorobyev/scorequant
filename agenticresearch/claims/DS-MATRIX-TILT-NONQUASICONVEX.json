@@ -31,8 +31,10 @@
   "warning": "Audited 2 Sep 2026: verified. Weak matrix-tilt duality remains valid (680 exact checks). This counterexample only kills convex/quasiconvex outer minimization and authorizes no approximation or src change.",
   "audit": "AUDITS/AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER-001.md",
   "implies": [
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
     "DS-PROFILED-COMPILE-CERTIFICATE",
     "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER"
+  ],
+  "verified_by": [
+    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
   ]
 }

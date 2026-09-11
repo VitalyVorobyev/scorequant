@@ -16,8 +16,6 @@
     "a reported open bracket is not a gap certificate (CE-DS-TILT-DUAL-TIE-MASK-001), and the DP-active primal p^+ can sit strictly below g^+"
   ],
   "dependencies": [
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
     "DS-EFFICIENT-SCORE-GLOBAL-UPPER",
     "DS-EXACT-MOVE-ORACLE",
     "DS-MATRIX-TILT-NONQUASICONVEX",
@@ -61,5 +59,11 @@
   "artifact": "py/ds_practical_certified_solver.py",
   "role": "reduced Tier A verdict answering P1's deployment question, independently audited, isolating the remaining exact-complexity question in P7",
   "warning": "Tier A is REDUCED, not a proof of exact polynomial bit complexity for fixed d_lambda>=2 with variable K or for variable d_lambda. Delta-consistency is value-only. The Tier B outer map is nonquasiconvex. No generic gate root, local optimizer terminal, measured nuisance floor, open bracket, or audit verdict authorizes compilation.",
-  "audit": "AUDITS/AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER-001.md"
+  "audit": "AUDITS/AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER-001.md",
+  "references": [
+    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+  ],
+  "verified_by": [
+    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
+  ]
 }

@@ -15,7 +15,6 @@
     "the d_lambda=1 case is closed by AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER section 7.5; the fixed-d_lambda arithmetic bound is prior art (Toledo 1993), not a bit bound"
   ],
   "dependencies": [
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
     "DS-TILT-DUAL-CERTIFICATE"
   ],
   "literature": [
@@ -31,5 +30,8 @@
     "section": "OP31. Exact bit complexity of the tilt-DP dual"
   },
   "programme": "P7",
-  "warning": "General parametric-shortest-path envelope lower bounds do not automatically transfer to the special scalar grouping DP, and Megiddo/Toledo parametric search shows the envelope need not be materialized. A valid hardness reduction for variable d_lambda, or a bit-complexity analysis of fixed-dimension parametric search, is required."
+  "warning": "General parametric-shortest-path envelope lower bounds do not automatically transfer to the special scalar grouping DP, and Megiddo/Toledo parametric search shows the envelope need not be materialized. A valid hardness reduction for variable d_lambda, or a bit-complexity analysis of fixed-dimension parametric search, is required.",
+  "references": [
+    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
+  ]
 }

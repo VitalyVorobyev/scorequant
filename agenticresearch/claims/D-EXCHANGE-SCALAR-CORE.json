@@ -16,7 +16,6 @@
     "q_bb <= q_aa",
     "0 <= q_delta <= 1/W_a + 1/W_b"
   ],
-  "dependencies": [],
   "proof_location": {
     "file": "KNOWN_RESULTS/04-d-optimality.md",
     "section": "D5. Exchange stability implies strict D-Voronoi geometry"

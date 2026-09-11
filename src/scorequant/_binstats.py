@@ -23,7 +23,7 @@ guard still keeps the arithmetic that produces ``means`` well-defined before
 that check runs, so the two concerns stay independent.
 
 This is deliberately not used for the differentiable soft-responsibility path
-in ``quantizers.soft_voronoi`` (``_soft_fisher``), which floors its occupancy
+in ``solvers.soft.soft_voronoi`` (``_soft_fisher``), which floors its occupancy
 with ``jnp.maximum(occupancy, tiny)`` instead. That path's occupancy is a sum
 of continuous softmax responsibilities that is never exactly zero but can be
 arbitrarily small, and it is differentiated through by ``jax.grad``: flooring

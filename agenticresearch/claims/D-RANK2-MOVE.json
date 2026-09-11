@@ -20,7 +20,6 @@
   "role": "exact finite move algebra",
   "implies": [
     "A-EXACT-MOVE-ORACLE",
-    "AUDIT-D-EXCHANGE-VORONOI",
     "D-LOGDET-GAIN",
     "DS-EXACT-MOVE-ORACLE",
     "GENERAL-SUPERGRADIENT-SCREENING",
@@ -32,5 +31,8 @@
     "file": "formal/ScoreQuantFormal/Relocation.lean",
     "declaration": "ScoreQuantFormal.rank_two_relocation",
     "statement_audit": "AUDITS/FORMALIZATION-D-RANK2-MOVE-001.md"
-  }
+  },
+  "verified_by": [
+    "AUDIT-D-EXCHANGE-VORONOI"
+  ]
 }

@@ -1,6 +1,6 @@
 # ScoreQuant research workspace
 
-**Version:** 5.0 · 6 September 2026. This file is the whole operating contract for research
+**Version:** 5.1 · 11 September 2026. This file is the whole operating contract for research
 sessions; everything else here is either scientific memory or a protocol read on demand.
 
 The subject is D- and \(D_s\)-optimal hard quantization of multivariate score space
@@ -38,6 +38,17 @@ Do not load `PROBLEM.md` beyond the section a definition needs, `NUMERICAL_EVIDE
 
 Generated, never hand-edited: `claims/INDEX.md`, `COUNTEREXAMPLES/INDEX.md`,
 `LITERATURE/BIBLIOGRAPHY.md`, `website/src/generated/atlas.json`.
+
+## Claim graph relations
+
+`dependencies` contains mathematical proof prerequisites only and must form a DAG.
+`verified_by` links a claim to an audit record; `references` carries reviewed inputs or supporting
+evidence without a deductive assertion. Audit records use references, not dependencies, for their
+inputs. Measured evidence never supplies a theorem prerequisite. `implies` retains result and
+question relationships; audit targets belong in `verified_by`. File-valued `audit` pointers and
+formal-proof metadata remain unchanged. All relation targets must resolve, duplicate edges are
+rejected, and `show --deps` traverses only mathematical prerequisites. The Atlas displays the
+evidence relations separately. See ADR 0041.
 
 ## Invariants
 

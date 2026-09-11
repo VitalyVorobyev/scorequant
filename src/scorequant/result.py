@@ -308,12 +308,15 @@ class PartitionResult:
         rather than a new fit. The theorem is exact; the partition behind it is
         not. A finite solver stops at ``config.gain_tolerance``, so the
         guarantee this method can offer is self-consistency *at that tolerance*:
-        the rule reproduces every training label except on rows whose relocation
-        is worth no more than ``gain_tolerance``, which the ``geometry``
-        certificate has already measured and stamped with the same tolerance.
-        Requiring exact reproduction instead verifies at tolerance zero and
-        refuses partitions the solver converged on, which is what a boundary row
-        in a million becomes.
+        each admissible individual prediction disagreement has relocation gain at
+        most ``gain_tolerance``, priced against the original partition. Successful
+        solver result construction separately checks that every positive-weight
+        disagreement is admissible. Positive tolerance alone does not guarantee
+        compilability: a singleton tie can be refused
+        (``CE-D-COMPILE-SINGLETON-TIE-001``). No bound on simultaneous relabeling,
+        global suboptimality or population loss follows from the tolerance
+        (``CE-D-COMPILE-BATCH-TOLERANCE-001``). These are numerical exact-formula
+        diagnostics in the retained score subspace, not interval arithmetic.
 
         Boundary ties are never resolved here. ``predict_scores`` keeps the
         ordinary ``argmin`` rule, which is deterministic and breaks a tie toward

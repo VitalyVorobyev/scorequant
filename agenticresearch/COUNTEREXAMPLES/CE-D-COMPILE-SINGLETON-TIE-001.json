@@ -1,0 +1,53 @@
+{
+  "id": "CE-D-COMPILE-SINGLETON-TIE-001",
+  "criterion": "D",
+  "level": "finite_assignment",
+  "claim_falsified": "Positive-tolerance D exchange stability alone guarantees admissible training-label disagreements under the deterministic nearest-centroid rule.",
+  "scores": [
+    [
+      0
+    ],
+    [
+      1
+    ],
+    [
+      2
+    ]
+  ],
+  "weights": [
+    1,
+    1,
+    1
+  ],
+  "K": 2,
+  "labels_before": [
+    0,
+    1,
+    0
+  ],
+  "labels_after_or_optimum": [
+    0,
+    0,
+    0
+  ],
+  "poi_indices": [],
+  "nuisance_indices": [],
+  "objective_before": "log(3)",
+  "objective_after": "log(3)",
+  "exact_quantities": {
+    "information_before": "3",
+    "centroids": [
+      "1",
+      "1"
+    ],
+    "largest_admissible_determinant_ratio": "3/2",
+    "singleton_row": 1,
+    "gain_tolerance": "1/2"
+  },
+  "verification": {
+    "method": "exact_formula",
+    "notes": "Fraction regression enumerates every admissible one-row relocation; log ratios are invariant under uniform weight scaling. Singleton prediction is inadmissible; the batch fixture retains both cells."
+  },
+  "source": "AUDITS/AUDIT-D-COMPILE-TOLERANCE-001.md",
+  "date": "2026-09-11"
+}

@@ -11,7 +11,7 @@ import scorequant as sq
 from scorequant._execution import use_execution
 from scorequant.config import QuantizerConfig
 from scorequant.criteria import Criterion
-from scorequant.quantizers import soft_objective_and_center_gradient
+from scorequant.solvers.soft import soft_objective_and_center_gradient
 
 
 def _execution(backend: str) -> sq.ExecutionConfig:

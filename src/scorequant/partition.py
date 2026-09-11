@@ -64,7 +64,6 @@ from .information import (
     information_report,
     profiled_information_report,
 )
-from .quantizers import hard_assign, weighted_kmeans
 from .reports import (
     GeometryReport,
     ProfiledGeometryReport,
@@ -72,6 +71,8 @@ from .reports import (
     StabilityReport,
 )
 from .result import PartitionResult
+from .solvers.common import hard_assign
+from .solvers.kmeans import weighted_kmeans
 from .sources import ScoreProvenance, ScoreSchema
 from .transforms import FisherTransform, fisher_transform
 
@@ -470,8 +471,10 @@ def _voronoi_disagreement_gain(
     This is the compile bridge measured in the units the solver optimizes. A
     terminal labeling and the nearest-centroid rule of its own metric may
     disagree on rows within the solver's stopping tolerance of a cell boundary;
-    the disagreement is immaterial exactly when relocating those rows is worth
-    no more than that tolerance. Comparing the two labelings for equality
+    each admissible disagreement is tolerated when its individual relocation,
+    priced against the original partition, is worth no more than that tolerance.
+    This says nothing about simultaneous relabeling
+    (CE-D-COMPILE-BATCH-TOLERANCE-001). Comparing the two labelings for equality
     instead verifies at tolerance zero and rejects such a state, which is what
     made a converged 10^6-row fit unusable.
 

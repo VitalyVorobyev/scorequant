@@ -1,31 +1,36 @@
 # Open problems — the closure programme and the backlog
 
-**Version:** 5.1 · 10 September 2026
+**Version:** 5.3 · 11 September 2026
 **Rule:** this file selects work. It holds the finite programme that ends the research, a
 three-line status, and the backlog of unresolved questions. Established results live in the
 claim graph and `KNOWN_RESULTS/`; they are not restated here.
 
-## Status (10 September 2026)
+## Status (11 September 2026)
 
-- Active: none. Next: step 6, the freeze, which needs the owner's decision. Optional steps 2 and 4
-  were dropped; the manuscript's future-work section records them.
-- Done: step 0 (O7 audit, PR #59); step 3's corrected verdict plus independent audit
+- Active: none. Next: the separate non-blocking HEP template-likelihood assessment (P5).
+  Step 5a's review and local corrections are delivered; manuscript dispute/attribution assurance,
+  owner freeze and human gates remain open in development phase H. Steps 2 and 4 remain dropped.
+- Done: step 5a (11 September 2026, `AUDITS/AUDIT-D-COMPILE-TOLERANCE-001.md`,
+  two exact fixtures, narrowed guarantee and publication disposition in development phase H); step 0 (O7 audit, PR #59); step 3's corrected verdict plus independent audit
   (`AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`); step 1 shipped on 8 September 2026 as
-  `retention_uncertainty` (PR #66, ADR 0039); step 5, manuscript v10 (10 September 2026,
+  `retention_uncertainty` (PR #66, ADR 0039); step 5, manuscript v10 (merged PR #68, 10 September 2026,
   `manuscripts/README.md`), harvesting O6–O8 and both audits, with §10.2 absorbing this backlog and
   the bounded novelty pass `LITERATURE/audits/NOVELTY-STEP5-10-September-2026.md`. The formal-D
   packet is retired as partial, with its unresolved obligations preserved under the
   formal-verification backlog below.
-- Parked: OP31 and `WORK/active/DS-TILT-DUAL-EXACT-COMPLEXITY.md`; formal residue below.
+- Parked: OP31 and `WORK/active/DS-TILT-DUAL-EXACT-COMPLEXITY.md`; formal residue below,
+  the informal positive-tolerance contract audit is completed, while its Lean proof remains parked.
   Neither is selected work. P1 deployment verdict closed on 1 September 2026
   (`KNOWN_RESULTS/05b-ds-bridge.md`).
 
 ## Closure programme
 
-The research ends when the steps below are done. Each step is one session and one verdict
-(proved, refuted, or reduced with the missing statement named); no step is retried. Every
-theorem step names its product consequence before work starts. Anything not in this table is
-backlog and goes into the manuscript's future-work section, never into the active queue.
+The current research programme ends when the steps below are done. Each theorem step is one
+session and one verdict (proved, refuted, or reduced with the missing statement named); no step
+is retried. Every theorem step names its product consequence before work starts. Step 5a reviews
+assurance and release obligations, without reopening completed theorem steps. Outside this table,
+only the explicitly scheduled P5 assessment is selected follow-up work; it proposes a separate
+programme and does not delay closure. Other questions remain backlog.
 
 | Step | Packet | Programme | Product consequence | Gate |
 |---|---|---|---|---|
@@ -34,18 +39,36 @@ backlog and goes into the manuscript's future-work section, never into the activ
 | 2 | Refitted rules (OP27 remainder): is \(\sqrt n(\hat\eta_n-\eta^*)\) normal when the rule is fitted on the evaluation sample, under a margin condition, or is there an exact counterexample; order of the in-sample optimism | P4 | the docs sentence "evaluate on held-out data" gains a theorem or a counterexample | verdict; optional, drop first |
 | 3 | Score-error budget (OP17, first order only): bound the retention loss of a frozen rule under an \(L^2\) score error, one classifier example; OP18 only if it falls out as one inequality | P2 | a classifier-quality requirement beyond AUC | **verdict: proved after correction; audited** (8 Sep 2026, `AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`); core bounds retained, unconditional calibration consequences refuted |
 | 4 | Parameter mismatch (OP23): second-order local expansion of a frozen rule's retention at \(\theta_0+\delta\), as a diagnostic | P4 | a story for the reference-point assumption | verdict; optional, drop second |
-| 5 | Manuscript v10: harvest O6, O7, both audits and step 3; the future-work section absorbs the backlog below | publication | the paper | **written** (10 September 2026, `manuscripts/score_space_quantization_article_v10.md`); owner review |
-| 6 | Freeze: this file becomes a backlog only, the roadmap marks research closed, release tag | — | — | owner decision |
+| 5 | Manuscript v10: harvest O6, O7, both audits and step 3; the future-work section absorbs the backlog below | publication | the paper | **merged PR #68** (10 September 2026, `manuscripts/score_space_quantization_article_v10.md`); owner review pending |
+| 5a | Bounded v1.0 readiness review, the same session as `docs/roadmap.md` phase H: compilation contract and publication assurance | assurance | verified scope of shipped guarantees and an explicit publication disposition | reviewed 11 September 2026; independent audit and local corrections delivered; manuscript publication blocker remains in phase H |
+| 6 | Freeze the current programme: retain backlog and the separate P5 assessment, mark the current research programme closed in the roadmap; release tag under phase H's sequence | — | — | owner decision after step 5a disposition; release actions separately authorized |
 
-Steps 2 and 4 are optional; without them the programme is six sessions. Bin-count theory (P3),
-HEP specialisation (P5), the D-core spine (P6), foundations (P7) and the literature graph (P8)
-are closed without work: one sentence each in the manuscript.
+Steps 2 and 4 remain dropped. Bin-count theory (P3), the D-core spine (P6), foundations (P7)
+and the literature graph (P8) receive no further work in this programme. HEP specialisation (P5)
+has a separate assessment below; its open questions are not prerequisites for v1.0.
+
+### Step 5a — pre-freeze assurance (review delivered 11 September 2026)
+
+Review `D-COMPILE-TOLERANCE-GUARANTEE` against the implementation and regression fixtures:
+exact versus tolerated agreement, individual relocation gains versus simultaneous reassignment,
+duplicate atoms, zero-weight rows and singular directions. The informal contract audit is complete
+(`AUDITS/AUDIT-D-COMPILE-TOLERANCE-001.md`); completing its Lean proof is not selected. Any strengthened guarantee needs an independent audit
+under `protocols/audit.md` before promotion. Record any missing audit as an unresolved obligation.
+
+Recover the inherited v9 manuscript dispute verdicts from audit history and reconcile their v10
+dispositions and remaining attribution qualifications before publication sign-off. Correct the
+profiled-certification refusal rationale without adding a solver. Classify each issue as release
+blocker, required correction or deferred opportunity, and record actionable outcomes in development
+phase H plus the research status here. The session runs the development handoff gate and inspects
+formal-proof trust evidence, reporting passed, failed and unrun checks. It does not infer human
+acceptance, change claim status, declare closure or authorize publication.
 
 ## Backlog
 
 Unresolved questions, grouped by programme. OP numbers are stable ids; claim
 `proof_location`s point at these headings. A backlog item is worked only if the owner moves it
-into the closure programme.
+into a selected programme. The P5 assessment below scopes a proposal only; it does not select
+its underlying theorem or implementation work.
 
 # P2 · SCORE-ORACLE-ROBUSTNESS — estimated scores and classifiers
 
@@ -124,6 +147,31 @@ profiled \(D_s\) retention; the degenerate limits when \(\sigma^2=0\); a second-
 interval for heavy-tailed scores. Target claim: `OPEN-RETENTION-UNCERTAINTY`.
 
 # P5 · HEP-SPECIALIZATION — template fits made mathematically explicit
+
+## Scheduled follow-up — HEP template-likelihood research assessment
+
+After the v1.0 readiness review (step 5a / development phase H), run one bounded assessment,
+independent of the freeze and release schedule. Start from OP20–22, their claim nodes, the current
+HEP study and its committed evidence, and primary literature under `protocols/literature.md`.
+Assess four connected questions:
+
+1. Extended-Poisson count/shape accounting and stable parameterization (OP20–21), including
+   yield scaling, intensity versus probability scores, and fixed selection assumptions.
+2. Auxiliary constraints and profiled bin optimization (OP22): which existing exchange,
+   geometry and bound contracts survive adding actual auxiliary information.
+3. Finite-template statistics, split/merge decisions and bin-budget tradeoffs under a named
+   likelihood; distinguish information loss from changes in the nuisance model between binnings.
+4. A controlled benchmark with known scores, separate training/design/evaluation samples,
+   and downstream profile-likelihood uncertainty, bias and coverage. Compare existing D and
+   profiled rules with classifier baselines before proposing a larger HEP dataset study.
+
+Stop with a **go/no-go recommendation** and a finite programme proposal recorded here under P5:
+each proposed session names its product consequence, dependencies, evidence, acceptance criterion
+and stop condition. Separate established identities, literature adaptations, unresolved questions
+and engineering integration; a search gap is not novelty. A no-go verdict records the reason and
+parks the proposal. A go verdict still requires owner selection before derivation or implementation.
+This assessment adds no library capabilities, dependencies or automatic v1.0 blockers, and creates
+no parallel planning file.
 
 ## OP20. Canonical parameterization for linear mixtures
 
@@ -255,8 +303,12 @@ formal markers. The duplicate node was trimmed as audit 002 required, but inheri
 labels do not establish D5's second duplicate branch. Standing evidence:
 `AUDITS/FORMALIZATION-D-FINITE-INDUCTIVE-CLOSURE-002.md` and `formal/README.md`.
 
-Unresolved: positive-tolerance `D-COMPILE-TOLERANCE-GUARANTEE` (including its informal
-contract audit); zero-weight samples; D5 duplicate-label constancy; D7's equal-optimum
+Completed separately: the informal `D-COMPILE-TOLERANCE-GUARANTEE` contract audit
+(`AUDITS/AUDIT-D-COMPILE-TOLERANCE-001.md`) narrowed the guarantee and added two boundary
+fixtures in step 5a. Its positive-tolerance Lean proof remains parked.
+
+Unresolved formal obligations: positive-tolerance `D-COMPILE-TOLERANCE-GUARANTEE`;
+zero-weight samples; D5 duplicate-label constancy; D7's equal-optimum
 half; D12 singleton-refinement bound; frozen `ExchangeVoronoiSpec` importing editable
 `Leverage`; unapplied leverage statement hardenings and the superseded log-det audit's
 bookkeeping. Generic helper proofs do not supply additional registry formal markers.

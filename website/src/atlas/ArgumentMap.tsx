@@ -86,7 +86,7 @@ export function ArgumentMap({core}: ArgumentMapProps): React.JSX.Element {
       types = asked.edgeTypes;
     } else {
       nodes = egoGraph(core, adj, focus, 1).nodes;
-      types = ["rests_on", "enables", "raises", "verified_by", "converse_fails", "refuted_by", "bounded_by"];
+      types = ["rests_on", "enables", "raises", "verified_by", "references", "converse_fails", "refuted_by", "bounded_by"];
     }
     const set = new Set(nodes.filter((id) => id in visible));
     const shown: Edge[] = core.edges.filter(

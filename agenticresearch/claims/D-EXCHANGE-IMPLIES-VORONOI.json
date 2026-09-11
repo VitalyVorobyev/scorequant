@@ -34,7 +34,6 @@
   "warning": "The internal proof has passed the priority-0 audit. The targeted literature search found no direct equivalent, but that search gap is not a novelty/priority claim. The statement is machine-checked in Lean for arbitrary dimension d, on the merged-atoms branch of the duplicate hypothesis only; the alternative 'labels constant on every duplicate class' branch, positive gain tolerances, singular objectives, and any equivalence with the Python/JAX implementation are outside the formalization.",
   "role": "primary structural theorem",
   "implies": [
-    "AUDIT-D-EXCHANGE-VORONOI",
     "D-FINITE-INDUCTIVE-CLOSURE",
     "D-GLOBAL-GEOMETRIC-REALIZABILITY",
     "OPEN-CRITERION-CHARACTERIZATION",
@@ -46,5 +45,8 @@
     "file": "formal/ScoreQuantFormal/ExchangeVoronoi.lean",
     "declaration": "ScoreQuantFormal.exchange_voronoi",
     "statement_audit": "AUDITS/FORMALIZATION-D-EXCHANGE-IMPLIES-VORONOI-001.md"
-  }
+  },
+  "verified_by": [
+    "AUDIT-D-EXCHANGE-VORONOI"
+  ]
 }

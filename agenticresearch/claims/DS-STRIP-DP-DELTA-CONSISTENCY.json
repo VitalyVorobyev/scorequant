@@ -17,11 +17,9 @@
   ],
   "dependencies": [
     "DS-SCALAR-EFFICIENT-DP",
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
   ],
   "implies": [
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
     "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER"
   ],
   "boundary_counterexamples": [
@@ -41,5 +39,11 @@
   },
   "artifact": "py/ds_practical_certified_solver.py",
   "warning": "Audited 2 Sep 2026: verified. Delta-consistency is a value statement only. It does not imply one-point exchange stability, selection by local ascent, perturbation robustness, or compile authorization.",
-  "audit": "AUDITS/AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER-001.md"
+  "audit": "AUDITS/AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER-001.md",
+  "references": [
+    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+  ],
+  "verified_by": [
+    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
+  ]
 }

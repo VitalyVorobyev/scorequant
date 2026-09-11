@@ -36,8 +36,10 @@
   "warning": "Audited 2 Sep 2026: verified; 'support-minimal' corrected to K=3-minimal, with CE-DS-TILT-DUAL-GAP-002 as the overall minimum. This falsifies universal strong duality, not weak validity of the ceiling. The Theta(1) extension is asymptotic; unrestricted duplication of rows can change a finite assignment optimum.",
   "audit": "AUDITS/AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER-001.md",
   "implies": [
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
     "DS-PROFILED-COMPILE-CERTIFICATE",
     "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER"
+  ],
+  "verified_by": [
+    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
   ]
 }

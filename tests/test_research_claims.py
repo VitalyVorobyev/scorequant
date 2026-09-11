@@ -3219,3 +3219,62 @@ def test_o8_audit_calibration_does_not_certify_retention_distortion(suffix: str)
     assert eps2 == Fraction(q["eps2"])
     assert retained[0][0] / v[0][0] == Fraction(q["eta_true"])
     assert it[0][0] / vt[0][0] == Fraction(q["eta_reported"]) == 1
+
+
+@pytest.mark.parametrize(
+    ("fixture_id", "maximum_ratio", "batch_ratio"),
+    [
+        ("CE-D-COMPILE-SINGLETON-TIE-001", Fraction(3, 2), Fraction(1)),
+        ("CE-D-COMPILE-BATCH-TOLERANCE-001", Fraction(3), Fraction(4)),
+    ],
+)
+def test_compile_tolerance_boundary_exact_ratios(
+    fixture_id: str, maximum_ratio: Fraction, batch_ratio: Fraction
+) -> None:
+    fixture = json.loads(
+        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / f"{fixture_id}.json").read_text()
+    )
+    scores = [Fraction(row[0]) for row in fixture["scores"]]
+    labels = fixture["labels_before"]
+    n_bins = fixture["K"]
+
+    def information(assignment: list[int]) -> Fraction:
+        total = Fraction(0)
+        for cell in range(n_bins):
+            members = [
+                score for score, label in zip(scores, assignment, strict=True) if label == cell
+            ]
+            if members:
+                total += sum(members, Fraction(0)) ** 2 / len(members)
+        return total
+
+    before = information(labels)
+    ratios = []
+    for row, source in enumerate(labels):
+        if labels.count(source) == 1:
+            continue
+        for destination in range(n_bins):
+            if destination != source:
+                moved = labels.copy()
+                moved[row] = destination
+                ratios.append(information(moved) / before)
+    assert max(ratios) == maximum_ratio
+    predicted = fixture["labels_after_or_optimum"]
+    centers = [
+        sum(
+            (score for score, label in zip(scores, labels, strict=True) if label == cell),
+            Fraction(0),
+        )
+        / labels.count(cell)
+        for cell in range(n_bins)
+    ]
+    assert predicted == [
+        min(range(n_bins), key=lambda cell: (score - centers[cell]) ** 2) for score in scores
+    ]
+    assert information(predicted) / before == batch_ratio
+    tolerance = float(Fraction(fixture["exact_quantities"]["gain_tolerance"]))
+    assert math.log(float(maximum_ratio)) < tolerance
+    if "SINGLETON" in fixture_id:
+        assert labels.count(labels[1]) == 1 and predicted[1] != labels[1]
+    else:
+        assert math.log(float(batch_ratio)) > tolerance

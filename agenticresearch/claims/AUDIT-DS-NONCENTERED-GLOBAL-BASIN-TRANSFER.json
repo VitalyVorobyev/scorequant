@@ -15,13 +15,6 @@
     "the audit does not re-audit inherited DS-SCHUR, FI-QUANT-IDENTITY or FI-RANK-CEILING, and does not re-prove the audited DS14/DS15/DS17 nodes; it only checks that DS18's use of them matches their registered hypotheses",
     "no src/, public API, example or documentation-API change is authorized by this audit"
   ],
-  "dependencies": [
-    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "DS-PROFILED-VARIATIONAL",
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "DS-STABLE-BASINS-FIXED-POINT-GATE",
-    "OPEN-DS-FINITE-POP-BRIDGE"
-  ],
   "boundary_counterexamples": [
     "CE-DS-NONCENTERED-SINGULAR-DESTINATION-001"
   ],
@@ -39,5 +32,12 @@
     "section": "Publication-grade audit of the exact off-(L) global basin and empirical transfer"
   },
   "artifact": "py/audit_ds_noncentered_global_basin_transfer.py",
-  "role": "independent publication-grade verification and hardening of the first exact off-(L) population-to-empirical transfer theorem"
+  "role": "independent publication-grade verification and hardening of the first exact off-(L) population-to-empirical transfer theorem",
+  "references": [
+    "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+    "DS-PROFILED-VARIATIONAL",
+    "OPEN-DS-MARGINS-AT-OPTIMA",
+    "DS-STABLE-BASINS-FIXED-POINT-GATE",
+    "OPEN-DS-FINITE-POP-BRIDGE"
+  ]
 }

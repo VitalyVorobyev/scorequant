@@ -149,7 +149,7 @@ def test_api_constructs_results_once() -> None:
     # rather than assembled and then patched after the fact; the façade no
     # longer reaches into a solver module's global state either.
     assert "object.__setattr__" not in (PACKAGE / "api.py").read_text()
-    assert "_DYNAMIC_WORKING_SET_BYTES" not in (PACKAGE / "quantizers.py").read_text()
+    assert not (PACKAGE / "quantizers.py").exists()
 
 
 def _refusal_error_call_name(func: ast.expr) -> str | None:

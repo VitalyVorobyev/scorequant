@@ -21,7 +21,6 @@
   },
   "role": "exact O(d^2)-type candidate evaluation",
   "implies": [
-    "AUDIT-D-EXCHANGE-VORONOI",
     "D-EXCHANGE-IMPLIES-VORONOI",
     "D-EXCHANGE-TERMINATES",
     "D-EXCHANGE-VIOLATION-LOWER-BOUND",
@@ -33,5 +32,8 @@
     "file": "formal/ScoreQuantFormal/DetGain.lean",
     "declaration": "ScoreQuantFormal.det_relocation_gain",
     "statement_audit": "AUDITS/FORMALIZATION-D-LOGDET-GAIN-002.md"
-  }
+  },
+  "verified_by": [
+    "AUDIT-D-EXCHANGE-VORONOI"
+  ]
 }

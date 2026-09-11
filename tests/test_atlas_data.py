@@ -192,3 +192,14 @@ def test_editorial_rejects_missing_summary(generator: ModuleType, committed: dic
     summaries.pop(committed["home"]["central"]["id"])
     with pytest.raises(RuntimeError, match="every non-audit"):
         generator.validate_editorial(committed["home"], summaries, committed["claims"])
+
+
+def test_audits_remain_accessible_outside_the_proof_graph(committed: dict) -> None:
+    claims = committed["claims"]
+    for edge in committed["edges"]:
+        if edge["type"] == "rests_on":
+            assert claims[edge["source"]]["kind"] != "audit"
+            assert claims[edge["target"]]["kind"] not in {"audit", "evidence"}
+    audit = "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
+    assert any(e["source"] == audit and e["type"] == "references" for e in committed["edges"])
+    assert any(e["target"] == audit and e["type"] == "verified_by" for e in committed["edges"])

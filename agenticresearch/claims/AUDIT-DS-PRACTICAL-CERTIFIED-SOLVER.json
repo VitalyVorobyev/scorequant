@@ -15,17 +15,6 @@
     "Toledo (1993) is cited for the fixed-d_lambda variable-K arithmetic-complexity statement from its primary text; its bit complexity is not claimed",
     "no src/, public API, example, benchmark or compile-path change is authorized by this audit"
   ],
-  "dependencies": [
-    "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
-    "DS-TILT-DUAL-CERTIFICATE",
-    "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
-    "DS-STRIP-DP-DELTA-CONSISTENCY",
-    "DS-MATRIX-TILT-NONQUASICONVEX",
-    "DS-PROFILED-COMPILE-CERTIFICATE",
-    "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY",
-    "DS-PROFILED-VARIATIONAL",
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
-  ],
   "counterexamples": [
     "CE-DS-TILT-DUAL-GAP-002",
     "CE-DS-TILT-DUAL-TIE-MASK-001"
@@ -54,5 +43,16 @@
   },
   "artifact": "py/audit_ds_practical_certified_solver.py",
   "role": "independent publication-grade verification and hardening of the DS19 certificate complex; authorizes removal of the 'unaudited' warnings, not a compile path",
-  "warning": "Verified does not mean deployable: a closed regular saddle certifies finite globality of the exhibited labeling only; an open reported bracket certifies nothing about the gap; the primal side of the bracket can sit far below the global value; no held-out or population statement is made outside the named DS18 law."
+  "warning": "Verified does not mean deployable: a closed regular saddle certifies finite globality of the exhibited labeling only; an open reported bracket certifies nothing about the gap; the primal side of the bracket can sit far below the global value; no held-out or population statement is made outside the named DS18 law.",
+  "references": [
+    "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
+    "DS-TILT-DUAL-CERTIFICATE",
+    "DS-TILT-DUAL-STRONG-DUALITY-FAILS",
+    "DS-STRIP-DP-DELTA-CONSISTENCY",
+    "DS-MATRIX-TILT-NONQUASICONVEX",
+    "DS-PROFILED-COMPILE-CERTIFICATE",
+    "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY",
+    "DS-PROFILED-VARIATIONAL",
+    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER"
+  ]
 }

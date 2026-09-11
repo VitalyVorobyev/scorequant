@@ -19,6 +19,107 @@ plotting helpers. Each answers a question you will know you have; none is needed
 The sections below follow that order. The generated [reference](symbols/index.md) covers every
 public object.
 
+## Stability contract for 1.x
+
+The table inventories the supported top-level surface and its public members.
+**Stable** preserves names, call semantics, configuration fields and member meaning across 1.x.
+**Diagnostic** preserves existing report fields and their meaning; minor releases may add fields.
+Removal or renaming requires a warning for at least one minor release before removal.
+All `to_dict()` payloads are additive diagnostic state, including those on stable inputs and
+`Quantizer`; they are not persistence formats. Consumers must tolerate additional keys.
+`Quantizer.save` / `load` use the separate format-1 compatibility promise.
+Function arguments, field shapes and numerical semantics remain specified by their reference
+docstrings and the contracts below. Result prediction/evaluation and compilation methods remain
+stable operations even though their returned reports are diagnostic. No report implies a
+global or population guarantee beyond its stated criterion, sample and tolerance.
+
+| Public name | Stability | Fields | Methods and properties |
+| --- | --- | --- | --- |
+| `CentralLogRatioScore` | Stable | `predict`, `deltas`, `class_priors`, `description`, `metadata`, `schema` | `provenance`, `score` |
+| `CertificationConfig` | Stable | `method`, `max_nodes`, `max_rows`, `gain_tolerance` | `to_dict` |
+| `ContractError` | Stable | — | — |
+| `DExchangeConfig` | Stable | `method`, `rank_rtol`, `seed`, `initializer_restarts`, `max_scans`, `batch_moves`, `solver_restarts`, `init`, `gain_tolerance`, `first_improvement`, `collapse_duplicates` | `to_dict` |
+| `DOptimality` | Stable | `name` | `to_dict` |
+| `DensityRatioScore` | Stable | `ratio`, `parameterization`, `provenance`, `schema` | `from_classifier`, `score` |
+| `EfficientScoreBound` | Diagnostic | `upper_bound`, `labels`, `efficient_scores`, `n_bins`, `interest` | `gap_to`, `to_dict` |
+| `ExecutionConfig` | Stable | `backend`, `precision`, `device` | `to_dict` |
+| `FisherTransform` | Stable | `matrix`, `eigenvectors`, `eigenvalues`, `retained_eigenvalues`, `rank_rtol`, `threshold`, `whiten` | `input_dim`, `rank`, `dropped_directions`, `apply`, `to_dict` |
+| `GaussLegendreConfig` | Stable | `order`, `max_points` | — |
+| `GeometryReport` | Diagnostic | `maximum_voronoi_violation`, `guaranteed_violation_gain`, `maximum_violation_gain`, `maximum_separation_residual`, `violating_moves`, `evaluated_moves`, `voronoi_consistent`, `separation_certified`, `gain_tolerance` | `to_dict` |
+| `InformationReport` | Diagnostic | `fisher_unbinned`, `fisher_binned`, `retained_matrix`, `retained_eigenvalues`, `arithmetic_mean_retention`, `geometric_mean_retention`, `logdet_retention`, `bin_weights`, `bin_counts`, `bin_effective_sample_sizes`, `effective_rank`, `rank_threshold`, `psd_residual_min_eigenvalue` | `to_dict` |
+| `IntegrationSource` | Stable | `bounds`, `density`, `quadrature` | `materialize` |
+| `IntensityParameterization` | Stable | `coefficients` | `n_components`, `scores` |
+| `KMeansConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `solver_restarts`, `max_iter`, `tolerance`, `record_every` | `to_dict` |
+| `LinearComponentScore` | Stable | `model`, `provenance` | `schema`, `score` |
+| `LinearComponents` | Stable | `components`, `coefficients`, `component_names`, `variables` | `evaluate_components`, `to_dict` |
+| `MahalanobisLloydConfig` | Stable | `method`, `rank_rtol`, `seed`, `initializer_restarts`, `max_iter`, `guard`, `gain_tolerance`, `collapse_duplicates` | `to_dict` |
+| `MixtureParameterization` | Stable | `reference_fractions`, `reference_component` | `n_components`, `scores` |
+| `NormalizedTrace` | Stable | `name` | `to_dict` |
+| `ObservationSample` | Stable | `observations`, `weights` | — |
+| `OptimizationTrace` | Diagnostic | `steps`, `centers`, `objective`, `bin_weights`, `train_hard_retention`, `objective_label`, `validation_hard_retention`, `soft_retention`, `temperatures`, `gradient_norms` | `to_dict` |
+| `PartitionCertificate` | Diagnostic | `status`, `objective`, `labels`, `upper_bound`, `gap`, `nodes_explored`, `incumbent_was_optimal` | `to_dict` |
+| `PartitionResult` | Diagnostic | `labels`, `training_scores`, `cell_weights`, `cell_score_sums`, `cell_score_means`, `information_full`, `information_partitioned`, `objective`, `transform`, `transformed_centers`, `metric`, `criterion`, `config`, `execution`, `train_report`, `provenance`, `accepted_moves`, `scans`, `exchange_stable`, `best_remaining_gain`, `objective_history`, `positive_weight_mask`, `lloyd_iterations`, `accepted_lloyd_steps`, `geometry`, `profiled_report`, `profiled_geometry`, `schema` | `n_bins`, `rank`, `information_kind`, `report`, `compile_quantizer`, `to_dict` |
+| `ProfiledDOptimality` | Stable | `interest`, `name` | `named`, `interest_indices`, `resolve`, `to_dict` |
+| `ProfiledGeometryReport` | Diagnostic | `metric`, `maximum_positive_violation`, `maximum_theoretical_bound`, `maximum_bound_residual`, `violating_moves`, `evaluated_moves`, `bound_certified` | `to_dict` |
+| `ProfiledInformationReport` | Diagnostic | `interest`, `nuisance`, `schur_unbinned`, `schur_binned`, `nuisance_unbinned`, `nuisance_binned`, `objective`, `logdet_retention`, `geometric_mean_retention`, `interest_rank`, `nuisance_rank`, `schema` | `interest_names`, `nuisance_names`, `describe`, `to_dict` |
+| `Quantizer` | Stable | `transform`, `centers`, `metric`, `schema`, `provenance`, `criterion`, `execution` | `n_bins`, `rank`, `input_dim`, `information_kind`, `predict_scores`, `evaluate_scores`, `to_dict`, `save`, `load` |
+| `QuantizerResult` | Diagnostic | `quantizer`, `criterion`, `config`, `execution`, `trace`, `labels`, `train_report`, `validation_report`, `provenance`, `hardening_gap`, `source_kind`, `train_profiled_report`, `validation_profiled_report` | `centers`, `metric`, `transform`, `schema`, `n_bins`, `rank`, `information_kind`, `predict_scores`, `evaluate_scores`, `report`, `to_dict`, `plot_summary` |
+| `RatioClosureReport` | Diagnostic | `normalizers`, `max_residual` | `to_dict` |
+| `RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas` | `to_dict` |
+| `RefusalError` | Stable | `counterexample` | — |
+| `RetentionUncertainty` | Diagnostic | `estimate`, `standard_error`, `confidence_interval`, `confidence_level`, `n_observations`, `status` | `to_dict` |
+| `ScalarDPConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `max_rows` | `to_dict` |
+| `ScoreFunction` | Stable | `function`, `provenance`, `schema` | `score` |
+| `ScoreProvenance` | Stable | `kind`, `description`, `reference_point`, `metadata`, `ratio` | `exact_fisher`, `to_dict` |
+| `ScoreProvider` | Stable | — | `provenance`, `score` |
+| `ScoreQuantError` | Stable | — | — |
+| `ScoreSample` | Stable | `scores`, `weights`, `provenance`, `schema` | — |
+| `ScoreSchema` | Stable | `parameters` | `dimension`, `index`, `select`, `to_dict` |
+| `SoftVoronoiConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `initializer_restarts`, `kmeans_max_iter`, `tolerance`, `max_steps`, `learning_rate`, `gradient_clip`, `temperature_end_ratio`, `record_every` | `to_dict` |
+| `StabilityReport` | Diagnostic | `stable`, `best_gain`, `best_move`, `objective`, `n_bins`, `criterion`, `gain_tolerance` | `to_dict` |
+| `binned_fisher_information` | Stable | — | — |
+| `certify_partition` | Stable | — | — |
+| `efficient_score_bound` | Stable | — | — |
+| `efficient_scores` | Stable | — | — |
+| `exchange_stability_report` | Stable | — | — |
+| `fisher_information` | Stable | — | — |
+| `fit_quantizer` | Stable | — | — |
+| `fractional_fisher_information` | Stable | — | — |
+| `information_report` | Stable | — | — |
+| `mixture_scores_from_ratios` | Stable | — | — |
+| `optimize_partition` | Stable | — | — |
+| `plot_information` | Stable | — | — |
+| `plot_optimization` | Stable | — | — |
+| `plot_partition` | Stable | — | — |
+| `plot_summary` | Stable | — | — |
+| `profiled_information_report` | Stable | — | — |
+| `ratio_closure_report` | Stable | — | — |
+| `ratios_from_posteriors` | Stable | — | — |
+| `retention_uncertainty` | Stable | — | — |
+| `scores_from_components` | Stable | — | — |
+
+`ScoreProvider` requires `provenance` and `score(observations)`; optional schema discovery
+is unchanged. Python standard exception members are inherited normally. `__version__` is
+package metadata, outside the callable surface above. Non-underscored helper names in implementation
+modules do not become supported APIs merely by being importable: the table is the supported
+entry-point inventory. `_` modules and `solvers/` remain private. The obsolete private
+`quantizers.py` façade has been removed; internal callers import the owning solver module.
+
+### Diagnostic serialization keys
+
+Dataclass serializers use the fields listed above unless overridden below. Nested objects follow
+their own diagnostic serializer; arrays become JSON-ready lists. Additional keys may appear in a
+minor release, so consumers should select the keys they need rather than require exact equality.
+
+| Serializer | Keys differing from the field inventory |
+| --- | --- |
+| `FisherTransform.to_dict()` | Adds `rank`, `dropped_directions`. |
+| `LinearComponents.to_dict()` | Omits the callable `components`; records `coefficients`, `component_names`, `variables`. |
+| `ScoreProvenance.to_dict()` | Adds derived `exact_fisher`. |
+| `PartitionResult.to_dict()` | Omits `training_scores`, `positive_weight_mask`; adds `information_kind`. |
+| `QuantizerResult.to_dict()` | Omits the `quantizer` object; adds `centers`, `metric`, `transform`, `schema`, `information_kind`. |
+| `Quantizer.to_dict()` | Adds `format_version`, `input_dim`, `n_bins`, `rank`; this diagnostic includes `execution`, while the saved artifact is backend-free. |
+
 ## Which task, which criterion, which solver
 
 <!-- generated: solver-matrix (do not edit by hand; run `pnpm generate:data`) -->
@@ -441,9 +542,9 @@ determinant bounds every completion of a partial assignment. It starts from an i
 the tree was exhausted; a spent node budget returns `status="budget_exhausted"` with the best
 outstanding bound and the remaining `gap`. The search is exponential, so `CertificationConfig`
 guards both the node count and the number of distinct score atoms, refusing an oversized instance
-by name. Certification is `DOptimality` only: the refinement bound uses Loewner monotonicity of
-`logdet`, which the profiled Schur objective does not inherit, and a profiled criterion is rejected
-rather than approximated. Neither entry point ever runs implicitly during fitting.
+by name. Certification currently supports `DOptimality` only. The profiled Schur complement is also
+Loewner-monotone on a fixed block decomposition, but profiled certification needs its own
+singular-block policy and validated objective bounds; it is not implemented. Neither entry point ever runs implicitly during fitting.
 
 ## Result semantics
 
@@ -473,7 +574,12 @@ boundary inside the default \(10^{-10}\). `compile_quantizer()` reads that certi
 demanding bit-exact label reproduction, so on such a partition `predict_scores` on the training
 scores differs from `PartitionResult.labels` on those boundary rows and nowhere else; the
 partition's labels stay authoritative for the fixed sample. Assignment itself is unchanged —
-`argmin` decides, resolving a tie toward the lowest cell index.
+`argmin` decides, resolving a tie toward the lowest cell index. The bound concerns admissible
+individual relocations priced against the original partition, not simultaneous reassignment or
+global or population loss. Positive tolerance can admit coincident centers and singleton ties;
+result construction separately refuses inadmissible positive-weight prediction disagreements.
+Zero-weight rows remain predictable without a label-reproduction guarantee. The report uses
+numerical exact-formula gains in the retained coordinates, not interval arithmetic.
 
 `QuantizerResult.predict_scores(scores)` is the only prediction method. `evaluate_scores` assigns
 new scores with the frozen rule and computes supplied-score information. The stored transform,

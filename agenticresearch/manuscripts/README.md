@@ -33,3 +33,16 @@ are cited for the endpoint rate from secondary sources and their primary texts a
 enters a v11 only through a new closure-programme decision; until then it is listed here.
 
 Earlier snapshots (v8, v9, the HEP companion, the landscape survey) are in git history.
+
+Review disposition (11 September 2026, phase H): the historical packet at commit
+`6a4c7b3`, `agenticresearch/WORK/completed/MANUSCRIPT-V9-AUDIT.md`, records two disputed
+rows only as a count; it does not preserve their row-level identities or resolutions. Do not
+interpret that absence as approval. Publication remains blocked on recovering those verdicts or
+re-auditing the affected ledger scope. Explicit remaining attribution items in that packet are
+V8-10 (regression leverage), V8-30 (minimum-eigenvalue superdifferential), and read/annotation
+provenance for Hartigan/Haynsworth; the later DOI verification does not itself constitute the
+missing source read. Retain the stated secondary-source qualifications for Hsu/Glynn–Muirhead.
+The positive-tolerance library contract was independently narrowed on 11 September
+(`AUDITS/AUDIT-D-COMPILE-TOLERANCE-001.md`): admissible individual moves only, with a separate
+singleton-disagreement guard and no simultaneous-change bound. The positive-tolerance sentence following (4.6) now states these qualifications; exact-zero
+theorems and existing formal markers are unchanged.

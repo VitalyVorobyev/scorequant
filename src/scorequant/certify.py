@@ -162,9 +162,8 @@ def certify_partition(
     resolved_criterion = DOptimality() if criterion is None else criterion
     if not isinstance(resolved_criterion, DOptimality):
         raise ContractError(
-            "global certification supports DOptimality only: the singleton-completion "
-            "bound relies on Loewner monotonicity of the log determinant under "
-            "refinement, which the profiled Schur objective does not inherit"
+            "global certification supports DOptimality only; profiled certification "
+            "requires its own singular-block policy and validated objective bounds"
         )
     exchange_config = DExchangeConfig(
         rank_rtol=rank_rtol, gain_tolerance=resolved_config.gain_tolerance

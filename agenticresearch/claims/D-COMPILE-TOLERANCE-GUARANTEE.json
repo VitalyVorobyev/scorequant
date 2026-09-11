@@ -7,10 +7,13 @@
   "level": "empirical_inductive_quantizer",
   "status": "project_proved",
   "publication_status": "internal",
-  "statement": "A finite D solver that stops at a positive gain tolerance yields only a tolerance-stamped guarantee: the compiled nearest-centroid rule reproduces every training label except on rows whose relocation gain is at most that tolerance. Strictness of the argmin is not available in this regime, so prediction retains a deterministic tie-break and the guarantee is stamped with the tolerance that produced it.",
+  "statement": "At a finite D partition stable at gain tolerance epsilon, every admissible individual relocation has gain at most epsilon, including each admissible disagreement with the deterministic terminal nearest-centroid rule, priced against the original partition. Compilation additionally requires every positive-weight prediction disagreement to be admissible. Positive tolerance alone does not imply distinct centroids or admissibility: singleton ties can force refusal. No bound on simultaneous reassignment, global optimality gap or population loss follows. The implementation evaluates exact-formula gains numerically in its retained score subspace; this is not an interval-arithmetic certificate.",
   "assumptions": [
-    "positive gain tolerance",
-    "the hypotheses of D-FINITE-INDUCTIVE-CLOSURE otherwise"
+    "positive gain tolerance; positive-weight atoms with duplicate labels consistently merged",
+    "positive-definite retained information in the working score coordinates; exactly K nonempty cells",
+    "stability against all individual relocations preserving positive source-cell weight",
+    "successful compilation requires all positive-weight prediction disagreements to preserve source-cell weight",
+    "deterministic lowest-index argmin; zero-weight rows carry no information or label-reproduction guarantee"
   ],
   "dependencies": [
     "D-FINITE-INDUCTIVE-CLOSURE"
@@ -19,5 +22,10 @@
     "file": "KNOWN_RESULTS/04-d-optimality.md",
     "section": "D6. Exact finite inductive closure / compiler"
   },
-  "role": "what a real solver can actually claim"
+  "role": "what a real solver can actually claim",
+  "audit": "AUDITS/AUDIT-D-COMPILE-TOLERANCE-001.md",
+  "boundary_counterexamples": [
+    "CE-D-COMPILE-SINGLETON-TIE-001",
+    "CE-D-COMPILE-BATCH-TOLERANCE-001"
+  ]
 }

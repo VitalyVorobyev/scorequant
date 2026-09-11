@@ -22,7 +22,6 @@
     "DS-SCALAR-EFFICIENT-DP"
   ],
   "implies": [
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
     "DS-PROFILED-COMPILE-CERTIFICATE",
     "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER",
     "OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY"
@@ -51,5 +50,8 @@
   },
   "artifact": "py/ds_practical_certified_solver.py",
   "warning": "Audited 2 Sep 2026 (AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER): verified with hardened assumptions. The dual is a ceiling on both domains, but a singular DP state is not an in-bin lower bound. Strong duality is false by CE-DS-TILT-DUAL-GAP-001 and, support-minimally, CE-DS-TILT-DUAL-GAP-002. A reported open bracket is not a gap certificate (CE-DS-TILT-DUAL-TIE-MASK-001). The primal side p^+ can sit strictly below g^+. Crossings-plus-midpoints and epsilon-accurate convex optimization are not exact algebraic solvers. Verification authorizes no src change; compilation remains governed by DS-PROFILED-COMPILE-CERTIFICATE.",
-  "audit": "AUDITS/AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER-001.md"
+  "audit": "AUDITS/AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER-001.md",
+  "verified_by": [
+    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
+  ]
 }

@@ -132,10 +132,47 @@ def _check_vocabularies(registry: dict, out: list[str]) -> None:
 
 def _check_graph_edges(index: dict[str, dict], out: list[str]) -> None:
     for claim in index.values():
-        for field in ("dependencies", "implies", "converse_failures"):
+        for field in ("dependencies", "implies", "converse_failures", "verified_by", "references"):
+            targets = claim.get(field, [])
+            if len(targets) != len(set(targets)):
+                out.append(f"{claim['id']}: duplicate {field} edge")
             for other in claim.get(field, []):
                 if other not in index:
                     out.append(f"{claim['id']}: {field} -> unknown claim {other}")
+                    continue
+                target = index[other]
+                is_audit = target.get("proof_location", {}).get("file", "").startswith("AUDITS/")
+                if field == "verified_by" and not is_audit:
+                    out.append(f"{claim['id']}: verified_by target {other} is not an audit")
+                if field == "implies" and is_audit:
+                    out.append(f"{claim['id']}: audit target {other} belongs in verified_by, not implies")
+                if field == "dependencies":
+                    source_audit = claim.get("proof_location", {}).get("file", "").startswith("AUDITS/")
+                    if is_audit or source_audit or target.get("status") == "measured":
+                        out.append(f"{claim['id']}: evidence belongs in references or verified_by, not dependencies -> {other}")
+                    if other == claim["id"]:
+                        out.append(f"{claim['id']}: self-dependency")
+
+    # Only proof prerequisites must form a DAG. Audit references may be reciprocal.
+    visited: set[str] = set()
+    active: list[str] = []
+
+    def visit(cid: str) -> None:
+        if cid in active:
+            cycle = active[active.index(cid):] + [cid]
+            out.append("dependency cycle: " + " -> ".join(cycle))
+            return
+        if cid in visited:
+            return
+        active.append(cid)
+        for target in index[cid].get("dependencies", []):
+            if target in index:
+                visit(target)
+        active.pop()
+        visited.add(cid)
+
+    for cid in sorted(index):
+        visit(cid)
 
 
 def _check_proof_locations(registry: dict, workspace: Path, out: list[str]) -> None:

@@ -256,6 +256,24 @@ new number, never a silent change. Private modules (`_`-prefixed and `solvers/`)
 promise, and the `quantizers.py` façade is removed at the 1.0 API audit (roadmap phase H). The
 package classifier moves to Beta at 0.3 and to Production/Stable at 1.0.
 
+## ADR 0041 · Proof dependencies and evidence are separate relations
+
+The registry's `dependencies` relation is an acyclic graph of mathematical prerequisites.
+`verified_by` names audit records; `references` carries reviewed inputs and non-deductive evidence.
+Audit inputs and measured evidence are not proof prerequisites. Registry lookup traverses only
+`dependencies`; the Atlas preserves all relations with distinct labels. IDs, statements, statuses,
+proof locations and file-valued audit/formal metadata survive this migration unchanged.
+
+## ADR 0042 · Prepare the 1.0 engineering contract before release
+
+Phase H engineering preparation may precede the 0.3 tag. The API guide inventories supported
+names and public members under ADR 0040; helper importability is not public support. Existing
+public names remain, and the private `quantizers.py` façade is removed in favour of owning solver
+modules. Report fields and all `to_dict()` keys are additive diagnostic contracts, while prediction,
+evaluation and compilation operations retain their documented stable semantics. A fixture written
+by the isolated v0.2.0 format-1 writer guards historical loading without JAX. Version changes,
+research freeze, publication and human acceptance remain separate gates.
+
 ## Absorbed and superseded records
 
 | Record | Where it lives now |

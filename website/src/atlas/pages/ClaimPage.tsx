@@ -42,6 +42,7 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
   const enabled = enables(adj, id).filter((other) => other !== id);
   const raised = raises(adj, id);
   const verifiers = verifiedBy(adj, id);
+  const references = (adj.outgoing.get(id) ?? []).filter((edge) => edge.type === "references").map((edge) => edge.target);
   const stop = boundary(adj, id);
   const nextDoor = openNextDoor(core, adj, id).filter((other) => other !== id);
   const motivatedBy = raisedBy(adj, id);
@@ -196,6 +197,13 @@ export default function ClaimPage({core, data}: AtlasPageProps<ClaimData>): Reac
 
           <details className="research-disclosure" id="relationships">
             <summary>Relationships</summary>
+            {references.length > 0 ? (
+              <section>
+                <h3>Evidence references</h3>
+                <p>Reviewed inputs and supporting evidence; these are not proof prerequisites.</p>
+                <EntityList core={core} ids={references} />
+              </section>
+            ) : null}
             {rests.length > 0 ? (
               <section id="rests-on" className="atlas__section">
                 <h2>{isQuestion ? "Related settled results" : "Rests on"}</h2>

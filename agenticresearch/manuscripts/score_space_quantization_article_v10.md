@@ -180,7 +180,7 @@ The theorem closes the finite-assignment/quantizer gap for D: at exact one-point
 \widehat q_D(s)=\arg\min_b(s-\mu_b)^\top\widehat I^{-1}(s-\mu_b),
 \tag{4.6}
 \]
-which reproduces every merged-atom training label strictly, without a tie breaker, while a solver stopping at tolerance \(\varepsilon>0\) has only the tolerance-stamped guarantee that no geometric disagreement gains more than \(\varepsilon\) [novelty: direct corollary; ledger V8-14]. Every positive-definite global finite D optimum on merged atoms is exchange-stable, hence realizable in the form (4.6), so unrestricted finite D assignment and optimization over realizable affine-max labelings share the same optimum value, though not every D-Voronoi fixed point is globally optimal [novelty: direct corollary; ledger V8-15].
+which reproduces every merged-atom training label strictly, without a tie breaker, while a solver stopping at tolerance \(\varepsilon>0\) bounds only admissible individual geometric-disagreement gains by \(\varepsilon\), each priced against the original partition. Compilation additionally requires every positive-weight prediction disagreement to be admissible; a singleton tie can force refusal. No simultaneous-reassignment or population-loss bound follows [novelty: direct corollary; ledger V8-14]. Every positive-definite global finite D optimum on merged atoms is exchange-stable, hence realizable in the form (4.6), so unrestricted finite D assignment and optimization over realizable affine-max labelings share the same optimum value, though not every D-Voronoi fixed point is globally optimal [novelty: direct corollary; ledger V8-15].
 
 <figure>
 <img alt="Histogram of slack above the Theorem 2 lower bound" src="figures/fig-02-exchange-slack-histogram.png">

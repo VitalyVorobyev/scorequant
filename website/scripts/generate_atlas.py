@@ -83,6 +83,11 @@ EDGE_TYPES = [
     ("enables", "enables", "The source is used by, or directly yields, the target."),
     ("raises", "raises", "The source motivates the target, which is open."),
     ("verified_by", "verified by", "An independent audit re-derived the source."),
+    (
+        "references",
+        "references",
+        "Reviewed inputs or supporting evidence, not proof prerequisites.",
+    ),
     ("converse_fails", "converse fails", "The target shows the converse of the source is false."),
     ("refuted_by", "refuted by", "An exact fixture falsifies the source statement."),
     ("bounded_by", "bounded by", "An exact fixture sits on the edge of the source's hypotheses."),
@@ -374,6 +379,10 @@ def build() -> dict:
         for target in c.get("dependencies", []):
             if target_ok(cid, target):
                 edges.append({"source": cid, "target": target, "type": "rests_on"})
+        for relation in ("verified_by", "references"):
+            for target in c.get(relation, []):
+                if target_ok(cid, target):
+                    edges.append({"source": cid, "target": target, "type": relation})
         for target in c.get("implies", []):
             if not target_ok(cid, target):
                 continue

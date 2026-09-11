@@ -11,7 +11,7 @@ export type Provenance = "established" | "derived" | "proved" | "proved_new" | "
 
 export type EntityKind = "result" | "question" | "counterexample" | "evidence" | "audit";
 
-export type EdgeType = "rests_on" | "enables" | "raises" | "verified_by" | "converse_fails" | "refuted_by" | "bounded_by" | "cites";
+export type EdgeType = "rests_on" | "enables" | "raises" | "verified_by" | "references" | "converse_fails" | "refuted_by" | "bounded_by" | "cites";
 
 export interface VocabularyEntry {
   description: string;

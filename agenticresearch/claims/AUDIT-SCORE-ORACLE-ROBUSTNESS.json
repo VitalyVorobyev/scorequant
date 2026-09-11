@@ -16,13 +16,6 @@
     "scope is O6.1-O6.5 and the two claim nodes; vector scores, refitted rules, weights, bootstrap comparisons and any public API are flagged, not chased",
     "no src/ or public API change is authorized by this audit"
   ],
-  "dependencies": [
-    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
-    "RETENTION-PLUGIN-COVERAGE-DOOR3",
-    "OPEN-RETENTION-UNCERTAINTY",
-    "FI-QUANT-IDENTITY",
-    "PROXY-TRUE-RETAINED-FI"
-  ],
   "boundary_counterexamples": [
     "CE-O6-ETA-ZERO-MULTIATOM-VARIANCE-001"
   ],
@@ -44,5 +37,12 @@
   },
   "artifact": "py/audit_score_oracle_retention_uncertainty.py",
   "role": "independent publication-grade verification and hardening of O6; authorizes removal of the 'not independently audited' notes, not a library uncertainty API",
-  "warning": "Verified does not mean deployable: the interval is conditional on a frozen rule, needs an oracle-score evaluation sample from the reference law, has no finite-sample guarantee (0.90-0.92 coverage at n = 100), and is unsupported (conservative, width O(1/n)) when sigma^2 = 0. Nothing here covers vector scores, refitted rules or weights."
+  "warning": "Verified does not mean deployable: the interval is conditional on a frozen rule, needs an oracle-score evaluation sample from the reference law, has no finite-sample guarantee (0.90-0.92 coverage at n = 100), and is unsupported (conservative, width O(1/n)) when sigma^2 = 0. Nothing here covers vector scores, refitted rules or weights.",
+  "references": [
+    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
+    "RETENTION-PLUGIN-COVERAGE-DOOR3",
+    "OPEN-RETENTION-UNCERTAINTY",
+    "FI-QUANT-IDENTITY",
+    "PROXY-TRUE-RETAINED-FI"
+  ]
 }

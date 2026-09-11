@@ -14,13 +14,6 @@
     "exact claims recomputed with fractions.Fraction; population controls use an independently derived adaptive quadrature path",
     "the audit does not re-audit inherited DS-SCHUR, FI-QUANT-IDENTITY, FI-RANK-CEILING, or the measured dependency of the compile certificate"
   ],
-  "dependencies": [
-    "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
-    "DS-STABLE-BASINS-LCM-CLASSIFICATION",
-    "DS-STABLE-BASINS-FIXED-POINT-GATE",
-    "DS-STABLE-BASINS-GATE-SCANS",
-    "DS-PROFILED-COMPILE-CERTIFICATE"
-  ],
   "literature": [
     "Bickel-Klaassen-Ritov-Wellner-1993",
     "Jakubowski-2021",
@@ -34,5 +27,12 @@
     "section": "Publication-grade audit of DS17 stable basins"
   },
   "artifact": "py/audit_ds_stable_basins.py",
-  "role": "independent publication-grade verification and hardening of the load-bearing DS17 compile refusal"
+  "role": "independent publication-grade verification and hardening of the load-bearing DS17 compile refusal",
+  "references": [
+    "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
+    "DS-STABLE-BASINS-LCM-CLASSIFICATION",
+    "DS-STABLE-BASINS-FIXED-POINT-GATE",
+    "DS-STABLE-BASINS-GATE-SCANS",
+    "DS-PROFILED-COMPILE-CERTIFICATE"
+  ]
 }

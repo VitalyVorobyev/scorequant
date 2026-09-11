@@ -28,7 +28,6 @@ from ._validation import (
     validate_sample,
 )
 from .config import ExecutionConfig, ScalarDPConfig, _validate_finite, validate_rank_rtol
-from .quantizers import chunked_hard_assign, scalar_interval_dp
 from .reports import (
     EfficientScoreBound,
     InformationReport,
@@ -36,6 +35,8 @@ from .reports import (
     RetentionUncertainty,
     RetentionUncertaintyStatus,
 )
+from .solvers.common import chunked_hard_assign
+from .solvers.scalar import scalar_interval_dp
 from .sources import ScoreSchema
 from .transforms import _default_rank_rtol, fisher_transform
 

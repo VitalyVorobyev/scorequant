@@ -17,8 +17,6 @@
     "a saddle certificate names the concrete DP-optimal labeling whose normal equation was checked; the induced strip rule on S_psi - beta* S_lambda describes that labeling but carries no held-out guarantee"
   ],
   "dependencies": [
-    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
-    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER",
     "DS-MATRIX-TILT-NONQUASICONVEX",
     "DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
     "DS-STABLE-BASINS-CENTERED-OBSTRUCTION",
@@ -51,5 +49,9 @@
   },
   "audit": "AUDITS/AUDIT-DS-STABLE-MARGINS-COMPILE-001.md",
   "role": "deployment decision table; DS16 portion audited 30 Aug 2026, DS19 portion audited 2 Sep 2026",
-  "warning": "The recorded audit covers the inherited DS16 portion; the DS19 clauses are audited in AUDITS/AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER-001.md. Both audits authorize no src change: verification of the certificate theory is not a compile authorization. 'Only currently established' is registry-relative, not an impossibility theorem. Delta-consistency, a finite floor, a gate root, an epsilon-tight numerical bracket, and an open reported bracket are not compile authorizations, and an open reported bracket is not a gap certificate."
+  "warning": "The recorded audit covers the inherited DS16 portion; the DS19 clauses are audited in AUDITS/AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER-001.md. Both audits authorize no src change: verification of the certificate theory is not a compile authorization. 'Only currently established' is registry-relative, not an impossibility theorem. Delta-consistency, a finite floor, a gate root, an epsilon-tight numerical bracket, and an open reported bracket are not compile authorizations, and an open reported bracket is not a gap certificate.",
+  "references": [
+    "AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER",
+    "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER"
+  ]
 }

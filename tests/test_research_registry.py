@@ -181,3 +181,57 @@ def test_formal_proof_validator_rejects_a_dangling_declaration(tool: ModuleType)
     }
     tool._check_formal_proofs(registry, WORKSPACE, out)
     assert any("declares no theorem named no_such_theorem" in line for line in out)
+
+
+def test_proof_graph_rejects_cycles_and_keeps_evidence_separate(tool: ModuleType) -> None:
+    index = {
+        "A": {"id": "A", "dependencies": ["B"], "verified_by": ["AUDIT"]},
+        "B": {"id": "B", "dependencies": ["A"]},
+        "AUDIT": {
+            "id": "AUDIT",
+            "references": ["A", "B"],
+            "proof_location": {"file": "AUDITS/example.md"},
+        },
+    }
+    errors: list[str] = []
+    tool._check_graph_edges(index, errors)
+    assert errors == ["dependency cycle: A -> B -> A"]
+    index["B"]["dependencies"] = []
+    errors.clear()
+    tool._check_graph_edges(index, errors)
+    assert errors == []
+    assert tool.transitive_dependencies(index, "A") == ["B"]
+
+
+def test_relation_validation_rejects_invalid_links(tool: ModuleType) -> None:
+    index = {
+        "A": {
+            "id": "A",
+            "dependencies": ["A", "A"],
+            "references": ["MISSING"],
+            "verified_by": ["A"],
+        }
+    }
+    errors: list[str] = []
+    tool._check_graph_edges(index, errors)
+    assert any("duplicate dependencies" in error for error in errors)
+    assert any("self-dependency" in error for error in errors)
+    assert any("unknown claim MISSING" in error for error in errors)
+    assert any("not an audit" in error for error in errors)
+
+
+def test_audit_and_measurement_are_not_proof_prerequisites(tool: ModuleType) -> None:
+    index = {
+        "A": {"id": "A", "dependencies": ["AUDIT", "MEASURED"]},
+        "AUDIT": {"id": "AUDIT", "proof_location": {"file": "AUDITS/example.md"}},
+        "MEASURED": {"id": "MEASURED", "status": "measured"},
+    }
+    errors: list[str] = []
+    tool._check_graph_edges(index, errors)
+    assert len(errors) == 2
+    assert all("evidence belongs" in error for error in errors)
+    index["A"]["dependencies"] = []
+    index["A"]["implies"] = ["AUDIT"]
+    errors.clear()
+    tool._check_graph_edges(index, errors)
+    assert errors == ["A: audit target AUDIT belongs in verified_by, not implies"]

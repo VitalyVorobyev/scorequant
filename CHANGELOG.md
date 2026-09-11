@@ -11,6 +11,22 @@ once already, which retroactively asserted that unshipped work had shipped.
 
 ## [Unreleased]
 
+### Removed
+
+- The private `scorequant.quantizers` façade; internal imports now use their owning
+  `scorequant.solvers` modules. These modules remain private.
+
+### Fixed
+
+- Separate mathematical proof prerequisites from audit/evidence references in the research
+  registry and Atlas; validate the proof DAG.
+- Explain D-only global certification as an implementation boundary, not a failure of Schur
+  refinement monotonicity.
+
+### Documentation
+
+- Inventory the 1.x public stability contract and add a v0.2.0 format-1 artifact compatibility fixture.
+
 ### Diagnostics
 
 - `retention_uncertainty` and `RetentionUncertainty` (ADR 0039): the audited plug-in standard error

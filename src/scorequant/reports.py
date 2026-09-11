@@ -245,7 +245,8 @@ class GeometryReport:
     metric \(I^{-1}\) would raise the log determinant by at least
     \(\log(1+\alpha\beta q_\delta^2/4)>0\), where
     \(q_\delta=(\mu_a-\mu_b)^\top I^{-1}(\mu_a-\mu_b)\) separates the two cell
-    means. Exchange stability therefore forces strict Voronoi geometry, which is
+    means. Exact zero-tolerance stability under the merged-atom hypotheses
+    therefore forces strict Voronoi geometry, which is
     what makes ``PartitionResult.compile_quantizer`` well posed. This report
     measures both sides of that statement on the terminal state instead of
     assuming them.
@@ -259,6 +260,11 @@ class GeometryReport:
     such a state at tolerance zero rejects a partition the solver never claimed
     to have refined further, so every field below is judged against
     ``gain_tolerance`` instead.
+
+    At positive tolerance this report covers admissible individual moves only.
+    It does not certify that every prediction disagreement is admissible; the
+    solver checks that separately and refuses singleton disagreements. It also
+    supplies no bound on simultaneous relabeling or population loss.
 
     All quadratic forms use the same metric and cell means the solver ended
     with, evaluated over the distinct positive-weight score atoms.

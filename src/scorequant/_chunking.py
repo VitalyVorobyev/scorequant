@@ -4,7 +4,7 @@ Several private kernels evaluate one ``[chunk_rows, n_bins]`` (or the
 Mahalanobis ``[chunk_rows, n_bins, rank]`` residual behind it) distance table
 per row chunk instead of materializing the full ``[n_rows, n_bins, rank]``
 tensor at once. ``assignment_chunk_rows`` is the one place that budget is
-computed, so ``partition.py``, ``quantizers.py``, and ``result.py`` size their
+computed, so ``partition.py``, ``solvers/``, and ``result.py`` size their
 chunks identically instead of drifting apart under independent edits.
 """
 

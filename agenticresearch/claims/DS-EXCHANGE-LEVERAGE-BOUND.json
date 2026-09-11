@@ -18,8 +18,7 @@
     "D-LOGDET-GAIN"
   ],
   "implies": [
-    "OPEN-DS-FINITE-POP-BRIDGE",
-    "AUDIT-DS-POPULATION-BRIDGE"
+    "OPEN-DS-FINITE-POP-BRIDGE"
   ],
   "proof_location": {
     "file": "KNOWN_RESULTS/05b-ds-bridge.md",
@@ -27,5 +26,8 @@
   },
   "role": "finite half of the finite-to-population bridge",
   "audit": "AUDITS/AUDIT-DS-POPULATION-BRIDGE-001.md",
-  "literature_search_status": "search_gap"
+  "literature_search_status": "search_gap",
+  "verified_by": [
+    "AUDIT-DS-POPULATION-BRIDGE"
+  ]
 }

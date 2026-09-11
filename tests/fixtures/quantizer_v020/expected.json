@@ -1,0 +1,52 @@
+{
+  "writer_tag": "v0.2.0",
+  "writer_commit": "ed219d5f3301912ebfc6127da28869777142fa52",
+  "writer_version": "0.2.0",
+  "numpy_version": "2.5.2",
+  "format_version": 1,
+  "training_scores": [
+    [
+      -3.0
+    ],
+    [
+      -2.0
+    ],
+    [
+      -1.0
+    ],
+    [
+      1.0
+    ],
+    [
+      2.0
+    ],
+    [
+      3.0
+    ]
+  ],
+  "prediction_scores": [
+    [
+      -4.0
+    ],
+    [
+      -1.5
+    ],
+    [
+      0.0
+    ],
+    [
+      0.75
+    ],
+    [
+      4.0
+    ]
+  ],
+  "expected_labels": [
+    0,
+    0,
+    0,
+    1,
+    1
+  ],
+  "artifact_sha256": "fee2ee23b72567e63a47d83a9cfaf38c1b9dab00e5fd6f647d8bac3432e38eee"
+}

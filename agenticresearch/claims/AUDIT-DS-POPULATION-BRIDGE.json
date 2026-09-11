@@ -8,16 +8,6 @@
   "status": "project_proved",
   "publication_status": "internal",
   "statement": "DS11-DS14 were independently re-derived and survived exact-rational exhaustive attack (1,748 admissible moves at all 171 stable states of five adversarial datasets including vector nuisance and vector POI; 400 variational-identity instances with singular blocks; both fixtures re-verified; fully exact N=10 global-optimum margin scan). DS11's core identity is classical (Krein/Anderson/Li-Mathias: prior art found); DS12/DS13 verified with hardened assumptions (selection-independent deployability; merged atoms dropped, degenerate destinations closed via Fischer); DS14 verified as a conditional theorem after supplying the fixed-class slab Glivenko-Cantelli step, the derived Lambda, the compact parameter set, and the general-d_psi merged-value argument. Targeted search for DS12-DS14 found no direct equivalent: a search gap, not novelty.",
-  "dependencies": [
-    "DS-PROFILED-VARIATIONAL",
-    "OPEN-DS-POP-COMMON-METRIC",
-    "DS-EXCHANGE-LEVERAGE-BOUND",
-    "OPEN-DS-FINITE-POP-BRIDGE",
-    "FI-QUANT-IDENTITY",
-    "D-RANK2-MOVE",
-    "D-LOGDET-GAIN",
-    "DS-GRADIENT-EFFICIENT-SEMIMETRIC"
-  ],
   "proof_location": {
     "file": "AUDITS/AUDIT-DS-POPULATION-BRIDGE-001.md",
     "section": "Publication-grade audit of the profiled Ds population bridge"
@@ -26,5 +16,15 @@
   "literature": [
     "Li-Mathias-2000"
   ],
-  "literature_search_status": "prior_art_found"
+  "literature_search_status": "prior_art_found",
+  "references": [
+    "DS-PROFILED-VARIATIONAL",
+    "OPEN-DS-POP-COMMON-METRIC",
+    "DS-EXCHANGE-LEVERAGE-BOUND",
+    "OPEN-DS-FINITE-POP-BRIDGE",
+    "FI-QUANT-IDENTITY",
+    "D-RANK2-MOVE",
+    "D-LOGDET-GAIN",
+    "DS-GRADIENT-EFFICIENT-SEMIMETRIC"
+  ]
 }

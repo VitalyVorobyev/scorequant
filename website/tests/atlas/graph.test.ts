@@ -14,6 +14,16 @@ describe("graph queries over the real atlas", () => {
     expect(verifiedBy(adj, D5)).toEqual(["AUDIT-D-EXCHANGE-VORONOI"]);
   });
 
+  it("keeps audit inputs outside the proof closure but reachable as evidence", () => {
+    const audit = "AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER";
+    const claim = "OPEN-DS-PRACTICAL-CERTIFIED-SOLVER";
+    expect(restsOn(adj, audit)).toEqual([]);
+    expect(verifiedBy(adj, claim)).toContain(audit);
+    expect(closure(adj, claim, "rests_on", "out").map((entry) => entry.id)).not.toContain(audit);
+    expect(closure(adj, audit, "references", "out").map((entry) => entry.id)).toContain(claim);
+    expect(egoGraph(core, adj, claim).nodes).toContain(audit);
+  });
+
   it("names where a result stops", () => {
     const stop = boundary(adj, D5);
     expect(stop.converse).toEqual(["D-VORONOI-NOT-EXCHANGE"]);

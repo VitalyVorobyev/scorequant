@@ -53,7 +53,7 @@
       "name": "EfficientScoreBound",
       "reference": "/reference/symbols/index/",
       "signature": "EfficientScoreBound(upper_bound: float, labels: np.ndarray, efficient_scores: np.ndarray, n_bins: int, interest: tuple[int, ...])",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L342",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L446",
       "summary": "Certify a ceiling on profiled information from the full-data efficient score."
     },
     {
@@ -85,7 +85,7 @@
       "name": "GeometryReport",
       "reference": "/reference/symbols/index/",
       "signature": "GeometryReport(maximum_voronoi_violation: float, guaranteed_violation_gain: float, maximum_violation_gain: float, maximum_separation_residual: float, violating_moves: int, evaluated_moves: int, voronoi_consistent: bool, separation_certified: bool, gain_tolerance: float)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L141",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L239",
       "summary": "Certify the self-consistent Voronoi geometry of a finite D partition."
     },
     {
@@ -181,7 +181,7 @@
       "name": "PartitionCertificate",
       "reference": "/reference/symbols/index/",
       "signature": "PartitionCertificate(status: Literal['optimal', 'budget_exhausted'], objective: float, labels: np.ndarray, upper_bound: float, gap: float, nodes_explored: int, incumbent_was_optimal: bool)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L289",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L393",
       "summary": "Report what a bounded global D search actually proved."
     },
     {
@@ -205,7 +205,7 @@
       "name": "ProfiledGeometryReport",
       "reference": "/reference/symbols/index/",
       "signature": "ProfiledGeometryReport(metric: np.ndarray, maximum_positive_violation: float, maximum_theoretical_bound: float, maximum_bound_residual: float, violating_moves: int, evaluated_moves: int, bound_certified: bool)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L272",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L376",
       "summary": "Diagnose the finite efficient-semimetric gap of a profiled partition."
     },
     {
@@ -213,7 +213,7 @@
       "name": "ProfiledInformationReport",
       "reference": "/reference/symbols/index/",
       "signature": "ProfiledInformationReport(interest: tuple[int, ...], nuisance: tuple[int, ...], schur_unbinned: np.ndarray, schur_binned: np.ndarray, nuisance_unbinned: np.ndarray, nuisance_binned: np.ndarray, objective: float, logdet_retention: float, geometric_mean_retention: float, interest_rank: int, nuisance_rank: int, schema: ScoreSchema | None = None)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L91",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L189",
       "summary": "Report same-label profiled information for interest and nuisance blocks."
     },
     {
@@ -237,7 +237,7 @@
       "name": "RatioClosureReport",
       "reference": "/reference/symbols/index/",
       "signature": "RatioClosureReport(normalizers: np.ndarray, max_residual: float)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L63",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L161",
       "summary": "Report how far model density ratios are from unit normalization."
     },
     {
@@ -255,6 +255,14 @@
       "signature": "RefusalError(message: str, counterexample: str)",
       "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/_errors.py#L18",
       "summary": "The library declines a valid request because a theorem-backed condition fails on the data."
+    },
+    {
+      "kind": "class",
+      "name": "RetentionUncertainty",
+      "reference": "/reference/symbols/index/",
+      "signature": "RetentionUncertainty(estimate: float | None, standard_error: float | None, confidence_interval: tuple[float, float] | None, confidence_level: float, n_observations: int, status: RetentionUncertaintyStatus)",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L72",
+      "summary": "Sampling uncertainty of a frozen rule's geometric-mean retention on held-out true scores."
     },
     {
       "kind": "class",
@@ -325,7 +333,7 @@
       "name": "StabilityReport",
       "reference": "/reference/symbols/index/",
       "signature": "StabilityReport(stable: bool, best_gain: float, best_move: tuple[int, int] | None, objective: float, n_bins: int, criterion: DOptimality | ProfiledDOptimality, gain_tolerance: float)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L224",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/reports.py#L328",
       "summary": "Certify that no single-row relocation improves one supplied labeling."
     },
     {
@@ -333,7 +341,7 @@
       "name": "binned_fisher_information",
       "reference": "/reference/symbols/index/",
       "signature": "binned_fisher_information(scores: ArrayLike, assignments: ArrayLike, weights: ArrayLike | None = None, *, n_bins: int | None = None, execution: ExecutionConfig | None = None) -> np.ndarray",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L135",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L143",
       "summary": "Estimate Fisher information retained by hard bin counts."
     },
     {
@@ -349,7 +357,7 @@
       "name": "efficient_score_bound",
       "reference": "/reference/symbols/index/",
       "signature": "efficient_score_bound(scores: ArrayLike, *, interest: tuple[int, ...], weights: ArrayLike | None = None, n_bins: int, config: ScalarDPConfig | None = None, execution: ExecutionConfig | None = None) -> EfficientScoreBound",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L549",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L807",
       "summary": "Certify a ceiling on profiled information by quantizing the efficient score."
     },
     {
@@ -357,7 +365,7 @@
       "name": "efficient_scores",
       "reference": "/reference/symbols/index/",
       "signature": "efficient_scores(scores: ArrayLike, *, interest: tuple[int, ...], weights: ArrayLike | None = None, execution: ExecutionConfig | None = None) -> np.ndarray",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L494",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L752",
       "summary": "Project scores with the full-information nuisance regression."
     },
     {
@@ -365,7 +373,7 @@
       "name": "exchange_stability_report",
       "reference": "/reference/symbols/index/",
       "signature": "exchange_stability_report(scores: ArrayLike, labels: ArrayLike, *, weights: ArrayLike | None = None, criterion: DOptimality | ProfiledDOptimality | None = None, rank_rtol: float | None = None, gain_tolerance: float = 1e-10, execution: ExecutionConfig | None = None) -> StabilityReport",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/partition.py#L578",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/partition.py#L581",
       "summary": "Certify one supplied labeling against every single-row relocation."
     },
     {
@@ -373,7 +381,7 @@
       "name": "fisher_information",
       "reference": "/reference/symbols/index/",
       "signature": "fisher_information(scores: ArrayLike, weights: ArrayLike | None = None, *, execution: ExecutionConfig | None = None) -> np.ndarray",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L36",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L44",
       "summary": "Estimate unbinned Fisher information."
     },
     {
@@ -381,7 +389,7 @@
       "name": "fit_quantizer",
       "reference": "/reference/symbols/index/",
       "signature": "fit_quantizer(source: Source, *, provider: ScoreProvider | None = None, validation: Source | None = None, n_bins: int, criterion: Criterion | None = None, config: QuantizerConfig | None = None, diagnostics: DiagnosticsMode = 'endpoints', execution: ExecutionConfig | None = None) -> QuantizerResult",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/api.py#L260",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/api.py#L257",
       "summary": "Fit a reusable hard rule from an empirical or bounded score law."
     },
     {
@@ -389,7 +397,7 @@
       "name": "fractional_fisher_information",
       "reference": "/reference/symbols/index/",
       "signature": "fractional_fisher_information(scores: ArrayLike, responsibilities: ArrayLike, weights: ArrayLike | None = None, *, execution: ExecutionConfig | None = None) -> np.ndarray",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L170",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L178",
       "summary": "Estimate Fisher information retained by fractional assignments."
     },
     {
@@ -397,7 +405,7 @@
       "name": "information_report",
       "reference": "/reference/symbols/index/",
       "signature": "information_report(scores: ArrayLike, assignments: ArrayLike, weights: ArrayLike | None = None, *, n_bins: int | None = None, rank_rtol: float | None = None, execution: ExecutionConfig | None = None) -> InformationReport",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L252",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L260",
       "summary": "Build retained-information and occupancy diagnostics for hard bins."
     },
     {
@@ -413,7 +421,7 @@
       "name": "optimize_partition",
       "reference": "/reference/symbols/index/",
       "signature": "optimize_partition(scores: ScoreSample | ArrayLike, *, weights: ArrayLike | None = None, n_bins: int, criterion: DOptimality | ProfiledDOptimality | None = None, config: PartitionConfig | None = None, provenance: ScoreProvenance | None = None, initial_labels: ArrayLike | None = None, execution: ExecutionConfig | None = None) -> PartitionResult",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/api.py#L185",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/api.py#L182",
       "summary": "Optimize labels of one fixed score table without prediction semantics."
     },
     {
@@ -453,7 +461,7 @@
       "name": "profiled_information_report",
       "reference": "/reference/symbols/index/",
       "signature": "profiled_information_report(scores: ArrayLike, assignments: ArrayLike, *, interest: tuple[int, ...], weights: ArrayLike | None = None, n_bins: int | None = None, schema: ScoreSchema | None = None, execution: ExecutionConfig | None = None) -> ProfiledInformationReport",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L422",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L680",
       "summary": "Build same-label profiled-\\(D_s\\) diagnostics without regularization."
     },
     {
@@ -471,6 +479,14 @@
       "signature": "ratios_from_posteriors(posteriors: ArrayLike, class_priors: ArrayLike, *, execution: ExecutionConfig | None = None) -> np.ndarray",
       "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/ratios.py#L59",
       "summary": "Convert calibrated class posteriors into model density ratios."
+    },
+    {
+      "kind": "function",
+      "name": "retention_uncertainty",
+      "reference": "/reference/symbols/index/",
+      "signature": "retention_uncertainty(scores: ArrayLike, assignments: ArrayLike, *, n_bins: int | None = None, confidence_level: float = 0.95, rank_rtol: float | None = None, execution: ExecutionConfig | None = None) -> RetentionUncertainty",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/information.py#L421",
+      "summary": "Estimate the sampling uncertainty of a frozen rule's held-out retention."
     },
     {
       "kind": "function",

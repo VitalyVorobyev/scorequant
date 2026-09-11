@@ -44,14 +44,11 @@ from .information import (
 )
 from .partition import optimize_d_partition, optimize_profiled_d_partition
 from .providers import ScoreProvider, validate_provider
-from .quantizers import (
-    QuantizerRun,
-    chunked_hard_assign,
-    scalar_weighted_kmeans_dp,
-    soft_voronoi,
-    weighted_kmeans,
-)
 from .result import InformationReport, OptimizationTrace, PartitionResult, QuantizerResult
+from .solvers.common import QuantizerRun, chunked_hard_assign
+from .solvers.kmeans import weighted_kmeans
+from .solvers.scalar import scalar_weighted_kmeans_dp
+from .solvers.soft import soft_voronoi
 from .sources import (
     IntegrationSource,
     ObservationSample,

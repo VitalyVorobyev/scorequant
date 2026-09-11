@@ -22,8 +22,7 @@
     "DS-EFFICIENT-SCORE-DOMINATION",
     "OPEN-DS-DOMINATION-EQUALITY",
     "DS-GLOBAL-TIE-DEGENERACY",
-    "OPEN-DS-FINITE-POP-BRIDGE",
-    "AUDIT-DS-POPULATION-BRIDGE"
+    "OPEN-DS-FINITE-POP-BRIDGE"
   ],
   "proof_location": {
     "file": "KNOWN_RESULTS/05b-ds-bridge.md",
@@ -34,5 +33,8 @@
   "literature": [
     "Li-Mathias-2000"
   ],
-  "literature_search_status": "prior_art_found"
+  "literature_search_status": "prior_art_found",
+  "verified_by": [
+    "AUDIT-DS-POPULATION-BRIDGE"
+  ]
 }

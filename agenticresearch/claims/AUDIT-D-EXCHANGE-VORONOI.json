@@ -8,12 +8,6 @@
   "status": "project_proved",
   "publication_status": "internal",
   "statement": "The finite D exchange=>strict Voronoi theorem was independently re-derived and survived exact-rational exhaustive attack over weighted, singleton, tie, and near-singular cases. The audit sharpened duplicate handling, exact-tolerance, positivity, and move-feasibility assumptions; an unmerged split-duplicate boundary failure is serialized. Targeted prior-art search found no direct equivalent, which is a search gap rather than a novelty claim.",
-  "dependencies": [
-    "D-RANK2-MOVE",
-    "D-LOGDET-GAIN",
-    "D-LEVERAGE",
-    "D-EXCHANGE-IMPLIES-VORONOI"
-  ],
   "proof_location": {
     "file": "AUDITS/AUDIT-D-EXCHANGE-VORONOI-001.md",
     "section": "Publication-grade audit of finite D exchange implies Voronoi"
@@ -22,5 +16,11 @@
     "CE-D-UNMERGED-DUPLICATES-001"
   ],
   "artifact": "py/audit_d_exchange_voronoi.py",
-  "literature_search_status": "search_gap"
+  "literature_search_status": "search_gap",
+  "references": [
+    "D-RANK2-MOVE",
+    "D-LOGDET-GAIN",
+    "D-LEVERAGE",
+    "D-EXCHANGE-IMPLIES-VORONOI"
+  ]
 }

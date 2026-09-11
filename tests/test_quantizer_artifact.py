@@ -189,3 +189,32 @@ def test_a_profiled_rule_records_the_parameters_it_was_built_for(tmp_path: Path)
     assert result.train_profiled_report.interest_names == ("HSPC",)
     assert result.train_profiled_report.nuisance_names == ("T", "B", "mono")
     assert "interest: HSPC" in result.train_profiled_report.describe()
+
+
+def test_historical_v020_artifact_loads_without_jax() -> None:
+    """A committed old-writer artifact guards compatibility independently of save()."""
+    fixture = Path(__file__).parent / "fixtures" / "quantizer_v020"
+    program = f"""
+import sys, json, hashlib
+from pathlib import Path
+class NoJax:
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == "jax" or fullname.startswith("jax."):
+            raise ImportError(fullname)
+sys.meta_path.insert(0, NoJax())
+import numpy as np
+import scorequant as sq
+fixture = Path({str(fixture)!r})
+expected = json.loads((fixture / "expected.json").read_text())
+artifact = fixture / "rule.sqz"
+assert hashlib.sha256(artifact.read_bytes()).hexdigest() == expected["artifact_sha256"]
+rule = sq.Quantizer.load(artifact)
+actual = rule.predict_scores(
+    expected["prediction_scores"], execution=sq.ExecutionConfig(backend="numpy")
+)
+assert np.array_equal(actual, expected["expected_labels"])
+assert rule.schema.parameters == ("location",)
+assert "jax" not in sys.modules
+"""
+    completed = subprocess.run([sys.executable, "-c", program], capture_output=True, text=True)
+    assert completed.returncode == 0, completed.stderr

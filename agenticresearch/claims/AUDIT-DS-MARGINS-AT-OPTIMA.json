@@ -8,14 +8,6 @@
   "status": "project_proved",
   "publication_status": "internal",
   "statement": "DS15 was independently re-derived and verified for d_psi = d_lambda = 1 with hardened assumptions: Proposition 6 (achievability by steering) was closed from a sketch to a proof (boundary/mass consistency from (S)-uniqueness, a VC/LIL availability count for the swap slabs, drift accounting, two-direction controllability; honest rate ~N^{-3/4} up to log log factors); the conclusion-(3) Glivenko-Cantelli import was corrected (fixed half-plane VC class plus (S)-atomlessness, no (M4)/(M5) needed); Proposition 5's uniform Lipschitz-in-tilt bound was derived. The registered d_lambda-generality was refuted: at K = d_lambda + 1 exact centering forces every feasible labeling's profiled value to exactly zero (CE-DS-MARGINS-RANK-VACUITY-001), so K >= d_lambda + 2 is the correct cardinality condition and the d_lambda >= 2 branch is open (OP29). Independent exact evidence: 20 exhaustively certified global optima at N=12-16 (up to 7,141,686 canonical partitions per instance, ~42.6M exact evaluations), zero exact full-lattice ties, sandwich/tax identity 20/20, the researcher's float top-64 screen validated (rank 1, zero guard casualties), the float-only scalar (M2) sweep anchored by an exact DP at N=1000. Targeted prior-art search found no direct equivalent of the margins-failure-at-optima dichotomy: a search gap, not novelty.",
-  "dependencies": [
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "DS-PROFILED-VARIATIONAL",
-    "DS-EFFICIENT-SCORE-DOMINATION",
-    "DS-SCALAR-EFFICIENT-DP",
-    "DS-FULL-PROFILE-K-LE-D-SINGULAR",
-    "FI-QUANT-IDENTITY"
-  ],
   "proof_location": {
     "file": "AUDITS/AUDIT-DS-MARGINS-AT-OPTIMA-001.md",
     "section": "Publication-grade audit of the DS15 margins dichotomy"
@@ -31,5 +23,13 @@
     "Mease-Nair-2006",
     "Blanchard-Jaffe-Zhivotovskiy-2025"
   ],
-  "literature_search_status": "search_gap"
+  "literature_search_status": "search_gap",
+  "references": [
+    "OPEN-DS-MARGINS-AT-OPTIMA",
+    "DS-PROFILED-VARIATIONAL",
+    "DS-EFFICIENT-SCORE-DOMINATION",
+    "DS-SCALAR-EFFICIENT-DP",
+    "DS-FULL-PROFILE-K-LE-D-SINGULAR",
+    "FI-QUANT-IDENTITY"
+  ]
 }

@@ -21,7 +21,6 @@
   },
   "role": "key inequality in finite D geometry",
   "implies": [
-    "AUDIT-D-EXCHANGE-VORONOI",
     "D-EXCHANGE-IMPLIES-VORONOI",
     "D-EXCHANGE-VIOLATION-LOWER-BOUND"
   ],
@@ -31,5 +30,8 @@
     "file": "formal/ScoreQuantFormal/Leverage.lean",
     "declaration": "ScoreQuantFormal.leverage_inequality",
     "statement_audit": "AUDITS/FORMALIZATION-D-LEVERAGE-001.md"
-  }
+  },
+  "verified_by": [
+    "AUDIT-D-EXCHANGE-VORONOI"
+  ]
 }

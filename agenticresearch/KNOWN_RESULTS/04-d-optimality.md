@@ -265,15 +265,21 @@ centroids and the retained information, so a rule built from the *unmerged* data
 is the same rule. That direction is the content — the unmerged scores are not
 distinct, so D5 does not apply to them directly.
 
-A finite numerical solver using a positive gain tolerance has the weaker,
-explicitly tolerance-stamped compiler guarantee documented by `GeometryReport`
-(`D-COMPILE-TOLERANCE-GUARANTEE`). The derivation is D5's quantitative bound read
-backwards: a nearest-centroid disagreement from a non-singleton source has exact
-gain at least \(\log(1+\alpha\beta q_\delta^2/4)>0\), so a solver that
-accepted no move of gain above \(\varepsilon\) leaves only disagreements whose
-guaranteed gain is at most \(\varepsilon\). Strictness is gone with it, which is
-why prediction keeps a deterministic tie-break. That regime is where every real
-solver lives, and it is not formalized.
+A finite numerical solver using a positive gain tolerance has a weaker, conditional
+compiler guarantee (`D-COMPILE-TOLERANCE-GUARANTEE`, independently audited in
+`AUDITS/AUDIT-D-COMPILE-TOLERANCE-001.md`). A complete admissible-move scan bounds
+individual relocation gains by the tolerance, each priced against the original partition;
+D5's lower bound alone cannot supply this upper bound. Every positive-weight prediction
+disagreement must also be admissible. Positive tolerance does not force distinct centroids:
+a singleton tie can make a disagreement inadmissible, and the library's separate guard
+refuses it (`CE-D-COMPILE-SINGLETON-TIE-001`).
+
+There is no bound by this tolerance on simultaneous prediction changes
+(`CE-D-COMPILE-BATCH-TOLERANCE-001`), global suboptimality or population loss.
+Prediction keeps deterministic lowest-index argmin. The implementation uses numerical
+exact-formula gains in the projected score coordinates, not interval arithmetic; zero-weight
+rows remain predictable but have no positive-weight label guarantee. This regime is not
+formalized.
 
 **Machine-checked.** The exact zero-tolerance statements are
 `ScoreQuantFormal.closure_reproduces_labels` and

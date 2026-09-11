@@ -16,16 +16,6 @@
     "scope is O7.1-O7.5 and the four nodes; refitted rules, weights, the no-oracle case, D_s, second-order corrections and any public API are flagged, not chased",
     "no src/ or public API change is authorized by this audit; it clears closure step 1 of OPEN_PROBLEMS.md as an engineering step with its own tests and docs"
   ],
-  "dependencies": [
-    "RETENTION-PLUGIN-CLT-FROZEN-VECTOR",
-    "RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE",
-    "RETENTION-PLUGIN-COVERAGE-VECTOR",
-    "OPEN-RETENTION-UNCERTAINTY",
-    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
-    "FI-QUANT-IDENTITY",
-    "FI-RANK-CEILING",
-    "PROXY-TRUE-RETAINED-FI"
-  ],
   "boundary_counterexamples": [
     "CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001"
   ],
@@ -48,5 +38,15 @@
   },
   "artifact": "py/audit_retention_plugin_vector.py",
   "role": "independent publication-grade verification and hardening of O7; authorizes removal of the 'not independently audited' notes and clears closure step 1 (ship the error bar) as engineering, not as a research claim",
-  "warning": "Verified does not mean deployable: the interval is conditional on a frozen rule, needs an oracle-score evaluation sample from the reference law, has no finite-sample guarantee (liberal at every n <= 3000 on unbounded polynomial scores; nominal from n = 100 on bounded mixture scores), is unsupported when sigma^2 = 0 (measured conservative), and must not be used at rank-deficient I_hat_Z, singular V_hat or K <= d, where the plug-in is biased upward at a rate slower than n^{-1/2} for d >= 2. Nothing here covers refitted rules, weights, the no-oracle case or D_s."
+  "warning": "Verified does not mean deployable: the interval is conditional on a frozen rule, needs an oracle-score evaluation sample from the reference law, has no finite-sample guarantee (liberal at every n <= 3000 on unbounded polynomial scores; nominal from n = 100 on bounded mixture scores), is unsupported when sigma^2 = 0 (measured conservative), and must not be used at rank-deficient I_hat_Z, singular V_hat or K <= d, where the plug-in is biased upward at a rate slower than n^{-1/2} for d >= 2. Nothing here covers refitted rules, weights, the no-oracle case or D_s.",
+  "references": [
+    "RETENTION-PLUGIN-CLT-FROZEN-VECTOR",
+    "RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE",
+    "RETENTION-PLUGIN-COVERAGE-VECTOR",
+    "OPEN-RETENTION-UNCERTAINTY",
+    "RETENTION-PLUGIN-CLT-FROZEN-SCALAR",
+    "FI-QUANT-IDENTITY",
+    "FI-RANK-CEILING",
+    "PROXY-TRUE-RETAINED-FI"
+  ]
 }

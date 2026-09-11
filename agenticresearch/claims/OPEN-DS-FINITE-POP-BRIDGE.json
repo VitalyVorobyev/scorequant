@@ -32,11 +32,13 @@
     "CE-DS-DEGENERATE-GLOBAL-TIE-001"
   ],
   "implies": [
-    "OPEN-DS-MARGINS-AT-OPTIMA",
-    "AUDIT-DS-POPULATION-BRIDGE"
+    "OPEN-DS-MARGINS-AT-OPTIMA"
   ],
   "warning": "Conditional theorem. DS15 (OPEN-DS-MARGINS-AT-OPTIMA, 29 Aug 2026) settles the margin question on the conditionally centered d_psi = d_lambda = 1 class (audited 30 Aug 2026; the d_lambda >= 2 generality of DS15 was refuted at K = d_lambda + 1 and is open at K >= d_lambda + 2): (M2) is automatic at global optima, but (M3) fails there for every kappa>0 - free global optima converge to the nuisance-degenerate efficient-score interval quantizer, so the bridge's hypothesis set is empty along them and DS14 governs margin-CERTIFIED (delta(kappa)-suboptimal) solutions instead. Beyond that class the margins remain open (OPEN-DS-MARGINS-NONCENTERED). Passed the publication-grade audit (AUDITS/AUDIT-DS-POPULATION-BRIDGE-001.md), which supplied the fixed-class slab Glivenko-Cantelli step, the derived Lambda, the explicit compact parameter set, and the merged-variant value identification.",
   "role": "the compile bridge candidate for profiled criteria",
   "audit": "AUDITS/AUDIT-DS-POPULATION-BRIDGE-001.md",
-  "literature_search_status": "search_gap"
+  "literature_search_status": "search_gap",
+  "verified_by": [
+    "AUDIT-DS-POPULATION-BRIDGE"
+  ]
 }

@@ -14,15 +14,6 @@
     "the theorem verdict is restricted to d_psi = d_lambda = 1, K >= 3, equal weights, exact scores, class (L)+(S), raw fixed-rule labels and centered empirical moments",
     "the measured verdict does not assert an asymptotic basin-selection theorem"
   ],
-  "dependencies": [
-    "DS-STABLE-MARGINS-PRICE",
-    "DS-PROFILED-COMPILE-CERTIFICATE",
-    "DS-STABLE-STATE-SELECTION",
-    "DS-PROFILED-VARIATIONAL",
-    "DS-SCALAR-EFFICIENT-DP",
-    "OPEN-DS-FINITE-POP-BRIDGE",
-    "OPEN-DS-MARGINS-AT-OPTIMA"
-  ],
   "proof_location": {
     "file": "AUDITS/AUDIT-DS-STABLE-MARGINS-COMPILE-001.md",
     "section": "Publication-grade audit of DS16 stable margins and the compile verdict"
@@ -35,5 +26,14 @@
     "Silvey-1978",
     "Alsing-Wandelt-2019"
   ],
-  "literature_search_status": "search_gap"
+  "literature_search_status": "search_gap",
+  "references": [
+    "DS-STABLE-MARGINS-PRICE",
+    "DS-PROFILED-COMPILE-CERTIFICATE",
+    "DS-STABLE-STATE-SELECTION",
+    "DS-PROFILED-VARIATIONAL",
+    "DS-SCALAR-EFFICIENT-DP",
+    "OPEN-DS-FINITE-POP-BRIDGE",
+    "OPEN-DS-MARGINS-AT-OPTIMA"
+  ]
 }

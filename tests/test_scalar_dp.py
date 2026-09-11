@@ -7,8 +7,8 @@ import numpy as np
 import pytest
 
 import scorequant as sq
-from scorequant.quantizers import scalar_interval_dp
 from scorequant.solvers import scalar as scalar_dp
+from scorequant.solvers.scalar import scalar_interval_dp
 from tests._fit import fit_test_quantizer
 
 from ._oracles import _exhaustive_d_oracle

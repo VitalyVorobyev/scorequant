@@ -63,6 +63,13 @@ phase H plus the research status here. The session runs the development handoff 
 formal-proof trust evidence, reporting passed, failed and unrun checks. It does not infer human
 acceptance, change claim status, declare closure or authorize publication.
 
+Editorial follow-through (11 September 2026): the v10 clarity rewrite found two registry/prose
+discrepancies. The A fixture establishes a move-level failure, while its claim infers a stronger
+partition-level failure; the endpoint formula equals the square-root scale at `d = 2` despite
+wording saying it is slower. Manuscript claims are narrowed; registry statuses and statements are
+unchanged. Independent A-claim disposition and endpoint wording reconciliation are required
+corrections within publication assurance, recorded in phase H and `manuscripts/README.md`.
+
 ## Backlog
 
 Unresolved questions, grouped by programme. OP numbers are stable ids; claim

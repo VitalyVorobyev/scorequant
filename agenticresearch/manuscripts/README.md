@@ -6,7 +6,7 @@ body only in a manuscript-revision task.
 
 | File | What it is |
 |---|---|
-| `score_space_quantization_article_v10.md` / `.html` | "Information-optimal hard quantization of multivariate score space", v10, 10 September 2026: main text §1–§11, Appendices A–I. §8 and Appendix I carry the frozen-rule results O6–O8; §10.2 is the future-work section that absorbs the research backlog. Appendix G resolves every fixture id (G1–G32); Appendix H places every ledger row. |
+| `score_space_quantization_article_v10.md` / `.html` | "Information-optimal hard quantization of multivariate score space", v10, 10 September 2026: main text §1–§11, Appendices A–I; editorial revision 11 September 2026. §8 and Appendix I carry the frozen-rule results O6–O8; §10.2 is the future-work section that absorbs the research backlog. Appendix G resolves every fixture id (G1–G32); Appendix H places every ledger row. |
 | `NOVELTY_LEDGER.md` | One row per central statement with novelty label, attribution and claim ids (version 1.1: §1–§4 wrote v9, §5 wrote v10's §8). |
 | `figures/` | The six figure assets; never inlined (`registry.py validate` rejects `data:` payloads). |
 
@@ -46,3 +46,28 @@ The positive-tolerance library contract was independently narrowed on 11 Septemb
 (`AUDITS/AUDIT-D-COMPILE-TOLERANCE-001.md`): admissible individual moves only, with a separate
 singleton-disagreement guard and no simultaneous-change bound. The positive-tolerance sentence following (4.6) now states these qualifications; exact-zero
 theorems and existing formal markers are unchanged.
+
+## Editorial revision — 11 September 2026
+
+The v10 article has been rewritten for applied researchers. The main text explains the
+information identity, assignment-to-rule result, nuisance limitations, and evaluation. Detailed
+margin statements now accompany their proofs in Appendix C, the finite bracket in Appendix D,
+and score-error and exceptional sampling results in Appendix I. Appendix A.6 retains detailed
+prior-work comparisons; Appendix F.6 retains the full open-question list. Result identifiers,
+equation tags, claim IDs, novelty labels, and bibliography numbering are preserved.
+
+Two discrepancies found during the editorial fidelity pass require research disposition before
+publication; this edit does not modify the registry or constitute an independent scientific audit:
+
+- `A-FINITE-GEOMETRY-FAILS` and its A2 proof text infer a partition-level failure from
+  `CE-A-DSTYLE-001`, which exhibits only a move-level failure. The manuscript now states only
+  what that fixture establishes. Acceptance requires an independent audit of the stronger claim,
+  followed by evidence or a scoped registry correction.
+- `RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE` describes the rate at `d = 2, r = 1` as slower
+  than the square-root scale, although its own formula gives equality. The manuscript distinguishes
+  `d = 2` from `d > 2`; acceptance requires correcting the registry's explanatory wording through
+  the research workflow. The rate formula and proposition are unchanged.
+
+The existing unidentified v9 disputes and attribution/source-read qualifications remain pending.
+The rewrite corrects stale closure and score-error summaries without declaring research frozen,
+adding a capability, or satisfying owner/publication acceptance.

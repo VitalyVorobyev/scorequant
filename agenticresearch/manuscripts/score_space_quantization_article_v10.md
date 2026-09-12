@@ -1,120 +1,175 @@
 <header markdown="1">
-<div class="kicker">Research manuscript draft · v10 · 10 September 2026</div>
+<div class="kicker">Research manuscript draft · v10 · editorial revision 11 September 2026</div>
 <h1>Information-optimal hard quantization of multivariate score space</h1>
-<div class="subtitle">Exchange stability compiles finite D-optimal partitions into deployable quantizers; for profiled \(D_s\) the bridge is conditional, priced, and certified only by a closed bracket.</div>
+<div class="subtitle">How to turn information-preserving sample bins into rules for new events, and what changes when nuisance parameters or estimated scores enter.</div>
 <div class="meta">
-<span class="tag">Fisher information</span><span class="tag">score-space quantization</span><span class="tag">hard binning</span><span class="tag">D-optimality</span><span class="tag">profiled \(D_s\)</span><span class="tag">finite-to-population bridge</span><span class="tag">margins and stable basins</span><span class="tag">certified brackets</span><span class="tag">A-optimality</span><span class="tag">E-optimality</span><span class="tag">information efficiency</span><span class="tag">estimated scores</span><span class="tag">sampling uncertainty</span>
+<span class="tag">Fisher information</span><span class="tag">hard binning</span><span class="tag">D-optimality</span><span class="tag">nuisance parameters</span><span class="tag">estimated scores</span>
 </div>
 </header>
 
 ## Abstract
 
-Let \(S\) be the score of a regular parametric model at a reference parameter. We compress \(S\) into \(K\) hard labels retaining as much Fisher information as possible; the retained information is the between-cell scatter of the conditional mean score. Three problems are kept apart: labelling a fixed sample, fitting a quantizer for future scores, and designing one under the score law. For D-optimality an exact rank-two relocation identity and a leverage inequality show that every one-point-exchange-stable partition of merged score atoms into exactly \(K\) nonempty cells, at zero gain tolerance, is a strict self-consistent Mahalanobis Voronoi partition, so a finite D solution compiles into a deployable rule. For profiled \(D_s\) the same implication fails at global finite optima. We characterize population stationarity as nearest-projected-centroid assignment in the binned efficient score, bound first-order violations at exchange-stable states by a leverage factor, and prove a conditional finite-to-population bridge under five margins. On conditionally centered laws with a scalar nuisance the margins are not free: global finite optima converge to the nuisance-degenerate interval quantizer of the efficient score, the conditioning margin fails along them, every margin costs a definite amount of information, and the margin-certified exchange-stable branch is almost surely eventually empty; one law outside the class admits a transfer through global selection. A tilt dynamic-programming dual brackets the finite profiled optimum with a set-valued saddle closure test; strong duality can fail by order one. A- and E-optimality, differentiable randomized quantizers, and density-ratio access to the score complete the framework. Two results concern a frozen rule in use. When the rule is fed an estimated score, the retention computed from the proxy differs from the true retention of the same labels by an exact two-term first-order expansion — an alignment term proportional to the square root of the rule's trace loss and a spurious-information term proportional to the cell-averaged whitened score error over the smallest retained eigenvalue — with an explicit curvature remainder; no bound on the score error alone controls the gap, and neither ranking quality nor calibration certifies it. On an independent sample of true scores the plug-in geometric-mean retention is asymptotically normal with an explicit influence function and a consistent variance; the variance vanishes exactly on per-cell ellipsoids, and at a rank-deficient population retention the plug-in is biased upward at the rate \(n^{-(d-r)/d}\).
+Binning simplifies a statistical analysis, but can discard information. We study how to assign events to a fixed number of bins while retaining Fisher information about model parameters. Each event is represented by its score: the gradient of its log likelihood at a reference parameter value.
+
+A bin contributes information through its probability and its average score.
+
+Our central question is whether good labels for a finite sample also define a rule for new events. For D-optimality, which maximizes the determinant of the retained information matrix, we prove that they do under precise conditions.
+
+For positive weights, nonsingular retained information, and exactly \(K\) nonempty bins, merge identical score vectors. If no single-point move that leaves its source nonempty improves the objective at zero tolerance, every point is strictly closest to its own centre in a shared metric. The resulting nearest-centre rule reproduces the sample labels.
+
+With nuisance parameters estimated from the bins, this conclusion can fail even at a global sample optimum. We establish conditional convergence results, show why their regularity conditions can cost information or fail, and give bounds that certify finite optimality when they meet.
+
+Finally, we distinguish errors from estimated scores from uncertainty due to finite evaluation samples. For a fixed rule, we derive bounds on the former and an asymptotic error bar for the latter. These results separate what the bins optimize, what the prediction rule preserves, and what a reported information-retention value establishes.
 
 ## 1. Introduction
 
-Many statistical pipelines end by replacing a high-dimensional observation with a small categorical symbol: a histogram bin, an event category, a codeword. At a fixed reference parameter the local inferential content of an observation is its score, the gradient of the log likelihood, so the design problem is direct: partition multivariate score space into \(K\) cells so that the label retains as much Fisher information as possible. The label's information is the between-cell scatter of the conditional mean score, so this is a clustering problem with a matrix-valued objective.
+Many analyses replace each event with a histogram bin or category before fitting model parameters. The binning is useful only if it preserves the distinctions that matter for that fit. Here we ask how to choose \(K\) bins to retain Fisher information at a specified reference parameter value.
 
-The choice of scalar summary changes the mathematics. Fisher-normalized trace reduces after whitening to weighted \(k\)-means [1], [29], [3], [4] [novelty: known; ledger V8-03], whereas D-optimality depends on the determinant of the whole retained matrix and couples all directions through a metric the partition itself determines; profiled \(D_s\) couples them through a projection the partition also determines after subtracting a nuisance block.
+The score gives a natural representation of an event for this local problem. It records how the event's log likelihood changes when each parameter changes. Events with similar scores therefore have similar local effects on the fit.
 
-Optimizing the labels of observations already in memory is not the same task as learning a function that labels the next observation: a finite labeling underdetermines its extension outside the observed score vectors, while a deployable quantizer is a function on score space, hence an estimator learned from finite data. The distinction is immaterial for classical quantizers posed over centers or boundaries, unavoidable for exact label-exchange methods.
+After binning, the score of a label is the average score of events assigned to that bin. This turns information-preserving binning into a clustering problem whose objective is a matrix.
 
-| Problem | Object optimized | Semantics of the result |
+There are three distinct optimization tasks:
+
+| Task | What is chosen | What the result provides |
 |---|---|---|
-| A. Population design | measurable \(q\) under the score law \(P_S\): \(\sup_q F(I_P(q))\) | inherently a rule for future scores |
-| B. Empirical inductive fitting | \(q_\eta\) in an explicit class \(\mathcal Q\) maximizing \(F(I_{P_n}(q_\eta))\) | a prediction rule, validatable on new samples |
-| C. Finite assignment | arbitrary labels \(z_1,\ldots,z_N\) of a weighted score table | a transductive partition; no unique extension off the observed rows |
+| Assign a finite sample | One label for each weighted score vector | Bins for the supplied events |
+| Fit a prediction rule | Parameters of a function \(q(s)\), using a training sample | A label for any new score vector |
+| Optimize at the population level | A function \(q\) evaluated under a specified score distribution \(P_S\) | An ideal rule for that distribution |
 
-These problems need not share a finite optimum, and each is legitimate. The distinction follows the empirical-versus-population analysis of Pollard [12] and the terminal-versus-Voronoi analysis of Telgarsky and Vattani [8]; it is a framing, not a theorem [novelty: known; ledger V8-02]. When does a theorem connect the levels? For D-optimality one does, exactly and at finite \(N\); for profiled \(D_s\), A, and E no exact finite bridge exists, and for \(D_s\) the levels are reconnected only conditionally, through margins that turn out to be priced rather than free.
+The first task does not specify how to label a new event. The other two do, but their attainable sample objectives may differ from unrestricted label optimization. This distinction follows the empirical-versus-population analysis of Pollard [12] and the terminal-versus-Voronoi analysis of Telgarsky and Vattani [8].
 
-**Contributions.** (i) Theorem 2: on merged distinct score atoms, with exactly \(K\) nonempty cells and zero gain tolerance, one-point exchange stability for D forces strict self-consistent \(I^{-1}\)-Mahalanobis Voronoi geometry; the converse fails and split duplicate atoms are a genuine boundary. We found no direct precedent, and the nearest prior art [8] concludes the opposite for squared error. (ii) Theorem 8, the \(D_s\) dichotomy on conditionally centered scalar-nuisance laws. (iii) Theorems 9 and 10: every conditioning margin costs a definite amount of information, and conditional centering empties the margin-certified exchange-stable branch. (iv) Theorem 11: an explicit off-class law with an isolated population optimum to which global finite optima transfer at a computable rate. (v) Theorem 12: a tilt dynamic-programming dual bracketing the finite profiled optimum, with a set-valued saddle closure test and exact order-one duality gaps. Around these sit the rank-two relocation identity, the population efficient-Voronoi characterization (Theorem 5), the profiled leverage bound (Proposition 6), and the conditional bridge under (M1)–(M5) (Theorem 7). (vi) Theorem 13: for a frozen rule applied to a proxy score, the gap between reported and true geometric-mean retention is an alignment term plus a spurious-information term with an explicit curvature remainder, with exact witnesses that no bound on the score error alone controls it; we found no direct precedent, and claim no novelty for a search gap. (vii) Theorem 16 and Propositions 17–18: the plug-in retention of a frozen rule on held-out true scores is asymptotically normal with a consistent variance, a bridge from the delta method and the canonical-correlation influence functions, with the zero-variance set characterized and the singular-endpoint rate \(n^{-(d-r)/d}\) made explicit.
+It is the framework for our results, not a new theorem [novelty: known; ledger V8-02].
 
-**Map.** The main text reads without the appendices: Appendix A catalogues access to the score law, Appendix B auxiliary D results, Appendix C the \(D_s\) proofs, Appendix D bracket complexity, Appendix E the E and A propositions, Appendix F differentiable quantizers, Appendix G fixtures, Appendix H ledger placement, Appendix I the proofs for §8.
+The matrix criterion matters. Maximizing Fisher-normalized trace is weighted \(k\)-means after whitening [1], [29], [3], [4] [novelty: known; ledger V8-03]. D-optimality instead maximizes the determinant of the retained information. Its distance metric depends on the bins being optimized.
+
+Profiled \(D_s\)-optimality also depends on how those bins constrain nuisance parameters.
+
+The main finite-sample result is Theorem 2. For D-optimality, exact single-point exchange stability forces a nearest-centre rule that reproduces the training labels. The assumptions include positive weights, merged duplicate score vectors, a nonsingular information matrix, and exactly \(K\) nonempty bins.
+
+This provides a prediction rule, but does not establish global or population optimality.
+
+The corresponding result fails for profiled \(D_s\). We show what can still be proved: population stationarity, convergence under explicit regularity conditions, and finite optimality certificates. The scalar nuisance results explain why the regularity conditions are substantive.
+
+An optimizer can gain information about the parameter of interest while losing the ability to estimate the nuisance from the bins.
+
+A separate question arises after fitting. A rule may receive estimated scores, and its reported retention is itself estimated from data. We analyze these two errors separately. A small score error alone does not control relative retention error; independent true-score data support an asymptotic uncertainty interval under stated moment and rank conditions.
+
+Sections 3–4 develop the information identity and the D result. Sections 5–6 explain nuisance parameters and finite certificates. Section 7 briefly treats alternative criteria and learned rules. Sections 8–9 cover evaluation and implementation. The appendices give technical statements, proofs, counterexamples, and claim-level attribution.
 
 ## 2. Prior work
 
-**Fisher-information quantization.** Score-function quantizers for distributed estimation were introduced by Venkitasubramaniam, Tong, and Swami [1], [29]; Farias and Brossier analyzed Fisher-optimal scalar quantization [2]. Barnes, Han, and Özgür showed that the Fisher information of a quantized observation is the scatter of the conditional score means and derived trace bounds [3]; Dülek proved that trace-optimal sufficient-statistic quantizers in exponential families have polytopal cells [4]. Zhang, Blum, Kaplan, and Lu established the alphabet-size obstruction on the rank of quantized Fisher information [30]. Valassi's weight-derivative regression states the scalar retained-information ratio [23]. They supply the score representation and trace geometry used here; our focus is the full-matrix criteria, the finite relocation structure, and the finite-to-population question.
+The score representation and the information retained by a label are established results. Score-function quantization was developed in [1], [29], with scalar Fisher-optimal quantization in [2]. The conditional-score formulation and trace geometry appear in [3], [4]; [23] gives the scalar retained-information ratio.
 
-**Determinant clustering, exchange methods, and Voronoi structure.** Determinant-based clustering criteria go back to Friedman and Rubin [5] and Scott and Symons [6], with the determinant of within-cluster scatter; above dimension one, minimizing \(\det W\) is not equivalent to maximizing \(\det B\). Exact point-relocation search has a long history: Hartigan's local search [7], Späth's exchange method [24], [25], and the exchange algorithms for discrete D-optimal designs [71] in the tradition of Fedorov [70], resting on rank-one inverse updates [68], [69] and monotone weight algorithms [40]. Telgarsky and Vattani showed Hartigan stability to be stronger than Lloyd stationarity for \(k\)-means [8]. Inaba, Katoh, and Imai used Voronoi realizability and arrangement enumeration for fixed-parameter exact clustering [9]. Theorem 2 has the flavor of these comparisons but rests on a determinant-specific leverage identity, and the template of [9] gives the algorithm of §4.3.
+We use these results to study full-matrix objectives and the relation between sample labels and prediction rules.
 
-**Population quantization and consistency.** Centroidal Voronoi tessellations give the population picture for squared-error quantization and Lloyd-type algorithms [13], [14]; [33] gives existence and stationarity of optimal quantizers. Pollard's strong consistency theorem for \(k\)-means [12], its quantization form [50], and Sabin and Gray's generalized-Lloyd consistency [51] are the empirical-to-population templates, with the uniform laws of empirical-process theory [52], [53] as the engine; [54] shows \(k\)-means consistency failing and restored by constraints, and Rakhlin and Caponnetto give the rigidity of almost-minimizing codebooks [56]. In one dimension Fisher's contiguity theorem [43] and the dynamic programmes of [44], [45] solve the grouping problem exactly, and [31], [32] give uniqueness of locally optimal quantizers for log-concave laws; [58] treats the nonregular univariate case. Levrard's margin condition [34] is a hypothesis for fast rates; §5 finds an analogous margin failing at global optima. Self-consistency [57], principal points of elliptical laws [60], the principal-curve origin of the term [61], and the generalized principal-subspace theorem [62] are the comparators for §5.8's coincident-centroid phenomena. None optimizes a hard-partition matrix information criterion.
+Exact point exchanges are also classical. Our finite D analysis combines scatter updates [24], [25] with a determinant-specific leverage argument. The closest geometric comparison is Hartigan versus Lloyd stability for squared-error clustering [8]. Theorem 2 establishes the corresponding implication for the retained-information determinant.
 
-**Density-ratio estimation and learned scores.** Direct density-ratio estimation fits \(p_1/p_0\) from samples without estimating either density [22]; calibrated probabilistic classifiers recover the same ratio up to known prior odds [21]. Differentiating a ratio between nearby hypotheses gives the local score, the principle of score-based likelihood-free inference [17]. Nuisance-hardened compression [27] and information-maximizing neural summaries [28] are the continuous-summary precedents. Inference-aware methods learn summaries or categories by differentiating through an inference objective [18], [19], [20]. Neither density-ratio estimation nor differentiable binning is claimed here; what is claimed is the information-quantization problem and its structure given a score.
+The literature search found no direct precedent; this is a search finding, not proof of priority.
 
-**Profiled designs, Schur complements, and tilt duality.** Optimal-design equivalence theory gives the convex-analytic language for D, \(D_s\), A and E: Kiefer [41], Whittle [38], Wynn [37], Silvey and Titterington [39], Näther and Reinsch's \(D_s\) equivalence theorem [16], Pukelsheim's monograph with the nondifferentiable E criterion and the matrix means \(\phi_p\) [15], the duality theory of Pukelsheim and Titterington [63], and the efficiency conventions of [72]. Silvey's singular \(D_s\)-optimal design measures [35] and information-based subdata selection [36] frame the design-side reading of §5's nuisance-degenerate limits. The profiled information is a Schur complement, whose extremal characterization is due to Krein [46] and Anderson [47], [48] in the form of Li and Mathias [26]; Haynsworth's inertia formula [55] gives rank additivity; the statistical reading is the efficient score [42], [49]. Purification of randomized rules under atomless laws is the Dvoretzky–Wald–Wolfowitz theorem [10], [11]. The tilt dual of §6 is the partition-side form of design duality, computed through Megiddo's parametric search [64], Toledo's fixed-dimension concave maximization [65], and parametric-envelope lower bounds [67], [66]; Chebyshev's covariance inequality [59] enters the centering obstruction of §5.8.
+For nuisance parameters, we use the classical \(D_s\) criterion [15], [16] and the variational characterization of the Schur complement [26], [46]–[48]. Population convergence draws on quantizer consistency and empirical-process methods [12], [33], [50]–[56]. The contribution lies in their application to hard partitions, including the conditions that fail and the explicit counterexamples.
 
-**Plug-in asymptotics and estimated scores.** The delta method [49] and matrix differential calculus [73] give the first-order theory of smooth functionals of sample moments; the influence functions of Wilks-type, generalized-variance and canonical-correlation parameters are due to Radhakrishnan and Kshirsagar [75] and Romanazzi [74], restated by Taskinen et al. [80], and asymptotic normality of eigenvalue functionals of canonical-correlation and MANOVA matrices without normality, under finite fourth moments, is Muirhead and Waternaux [76] and Fang and Krishnaiah [77]; the within/between decomposition is classical [81]. At a zero population canonical correlation the sample coefficients are \(O_p(n^{-1/2})\) with a known limit, from Hsu [85] through the dimensionality tests of Glynn and Muirhead [86], Seo, Kanda and Fujikoshi [78] and the rank tests of Robin and Smith [79]. §8.4 is the fixed-partition, uncentred instance of this theory, with one block a cell indicator that is a fixed map of a *different* variable. For estimated scores, log-determinant concavity [82] and the margin comparison method of Audibert and Tsybakov [83] supply the machinery of §8.1–§8.2, and Bröcker's decomposition of proper scores [84] the calibration chain of §8.3, together with the classifier-ratio construction [21]. None states the reporting expansion of Theorem 13, which is recorded as a search gap.
+Our evaluation results use log-determinant perturbation bounds [82], classification-margin comparisons [83], and the delta method [49]. The sampling theory is closely related to canonical-correlation influence functions [74]–[80]. We distinguish these inherited methods from the score-bin calculations and counterexamples developed here.
+
+[Appendix A.6](#appendix-a6) gives the detailed comparisons; Appendix H records attribution for each result.
 
 ## 3. Setting
 
 ### 3.1 Score space and the information retained by a label
 
-Let \(P_\theta\) be a regular parametric model on \((\mathcal X,\mathcal A)\) with \(\theta\in\mathbb R^d\). At a reference point \(\theta_0\) define
+Let \(P_\theta\) be a regular model for an observation \(X\), with parameter \(\theta\in\mathbb R^d\). All information statements are local to a fixed reference point \(\theta_0\). Define the score and full information matrix by
 \[
 S=s(X)=\nabla_\theta\log p(X\mid\theta)\big|_{\theta_0},\qquad \mathbb E[S]=0,\qquad I_{\rm full}=\mathbb E[SS^\top]\succ0 .
 \]
-A hard quantizer is a map \(q:\mathbb R^d\to\{1,\ldots,K\}\), \(Z=q(S)\), with observation-space compressor \(Q(x)=q(s(x))\). The optimization depends on the model only through the push-forward score law \(P_S=s_\#P_{\theta_0}\): a finite table, a simulator output, a score sampler, or an analytic integral.
+A hard quantizer assigns exactly one label to each score vector: \(q:\mathbb R^d\to\{1,\ldots,K\}\).
+
+Write \(Z=q(S)\) for the label and \(Q(x)=q(s(x))\) for the complete observation-to-label map. The distribution of \(S\), denoted by \(P_S=s_\#P_{\theta_0}\), determines the optimization problem. It may be represented by a sample, a simulator, or an analytic integral.
 
 <div class="diagram">
-<figure><img src="figures/fig-01-score-quantization-pipeline.svg" alt="Observation model, score map, score-space quantizer, and retained Fisher information"><figcaption>Observations are mapped to scores at the reference parameter, the quantizer assigns one of \(K\) labels, and the retained information is the between-cell scatter of the label.</figcaption></figure>
+<figure><img src="figures/fig-01-score-quantization-pipeline.svg" alt="Observation model, score map, score-space quantizer, and retained Fisher information"><figcaption>Observations are mapped to scores at the reference parameter, the quantizer assigns one of \(K\) labels, and each bin contributes information through its probability and average score.</figcaption></figure>
 </div>
 
-For cell \(b\) let \(W_b=P(q(S)=b)\), \(m_b=\mathbb E[S\,1_{\{q(S)=b\}}]\), \(\mu_b=m_b/W_b\). The score of the label is its conditional mean score, hence
+For bin \(b\), let \(W_b=P(q(S)=b)\) be its probability, \(m_b=\mathbb E[S\,1_{\{q(S)=b\}}]\) its weighted score sum, and \(\mu_b=m_b/W_b\) its mean score. A bin label has score \(\mu_b\): once only the label is observed, the individual score is replaced by this conditional average.
+
+Therefore
 \[
 I_q=\sum_{b=1}^K W_b\mu_b\mu_b^\top=\sum_{b=1}^K\frac{m_bm_b^\top}{W_b}=\operatorname{Var}(\mathbb E[S\mid Z]),
 \qquad
 I_{\rm full}=I_q+\mathbb E[\operatorname{Cov}(S\mid Z)] .
 \tag{3.1}
 \]
-Every criterion below depends on \(q\) only through \((W_b,m_b)\). The identity (3.1) is the score-function quantization identity of [1], in the geometric form of [3], [4], with the scalar form of [23] [novelty: known; ledger V8-01]. Since \(\sum_bm_b=0\), \(\operatorname{rank}I_q\le\min(d,K-1)\), so \(K\ge d+1\) is necessary for a nonsingular full D criterion; refinement increases \(I_q\) in Loewner order; and D-optimal partitions are invariant under invertible reparameterization of \(\theta\). The rank ceiling is the alphabet-size obstruction of [30]; refinement monotonicity and D reparameterization invariance are standard [novelty: known; ledger V8-04]. Scores are never centered by the optimizer: the score-space origin carries statistical meaning, and exact sample centering appears only where a theorem says so.
+The second identity identifies the loss: score variation within a bin is no longer observable. Every objective below depends only on the bin probabilities and score sums \((W_b,m_b)\). This is the score-function quantization identity [1], in the geometric form of [3], [4] and the scalar form of [23] [novelty: known; ledger V8-01].
 
-### 3.2 First variation and common-metric stationarity
+There are three immediate consequences. First, \(\sum_bm_b=0\) implies \(\operatorname{rank}I_q\le\min(d,K-1)\). Thus at least \(d+1\) bins are needed for nonsingular full D information [30]. Second, splitting bins cannot decrease information in any direction. Third, an invertible change of parameter coordinates preserves which partition is D-optimal [novelty: known; ledger V8-04].
 
-Moving mass \(d\varepsilon\) at score \(s\) from cell \(a\) to \(b\) changes \(I_q\) by \([(s-\mu_a)(s-\mu_a)^\top-(s-\mu_b)(s-\mu_b)^\top]d\varepsilon\), so for a differentiable \(F\) with symmetric gradient \(G=\nabla_IF(I)\),
+The optimizer never subtracts the sample mean from the scores. The origin carries statistical meaning. Exact sample centering is used only in constructions or theorems that explicitly require it.
+
+### 3.2 Why nearest-centre rules appear
+
+Transfer a small probability mass \(d\varepsilon\) at score \(s\) from bin \(a\) to bin \(b\). The information changes by \([(s-\mu_a)(s-\mu_a)^\top-(s-\mu_b)(s-\mu_b)^\top]d\varepsilon\). For a differentiable objective \(F\), let \(G=\nabla_IF(I)\) be its symmetric matrix gradient. Then
 \[
-\frac{dF}{d\varepsilon}=(s-\mu_a)^\top G(s-\mu_a)-(s-\mu_b)^\top G(s-\mu_b),
+\frac{dF}{d\varepsilon}=(s-\mu_a)^\top G(s-\mu_a)-(s-\mu_b)^\top G(s-\mu_b).
 \tag{3.2}
 \]
-so a regular atomless population local optimum satisfies the nearest-cell rule \(q(s)\in\arg\min_b(s-\mu_b)^\top G(s-\mu_b)\) a.e., provided \(F\) is differentiable at \(I_q\) and ties null. This is the Gateaux derivative of (3.1): the first variation of centroidal Voronoi energies [13] with the directional derivatives of design criteria [15] [novelty: direct corollary; ledger V8-07].
+If moving a boundary cannot improve the objective to first order, each point must prefer its assigned centre under this comparison.
+
+For an atomless distribution, a regular local optimum therefore satisfies \(q(s)\in\arg\min_b(s-\mu_b)^\top G(s-\mu_b)\) almost everywhere, with the stated differentiability and zero-probability tie conditions. This applies the first variation of centroidal Voronoi energies [13] and directional derivatives of design criteria [15] to (3.1) [novelty: direct corollary; ledger V8-07].
 
 <div class="proposition" markdown="1">
 <div class="box-title" markdown="span">Proposition 1 — affine form of a common-metric stationary partition</div>
 
-If the same symmetric matrix \(G\) is used for all cells, pairwise comparisons cancel the common term \(s^\top Gs\). Thus every cell is an intersection of affine halfspaces. For \(G\succeq0\) the rule is a Mahalanobis Voronoi diagram, possibly cylindrical when \(G\) is singular. Equivalently it is an affine-max classifier \(q(s)=\arg\max_b(a_b^\top s+c_b)\). [novelty: adaptation; ledger V8-08]
+Using the same symmetric matrix \(G\) for all bins cancels \(s^\top Gs\) in each pairwise comparison. Every bin is therefore an intersection of affine halfspaces.
+
+When \(G\succeq0\), this is a Mahalanobis Voronoi rule: assign to the nearest centre using the quadratic distance defined by \(G\). Singular \(G\) leaves some directions unmeasured, so the cells extend along those directions. The rule can equivalently be written as \(q(s)=\arg\max_b(a_b^\top s+c_b)\), an affine-max classifier [novelty: adaptation; ledger V8-08].
 
 </div>
 
-Proposition 1 transfers the Lloyd/CVT necessary condition [13] to a partition-dependent Mahalanobis metric; polyhedral cells for trace-type criteria are already in [3], [4]. It is stationarity, not optimality.
+Proposition 1 transfers the Lloyd/CVT necessary condition [13] to a partition-dependent Mahalanobis metric; polyhedral cells for trace-type criteria are already in [3], [4]. This is a necessary local condition. It does not identify a global optimum.
 
-### 3.3 The criteria
+### 3.3 Choosing what to preserve
 
-*D-optimality.* \(F_D(I)=\log\det I\), \(G_D=I^{-1}\). Regular population stationary quantizers are self-consistent Mahalanobis Voronoi partitions, \(q(s)=\arg\min_b(s-\mu_b)^\top I_q^{-1}(s-\mu_b)\), the metric determined by the partition itself; the D specialization of Proposition 1, stating stationarity only.
+*D-optimality* maximizes \(F_D(I)=\log\det I\), with gradient \(G_D=I^{-1}\). At a regular population stationary rule,
+\(q(s)=\arg\min_b(s-\mu_b)^\top I_q^{-1}(s-\mu_b)\). Both the centres and the metric are computed from the resulting bins. This is what we mean by *self-consistent*. The condition does not imply global optimality.
 
-*Profiled \(D_s\)-optimality.* Split \(\theta=(\psi,\lambda)\) into interest \(\psi\in\mathbb R^{d_\psi}\) and nuisance \(\lambda\in\mathbb R^{d_\lambda}\), write \(I=\begin{pmatrix}A&B\\B^\top&C\end{pmatrix}\), \(S_\psi(I)=A-BC^{-1}B^\top\), and
+*Profiled \(D_s\)-optimality* targets selected parameters while estimating nuisance parameters from the same labels. Write \(\theta=(\psi,\lambda)\), where \(\psi\in\mathbb R^{d_\psi}\) is of interest and \(\lambda\in\mathbb R^{d_\lambda}\) is nuisance. Partition the information matrix as \(I=\begin{pmatrix}A&B\\B^\top&C\end{pmatrix}\). The information remaining for \(\psi\) after profiling is \(S_\psi(I)=A-BC^{-1}B^\top\), and the objective is
 \[
-F_s(I)=\log\det S_\psi(I)=\log\det I-\log\det C ,
+F_s(I)=\log\det S_\psi(I)=\log\det I-\log\det C .
 \tag{3.3}
 \]
-the profiled information when both parameters are estimated from the binned label. The Schur-complement form is the classical \(D_s\) criterion of optimal design [37], [38], [41], [39], [16], [15], with the nuisance-hardened reading of [27] [novelty: known; ledger V8-21]; its feasible set of probability measures differs from the hard-partition set, so the equivalence theorems do not transfer. The gradient is
+This is the classical \(D_s\) criterion [37], [38], [41], [39], [16], [15], with the nuisance-hardened interpretation of [27] [novelty: known; ledger V8-21].
+
+Experimental-design equivalence theorems do not automatically apply: choosing hard partitions gives a different feasible set.
+
+The gradient is
 \[
 G_s=I^{-1}-E_\lambda C^{-1}E_\lambda^\top=L^\top S_\psi(I)^{-1}L\succeq0,\qquad L=[\,I_{d_\psi},-BC^{-1}\,],
 \tag{3.4}
 \]
-of rank \(d_\psi\), where \(E_\lambda\) selects the nuisance coordinates (\(E_\lambda^\top IE_\lambda=C\)), so a regular population stationary quantizer is Voronoi in the projected *binned efficient score* \(e_q(s)=s_\psi-BC^{-1}s_\lambda\), cells being cylindrical along the nuisance directions annihilated by \(L\). This is the Schur-complement derivative, the \(D_s\) sensitivity function of [16], [15], with (3.2) [novelty: direct corollary; ledger V8-22]. Section 5 sharpens it and shows that stationarity alone does not separate projected centroids.
+where \(E_\lambda\) selects the nuisance coordinates, so \(E_\lambda^\top IE_\lambda=C\). The matrix has rank \(d_\psi\). It compares events through the projected score \(e_q(s)=s_\psi-BC^{-1}s_\lambda\), called the *binned efficient score*. The projection depends on the bins, unlike a projection computed from full-data information.
 
-*A-optimality.* \(F_A(I)=-\operatorname{tr}(I^{-1})\), \(G_A=I^{-2}\), differentiable and concave on the cone.
+Equations (3.2) and (3.4) give a nearest-centre rule in this projected space [16], [15] [novelty: direct corollary; ledger V8-22]. Section 5 explains why distinct bins may have the same projected centre.
 
-*E-optimality.* \(F_E(I)=\lambda_{\min}(I)\), concave and Loewner-monotone but nonsmooth at eigenvalue multiplicities. At a simple smallest eigenvalue with unit eigenvector \(v\), \(G_E=vv^\top\) and stationarity is the rank-one rule \(q(s)=\arg\min_b(v^\top(s-\mu_b))^2\): only the least-informed projection matters to first order.
+*A-optimality* minimizes the trace of the inverse information: \(F_A(I)=-\operatorname{tr}(I^{-1})\), \(G_A=I^{-2}\), differentiable and concave on the cone.
+
+*E-optimality* maximizes information in the weakest direction: \(F_E(I)=\lambda_{\min}(I)\), concave and Loewner-monotone but nonsmooth at eigenvalue multiplicities. At a simple smallest eigenvalue with unit eigenvector \(v\), \(G_E=vv^\top\) and stationarity is the rank-one rule \(q(s)=\arg\min_b(v^\top(s-\mu_b))^2\): only the least-informed projection matters to first order.
 
 Throughout \(\Phi_{D_s}(q)=\log\det S_\psi(I_q)\); at \(d_\psi=1\) we also write \(\Phi_s(q)=S_\psi(I_q)\), which orders quantizers identically, and \(\hat\Phi_s\) for its empirical value.
 
 ### 3.4 Access to the score law
 
-Nothing above requires stored densities: the local score is the parameter derivative of a log density ratio, \(s(x)=\nabla_\theta\log[p(x\mid\theta)/p(x\mid\theta_0)]|_{\theta_0}\). Analytic ratio functions, direct ratio estimators, and calibrated classifiers are interchangeable upstream routes; a classifier estimates the ratios, is not part of the quantization method, and a ranking-only discriminant is insufficient. These are bridges over published identities [17], [21], [22] [novelty: known; ledger V8-05]. When estimated ratios yield \(\hat s\ne s\), the optimized matrix \(\operatorname{Var}(\mathbb E[\hat s\mid q(\hat s)])\) is a surrogate for the true retained information \(\operatorname{Var}(\mathbb E[s\mid q(\hat s)])\), and score-estimation error separates from quantization error [17], [27], [28] [novelty: known; ledger V8-06]. A score provider is not a training distribution: population optimization also needs the reference measure, a sample, importance weights, or an integration oracle. Appendix A catalogues the admissible inputs, the linear-component case, and the classifier and mixture formulas.
+The method needs scores, not necessarily densities. The identity
+\(s(x)=\nabla_\theta\log[p(x\mid\theta)/p(x\mid\theta_0)]|_{\theta_0}\)
+allows scores to be obtained from density ratios. Those ratios may come from analytic models, direct estimators, or classifiers with the required probability information [17], [21], [22].
 
-## 4. D-optimality: exchange stability closes the bridge
+A discriminant that supplies only a ranking is insufficient [novelty: known; ledger V8-05].
 
-### 4.1 Exact finite relocation
+Estimated scores change the interpretation of the objective. If \(\hat s\ne s\), the proxy quantity \(\operatorname{Var}(\mathbb E[\hat s\mid q(\hat s)])\) differs from the true retained information \(\operatorname{Var}(\mathbb E[s\mid q(\hat s)])\). Score-estimation error and binning loss are separate [17], [27], [28] [novelty: known; ledger V8-06]. Section 8 quantifies this distinction.
+
+A score function alone does not specify how often scores occur. Optimization also needs a sample, reference distribution, importance weights, or an integration procedure. Appendix A gives the input constructions.
+
+## 4. D-optimality: from sample labels to a prediction rule
+
+### 4.1 Computing the gain from moving one point
 
 Move a point \((s,w)\) of a weighted score table from a non-singleton cell \(a\) to \(b\), and let
 \[
@@ -128,7 +183,7 @@ The exact change of retained information is one positive and one negative rank-o
 \Delta I=\alpha u_au_a^\top-\beta u_bu_b^\top .
 \tag{4.2}
 \]
-The \(ss^\top\) contributions cancel; derivation in Appendix B.
+The direct \(ss^\top\) terms cancel. Appendix B derives the remaining two terms.
 
 With \(H=I^{-1}\), \(q_{aa}=u_a^\top Hu_a\), \(q_{bb}=u_b^\top Hu_b\), \(q_{ab}=u_a^\top Hu_b\), the matrix determinant lemma gives the closed gain
 \[
@@ -137,50 +192,64 @@ With \(H=I^{-1}\), \(q_{aa}=u_a^\top Hu_a\), \(q_{bb}=u_b^\top Hu_b\), \(q_{ab}=
 \]
 so a candidate move costs three inverse-metric inner products. Identities (4.2)–(4.3) adapt the exchange-method scatter updates of Späth [24], [25], in the determinant-clustering tradition of [5], [6], from within-cluster scatter to the between-cell information matrix with centroid-coupled \(\alpha,\beta\) [novelty: adaptation; ledger V8-09].
 
-### 4.2 Exchange stability forces self-consistent geometry
+### 4.2 Why an exchange-stable partition defines a rule
 
-The bridge rests on one inequality. For a nonsingular partition,
+An exchange-stable partition is one in which no admissible single-point move improves the objective. Under the assumptions below, a D-optimality exchange-stable partition must also obey a nearest-centre rule. The key is the following bound on distances between bin centres.
+
+For a nonsingular partition,
 \[
 (\mu_a-\mu_b)^\top I^{-1}(\mu_a-\mu_b)\le\frac1{W_a}+\frac1{W_b},
 \tag{4.4}
 \]
-the hat-matrix leverage inequality on the columns \(\sqrt{W_b}\mu_b\) (Lemma B.1); it bridges infinitesimal D geometry to exact finite gains [novelty: known; ledger V8-10].
+which follows from a projection-matrix bound on the columns \(\sqrt{W_b}\mu_b\) (Lemma B.1). This leverage inequality connects the distance comparison to the exact gain [novelty: known; ledger V8-10].
 
 <div class="theorem" markdown="1">
 <div class="box-title" markdown="span">Theorem 2 — finite D exchange stability forces self-consistent Voronoi geometry</div>
 
-Let \(s_1,\ldots,s_N\in\mathbb R^d\) be the distinct score atoms obtained after merging coincident score rows, with strictly positive weights \(w_i>0\), partitioned into exactly \(K\) nonempty cells. Assume \(I\succ0\). Let the only constraint on a one-atom relocation be that its source cell remain nonempty, and let exchange stability mean that no admissible relocation has strictly positive exact \(\log\det I\) gain, with zero gain tolerance. For an admissible move \(a\to b\) between distinct centroids, if the atom is no closer to its own centroid than to \(b\) in the current D metric, \(q_{aa}\ge q_{bb}\), then
+Merge coincident score rows into distinct vectors \(s_1,\ldots,s_N\in\mathbb R^d\) with positive weights \(w_i\). Partition them into exactly \(K\) nonempty bins and assume \(I\succ0\). A relocation is admissible whenever it leaves its source bin nonempty; impose no other move constraint.
+
+Assume no admissible move has strictly positive exact \(\log\det I\) gain. This is exchange stability at zero tolerance. For an admissible move \(a\to b\) between distinct centres, suppose the point is at least as far from its own centre as from \(b\), so \(q_{aa}\ge q_{bb}\). Then
 \[
 \Delta F_D\ge\log\!\left(1+\frac{\alpha\beta}4q_\delta^2\right)>0,
 \qquad
 q_\delta=(\mu_a-\mu_b)^\top I^{-1}(\mu_a-\mu_b).
 \tag{4.5}
 \]
-Distinct centroids are a consequence of stability, not an additional hypothesis: coincident centroids either admit a strictly improving relocation or force duplicate atoms, excluded by merging. A singleton atom is then strictly nearest to its own centroid. Hence every one-point-exchange-stable finite D partition under these hypotheses is a strict self-consistent \(I^{-1}\)-Mahalanobis Voronoi partition on the merged atoms,
+Such a move would contradict stability. Coincident centres also contradict stability unless duplicate atoms remain; those were excluded by merging. A singleton point is strictly closest to its own centre.
+
+Consequently every training point is strictly closest to its assigned centre:
 \[
 (s_i-\mu_{z_i})^\top I^{-1}(s_i-\mu_{z_i})<(s_i-\mu_b)^\top I^{-1}(s_i-\mu_b)\qquad\text{for every }i\text{ and every }b\ne z_i .
 \]
-[novelty: apparently new; ledger V8-11]
+This is a strict self-consistent Mahalanobis Voronoi partition [novelty: apparently new; ledger V8-11].
 
 </div>
 
-*Proof sketch.* By (4.3) the determinant ratio is \(1+E\) with \(E=\alpha q_{aa}-\beta q_{bb}-\alpha\beta(q_{aa}q_{bb}-q_{ab}^2)\); eliminating \(q_{ab}\) through \(q_\delta=q_{aa}+q_{bb}-2q_{ab}\) and using \((\alpha-\beta)/(\alpha\beta)=1/W_a+1/W_b\) from (4.1) lets the leverage bound (4.4) meet the gain exactly, leaving \(E\ge\frac{\alpha\beta}4q_\delta^2\) when \(q_{aa}\ge q_{bb}\). Full proof in Appendix B. \(\square\)
+*Proof idea.* The determinant update (4.3) and leverage bound (4.4) together give the positive lower bound (4.5). Thus a point that prefers another centre would admit an improving move. Appendix B gives the algebra and the separate arguments for coincident centres and singletons. \(\square\)
 
 <div class="remark" markdown="1">
 <div class="box-title" markdown="span">Boundary of Theorem 2: split duplicate atoms</div>
 
-The merged-atom hypothesis cannot be dropped. Scalar scores \((1,1,-1)\) with weights \((1/4,1/4,1/2)\), each in its own singleton cell with \(K=3\), admit no nonempty-preserving relocation, so the labeling is vacuously exchange-stable; yet two centroids coincide and no deterministic score-only rule reproduces the split labels (fixture G3). The resolution is to merge coincident atoms before optimization, after which the theorem forces distinct centroids. [novelty: unresolved; ledger V8-12]
+The merged-atom hypothesis cannot be dropped. Scalar scores \((1,1,-1)\) with weights \((1/4,1/4,1/2)\), each in its own singleton cell with \(K=3\), admit no nonempty-preserving relocation, so the labeling is vacuously exchange-stable; yet two centroids coincide and no deterministic score-only rule reproduces the split labels (fixture G3).
+
+The resolution is to merge coincident atoms before optimization, after which the theorem forces distinct centroids. [novelty: unresolved; ledger V8-12]
 
 </div>
 
 The converse fails: self-consistent nearest-centroid assignment under the current D metric is strictly weaker than exchange stability. An exact \(N=4\), \(d=1\), \(K=2\) D-Voronoi fixed point admits a strictly improving relocation (fixture G2), as did 35 of 100 random Lloyd/Voronoi fixed points, the determinant analogue of Lloyd fixed points that are not Hartigan-stable [8]; the chain global optimum \(\Rightarrow\) exchange-stable \(\Rightarrow\) strict D-Voronoi is strict in both arrows [novelty: unresolved; ledger V8-13].
 
-The theorem closes the finite-assignment/quantizer gap for D: at exact one-point stability the terminal state has the canonical inductive extension
+The result supplies a rule for new scores:
 \[
-\widehat q_D(s)=\arg\min_b(s-\mu_b)^\top\widehat I^{-1}(s-\mu_b),
+\widehat q_D(s)=\arg\min_b(s-\mu_b)^\top\widehat I^{-1}(s-\mu_b).
 \tag{4.6}
 \]
-which reproduces every merged-atom training label strictly, without a tie breaker, while a solver stopping at tolerance \(\varepsilon>0\) bounds only admissible individual geometric-disagreement gains by \(\varepsilon\), each priced against the original partition. Compilation additionally requires every positive-weight prediction disagreement to be admissible; a singleton tie can force refusal. No simultaneous-reassignment or population-loss bound follows [novelty: direct corollary; ledger V8-14]. Every positive-definite global finite D optimum on merged atoms is exchange-stable, hence realizable in the form (4.6), so unrestricted finite D assignment and optimization over realizable affine-max labelings share the same optimum value, though not every D-Voronoi fixed point is globally optimal [novelty: direct corollary; ledger V8-15].
+Under Theorem 2's assumptions, this rule reproduces all merged-atom training labels strictly. Original duplicate rows inherit their merged label. New scores may require a tie-breaking convention.
+
+A numerical solver stopping at positive tolerance \(\varepsilon\) has a weaker guarantee. Only admissible individual prediction-disagreement moves are bounded by \(\varepsilon\), each evaluated against the original partition. Compilation also requires every positive-weight disagreement to be admissible: a singleton tie can force refusal.
+
+The bound does not control simultaneous reassignment or population loss [novelty: direct corollary; ledger V8-14].
+
+Every positive-definite global finite D optimum on merged atoms is exchange-stable. It therefore has the form (4.6), and restricting optimization to realizable affine-max labelings preserves the optimum value. The converse does not follow: a self-consistent rule can be suboptimal [novelty: direct corollary; ledger V8-15].
 
 <figure>
 <img alt="Histogram of slack above the Theorem 2 lower bound" src="figures/fig-02-exchange-slack-histogram.png">
@@ -191,7 +260,11 @@ Among 5,547 moves satisfying the premise of Theorem 2, drawn from 15,000 random 
 
 ### 4.3 Exchange, Lloyd proposals, and global search
 
-Accepting only positive-gain moves is strict ascent, terminating at a one-point exchange-stable state that by Theorem 2 compiles to (4.6) [24], [7], [40] [novelty: direct corollary; ledger V8-16]. The batch iteration that freezes \(I^{-1}\), reassigns every point to its nearest centroid, and recomputes \(I\) is not monotone, because the tangent inequality of concave \(\log\det\) is an upper bound rather than a minorizer; batch proposals must be guarded by exact evaluation. The non-monotonicity is a witness, not a novelty, adaptive-metric Lloyd steps not having been prior-art searched [8] [novelty: unresolved; ledger V8-17].
+Accepting only strictly positive exact gains must terminate because the finite label set cannot contain an infinite improving sequence. Under Theorem 2's assumptions, the final state defines the predictor (4.6) [24], [7], [40] [novelty: direct corollary; ledger V8-16].
+
+Updating all labels at once is different. Freezing \(I^{-1}\), assigning every point to its nearest centre, and recomputing \(I\) can decrease the objective. Concavity gives an upper tangent bound, not a lower bound on improvement.
+
+Evaluate the actual objective before accepting a batch proposal. The example below demonstrates the failure; no novelty claim is made for it [8] [novelty: unresolved; ledger V8-17].
 
 <div class="figure-pair" markdown="1">
 <figure>
@@ -204,7 +277,11 @@ Accepting only positive-gain moves is strict ascent, terminating at a one-point 
 </figure>
 </div>
 
-Because global optima are affine-max labelings, arrangement enumeration gives, for fixed \((d,K)\), an \(N^{O(Kd)}\) exact algorithm [9], XP and not known to be FPT (§10) [novelty: adaptation; ledger V8-19]. Refinement monotonicity supplies a branch-and-bound bound: treating every unassigned point as a singleton Loewner-dominates every completion, and the bound serves any Loewner-monotone criterion, E included [novelty: direct corollary; ledger V8-20]. Enumeration details in Appendix B.
+The geometry also restricts global search. For fixed \((d,K)\), enumerating realizable affine-max labelings gives an \(N^{O(Kd)}\) exact algorithm [9]. Its exponent depends on \(d\) and \(K\); it is XP, not known to be fixed-parameter tractable [novelty: adaptation; ledger V8-19].
+
+For branch-and-bound, give every unassigned point its own temporary bin. This refinement has at least as much information as any completion, so it supplies an upper bound for D and other information-monotone criteria, including E [novelty: direct corollary; ledger V8-20].
+
+[Appendix B.6](#appendix-b6) gives the details.
 
 <div class="figure-pair" markdown="1">
 <figure>
@@ -221,13 +298,21 @@ Log-determinant gaps to the exhaustive optimum for the same 30 instances; the la
 </figure>
 </div>
 
-## 5. Profiled \(D_s\): the bridge fails, then what survives
+## 5. What changes when nuisance parameters are fitted
 
-The determinant criterion owes Theorem 2 to a cancellation the profiled criterion lacks. Notation follows §3.3: \(B_q^*=I_{\psi\lambda}I_{\lambda\lambda}^{-1}\) for the binned blocks of \(I_q\), \(e_b=\mu_{b\psi}-B_q^*\mu_{b\lambda}\) the projected centroids, and \(\widehat S=S_\psi-B^*S_\lambda\), \(B^*=I^{\rm full}_{\psi\lambda}(I^{\rm full}_{\lambda\lambda})^{-1}\), the *full-data* efficient score.
+When nuisance parameters are fitted from the bins, preserving interest-parameter information is no longer the same objective as preserving the full determinant. Improving the full information can be offset by the change in the nuisance block.
 
-### 5.1 Exact exchange survives, the D mechanism does not
+Theorem 2's cancellation no longer applies.
 
-The rank-two update (4.2) holds for any criterion, so for \(D_s\) the exact finite gain is a difference of two determinant-lemma gains, \(\Delta F_s=\Delta\log\det I-\Delta\log\det I_{\lambda\lambda}\), evaluable by low-rank algebra when both blocks stay nonsingular [novelty: direct corollary; ledger V8-23]; positive-gain exchange stays strictly monotone and terminates, as for D [24], [7], [40] [novelty: direct corollary; ledger V8-16]. A relocation is admissible only if its source cell stays nonempty and its destination keeps a nonsingular binned nuisance block, the *in-bin* convention (§5.9 shows the conventions differing). What fails is the step from a first-order violation to a positive finite gain: the nuisance determinant can offset the full determinant invisibly to the efficient semimetric, leaving an approximate version.
+Two projections must be distinguished. The binned projection uses \(B_q^*=I_{\psi\lambda}I_{\lambda\lambda}^{-1}\), with projected bin centres \(e_b=\mu_{b\psi}-B_q^*\mu_{b\lambda}\). The full-data projection uses \(B^*=I^{\rm full}_{\psi\lambda}(I^{\rm full}_{\lambda\lambda})^{-1}\), giving the efficient score \(\widehat S=S_\psi-B^*S_\lambda\). In this section the hat denotes that projection, not an estimated score.
+
+### 5.1 A sample optimum need not follow its nearest-centre rule
+
+The rank-two update (4.2) still computes the exact change. The profiled gain is \(\Delta F_s=\Delta\log\det I-\Delta\log\det I_{\lambda\lambda}\), provided both matrices remain nonsingular [novelty: direct corollary; ledger V8-23]. Positive-gain exchanges still terminate on the finite label set [24], [7], [40] [novelty: direct corollary; ledger V8-16].
+
+We use the *in-bin* convention: the nuisance must remain estimable from the bins. A move must leave its source nonempty and the resulting nuisance block nonsingular. Section 5.9 shows why allowing singular blocks with a pseudo-inverse is a different problem.
+
+A point's preference under the projected distance no longer determines the sign of its exact gain. The following bound gives a weaker relation.
 
 <div class="proposition" markdown="1">
 <div class="box-title" markdown="span">Proposition 3 — approximate finite efficient-Voronoi geometry</div>
@@ -236,15 +321,19 @@ At a one-point-exchange-stable \(D_s\) partition with nonsingular blocks, let \(
 \[
 \left[s_{aa}-s_{bb}\right]_+\le w_iq_{aa}\Bigl(\frac1{W_a}+\frac1{W_b}\Bigr).
 \]
-Under uniform weights \(w_i=1/N\) and cell masses of order \(1/K\), the relative violation is \(O(K/N)\). [novelty: unresolved; ledger V8-24]
+Under uniform weights \(w_i=1/N\) and cell masses of order \(1/K\), the relative violation is \(O(K/N)\).
+
+[novelty: unresolved; ledger V8-24]
 
 </div>
 
 Proof in Appendix C; Proposition 6 needs neither balanced masses nor a mass floor.
 
-The failure is not a local-search artifact. On a centered equal-weight \(N=8\), \(d=2\), \(K=3\) table, exhaustive enumeration of all 966 three-cell partitions gives a unique global \(D_s\) optimum violating the nearest-cell rule of its own \(G_s\) semimetric (fixture G4): unrestricted finite \(D_s\) assignment and self-consistent inductive \(D_s\) fitting are genuinely different problems, a counterexample, not a novelty claim [novelty: unresolved; ledger V8-25]. A second witness has a unique non-geometric optimum (fixture G5) [novelty: unresolved; ledger DS12-4].
+The failure is not a local-search artifact. On a centered equal-weight \(N=8\), \(d=2\), \(K=3\) table, exhaustive enumeration of all 966 three-cell partitions gives a unique global \(D_s\) optimum violating the nearest-cell rule of its own \(G_s\) semimetric (fixture G4): unrestricted finite \(D_s\) assignment and self-consistent inductive \(D_s\) fitting are genuinely different problems, a counterexample, not a novelty claim [novelty: unresolved; ledger V8-25].
 
-### 5.2 The variational form and the domination bound
+A second witness has a unique non-geometric optimum (fixture G5) [novelty: unresolved; ledger DS12-4].
+
+### 5.2 Binning the full-data efficient score gives an upper bound
 
 Let \(S_\psi^+(I)=I_{\psi\psi}-I_{\psi\lambda}I_{\lambda\lambda}^+I_{\lambda\psi}\), with the Moore–Penrose pseudo-inverse, which is the Schur complement when \(I_{\lambda\lambda}\succ0\).
 
@@ -261,7 +350,9 @@ a Loewner minimum over \(d_\psi\times d_\lambda\) matrices, attained exactly at 
 
 </div>
 
-This is the extremal characterization of the generalized Schur complement [46], [47], [48], [26], read statistically as in [49], [42]; only the binned transfer is the project's. At a singular nuisance block the pseudo-inverse value can strictly exceed the feasible in-bin optimum.
+Lemma 4 is the classical variational characterization of the generalized Schur complement [46], [47], [48], [26], interpreted through efficient scores [49], [42]. The minimum is in matrix order: its value is no larger in any direction than the value at another \(B\).
+
+The pseudo-inverse allows a singular nuisance block, but that extends the feasible domain. Its value can exceed the best value attainable when the nuisance must be estimated from the bins.
 
 Evaluating (5.1) at \(B^*\) gives the *domination bound*: for every quantizer,
 \[
@@ -270,17 +361,25 @@ S_\psi(I_q)\preceq\operatorname{Var}\!\bigl(\mathbb E[\widehat S\mid q(S)]\bigr)
 \operatorname{Var}\!\bigl(\mathbb E[\widehat S\mid q]\bigr)-S_\psi^+(I_q)=(B^*-B_q^*)\,I^q_{\lambda\lambda}\,(B^*-B_q^*)^\top\succeq0 ,
 \tag{5.2}
 \]
-so the best profiled value is at most the best D value from quantizing the efficient score, the binned transfer of [26] read through the efficient-score variance [42] and nuisance-hardened compression [27] [novelty: direct corollary; ledger V8-27]. Proposition C.1 adds the rest: the gap vanishes iff \((B^*-B_q^*)I^q_{\lambda\lambda}=0\), and along any refining sequence generating the Borel \(\sigma\)-field with \(I^{\rm full}_{\lambda\lambda}\succ0\) [26] [novelty: direct corollary; ledger DS11-3]; \(S_\psi^+\) never decreases under refinement, and a split is neutral iff some minimizer of the merged problem equalizes the sub-cell projected means [novelty: direct corollary; ledger DS11-2]. Neutral splits identify a finite global optimum only up to its reduced configuration \(\{(W_b,e_b)\}\): an exact centered \(N=8\), \(K=3\) sample attains its optimum at 31 labelings (fixture G6), so uniqueness fails, an atomic-grid artifact [novelty: unresolved; ledger DS11-4, DS11-5].
+Thus binning the full-data efficient score gives an upper bound on the best profiled value [26], [42], [27] [novelty: direct corollary; ledger V8-27]. The two problems use different nuisance projections, and (5.2) measures the cost of that difference.
 
-For \(d_\psi=1\), D-optimal quantization of an atomless scalar efficient score has ordered interval cells [43] and is solved exactly by dynamic programming in \(O(KN)\) time after sorting [44], [45]; exact ties among tilted values need the tie lemma of Appendix D.1 [novelty: known; ledger V8-29]. Two objects recur from here on. Write \(J^*\) for the optimal \(K\)-interval quantizer of \(\widehat S\), and
+Proposition C.1 gives the equality condition, the limit under refinement, and the characterization of information-neutral splits [novelty: direct corollary; ledger DS11-3] [novelty: direct corollary; ledger DS11-2]. Neutral splits can create multiple optima: one exact eight-point example has 31 optimal labelings (fixture G6) [novelty: unresolved; ledger DS11-4, DS11-5].
+
+With one interest parameter and an atomless efficient-score distribution, the optimal projected bins are intervals [43]. On a sorted finite sample, their value can be computed by dynamic programming in \(O(KN)\) operations [44], [45]. [Appendix D.1](#appendix-d1) handles exact ties [novelty: known; ledger V8-29].
+
+Let \(J^*\) denote the optimal \(K\)-interval rule for \(\widehat S\), and let
 \[
-v_K=\sup_q S_\psi^+(I_q),
+v_K=\sup_q S_\psi^+(I_q)
 \]
-the best profiled value over all measurable \(K\)-cell quantizers. By (5.2), \(v_K\) is at most the between-cell variance \(\operatorname{Var}(\mathbb E[\widehat S\mid J^*(\widehat S)])\) of the efficient score under \(J^*\), its *between-value*; Theorem 8 shows when the two coincide. The interval programme that computes the empirical between-value \(\hat v_K\) on a sample is therefore an initializer and an upper certificate for the profiled problem, not a solution of it.
+be the best profiled value over measurable \(K\)-bin rules. Equation (5.2) bounds \(v_K\) by \(\operatorname{Var}(\mathbb E[\widehat S\mid J^*(\widehat S)])\). Theorem 8 states when equality holds.
 
-### 5.3 Population stationary geometry
+The empirical interval optimum, denoted by \(\hat v_K\), is therefore an upper bound and an initialization for the profiled problem. It is not generally a solution of that problem.
 
-Let \(P\) be atomless with \(\mathbb E[S]=0\), \(\mathbb E\|S\|^2<\infty\), and \(q\) have \(W_b>0\), \(I_q\succ0\). Relabeling \(E\subseteq A_a\) of mass \(\varepsilon\) and barycenter \(\bar s\) changes \(I_q\) as the rank-two relocation (4.2) at \((\bar s,\varepsilon)\). Call \(q\) *bounded-packet stationary* if for every \(a\ne b\) and \(R>0\)
+### 5.3 The population rule uses a bin-dependent projection
+
+At the population level, stationarity means that moving a vanishingly small region cannot improve the objective to first order. Let \(P\) be atomless with \(\mathbb E[S]=0\), \(\mathbb E\|S\|^2<\infty\), and \(q\) have \(W_b>0\), \(I_q\succ0\). Relabeling \(E\subseteq A_a\) of mass \(\varepsilon\) and barycenter \(\bar s\) changes \(I_q\) as the rank-two relocation (4.2) at \((\bar s,\varepsilon)\).
+
+Call \(q\) *bounded-packet stationary* if for every \(a\ne b\) and \(R>0\)
 \[
 \limsup_{E\subseteq A_a\cap B(0,R),\ P(E)\to0}\ \frac{\Phi_{D_s}(q_{E\to b})-\Phi_{D_s}(q)}{P(E)}\le0 .
 \tag{5.3}
@@ -296,169 +395,85 @@ Let \(P\) be atomless with \(\mathbb E[S]=0\), \(\mathbb E\|S\|^2<\infty\), and 
 G_s=C^\top S_\psi(I_q)^{-1}C,\quad C=[\,\mathrm{Id}_{d_\psi},-B_q^*\,],
 \tag{5.4}
 \]
-that is, nearest projected centroid in the \(S_\psi(I_q)^{-1}\) metric with \(e(s)=Cs\). Sufficiency holds for every \(P\); necessity needs atomlessness. The nearest-projected-centroid correspondence is a.e. single-valued and reproduces \(q\) up to null sets iff (i) the \(e_b\) are pairwise distinct and (ii) \(P\) charges no tie hyperplane. Stationarity does not force (i). [novelty: adaptation; ledger DS12-1]
+that is, nearest projected centroid in the \(S_\psi(I_q)^{-1}\) metric with \(e(s)=Cs\). Sufficiency holds for every \(P\); necessity needs atomlessness. The nearest-projected-centroid correspondence is a.e. single-valued and reproduces \(q\) up to null sets iff (i) the \(e_b\) are pairwise distinct and (ii) \(P\) charges no tie hyperplane.
+
+Stationarity does not force (i). [novelty: adaptation; ledger DS12-1]
 
 </div>
 
-Proof in Appendix C; it is the first-variation template of optimal design [15] in a solution-dependent semimetric, with [12], [33] as the \(k\)-means analogues; the witness of §5.1 violates (5.4). The theorem's last sentence is the population difference from D: under a nuisance-sign-symmetric law a \(\psi\)-threshold partition split by \(\operatorname{sign}(s_\lambda)\) is stationary with pairwise-coincident projected centroids and profiled-information-free cells (fixture G7) [novelty: unresolved; ledger DS12-2, DS12-3]. No efficient-semimetric rule separates coincident cells, whereas finite D forces distinct centroids (Theorem 2); a deployable rule must merge them first.
+Proof in Appendix C; it is the first-variation template of optimal design [15] in a solution-dependent semimetric, with [12], [33] as the \(k\)-means analogues; the witness of §5.1 violates (5.4). The theorem's last sentence is the population difference from D: under a nuisance-sign-symmetric law a \(\psi\)-threshold partition split by \(\operatorname{sign}(s_\lambda)\) is stationary with pairwise-coincident projected centroids and profiled-information-free cells (fixture G7) [novelty: unresolved; ledger DS12-2, DS12-3].
 
-### 5.4 The profiled leverage bound
+No efficient-semimetric rule separates coincident cells, whereas finite D forces distinct centroids (Theorem 2); a deployable rule must merge them first.
 
-The finite input to the bridge is an exact inequality needing no balance.
+### 5.4 How far sample labels can violate the population rule
 
-<div class="proposition" markdown="1">
-<div class="box-title" markdown="span">Proposition 6 — exact profiled leverage bound at exchange-stable states</div>
+Theorem 2 has no exact profiled counterpart. Proposition 6 nevertheless bounds a point's preference for another bin at an exchange-stable state. The bound is proportional to its weight and to two leverage factors, which measure distances in the inverse-information metric.
 
-Finite level, positive weights, \(I\) and \(I_{\lambda\lambda}\) nonsingular. At a one-point exchange-stable profiled \(D_s\) state, for every \((s_i,w_i)\) in a non-singleton cell \(a\) with \(W_a>w_i\) and every \(b\ne a\),
-\[
-s_{aa}-s_{bb}\le\beta_i\,q_{aa}q_{bb}\le w_i\,q_{aa}q_{bb},
-\qquad
-\beta_i=\frac{w_iW_b}{W_b+w_i},
-\tag{5.5}
-\]
-with \(s_{xx}=u_x^\top G_su_x\), \(q_{xx}=u_x^\top I^{-1}u_x\), \(u_x=s_i-\mu_x\). No merged-atom, balancedness or mass-margin hypothesis is used; moves with a singular destination are covered. [novelty: apparently new; ledger DS13-1]
+Small point weights help only if those factors remain controlled. Near-singular information can make them large. This is why a finite bound alone does not prove convergence to a population rule. The full inequality (5.5), its assumptions, and proof are in [Appendix C.5](#appendix-c5).
 
-</div>
+### 5.5 When sample solutions approach a population rule
 
-We found no direct precedent; the nearest cousin is the leverage inequality (4.4). Proof in Appendix C. Unlike Proposition 3, (5.5) surfaces ill-conditioned cells through leverage factors rather than a mass floor; exact moves at 171 stable states gave no violation.
+Theorem 7 gives a conditional answer. Consider independent, equally weighted samples and an exchange-stable labeling for each sample. Build a nearest-projected-centre rule from each labeling's own moments.
 
-### 5.5 The conditional bridge
+Five conditions control this sequence: an atomless distribution with finite second moments; bin probabilities bounded away from zero; information matrices bounded away from singularity; little probability near possible decision boundaries; and separated projected bin centres. These are (M1)–(M5), stated precisely in [Appendix C.6](#appendix-c6).
 
-With the population geometry (Theorem 5) and the leverage bound (Proposition 6) in hand, the finite-to-population question can be posed conditionally: which hypotheses on a sequence of exchange-stable labelings make its companion rules converge to that geometry? The five margins below are exactly the quantities the proof needs to control; §5.6–§5.8 then ask what they cost. Let \(S_1,\ldots,S_N\) be i.i.d. from \(P\) with equal weights, \(z^{(N)}\) one-point exchange-stable \(K\)-cell labelings, and \(\rho_N\) the companion nearest-projected-centroid rule from the labeling's own binned quantities. The margins are (M1) \(P\) atomless, \(\mathbb E[S]=0\), \(\mathbb E\|S\|^2<\infty\); (M2) \(\min_b\hat W_b\ge c_0>0\); (M3) \(\lambda_{\min}(\hat I_N)\ge\kappa>0\); (M4) \(\sup_{\|v\|=1,c}P(|v^\top S-c|\le t)\le\varphi(t)\downarrow0\); (M5) \(\min_{b\ne b'}\|\hat e_b-\hat e_{b'}\|\ge\gamma>0\); (M2), (M3), (M5) along the sequence almost surely eventually.
+Under these conditions, the fraction of sample labels that disagree with the associated rule tends to zero. Every convergent subsequence of rule parameters identifies a population-stationary rule. A global sample optimum has the stronger value conclusion stated in Theorem 7, within the specified margin-compatible class.
 
-<div class="theorem" markdown="1">
-<div class="box-title" markdown="span">Theorem 7 — conditional finite-to-population bridge under (M1)–(M5)</div>
+These are conditional results: the optimizer does not automatically supply the conditions.
 
-Almost surely: (1) \(P_N(z^{(N)}\ne\rho_N)\to0\); (2) along any subsequence with converging rule parameters, \(\rho_N\to q^*\) \(P\)-a.e., \(q^*\) a self-consistent efficient-Voronoi quantizer, hence bounded-packet stationary by Theorem 5, with \(\hat I_N\to I_{q^*}\) and \(\hat\Phi_s(z^{(N)})\to\Phi_s^{\rm pop}(q^*)\); (3) if each \(z^{(N)}\) is a global finite optimum, \(\hat\Phi_s(z^{(N)})\to v^*\), the supremum over the compact class of efficient-Voronoi rules compatible with \((c_0,\kappa,\gamma)\), attained by every subsequential limit. Without (M5) the same holds for the reduced rule obtained by merging cells whose projected-centroid separation vanishes. [novelty: adaptation; ledger DS14-1]
+### 5.6 Good interest-parameter bins can lose nuisance information
 
-</div>
+Consider one parameter of interest and one nuisance parameter. Suppose the nuisance score has conditional mean zero given the full-data efficient score. This condition, called (L), includes the Gaussian setting covered by the theorem. It is a property of the distribution, not an instruction to center sample scores.
 
-Proof in Appendix C. The skeleton is Pollard's uniform law plus argmin continuity [12], [50], [51], [33], [52], [53]; what changes is the semimetric, the Schur self-consistency step, and the leverage route of Proposition 6. Lemma 4 through Theorem 7 were independently re-derived without change [novelty: n/a — audit record; ledger DS14-2]. The margins are hypotheses an optimizer cannot satisfy on the simplest class: (M3) fails at free global optima, leaving Theorem 7 to govern margin-certified, suboptimal solutions.
+Under the additional scalar regularity and swap conditions of Theorem 8, with exactly centered equal-weight samples and \(K\ge3\), global sample optima approach the best interval binning of the efficient score. Their information about the parameter of interest approaches the optimal value.
 
-### 5.6 The scalar dichotomy at global optima
+Their binned nuisance information tends to zero.
 
-Let \(d_\psi=d_\lambda=1\), \(\mathbb E S=0\), \(I\succ0\), \(\hat s=S_\psi-B^*S_\lambda\), and consider (L) conditional centering, \(\mathbb E[S_\lambda\mid\hat s]=0\) a.s. (Gaussian and elliptical laws); (S) scalar regularity, \(\operatorname{law}(\hat s)\) atomless with positive density near the optimal boundaries and a unique optimal \(K\)-point squared-error quantizer \(J^*\) (log-concavity suffices [31], [32]); (R) swap richness, both nuisance signs of bounded magnitude available there. With \(J^*\) and \(v_K\) as in §5.2, samples are exactly centered, weights equal, and \(K\ge3=d_\lambda+2\), which is load-bearing.
+Thus the bin-mass condition survives, but the nonsingularity condition fails. The limiting rule solves the projected problem; it cannot estimate the nuisance from its bins. [Appendix C.7](#appendix-c7) states the scalar scope and all assumptions, including the conditions needed for this limit.
 
-<div class="theorem" markdown="1">
-<div class="box-title" markdown="span">Theorem 8 — margins dichotomy at global finite \(D_s\) optima (\(d_\psi=d_\lambda=1\))</div>
+### 5.7 Preserving nuisance information has a cost
 
-Let \(z^{(N)}\) be exact global finite \(D_s\) optima over feasible \(K\)-cell labelings of i.i.d. samples from \(P\) satisfying (L)+(S)+(R). Almost surely: (1) \(\hat\Phi_s(z^{(N)})\to v_K=\sup_qS_\psi^+(I_q)\), the supremum over all measurable \(K\)-cell quantizers, attained at \(J^*\) and at nothing else, and \(J^*\) is fully nuisance-degenerate, hence in-bin infeasible; (2) \(\min_b\hat W_b\to\min_bw_b^*>0\): (M2) holds and singleton cells die out; (3) \(\hat I_{\lambda\lambda},\hat I_{\psi\lambda}\to0\), hence \(\lambda_{\min}(\hat I_N)\to0\): (M3) fails for every \(\kappa>0\) and every law in the class; (4) \(v^*(\kappa)=\sup\{\Phi_s(q):\lambda_{\min}(I_q)\ge\kappa\}<v_K\) for every \(\kappa>0\); (5) the gap (5.2) at \(z^{(N)}\) tends to \(0\). [novelty: apparently new; ledger DS15-1]
+Under Theorem 9's scalar assumptions, imposing a fixed positive lower bound on binned nuisance information keeps the best attainable value strictly below the efficient-score optimum. This loss applies to every feasible labeling, not just to exchange-stable solutions.
 
-</div>
+The theorem also shows that any sequence approaching the optimal value must lose nuisance information. The cost is therefore a property of the objective and distribution, rather than a failure of a particular optimizer. Its positive limiting size is proved to exist; no universal numerical value is supplied.
 
-We found no direct precedent; the nearest prior art is scalar quantizer consistency and uniqueness [12], [31], [33], [32], Levrard's margin-as-hypothesis viewpoint [34], and singular \(D_s\)-optimal designs [35], [36]. The theorem is stated for \(d_\lambda=1\) only, its (M3) failure not extended beyond (L). Proof in Appendix C. The upper half is an exact empirical sandwich \(\hat\Phi_s(z)\le\mathrm{btw}(\hat s_N;z)\le\hat v_K\), where \(\mathrm{btw}(\hat s_N;z)\) is the empirical between-cell variance of the efficient scores under the labeling \(z\) and \(\hat v_K\) its maximum over \(K\)-cell labelings, with \(\hat v_K\to v_K\) a.s. [43], [12], [26] (Proposition C.2) [novelty: direct corollary; ledger DS15-3]; the lower half is achievability, feasible labelings almost surely reaching \(\hat v_K-O\bigl(N^{-3/4}\sqrt{\log\log N}\bigr)\) by single-point swaps steering the binned nuisance moment onto the constraint plane (Proposition C.3) [novelty: unresolved; ledger DS15-2]. Global optimality squeezes \(z^{(N)}\), and rigidity forces the cells toward \(J^*\). The condition \(K\ge d_\lambda+2\) is sharp [55] (fixture G8) [novelty: direct corollary; ledger DS15-4]. The restriction to \(d_\lambda=1\) is the outcome of an independent re-derivation [novelty: n/a — audit record; ledger DS15-6].
+The observable sample comparison is the gap to the efficient-score upper bound.
 
-The limit \(J^*\) is the optimal binning of the projected efficient score, with exactly singular binned nuisance block: the free optimizer sheds its own feasibility margin [35]. On class (L) at \(d_\psi=1\) the theorem-backed target is the scalar efficient-score interval rule with the nuisance estimated unbinned, a margin-certified in-bin rule costing at least \(\delta(\kappa)=v_K-v^*(\kappa)>0\).
+[Appendix C.8](#appendix-c8) gives the precise constrained values and qualifications. Its counterexamples also show that the efficient-score interval labels need not be exchange-stable for the profiled objective.
 
-### 5.7 The margin price
+### 5.8 The regularity conditions can be incompatible
 
-The next theorem prices the margin for every labeling at once, so Theorem 8's degeneracy belongs to the value, not the optimizer. The setting of §5.6 continues, feasible labelings having \(\hat I_{\lambda\lambda}>0\).
+The obstruction goes beyond a loss in objective value. Under Theorem 10's scalar conditional-centering and boundary assumptions, sufficiently large samples almost surely admit no exchange-stable labeling satisfying all three fixed requirements: positive bin masses, nonsingular information, and separated projected centres.
 
-<div class="theorem" markdown="1">
-<div class="box-title" markdown="span">Theorem 9 — margin price, value funnel, and floor</div>
+Dropping centre separation can leave stationary configurations with several bins sharing a projected centre. Those bins cannot be distinguished by the projected nearest-centre rule. Merging them changes the nuisance information, so this is not a free repair of the original profiled problem.
 
-Under (L)+(S), \(d_\psi=d_\lambda=1\), \(K\ge3\), equal weights, on one probability-one event, simultaneously over every labeling at every \(N\):
+[Appendix C.9](#appendix-c9) gives the exact population and sample statements, the additional conditions for the merged configurations, and the counterexamples.
 
-(Price) for every \(\kappa>0\) there is \(\delta(\kappa)>0\), depending only on \((P,K,\kappa)\), with
-\[
-\limsup_N\ \sup\bigl\{\hat\Phi_s(z):z\ \text{feasible},\ \hat I_{\lambda\lambda}(z)\ge\kappa\bigr\}
-\le\limsup_N\ \sup\bigl\{\mathrm{btw}(\hat s_N;z):\hat I_{\lambda\lambda}(z)\ge\kappa\bigr\}
-\le v_K-\delta(\kappa),
-\tag{5.6}
-\]
-the supremum of an empty set being \(-\infty\); since \(\lambda_{\min}(\hat I_N)\le\hat I_{\lambda\lambda}\), the same cap holds under (M3). The hypothesis is a margin, not stability or optimality.
+### 5.9 The obstruction is not universal
 
-(Funnel) any feasible sequence with \(\hat\Phi_s(z^{(N)})\to v_K\), stable or not, has cells converging in sample measure to \(J^*\), \(\min_b\hat W_b\to\min_bw_b^*>0\), and \(\hat I_{\lambda\lambda},\hat I_{\psi\lambda},\lambda_{\min}(\hat I_N)\to0\); the degeneracy of Theorem 8 is value-topological.
+A distribution outside the conditional-centering class behaves differently. In the explicit example (5.7), three intervals of the interest score form the unique population optimum and retain positive nuisance information. Every sequence of exact global sample optima converges to that rule and eventually satisfies fixed regularity margins (Theorem 11).
 
-(Floor) for every fixed measurable \(q\) with \(W_b>0\) and \(I_{q,\lambda\lambda}>\kappa\), labeling raw rows by \(q(S_i)\) gives eventually feasible labelings with \(\hat I_{\lambda\lambda}\ge\kappa\) and \(\hat\Phi_s\to\Phi_s(q)\); hence the supremum in (5.6) is asymptotically at least \(v^{*+}(\kappa)=\sup\{\Phi_s(q):I_{q,\lambda\lambda}>\kappa\}\), and \(v^*(\kappa)\le v^{*+}(\kappa)\le v_K-\delta(\kappa)\). Neither attainment nor one-sided continuity in \(\kappa\) of either constrained value is asserted. [novelty: apparently new; ledger DS16-1]
+This is an existence result for one distribution. It does not show that local exchange search finds those global optima. The example, convergence bound, and finite-sample boundary cases are in [Appendix C.10](#appendix-c10). Together, Theorems 8–11 explain why profiled sample-to-population guarantees must name the distributional and selection assumptions.
 
-</div>
+## 6. Bounding and certifying the finite profiled optimum
 
-We found no direct precedent; the load-bearing ingredient is almost-minimizer codebook rigidity [56], with [12], [33], [35]. Proof in Appendix C; the conclusion is pathwise, covering any data-dependent selection. The reportable quantity is the gap \(\hat v_K-\hat\Phi_s\); \(\delta(\kappa)\) is existential. The distinction between \(v^{*+}\) and \(v^*\) came out of an independent re-derivation [56], [8], [54] [novelty: direct corollary; ledger DS16-4].
+A sample optimizer supplies a lower bound on the best attainable value. To certify global optimality, we also need an upper bound. For one interest parameter, Theorem 12 constructs such a bound by subtracting a linear combination of nuisance scores and solving the resulting scalar interval problem.
 
-Which regime a solver occupies is measured, not proved. An exact full-lattice census at \(N=10\)–\(14\), \(K=3\) finds exchange-stable states plentiful, overwhelmingly non-global, and margin-retaining in every instance of a centered grid law at a \(\Theta(1)\) price, with near-coincident projected centroids, so (M5) must be checked; larger runs terminate at the \(K/N\) nuisance scale there and at \(\lambda_{\min}\approx1.7\) on a non-centered law; these are observations, not a basin-selection law [novelty: unresolved; ledger DS16-2]. Two exact \(N=8\), \(K=3\) witnesses: an exchange-stable non-global state \(7.7\%\) below \(\hat v_K\) shows that exchange stability prices the degeneracy of Theorem 8 rather than forcing it (fixture G9) [novelty: apparently new; ledger DS16-5]; and the efficient-score interval labeling is not exchange-stable, so the interval dynamic programme is an initializer and an upper certificate, never a terminal state (fixture G10) [novelty: apparently new; ledger DS16-6]. We found no direct precedent for either witness.
+### 6.1 When the bounds meet
 
-### 5.8 The centering obstruction
+For each nuisance coefficient \(\beta\), compute the best interval labeling of the projected scores \(T_{\beta i}=s_{\psi i}-\beta s_{\lambda i}\). Minimizing that upper value over \(\beta\) gives a dual bound. A candidate labeling supplies the lower value by evaluating its actual profiled information.
 
-For \(\beta\in\mathbb R\) write \(T_\beta=S_\psi-\beta S_\lambda\); a *strip rule* at tilt \(\beta\) is a \(K\)-cell interval partition of \(T_\beta\) with positive masses. Neither (S) nor (R) is assumed, and (L) does not authorize centering of sample rows. Lemma C.4 supplies the gate: regular self-consistency of a strip rule decomposes into Lloyd stationarity of the cuts for \(\operatorname{law}(T_\beta)\) plus the *root equation* \(\mathbb E[h(T_\beta)S_\lambda]=0\), \(h\) the step function of cell means; as a necessary condition only, exchange-stable sequences inhabiting the full margin triple on an atomless law with (M4) require a population root meeting \((c_0,\kappa,\gamma)\) [57], [58], [59] [novelty: direct corollary; ledger DS17-3]. A root never implies empirical inhabitation.
+The two bounds meet when a labeling is optimal at a minimizing \(\beta\) and that same labeling satisfies the nuisance normal equation (6.2). This pair is a *saddle certificate*. A nonsingular nuisance block certifies the ordinary in-bin problem.
 
-<div class="theorem" markdown="1">
-<div class="box-title" markdown="span">Theorem 10 — conditional centering empties the margin-certified branch</div>
+A singular block certifies only the generalized problem that allows a pseudo-inverse.
 
-Let \(P\) be atomless, in class (L), with \(\mathbb E S=0\), \(\mathbb E\|S\|^2<\infty\), \(I\succ0\). (Population) Every root-consistent strip rule has \(I_{q,\lambda\lambda}=0\), at every tilt and every \(K\ge2\); equivalently no regular tilt-consistent strip rule exists, and no full-rank bounded-packet stationary rule has pairwise-distinct projected centroids. (Empirical) If (M4) also holds, then almost surely, for every rational \(\kappa,c_0,\gamma>0\) there is \(N_0<\infty\) such that for all \(N\ge N_0\) no one-point exchange-stable \(K\)-cell labeling of the sample satisfies (M2)+(M3)+(M5) at \((c_0,\kappa,\gamma)\). [novelty: apparently new; ledger DS17-1]
+[Appendix D.1](#appendix-d1) gives Theorem 12, definitions (6.1), and the exact certificate. If several interval labelings tie, the normal equation must be checked for the actual labeling supplied. A deterministic tie policy can miss a closing certificate.
 
-</div>
+### 6.2 Why a nonzero bracket width needs interpretation
 
-No direct precedent was found for the compound statement; its ingredients are efficient-score orthogonality [42], Chebyshev's covariance inequality [59], and self-consistency [57]. Proof in Appendix C: conditionally on \(\hat s\) an association inequality signs \(\mathbb E[h(T_\beta)S_\lambda\mid\hat s]\), (L) kills the product of conditional means, and a root forces \(\hat s\)-measurable cells with zero nuisance means. Gaussian and atomless elliptical laws satisfy (L) and (M4).
+An open bracket is still a valid enclosure of the optimum. It does not prove a positive gap between the best primal and dual values: another tied labeling might close it. Conversely, exact counterexamples show that the optimal bounds can remain separated by a nonvanishing amount.
 
-What remains when (M5) is dropped is a merged branch. On atomless laws with tie-nullity and linear conditional means, a bounded-packet stationary \(q\) with \(I_q\succ0\) has non-distinct projected centroids; merging coincident groups yields a \(T_{B_q^*}\)-interval rule with at most \(K-1\) cells, vanishing nuisance margin and \(\Phi_s(q)\le v_K\); on \(N(0,I_2)\) the sign-split family is stationary with \(\lambda_{\min}\) up to \(1/\pi\), so the class defining \(v^*(\kappa)\) is nonempty for \(\kappa\le1/\pi\) [57], [60], [61], [62] (Proposition C.5) [novelty: known; ledger DS17-2]. An exact 8-atom \(K=3\) sign-split rule shows margins surviving only as wasted cells (fixture G11) [novelty: adaptation; ledger DS17-7]; the \(N=K=3\) boundary is the algebraic minimum (fixture G12) [novelty: direct corollary; ledger DS17-8]. Off (L) the gate is a diagnostic only: scans found no gate-admissible root on eight (L)-laws, while a non-centered control had one root matching the efficient interval optimum, so a margin may cost little on a particular law [novelty: unresolved; ledger DS17-4]. All four statements were independently re-derived under these hypotheses [42], [59], [60], [57], [62] [novelty: known; ledger DS17-6].
-
-### 5.9 An exact off-class transfer
-
-Two gaps remain off class (L): a regular root with fixed margins, and an empirical sequence inhabiting it. Both close on one law. Let \(X,Z\) be i.i.d. uniform on \([-1,1]\) and
-\[
-S_\psi=X,\qquad S_\lambda=3X^2-1+Z,\qquad
-I_{\rm full}=\operatorname{diag}(1/3,\,17/15),\qquad B^*=0,\qquad \hat s=X .
-\tag{5.7}
-\]
-The law is atomless, bounded, satisfies (M4), and lies outside (L) since \(\mathbb E[S_\lambda\mid\hat s]=3X^2-1\). Let \(q^*\) be the three-cell \(X\)-interval rule with cuts \(\pm1/3\),
-\[
-I_{q^*}=\operatorname{diag}(8/27,\,32/81),\qquad \Phi_s(q^*)=8/27,\qquad \eta_{D_s}=8/9 .
-\tag{5.8}
-\]
-Lloyd-stationary for \(T_0=X\), it is a regular root at \(\beta=0\) with margins \((1/3,\,8/27,\,2/3)\).
-
-<div class="theorem" markdown="1">
-<div class="box-title" markdown="span">Theorem 11 — exact off-class global basin and empirical transfer through global optima</div>
-
-(1) Among all measurable three-cell quantizers of (5.7), \(q^*\) is the unique population \(D_s\) maximizer, almost surely up to labels and null sets, and it is strictly isolated: for every \(\varepsilon>0\) there is \(\delta(\varepsilon)>0\) with \(\min_\pi\sum_bP(A_b\triangle A^*_{\pi(b)})\ge\varepsilon\Rightarrow\Phi_s(q)\le8/27-\delta(\varepsilon)\). (2) For i.i.d. equal-weight samples without sample centering, on one selection-independent probability-one event, every sequence \(z^{(N)}\) of exact global maximizers of in-bin profiled \(D_s\) over labelings with three nonempty cells satisfies, after relabeling, \(P_N(z^{(N)}\ne q^*)\to0\), \(\hat I_N\to I_{q^*}\), \(\hat\Phi_s\to8/27\), at the computable rate \(P_N(z^{(N)}\ne q^*)\le3\Delta_N/\eta+P_N(|X\mp1/3|\le\eta)\) with \(\Delta_N=\hat v_{3,N}-\hat\Phi_s(z^*_N)\); every such optimum is exact ordinary one-point exchange-stable under the in-bin feasibility convention, and satisfies (M2)+(M3)+(M5) at \((1/4,1/4,1/2)\) eventually, with (M3) read as \(\lambda_{\min}(\hat I_N)\ge\kappa\). [novelty: adaptation; ledger DS18-1]
-
-</div>
-
-Uniqueness and isolation rest on [31], [32], consistency on Pollard [12], rigidity on [56], one-point stability on [8]. Proof in Appendix C: \(\Phi_s(q)\le I_{\psi\psi}(q)\le v_3=8/27\) under both conventions, equality forcing the codebook \(\{-2/3,0,2/3\}\), and empirically the uncentered sandwich squeezes every global optimum. It is existential through exact global optimizers: it does not prove that exchange ascent finds the basin, and carries no deployment consequence. Two fixtures mark its edges: on a support-minimal \(N=4\) sample the raw \(q^*\) labels admit an improving relocation, so boundary effects at scale \(1/N\) are real, bypassed by global selection [8] (fixture G13) [novelty: direct corollary; ledger DS18-4]; and on four exactly centered rows of the law's support the global regular optimum reaches a nuisance-singular labeling by one relocation, not exchange-stable under the pseudo-inverse domain of Lemma 4 and infeasible in-bin, so the convention must be named (fixture G14) [novelty: apparently new; ledger DS18-5]. We found no direct precedent for this witness. The self-contained proof in Appendix C was independently re-derived [31], [32], [12], [56], [18] [novelty: direct corollary; ledger DS18-3].
-
-## 6. Certified brackets
-
-What can be certified about a finite profiled optimum from the sample alone? By Lemma 4 the finite profiled value is a minimum over nuisance tilts of a maximum over labelings; exchanging the two operations gives a dual that is a plain scalar interval problem at each tilt, hence computable, and weak duality makes its value a ceiling. Take \(d_\psi=1\), a score table with positive rational weights, exactly \(K\) nonempty cells, and moments about the origin. For \(\beta\in\mathbb R^{d_\lambda}\) put
-\[
-T_{\beta i}=s_{\psi i}-\beta s_{\lambda i},\qquad
-V_z(\beta)=\sum_b\frac{\bigl(\sum_{i:z_i=b}w_iT_{\beta i}\bigr)^2}{\sum_{i:z_i=b}w_i},\qquad
-v_K(\beta)=\max_zV_z(\beta),
-\tag{6.1}
-\]
-so Lemma 4 reads \(\Phi^+(z)=\min_\beta V_z(\beta)\). The generalized domain uses \(\Phi^+\), the in-bin domain its subset with nonsingular binned nuisance block; labelings, roots and optima in that subset are called *regular*. Let \(g^+=\max_z\Phi^+(z)\), \(g_{\rm reg}\) the in-bin global value, \(d=\min_\beta v_K(\beta)\) the dual value (the bare letter \(d\) means this value throughout §6 and Appendix D; dimensions keep their subscripts \(d_\psi,d_\lambda\)), and, with \(\mathcal D(\beta)\) the labelings optimal at tilt \(\beta\), \(p^+=\max_{\beta,z\in\mathcal D(\beta)}\Phi^+(z)\), \(p_{\rm reg}\) its regular restriction. By scalar contiguity [43], \(v_K(\beta)\) is the exact interval dynamic programme on the sorted \(T_\beta\), so the dual is computable.
-
-### 6.1 The bracket and its closure gate
-
-<div class="theorem" markdown="1">
-<div class="box-title" markdown="span">Theorem 12 — valid two-sided brackets and exact saddle closure</div>
-
-On the generalized domain \(p^+\le g^+\le d\); on the in-bin domain \(p_{\rm reg}\le g_{\rm reg}\le g^+\le d\). The dual \(d\) is attained after quotienting the common nuisance-null directions, and a singular interval-DP state is a generalized but not an in-bin lower bound. The generalized bracket closes, \(p^+=g^+=d\), iff there are \((\beta^*,z^*)\) with
-\[
-z^*\in\mathcal D(\beta^*),\qquad \beta^*I_{\lambda\lambda}(z^*)=I_{\psi\lambda}(z^*),
-\tag{6.2}
-\]
-a saddle pair; if moreover \(I_{\lambda\lambda}(z^*)\succ0\), (6.2) certifies \(z^*\) as an in-bin global optimum. The gate is set-valued: a closure certificate must exhibit the concrete labeling whose normal equation is checked. For a supplied rational \(\beta\), \(v_K(\beta)\), one active labeling and the primal values cost \(O(KN)\) rational operations after sorting, tolerating exact ties in every order. [novelty: adaptation; ledger DS19-1]
-
-</div>
-
-The certificate is the partition-side form of design duality [63], [39] on the fixed-partition minimization of [26]; the fixed-tilt evaluation is the classical grouping programme [44], [45], [64], [65]. Proof in Appendix D. The gate applies to a set: an \(N=3\), \(K=2\) table has a closing bracket, yet a deterministic tie policy returns a non-closing member of \(\mathcal D(\beta^*)\) in 362 of 6,688 integer tables (fixture G17) [novelty: direct corollary; ledger DS19-10].
-
-### 6.2 The bracket is not generically exact
-
-<div class="remark" markdown="1">
-<div class="box-title" markdown="span">Strong duality fails by order one</div>
-
-Minimax interchange fails on the finite nonconvex feasible set [63]; the contribution is the witnesses. On an equal-weight \(N=4\), \(K=3\) table with all six partitions regular, a mixture of two active partition quadratics certifies
-\[
-d-g\ge\frac{105329256}{154014175}>0.68 ,
-\tag{6.3}
-\]
-at \(\beta^*=-8/23\); since \(p^+\le g\), the bracket has at least this gap. The witness is support-minimal for \(K=3\), and an augmentation family with vanishing added mass keeps the gap \(\Theta(1)\) (fixture G15). [novelty: direct corollary; ledger DS19-2, DS19-8] The support minimum is \(N=3\), \(K=2\), with \(g^+=1/3\), \(d=1/2\); 884 of 2,300 integer tables show gaps (fixture G16). [novelty: direct corollary; ledger DS19-9]
-
-</div>
-
-The gap falsifies strong duality, not the ceiling; Appendix D records what is computable. On the off-class law (5.7) the \(\beta=0\) interval labeling is almost surely regular eventually with \(\Delta_N\to0\), so the finite-\(N\) bound of Theorem 11 applies [12], [43], [45] (Proposition D.1), a value statement implying neither stability nor deployment [novelty: direct corollary; ledger DS19-3]. Rational bounds on \(d\) of width \(\varepsilon\) cost time polynomial in the input bits and \(\log(1/\varepsilon)\); exact minimization is bit-polynomial at \(d_\lambda=1\) and arithmetically polynomial for fixed \(d_\lambda\ge2\) [65], [45], [64], [66] (Proposition D.2) [novelty: direct corollary; ledger DS19-5]. For \(d_\psi>1\) weak duality persists but the outer log-determinant map need not be quasiconvex, killing convex outer minimization though the ceiling stays valid [26] (fixture G18) [novelty: direct corollary; ledger DS19-4, DS19-11]. The bracket was checked exhaustively over 125,491 partitions [64], [45], [65], [44] [novelty: adaptation; ledger DS19-7].
+[Appendix D.2](#appendix-d2) gives those examples, including (6.3). [Appendix D.4](#appendix-d4) states the computational guarantees and explains why the multivariate-interest extension does not support the same convex outer optimization.
 
 ### 6.3 What a profiled terminal state establishes
 
@@ -472,124 +487,89 @@ Five observable states follow, with no novelty of their own [27], [39], [26], [5
 | companion rule of Theorem 7 | backed only along sequences satisfying (M1)–(M5) |
 | any other profiled terminal | no inductive rule is asserted |
 
-"Established" is an inventory, not an impossibility theorem: on (L) Theorems 9 and 10 keep the companion branch priced and eventually empty, and off (L) Theorem 11 gives a value transfer, not a deployment authorization.
+These are the guarantees established here. The scalar obstruction requires the assumptions of Theorems 9–10; it is not universal. Theorem 11 proves convergence for global optimizers on one other distribution, without guaranteeing that local search finds them.
 
 ## 7. Other criteria and learned quantizers
 
 ### 7.1 E-optimality
 
-At a minimum eigenspace with orthonormal basis \(V\), the superdifferential of the concave \(\lambda_{\min}\) is \(\{VHV^\top:H\succeq0,\ \operatorname{tr}H=1\}\) [15] [novelty: known; ledger V8-30]: there is no unique metric. For a transfer \(\Delta I=aa^\top-bb^\top\), \(d\lambda_{\min}(I;\Delta I)=\lambda_{\min}(V^\top\Delta IV)\le0\) whenever \(r\ge2\), so first-order stability is automatic where E-optimality equalizes weak directions [15] [novelty: direct corollary; ledger V8-31]. The finite D bridge fails even at a simple eigenvalue: on a mean-centered \(N=8\), \(d=2\), \(K=3\) example a global E-optimal partition's own \(vv^\top\) rule disagrees with a training label (fixture G19) [novelty: unresolved; ledger V8-33]; and a positive first-order E margin can accompany a negative exact eigenvalue change, both witnesses without a novelty claim [novelty: unresolved; ledger V8-32]. Concavity gives a safe screen: for any supergradient \(G\), \(F_E(I+\Delta I)-F_E(I)\le\operatorname{tr}(G\Delta I)=\alpha u_a^\top Gu_a-\beta u_b^\top Gu_b\), so a nonpositive weighted tangent gain certifies that a move cannot improve; the inequality holds for every concave criterion, so the same rule screens D (§4.3), \(D_s\) with \(G_s\), and A with \(I^{-2}\) [15] [novelty: direct corollary; ledger V8-34]. Details in Appendix E.
+E-optimality maximizes the smallest information eigenvalue. If that eigenvalue is repeated, no unique first-order distance metric exists [15] [novelty: known; ledger V8-30]. In that case, single-transfer first-order stability can hold automatically [novelty: direct corollary; ledger V8-31].
+
+The D conclusion also fails when the smallest eigenvalue is simple. A numerically verified global E optimum disagrees with its own nearest-centre rule (fixture G19) [novelty: unresolved; ledger V8-33]. Positive first-order preference need not imply positive exact gain [novelty: unresolved; ledger V8-32].
+
+Concavity still supplies a safe test for rejecting non-improving moves [novelty: direct corollary; ledger V8-34]. [Appendix E.1](#appendix-e1)–E.2 gives the formulas and evidence.
 
 ### 7.2 A-optimality
 
-The finite theory splits for A as for E. With \(H=I^{-1}\), \(U=[u_a,u_b]\), \(C=\operatorname{diag}(\alpha,-\beta)\), the exact gain \(\Delta F_A=\operatorname{tr}[(C^{-1}+U^\top HU)^{-1}U^\top H^2U]\) is a \(2\times2\) capacitance identity costing \(O(d^2)\) per candidate [68], [69], [70] (Proposition E.1) [novelty: direct corollary; ledger A1-1], and positive-gain exchange terminates [24], [71] [novelty: direct corollary; ledger A1-2]. The D-style implication from a first-order \(I^{-2}\) violation to a positive exact gain fails: on an exact-rational \(N=6\), \(d=2\), \(K=3\) table one move has \(I^{-2}\) margin \(567/20>0\) and exact A gain \(-999/250\), a move-level witness, not an exchange-stable non-Voronoi state (fixture G20) [novelty: unresolved; ledger A2-1, A2-2]. Since \(-\operatorname{tr}(I^{-1})\) is concave, the tangent screen rejects safely and tangent stability certifies exchange stability, with the unique gradient \(I^{-2}\) [15], [38], [70] (Proposition E.2) [novelty: direct corollary; ledger A3-1]. No A criterion is implemented.
+A-optimality minimizes \(\operatorname{tr}(I^{-1})\). Its exact single-point gain can be computed in \(O(d^2)\), and strictly improving exchanges terminate [68]–[71], [24] [novelty: direct corollary; ledger A1-1] [novelty: direct corollary; ledger A1-2].
 
-### 7.3 Randomized quantizers and the efficient-score problem
+The D proof mechanism fails: one exact example has a positive nearest-centre preference but negative A gain. This is a counterexample for a move, not an exhibited exchange-stable non-Voronoi partition [novelty: unresolved; ledger A2-1, A2-2]. A concavity-based rejection test remains valid [15], [38], [70] [novelty: direct corollary; ledger A3-1].
 
-For an atomless score law the Dvoretzky–Wald–Wolfowitz theorem replaces every randomized quantizer by a deterministic one preserving all \((W_b,m_b)\) [10], [11] [novelty: known; ledger V8-28]; randomization therefore does not raise the population optimum of any moment-based criterion, and the upper problem in (5.2) may be taken over deterministic quantizers of \(\widehat S\) when its law is atomless; finite empirical laws are atomic and outside this result. For \(K\le d\), in-bin profiling is singular since \(\operatorname{rank}I_q\le K-1\), while efficient-score compression can stay well posed with nuisance information supplied externally.
+[Appendix E.3](#appendix-e3) gives both results. A-optimality is not implemented in the reference library.
 
-On a finite sample the hard objective \(F(I_{P_n}(q_\eta))\) is piecewise constant in \(\eta\), so ordinary gradients vanish almost everywhere, the motivation for soft binning [18], [20] [novelty: direct corollary; ledger V8-35]; shape derivatives can exist for absolutely continuous laws [13], [14], but no differentiability-and-convergence theorem for the four objectives has been established, and Theorem 5 is not one [novelty: known; ledger V8-36]. Replacing hard assignments by probabilities \(r_b(s;\eta)\) gives \(I_{\rm soft}=\sum_bm_bm_b^\top/W_b\) with \(W_b=\sum_iw_ir_{ib}\), \(m_b=\sum_iw_ir_{ib}s_i\), which, with the randomization rule fixed in \(\theta\), is exactly the Fisher information of the randomized quantizer by (3.1) [3], [18], [20] [novelty: direct corollary; ledger V8-37]; its assignment gradient \(\partial F/\partial r_{ib}=w_i(2s_i^\top G\mu_b-\mu_b^\top G\mu_b)\) is the negative squared \(G\)-distance to the centroid up to a bin-independent term [18] [novelty: direct corollary; ledger V8-38]. Fixed-temperature affine-softmax D and \(D_s\) objectives are smooth away from empty cells and singular matrices, so line-search ascent converges to stationary points, not hard local optima [18] [novelty: known; ledger V8-39]; the zero-temperature limit is open (§10). Appendix F gives parameterizations.
+### 7.3 Learning a rule through soft assignments
 
-### 7.4 Restricted-class consistency
+On a finite sample, moving a hard decision boundary changes nothing until an event crosses it. The empirical objective is therefore piecewise constant, with ordinary gradients zero almost everywhere [18], [20] [novelty: direct corollary; ledger V8-35]. Population shape derivatives require different arguments; no complete differentiability-and-convergence result is established here [13], [14] [novelty: known; ledger V8-36].
 
-For a compact class of \(K\)-cell affine-max quantizers with bounded scores, cell masses bounded below, and a uniform conditioning margin \(\lambda_{\min}\ge\kappa>0\), empirical cell probabilities and first moments converge uniformly, so the four objectives converge uniformly on the regular subset, approximate empirical maximizers are value-consistent, and with an isolated population maximizer the argmax theorem gives decision consistency up to label permutations; the proof is standard empirical-process theory [12], the mass margin echoing [54] (Proposition F.1) [novelty: adaptation; ledger V8-40].
+Soft assignments replace each label by bin probabilities. With the randomization fixed in the statistical parameter, their moment matrix is the information of a randomized quantizer [3], [18], [20] [novelty: direct corollary; ledger V8-37]. Its gradient uses the same centre comparisons [18] [novelty: direct corollary; ledger V8-38].
 
-## 8. Frozen rules under estimated scores and finite samples
+At fixed temperature and away from empty bins and singular matrices, standard smooth optimization supports stationary-point guarantees [18] [novelty: known; ledger V8-39]. This does not guarantee an optimal hard rule after rounding.
 
-The theorems of §4–§7 concern the score vectors a rule is given. Two things happen when a rule is used. The score it is given is an estimate \(\hat s=s+e\) of the true score — a classifier's calibrated ratio, a mis-specified template — and the retention it reports is a sample quantity. This section treats both for a *frozen* rule \(q\): fitted on any data by any method and then held fixed, so that every statement is conditional on \(q\) and no refitting enters. The first question (§8.1–§8.3) is algebraic. For one law and fixed labels, how far is the retention computed from \(\hat s\) from the true retention of the same labels, and what does the rule lose by acting on \(\hat s\) instead of \(s\)? The second (§8.4) is statistical. On an independent sample of true scores, what is the sampling error of the plug-in retention? The two errors are separate quantities and neither absorbs the other (§8.5). Every result here was independently audited after its derivation, and several first readings were refuted in the audit; the refuted readings are recorded as fixtures (Appendix G) so that they are not rederived. Proofs are in Appendix I.
+For an atomless score distribution, a deterministic rule exists with the same bin moments as any randomized rule [10], [11] [novelty: known; ledger V8-28]. This existence theorem neither describes how to find it nor covers finite atomic samples.
 
-### 8.1 The reporting gap of a proxy score
+Appendix F gives the construction, gradient, and qualifications.
 
-Fix a law \(P\) on observations, the true score \(s\in\mathbb R^d\) with \(V=E[ss^\top]\succ0\), a proxy \(\hat s=s+e\) with \(\tilde V=E[\hat s\hat s^\top]\), and labels \(Z=q(\hat s)\) with \(p_b=P(Z=b)>0\). Write \(c_b=E[s\mid Z=b]\), \(e_b=E[e\mid Z=b]\), \(I_Z=\sum_bp_bc_bc_b^\top\) for the true retained information of the labels and \(\tilde I_Z=\sum_bp_b(c_b+e_b)(c_b+e_b)^\top\) for the retained information computed from the proxy, the number a library prints when handed \(\hat s\). Set \(\mathcal E=E[ee^\top]\), \(\mathcal E_Z=\sum_bp_be_be_b^\top\), and the three whitened error scales
+### 7.4 Learning within a specified rule family
 
-\[
-\varepsilon^2=\operatorname{tr}(V^{-1}\mathcal E),\qquad
-\varepsilon_Z^2=\operatorname{tr}(V^{-1}\mathcal E_Z)\le\varepsilon^2,\qquad
-\varepsilon_R^2=\operatorname{tr}(I_Z^{-1}\mathcal E_Z).
-\tag{8.1}
-\]
+Proposition F.1 gives a standard consistency result for a compact family of affine-max rules. With the stated score, bin-mass, and nonsingularity conditions, empirical objectives converge uniformly. Approximate empirical maximizers then approach the best population value in that family [12], [54] [novelty: adaptation; ledger V8-40].
 
-With \(R=V^{-1/2}I_ZV^{-1/2}\), eigenvalues \(1\ge\rho_1\ge\dots\ge\rho_d=\rho_{\min}\), \(\eta_D=(\det R)^{1/d}\) is the true geometric-mean retention of the labels and \(\tilde\eta_D=(\det\tilde I_Z/\det\tilde V)^{1/d}\) the reported one; \(d-\operatorname{tr}R\) is the rule's trace loss. All of \(\varepsilon,\varepsilon_Z,\varepsilon_R,\rho_i,\eta_D\) are invariant under \((s,\hat s)\mapsto(As,A\hat s)\) for nonsingular \(A\); \(E[e]\ne0\) is allowed; \(E[s]=0\) is never used and is only what makes \(\eta_D\) a Fisher retention by (3.1). No sampling limit is taken: for the empirical law of a sample on which both scores exist the statements hold sample-wise and exactly. Write \(U_d(x)=2\sqrt d\,x+x^2\) and, for \(x<1\), \(L_d(x)=\max\{2d\log(1-x),\ x^2-2\sqrt d\,x-U_d(x)^2/(2(1-x)^2)\}\). Per direction, the proxy misreports the retention of a whitened direction \(u\) with true retention \(\rho=u^\top Ru\) by at most \(2\sqrt\rho\,\varepsilon_Z+\varepsilon_Z^2\), and the full information by at most \(2\varepsilon+\varepsilon^2\), by Cauchy–Schwarz on the cross term of \(\tilde I_Z-I_Z=E[c_Ze_Z^\top+e_Zc_Z^\top]+\mathcal E_Z\) [novelty: direct corollary; ledger O8-1]. The determinant statement is the one the library's headline number needs.
+This concerns optimization within the specified family. It neither certifies an arbitrary local training solution nor settles unrestricted D consistency.
 
-<div class="theorem" markdown="1">
-<div class="box-title" markdown="span">Theorem 13 — the reporting gap is an alignment term plus a spurious-information term</div>
+## 8. Evaluating a fitted rule
 
-Let \(I_Z\succ0\), \(\tilde V\succ0\) and \(\tilde I_Z\succ0\). Then
+A fitted rule faces two distinct sources of error. It may receive estimated scores, and its retention is measured on finitely many events. Throughout this section, a *frozen* rule means that fitting has finished and neither the rule nor its provider changes during evaluation.
 
-\[
-\log\frac{\tilde\eta_D}{\eta_D}=T_1+T_2+r_3,\qquad
-T_1=\frac2d\Big(E[e_Z^\top I_Z^{-1}c_Z]-E[e^\top V^{-1}s]\Big),\qquad
-T_2=\frac{\varepsilon_R^2-\varepsilon^2}{d},
-\tag{8.2}
-\]
+Sections 8.1–8.3 concern score error. Section 8.4 concerns independent-sample uncertainty. Appendix I gives the precise statements and proofs; Appendix G records counterexamples identified during the independent audits.
 
-with, for \(\varepsilon_R,\varepsilon<1\), the curvature remainder \(r_3\in\frac1d\big[-U_d(\varepsilon_R)^2/(2(1-\varepsilon_R)^2),\ U_d(\varepsilon)^2/(2(1-\varepsilon)^2)\big]\), and:
+### 8.1 A retention value computed from estimated scores can be misleading
 
-(a) *alignment.* Two independent bounds hold, and the smaller applies:
-\[
-|T_1|\le\frac2d\sqrt{d-\operatorname{tr}R}\,\Big(\varepsilon_Z\sqrt{\tfrac{1-\rho_{\min}}{\rho_{\min}}}+\sqrt{\varepsilon^2-\varepsilon_Z^2}\Big),\qquad
-|T_1|\le\frac2{\sqrt d}\,(\varepsilon_R+\varepsilon).
-\]
+Fix a rule \(q\) and labels \(Z=q(\hat s)\), where \(\hat s=s+e\) is an estimated score. There are two information matrices for these same labels. The true one uses the bin means of \(s\); the reported one uses the bin means of \(\hat s\).
 
-(b) *spurious information.* \(0\le\varepsilon_R^2\le\varepsilon_Z^2/\rho_{\min}\), so \(-\varepsilon^2/d\le T_2\le(\varepsilon_Z^2/\rho_{\min}-\varepsilon^2)/d\).
+Each retention ratio also uses its corresponding full-score matrix.
 
-(c) *crude bracket, no expansion.* \(\frac1d[L_d(\varepsilon_R)-U_d(\varepsilon)]\le\log(\tilde\eta_D/\eta_D)\le\frac1d[U_d(\varepsilon_R)-L_d(\varepsilon)]\), whose first order is \(\pm\frac2{\sqrt d}(\varepsilon_R+\varepsilon)\).
+Theorem 13 separates the log ratio of reported to true retention into an alignment term, a quadratic score-error term, and a controlled remainder. Alignment describes how score errors correlate with the signal retained by the bins.
 
-The numerator first-order constant is attained: with \(e_b=\kappa c_b\) in every cell, \(\log\det\tilde I_Z-\log\det I_Z=2d\log(1+\kappa)\) while \(\varepsilon_R^2=d\kappa^2\), in both signs of \(\kappa\). Sharpness of the retention-ratio bound is not claimed; a common rescaling cancels there.
-</div>
+The quadratic term compares cell-averaged score error with total score error. Neither term alone determines the reporting error.
 
-We found no direct precedent for the expansion; its ingredients — log-determinant concavity [82], a rank-one Loewner bound, and an exact integral form of \(\log(1+\lambda)-\lambda\) — are standard, and the specific two-term form on cell moments is a search gap, not a novelty claim [novelty: apparently new; ledger O8-2]. Three readings that the first derivation stated and the audit refuted are worth recording, because each is tempting. The two alignment bounds in (a) are not ordered: on a four-atom \(d=2\) law with \(R=\operatorname{diag}(1/10,1)\) the trace-loss bound exceeds the crude bound (fixture G27). The scalar inequality \(\log(1+\lambda)\ge\lambda-\lambda^2/[2(1+\lambda_{\min})]\) is false for \(\lambda_{\min}>0\), so the remainder must be derived from the integral identity with the floor \(m=\min(0,\lambda_{\min})\), which leaves the \(\varepsilon\)-based bound unchanged (fixture G26) [novelty: direct corollary; ledger O8-3]. And \(r_3\) is second order despite its position: \(T_2\) alone is not the full quadratic Taylor coefficient.
+The weakest retained direction matters. A modest score error can produce a large relative retention error if the rule retains almost no information in that direction. An exact example keeps the normalized score error near \(16\%\) while the reported-to-true ratio grows from about \(1.75\) to \(42.8\).
 
-**No bound on \(\varepsilon\) alone controls the gap.** The retention scale \(\rho_{\min}\) in (a) and (b) is necessary: a \(d=2\), three-cell centred atomic family with \(\varepsilon^2\in[0.026,0.028]\) throughout has \(\tilde\eta_D/\eta_D\) running \(1.75\to5.10\to42.8\) as \(\rho_{\min}\) runs \(0.034\to0.0014\to1.4\cdot10^{-5}\) (fixture G24) [novelty: unresolved; ledger O8-4]. A whitened proxy error of \(16\%\), aligned with a direction the rule barely retains, reports \(75\%\) more retention than there is. What fails is relative control from an error upper bound; both retentions stay in \([0,1]\). At \(\eta_D=0\) — \(I_Z\) singular, as at \(K\le d\) under the reference law by the rank ceiling of §3 — the expansion is void and the reported number can be anything in \([0,1]\); when \(\varepsilon_R\ge1\) the lower bracket is void and the reported information can vanish (\(e_b=-c_b\)). Neither is a defect of the bound.
+Both retention values still lie in \([0,1]\).
 
-**Invertible reduction and the deployable direction.** For fixed labels \(\tilde\eta_D\) is unchanged by \(\hat s\mapsto A\hat s\), \(A\) nonsingular, provided the rule is transported as \(q_A(u)=q(A^{-1}u)\); feeding transformed scores to an unchanged rule does not do this, and translations are not invariances of uncentred moments (fixture G28). Every reporting bound therefore applies with \(e_A=A\hat s-s\) and the error scales recomputed for the same labels. The least-squares matrix \(A^*=E[s\hat s^\top]\tilde V^{-1}\) gives \(\varepsilon_{\rm lin}^2=\sum_{i\le d}(1-r_i^2)\) in the uncentred canonical correlations \(r_i\) of \((s,\hat s)\), an identity that holds even when \(A^*\) is singular; applying the budget *at* \(A^*\) requires \(E[s\hat s^\top]\) nonsingular, which \(\varepsilon_{\rm lin}<1\) forces, and otherwise \(A^*\) is an inadmissible minimizer (fixture G29) [novelty: direct corollary; ledger O8-5]. The roles of \(s\) and \(\hat s\) are symmetric, so with \(\tilde\varepsilon^2=\operatorname{tr}(\tilde V^{-1}\mathcal E)\) and \(\tilde\rho_{\min}\) the smallest *reported* retention eigenvalue — the directional diagnostic of §9 — the same expansion bounds \(\log(\eta_D/\tilde\eta_D)\): a user holding a reported \(\tilde\eta_D\), a reported \(\tilde\rho_{\min}\), a reported trace loss and an error budget *in the proxy metric* has a bracket for the truth whenever the small-error conditions hold. Converting a budget stated in the true metric (§8.3) needs additional spectral control or a truth-labelled hold-out.
+[Appendix I.1](#appendix-i1) gives the expansion (8.2), the error scales, and the small-error and nonsingularity conditions. The result concerns one fixed set of labels. It supplies no uniform guarantee over fitted rules, and its error budgets require information about the true score.
 
-### 8.2 Acting on the proxy: rule transfer
+### 8.2 Estimated scores can also change labels
 
-Now the rule is applied to both scores, \(Z=q(s)\) and \(\hat Z=q(\hat s)\), and both retentions are computed from \(s\). Let \(M=\{Z\ne\hat Z\}\) and \(\pi=P(M)\). The margin function of the rule is \(M_q(t)=P(\operatorname{dist}_V(s,\partial q)\le t)\), the mass within \(V^{-1}\)-distance \(t\) of a cell boundary; for a nearest-centre rule with metric \(G\succ0\) and distinct centres the distance from \(s\) in cell \(b\) to its boundary is \(\min_{b'\ne b}(\|s-\mu_{b'}\|_G^2-\|s-\mu_b\|_G^2)/(2\|\mu_b-\mu_{b'}\|_G)\), rational on rational data.
+A second error occurs when \(q(\hat s)\ne q(s)\). A score perturbation changes a label only if it can reach the boundary of the original bin. Proposition 14 therefore bounds the disagreement probability using score error and the probability mass near bin boundaries.
 
-<div class="theorem" markdown="1">
-<div class="box-title" markdown="span">Proposition 14 — mislabel mass under a margin, and the label-perturbation sandwich</div>
+This boundary condition is essential. If a bin boundary contains an atom of positive probability, arbitrarily small perturbations can change a fixed fraction of labels. Moreover, few changed labels do not by themselves imply a small information loss: the scores of those events matter.
 
-(i) If \(q(\hat s)\ne q(s)\) then \(\operatorname{dist}(s,\partial C_{q(s)})\le\|e\|\) in any norm. Hence, for the \(L^2(V^{-1})\) error \(\varepsilon\),
-\[
-\pi\le\inf_{t>0}\Big\{M_q(t)+\frac{\varepsilon^2}{t^2}\Big\},\qquad
-M_q(t)\le Ct^\alpha\ (C,\alpha>0)\ \Longrightarrow\ \pi\le\Big(1+\tfrac\alpha2\Big)\Big(\tfrac2\alpha\Big)^{\frac\alpha{\alpha+2}}C^{\frac2{\alpha+2}}\varepsilon^{\frac{2\alpha}{\alpha+2}},
-\tag{8.3}
-\]
-the minimizer \(t_*=(2\varepsilon^2/(\alpha C))^{1/(\alpha+2)}\) lying in the range of the margin hypothesis, else minimize over that range and cap by one; at \(\alpha=1\), \(\pi\le1.89\,C^{2/3}\varepsilon^{2/3}\).
+The proposition combines a disagreement bound with bounds on the resulting information change. Moment conditions control the trace loss; determinant bounds additionally depend on the smallest retained eigenvalue. [Appendix I.2](#appendix-i2) gives the precise bounds and a boundary counterexample.
 
-(ii) With \(c_b\) the \(Z\)-cell means and \(\hat c_b\) the \(\hat Z\)-cell means of the true score, a zero centroid on any empty cell, and one label alphabet,
-\[
-I_{\hat Z}\succeq I_Z-\Gamma,\qquad I_Z\succeq I_{\hat Z}-\hat\Gamma,\qquad
-\Gamma=2E\big[(ss^\top+c_{\hat Z}c_{\hat Z}^\top)\mathbf 1_M\big],\quad
-\hat\Gamma=2E\big[(ss^\top+\hat c_Z\hat c_Z^\top)\mathbf 1_M\big].
-\tag{8.4}
-\]
-Consequently \(|\operatorname{tr}R_Z-\operatorname{tr}R_{\hat Z}|\le2E[\|w\|^2\mathbf 1_M]+2\pi\max_b\max(\|c'_b\|^2,\|\hat c'_b\|^2)\) in whitened coordinates \(w=V^{-1/2}s\), and with \(\gamma_R=\operatorname{tr}(I_Z^{-1}\Gamma)<1\), \(\log\eta_D(\hat Z)-\log\eta_D(Z)\ge\log(1-\gamma_R)\), symmetrically above, where \(\gamma_R\le\operatorname{tr}(V^{-1}\Gamma)/\rho_{\min}\).
-</div>
+### 8.3 Calibration and ranking do not certify retention
 
-Part (i) is the comparison method of Audibert and Tsybakov [83, §5] with spatial distance to a cell boundary in place of posterior distance to the Bayes boundary; their excess-risk exponent concerns a different, margin-weighted loss [novelty: adaptation; ledger O8-6]. Part (ii) is a Pythagoras argument on conditional expectations [novelty: direct corollary; ledger O8-7]. Orders: bounded whitened scores \(\|w\|\le B\) give trace loss \(O(\pi)\) with constant \(4B^2\); a fourth moment and a uniform bound on the centroids of the compared rules give \(O(\sqrt\pi)\); composing with (8.3) at \(\alpha=1\) gives \(O(\varepsilon^{2/3})\) and \(O(\varepsilon^{1/3})\) respectively. Uniformity across laws or rules needs uniform fourth moments and a common positive floor on the occupied base-cell masses, and the determinant orders a retained-eigenvalue floor. The margin is necessary: a scalar centred law with an atom of mass \(1/2\) on the boundary of the threshold rule has \(\pi=1/2\) under every lift \(\kappa>0\), \(\eta_D\) jumping \(4/5\to1/2\), and \(M_q(t)\ge1/2\) for all \(t\), so (8.3) is vacuous while (8.4) holds with \(\Gamma=4\) (fixture G25) [novelty: unresolved; ledger O8-8]. The budget is a function of the mislabel mass, and nothing makes that mass small without a margin.
+Classifier probabilities can be converted into mixture scores. Proposition 15 bounds score error by posterior-probability error for an interior reference mixture, with constants depending on the mixture and score coordinates.
 
-### 8.3 From classifier calibration to score error
+Calibration measures only part of posterior error. A calibrated prediction can omit distinctions present in the true posterior. Conversely, a miscalibrated prediction can rescale scores without changing the retention ratio. Ranking measures such as AUC do not control the score-error budget either: monotone distortions preserve ranking while changing reported retention.
 
-Appendix A states how a calibrated classifier yields the mixture score: with posteriors \(\eta\in\Delta^m\) under training priors \(\pi\), \(r_\alpha=\eta_\alpha/\pi_\alpha\), \(D(\eta)=\sum_\beta\theta_{0\beta}r_\beta\) and component ratios \(\varphi_\alpha=r_\alpha/D\), the score is a fixed linear image \(s=T\varphi\) of the ratios, in a tangent chart with \(T\mathbf 1=0\). An estimated posterior \(\hat\eta\) gives \(\hat s=T\varphi(\hat\eta)\).
+[Appendix I.3](#appendix-i3) gives the conversion bound and counterexamples. These results explain why calibration or ranking checks cannot replace validation of the scores used by the binning objective.
 
-<div class="theorem" markdown="1">
-<div class="box-title" markdown="span">Proposition 15 — posterior error bounds score error; calibration alone bounds neither</div>
+### 8.4 Estimating uncertainty on independent data
 
-For \(\theta_0\) interior, \(D\ge D_{\min}=\min_\beta\theta_{0\beta}/\pi_\beta>0\), \(0\le\varphi_\alpha\le1/\theta_{0\alpha}\), and \(\|\varphi(\eta')-\varphi(\eta)\|_2\le L\|\eta'-\eta\|_2\) on the simplex with \(L=D_{\min}^{-1}(\pi_{\min}^{-1}+Q\sqrt m\,\|1/\theta_0\|_2)\), \(Q=\max_\beta\theta_{0\beta}/\pi_\beta\). Hence
-\[
-\varepsilon^2\le\|V^{-1}\|_{\rm op}\|T\|_{\rm op}^2L^2\,E_{P_{\theta_0}}\|\hat\eta-\eta\|^2\le\|V^{-1}\|_{\rm op}\|T\|_{\rm op}^2L^2Q\,E_{P_\pi}\|\hat\eta-\eta\|^2,
-\]
-and under the training mixture \(E_{P_\pi}\|\hat\eta-\eta\|^2\) is the excess Brier score, which splits orthogonally into reliability \(E\|\hat\eta-E[\eta\mid\hat\eta]\|^2\) and the resolution gap \(E\|\eta-E[\eta\mid\hat\eta]\|^2\). Conversely \(\|\eta'-\eta\|_2\le L_{\rm inv}\|\varphi'-\varphi\|_2\) with \(L_{\rm inv}=Q(\pi_{\max}+\|\pi\|_2)\), so posterior and full-ratio errors are equivalent; a lower bound on the *score* error, \(\varepsilon^2\ge D_{\min}\sigma_T^2\,(L_{\rm inv}^2\|V\|_{\rm op})^{-1}\,\mathrm{reliability}\), holds only when the chart is injective on \(H=\{h:\theta_0^\top h=0\}\) with restricted singular value \(\sigma_T>0\).
-</div>
+Freeze the rule, score provider, reference parameter, and number of bins. Then evaluate the labels on an independent, equally weighted sample of true scores. The provider used to assign labels may still be approximate; the information calculation here uses the true scores.
 
-This is a bridge from the proper-score decomposition [84] and the classifier-ratio construction [21] with checked project constants [novelty: adaptation; ledger O8-9]. Two consequences the first derivation asserted are false. Positive reliability does not bound score error for an arbitrary chart: a one-parameter submodel with \(T=(1,-1,0)\) has reliability \(1/24\) and unchanged scores (fixture G30). And bad calibration does not distort reported retention even with a full binary chart: posteriors \((3/4,1/4)\) and \((1/4,3/4)\) replaced by \((5/8,3/8)\) and \((3/8,5/8)\) give reliability \(1/32\), \(\varepsilon^2=1/4\), and both retentions equal to one — an invertible rescaling of the true score (fixture G31) [novelty: unresolved; ledger O8-10]. Calibration certifies nothing about the resolution gap, which needs truth posteriors that only simulation supplies; reliability itself is a population functional estimated under calibration-estimator assumptions. Nor does ranking quality help. The scalar law \(s\in\{-2,-1,1,2\}\) with the threshold rule at \(0\) has true retention \(9/10\); two strictly increasing distortions of the score keep every rank-cut label under corresponding thresholds, the same ROC curve and the same true retention, and report \(100/101\) and \(5105/10006\) (fixture G32) [novelty: unresolved; ledger O8-11]. AUC is not a function of the whitened \(L^2\) error, and the whitened \(L^2\) error is what Theorem 13 needs.
+Let \(p_b\) and \(c_b=E[S\mid Z=b]\) be the bin probabilities and true mean scores. Write \(V=E[SS^\top]\), \(I_Z=\sum_bp_bc_bc_b^\top\), and \(\eta_D=(\det I_Z/\det V)^{1/d}\). Hats denote the same quantities computed from the evaluation sample, without centering scores. Empty-bin contributions are zero; the estimator is defined as zero if \(\hat V\) is singular.
 
-### 8.4 The sampling error bar of a frozen rule
-
-Keep the rule \(q\), the provider \(\hat s\), the reference point and \(K\) frozen, and draw an evaluation sample \(X_1,\dots,X_n\) iid from the evaluation law, equally weighted, independent of everything used to fit \(q\). Observe the true score \(S_i=s(X_i)\in\mathbb R^d\) and the label \(Z_i=q(\hat s(X_i))\). Because \(q\circ\hat s\) is a fixed measurable map, the pairs \((S_i,Z_i)\) are iid: the boundary non-smoothness of a refitted rule never enters. Population objects are \(p_b\), \(m_b=E[S\mathbf 1_{Z=b}]\), \(c_b=m_b/p_b\), \(V=E[SS^\top]\), \(I_Z=\sum_bm_bm_b^\top/p_b\) and \(\eta_D=(\det I_Z/\det V)^{1/d}\); under a regular model at the reference law this is the true geometric-mean retention of §9 by (3.1), and it is the geometric mean of the squared uncentred canonical correlations between \(S\) and the cell indicator, so that \(\prod_i(1-\rho_i^2)\) is Wilks' \(\Lambda\) for the grouping. The estimator is the plug-in on the same sample, \(\hat p_b=n_b/n\), \(\hat m_b=n^{-1}\sum_iS_i\mathbf 1_{Z_i=b}\), \(\hat V=n^{-1}\sum_iS_iS_i^\top\), \(\hat I_Z=\sum_{n_b>0}\hat m_b\hat m_b^\top/\hat p_b\), \(\hat\eta_D=(\det\hat I_Z/\det\hat V)^{1/d}\), with \(0/0:=0\) on empty cells and \(\hat\eta_D:=0\) when \(\det\hat V=0\); scores are never centred. On every sample \(\hat V-\hat I_Z=n^{-1}\sum_i(S_i-\hat c_{Z_i})(S_i-\hat c_{Z_i})^\top\succeq0\), so \(0\le\hat\eta_D\le1\), the uncentred matrix form of the within/between decomposition [81, (26.50)], and \(\hat\eta_D\) is exactly the library's `geometric_mean_retention` when \(\hat V\succ0\) and no direction is projected out [novelty: known; ledger O7-1]. Assume (A1) \(p_b>0\) for all \(b\); (A2) \(E\|S\|^4<\infty\); (A3) \(V\succ0\); (A3′) \(I_Z\succ0\), which by the rank ceiling needs \(K\ge d+1\) at the reference law.
+The assumptions are positive bin probabilities (A1), finite fourth score moment (A2), \(V\succ0\) (A3), and \(I_Z\succ0\) (A3′). At the reference law, the last condition requires at least \(d+1\) bins.
 
 <div class="theorem" markdown="1">
 <div class="box-title" markdown="span">Theorem 16 — plug-in asymptotics of the geometric-mean retention of a frozen rule</div>
@@ -601,82 +581,74 @@ Under (A1)–(A3′), conditionally on the rule,
 \psi(S,Z)=\frac{\eta_D}d\Big[2S^\top I_Z^{-1}c_Z-c_Z^\top I_Z^{-1}c_Z-S^\top V^{-1}S\Big],
 \tag{8.5}
 \]
-with \(E\psi=0\). The plug-in \(\hat\psi_i\) (hats on every population object) satisfies \(\sum_i\hat\psi_i=0\) whenever \(\hat I_Z,\hat V\succ0\), and \(\hat\sigma^2=n^{-1}\sum_i\hat\psi_i^2\to\sigma^2\) almost surely. If moreover (A4) \(\sigma^2>0\), the Wald interval \(\hat\eta_D\pm z_{1-\alpha/2}\hat\sigma/\sqrt n\) has asymptotic level \(1-\alpha\). At \(d=1\), \(\psi=((1-\eta)S^2-(S-c_Z)^2)/v\) and \(\hat\eta=1-\sum_i(S_i-\hat c_{Z_i})^2/\sum_iS_i^2\).
+with \(E\psi=0\). The plug-in \(\hat\psi_i\) (hats on every population object) satisfies \(\sum_i\hat\psi_i=0\) whenever \(\hat I_Z,\hat V\succ0\), and \(\hat\sigma^2=n^{-1}\sum_i\hat\psi_i^2\to\sigma^2\) almost surely. If moreover (A4) \(\sigma^2>0\), the Wald interval \(\hat\eta_D\pm z_{1-\alpha/2}\hat\sigma/\sqrt n\) has asymptotic level \(1-\alpha\).
+
+At \(d=1\), \(\psi=((1-\eta)S^2-(S-c_Z)^2)/v\) and \(\hat\eta=1-\sum_i(S_i-\hat c_{Z_i})^2/\sum_iS_i^2\).
 </div>
 
-The method is published: the vector delta method [49, Thm 3.1], the determinant differential [73, §8.3], the influence functions of Wilks-type and canonical-correlation parameters [75], [74], and asymptotic normality of eigenvalue functionals under finite fourth moments without normality, repeated roots allowed [76], [77]. In canonical coordinates \(\psi\) is \((\eta_D/d)\sum_i\operatorname{IF}(\rho_i^2)/\rho_i^2\), the average of Romanazzi's per-coefficient influence functions in the form restated by [80]. What is project algebra is the uncentred fixed-partition form on the cell moments the library computes, the plug-in variance with its consistency, and the \(d=1\) reduction [novelty: adaptation; ledger O7-2, O7-3; scalar case O6-1, O6-2, O6-3]. The "if" in the Wald statement is not an "iff": when \(\sigma^2=0\) the first-order theory gives no level, and the quadratic-form limit of \(n(\hat\eta_D-\eta_D)\) is not derived; measured, the interval is then conservative with width \(O(1/n)\).
+This gives an asymptotic error bar for the true retention of the fixed labels. It uses the delta method and canonical-correlation influence-function theory, specialized to uncentered bin moments [49], [73]–[80].
 
-<div class="theorem" markdown="1">
-<div class="box-title" markdown="span">Proposition 17 — the variance vanishes exactly on per-cell ellipsoids</div>
-
-Under (A1)–(A3′), \(\sigma^2=0\) iff for every cell \(b\) the conditional law of \(S\) given \(Z=b\) is supported on
-\[
-\mathcal E_b=\Big\{s:\ (s-VI_Z^{-1}c_b)^\top V^{-1}(s-VI_Z^{-1}c_b)=c_b^\top I_Z^{-1}(V-I_Z)I_Z^{-1}c_b\Big\},
-\]
-an ellipsoid in the \(V^{-1}\) metric, a single point when the right side is \(0\). An absolutely continuous cell of positive probability therefore forces (A4). At \(d=1\), \(\mathcal E_b=\{c_b/(1\mp\sqrt{1-\eta})\}\) for \(0<\eta<1\), and at \(\eta=0\) every law with vanishing cell means has \(\psi\equiv0\). At \(\eta_D=1\), \(S=c_Z\) a.s., \(\psi\equiv0\), and \(\hat\eta_D=1\) on every sample whose occupied cell means span \(\mathbb R^d\).
-</div>
-
-Completing the square gives the ellipsoid [novelty: direct corollary; ledger O7-4, O6-4]. The scalar remark "an atomless cell of positive probability forces \(\sigma^2>0\)" is true for \(0<\eta<1\), fails at \(\eta=0\) (fixture G21), and does not lift to \(d\ge2\): four cells related by quarter turns with \(S\mid Z=0\) uniform on \(\{(3,4),(3,-4)\}\) have \(\eta_D=9/25\) and \(\psi=0\) at every atom, the cell-0 ellipsoid is the circle \(|s-(25/3,0)|=20/3\), and the *atomless* law uniform on the arc of half-angle \(\alpha\approx1.1311\) about the far point has \(\sigma^2=0\) as well (fixture G22) [novelty: unresolved; ledger O7-5]. The \(\eta_D=1\) statement needs its spanning qualifier: a sample confined to fewer spanning cells has \(\hat V\) singular and \(\hat\eta_D=0\) by convention, while a library that projects the singular direction returns \(1\) (fixture G23); the event has probability \(2^{1-n}\) on the witness and vanishes exponentially under (A1) [novelty: unresolved; ledger O7-6].
-
-<div class="theorem" markdown="1">
-<div class="box-title" markdown="span">Proposition 18 — at a singular population retention the plug-in is biased upward at rate \(n^{-(d-r)/d}\)</div>
-
-Let (A1), (A3) hold with \(E\|S\|^2<\infty\), and let \(r=\operatorname{rank}I_Z<d\), so \(\eta_D=0\), with \(U\) an orthonormal basis of the null space of \(I_Z\). Then \(\hat\eta_D=O_p(n^{-(d-r)/d})\), and if \(K\ge d\) and \(E[U^\top SS^\top U\,\mathbf 1_{Z=b}]\succ0\) for every cell, \(n^{(d-r)/d}\hat\eta_D\) converges in law to a strictly positive random variable, namely \((\det A\,\det(WP^{-1}W^\top)/\det V)^{1/d}\) with \(A=R^\top I_ZR\), \(P=\operatorname{diag}(p)\), \(W=G(I-\Lambda)\), \(G\) the Gaussian limit of \(\sqrt n\,U^\top\hat m\) and \(\Lambda\) a rank-\(r\) idempotent. At \(d=2\), \(K=2\) on the Hermite law with cut \(0\) the limit is \(|G_0+G_1|/\sqrt\pi\), mean \(2/\pi\).
-</div>
-
-The rate is classical in another formulation: sample canonical correlations whose population value is zero are \(O_p(n^{-1/2})\) with a known limit law, from Hsu [85] through the dimensionality tests of Glynn and Muirhead [86] and, under nonnormality, [78]; the rank-test limit of \(n\)-scaled smallest roots as weighted \(\chi^2\) sums [79] has the same shape at \(d-r=1\). What is project algebra is the determinant form, the explicit Schur-complement limit and the bias reading for the retention estimator [novelty: adaptation; ledger O7-7]. The reference-law instance is \(K=d\): the rank ceiling forces \(\eta_D=0\), the plug-in is positive of order \(n^{-1/d}\), and the library's number is that plug-in. For \(d\ge2\) and \(r=d-1\) the bias is *slower* than the CLT scale, the plug-in and its Wald half-width are of the same order, and coverage of the true \(0\) is measured to stabilise at a law-dependent constant (\(0.95\) on the \(d=2\), \(K=2\) law by coincidence, \(0.80\) on the \(d=3\), \(K=3\) law); the joint limit behind that statement is not derived. The right tool at the endpoint is a rank test, not this interval.
-
-**Measured.** On a bounded three-component mixture-fraction score (\(d=2\), \(K=4\), \(E\|S\|^4=22\)) the \(95\%\) Wald interval covers \(0.950,0.945,0.956,0.945\) at \(n=100,300,1000,3000\), with \(\mathrm{SD}(\hat\eta_D)=\sigma/\sqrt n\) at every size and \(\hat\sigma\) within \(8\%\) of \(\sigma\) at \(n=100\) and \(3\%\) beyond; on the classifier-estimated scalar mixture rule of Appendix A (a mixture fraction estimated by a classifier trained on 15 events per class, \(d=1\), \(K=4\)) coverage is \(0.913,0.934,0.953,0.949\). On unbounded polynomial scores (Hermite, \(E\|S\|^4=83\) in \(d=2\) and \(4259\) in \(d=3\)) every first-order quantity converges as the theorem says but slowly: \(\hat\sigma\) underestimates \(\sigma\) by \(46\%\) at \(n=100\) and \(5\%\) at \(n=3000\) in \(d=2\), by \(76\%\) and \(25\%\) in \(d=3\), because \(\hat\sigma^2\) is a sample eighth or twelfth moment of the observation, and coverage is \(0.68\to0.94\) and \(0.40\to0.83\). This is a second-order, heavy-tail effect governed by the fourth moment, not a counterexample; every population reference and every coverage number was replicated on fresh seeds by the independent audit [novelty: unresolved; ledger O6-6, O7-8, O7-9]. Nothing is claimed about coverage on heavy-tailed scores at the sizes shown beyond the numbers themselves.
+The qualifications matter. A zero influence-function variance does not justify a Wald interval. A singular retained matrix requires different asymptotics. Heavy-tailed scores can make the large-sample approximation inaccurate at practical sample sizes. Propositions 17–18 and the measured coverage examples are in [Appendix I.4](#appendix-i4); none establishes coverage for a rule refitted on its evaluation sample.
 
 ### 8.5 What is measured and what is not
 
-The interval of Theorem 16 is for the *true* retention \(\eta_D\) of the frozen labels, conditional on the rule. The library's self-reported number replaces \(S\) by \(\hat s\); its population value \(\tilde\eta_D\) is the different number of §8.1, the same theorem gives the proxy plug-in a valid interval around that wrong target, and the \(O(n^{-1/2})\) interval excludes \(\tilde\eta_D\) with probability \(\to1\) whenever \(\tilde\eta_D\ne\eta_D\) — measured on that classifier rule, the interval for \(\eta\) covers the proxy value \(0.046\) of the time at \(n=100\) and never beyond [novelty: direct corollary; ledger O6-5, O7-10]. Once an oracle-score evaluation sample exists, sampling uncertainty (Theorem 16) and proxy reporting bias (Theorem 13) separate cleanly and add; without an oracle sample nothing in §8.4 applies, and the bias is bounded only through truth-dependent assumptions. Since \(\eta_D\) is a geometric mean, the interval says nothing about the worst retained direction.
+Three quantities should be reported separately: the retention computed from the supplied scores, any bound on its difference from true retention, and sampling uncertainty. Increasing the evaluation sample reduces sampling uncertainty; it does not remove score-estimation bias.
 
-Composing the budgets gives the deployment statement. For a rule \(\hat q\) fitted on the proxy and any comparison rule \(q\) that \(\hat q\) beats on the proxy objective — the global proxy optimum does, an exchange-stable solution only if it happens to — with \(-\beta^-(q)\le\log(\tilde\eta_D(q)/\eta_D(q\circ\hat s))\le\beta^+(q)\) from Theorem 13 and \(\gamma_R(q)<1\) from Proposition 14,
-\[
-\log\eta_D(\hat q\circ\hat s)\ \ge\ \log\eta_D(q\circ s)-\beta^+(\hat q)-\beta^-(q)+\log\big(1-\gamma_R(q)\big):
-\]
-the over-reporting budget belongs to the selected rule, the under-reporting budget to the comparator, and a change of score coordinates must transport rule, metric and comparator together [novelty: direct corollary; ledger O8-12]. Measured on the same classifier at 15, 60 and 300 training events per class the whitened score error is large, \(0.50\) at the smallest rung, while the reported retention is only \(8\%\) off — the two cancellations of Theorem 13(a) at work, a mostly linear error and a nearly lossless rule — and the margin bound (8.3) is informative only for \(\varepsilon\lesssim0.1\) [novelty: unresolved; ledger O8-13, O8-14]. The corollary still needs truth-based budgets for two rules and proxy-objective dominance; exchange stability alone supplies neither, and a uniform-over-rules budget with a proxy optimization-gap certificate is future work (§10.2).
+Under Theorem 16's conditions, true-score evaluation gives an interval for true retention. Applying the same calculation to proxy scores instead targets proxy retention. On the reported classifier example, the true-retention interval covers the proxy value only \(0.046\) of the time at \(n=100\), and never at the larger tested sizes [novelty: direct corollary; ledger O6-5, O7-10].
 
+Theorem 13 and Proposition 14 can also compare a proxy-fitted rule with another rule, but only with error budgets for both and the required proxy-objective comparison. Exchange stability alone supplies neither. [Appendix I.1](#appendix-i1) states that comparison precisely.
+
+Finally, geometric-mean retention and its interval do not characterize the weakest retained direction; the full retention spectrum remains useful.
 
 ## 9. Implementation and verification
 
-The theory supports two output types. A *finite partition result* takes a weighted score table and returns labels, cell moments, criterion value, exchange stability, move diagnostics, efficiency outputs, and an optional global certificate; it carries no prediction semantics unless a criterion-specific theorem or extension rule supplies one. A *quantizer result* takes a score-law representation or training source plus a geometric family and returns a serializable \(q(s)\) predicting in score space, composed with a supplied score function for observations. A reference library separates source model, score provider, optimization target, criterion, and solver, so score coordinates may come from exact functions, automatic differentiation, or a ratio estimator (Appendix A).
+The reference library separates the two tasks explicitly. `optimize_partition` returns labels and diagnostics for a fixed score table. `fit_quantizer` returns a reusable rule with `predict_scores`. Observation-to-score conversion remains a separate step. [Appendix A.4](#appendix-a4) describes the interfaces and their statistical meaning.
 
-The criterion-specific bridges decide what compiles. For D, every terminal exact zero-tolerance one-exchange-stable state on merged atoms compiles to its self-consistent Mahalanobis predictor (4.6) by Theorem 2; at positive tolerance the compile guarantee is tolerance-stamped. For profiled \(D_s\) the exchange solver is monotone under the in-bin convention and useful as a sample optimizer, and the tilt bracket of §6 certifies a finite global labeling when its saddle test closes, but the profiled route ships no compiled rule: the efficient-score interval seed is an initializer and an upper certificate, not a terminal state, because it is not exchange-stable (fixture G10, §5.7), and a profiled companion rule is theorem-backed only along margin-certified sequences, which are priced and, on conditionally centered scalar-nuisance laws, eventually empty. Profiled compilation therefore proceeds only through the projected efficient-score rule with nuisance information supplied externally. For A and E no finite bridge exists and nothing is compiled.
+For D, the exact theorem supports compilation under its stated assumptions. Positive numerical tolerance permits individual admissible disagreements, with the additional singleton guard described in §4.2. It does not imply exact label reproduction or a bound on changing all labels at once.
 
-Every fitted result reports retained information in normalized form. The retention operator \(R=I_{\rm full}^{-1/2}I_qI_{\rm full}^{-1/2}\) has eigenvalues in \([0,1]\), by the law of total covariance in (3.1) [1], [3] and nothing more [novelty: known; ledger I1-2]. The D-efficiency \(\eta_D=(\det I_q/\det I_{\rm full})^{1/d}=(\det R)^{1/d}\) is the standard design efficiency [15], [72], the geometric mean of retained information over normalized directions; [23] is prior art for \(d=1\) only [novelty: known; ledger I1-1]. The profiled \(\eta_{D_s}=(\det S_\psi(I_q)/\det S_\psi(I_{\rm full}))^{1/d_\psi}\) is the parameter-subsystem efficiency of design theory [16], [37], [15], [27]; it needs nonsingular nuisance blocks of both matrices [novelty: known; ledger I2-1]. Because D does not equalize directions, the spectrum of \(R\) is reported with \(\lambda_{\min}(R)\le\eta_D\le\operatorname{tr}R/d\), Kiefer's matrix means ordered by the arithmetic–geometric mean inequality [41], [15]; a diagnostic, not a theorem [novelty: known; ledger I3-1]. Singular directions of \(I_{\rm full}\) are projected out before whitening, never repaired by a ridge; estimated scores carry no exact Fisher semantics.
+Profiled exchange remains a sample optimizer. The mathematical bracket of §6 certifies finite labels when its conditions hold; it does not supply a general profiled predictor or mean that the library implements profiled certification. A projected efficient-score rule with externally supplied nuisance information solves a different statistical problem.
 
-The reported retention of a frozen rule on an independent, equally weighted sample of true scores from the reference law carries the standard error and untruncated Wald interval of Theorem 16, computed in one pass from the same cell moments. The interval is withheld under a named status where the first-order theory does not apply: a rule with at most \(d\) declared cells, whose reference-law retention is zero by the rank ceiling and whose plug-in is the biased endpoint estimator of Proposition 18; a rank-deficient full moment, where no projected surrogate is substituted; a rank-deficient between-cell moment, returned as zero with no interval; and influence values that cancel to rounding, returned as a zero standard error with no interval (Proposition 17). The between-cell moment is aggregated from whitened rows so that its rank verdict survives an ill-conditioned reparameterization. The interval measures sampling uncertainty only; for a proxy score the printed retention is the *reported* number of §8.1, whose distance to the truth is bounded by Theorem 13 under truth-dependent assumptions and is not controlled by AUC. The six boundary fixtures of the O8 audit and the two of the O7 audit (Appendix G) are pinned as deterministic tests.
+The normalized retention matrix is \(R=I_{\rm full}^{-1/2}I_qI_{\rm full}^{-1/2}\). Its eigenvalues lie in \([0,1]\) by (3.1) [1], [3] [novelty: known; ledger I1-2]. The geometric mean \(\eta_D=(\det R)^{1/d}\) is the standard D-efficiency [15], [72], with [23] covering the scalar case [novelty: known; ledger I1-1]. Profiled efficiency compares the corresponding Schur complements and requires nonsingular nuisance blocks [16], [37], [15], [27] [novelty: known; ledger I2-1].
 
-Verification checks exact algebra against recomputation and hunts counterexamples. The rank-two identity was checked on thousands of random moves and the Theorem 2 bound survived every move tried (fig-02); the fixtures cited in §4–§7 are the survivors of the hunt, each an exact instance on which a plausible rule fails; and terminal D labels matched the compiled predictor in every nonsingular zero-tolerance case. Appendix G lists every fixture and the verification runs.
+Report the spectrum as well as its geometric mean. The ordering \(\lambda_{\min}(R)\le\eta_D\le\operatorname{tr}R/d\) shows why the mean does not summarize the weakest direction [41], [15] [novelty: known; ledger I3-1]. Numerically singular full-information directions are projected out, never replaced by a ridge.
+
+Estimated-score outputs retain their proxy interpretation.
+
+The independent-sample diagnostic computes Theorem 16's influence-function variance. It withholds the interval when the rank or variance conditions fail. It does not replace a singular full matrix by a projected surrogate for that interval. [Appendix I.4](#appendix-i4) explains the exceptional cases; [Appendix A.5](#appendix-a5) describes the normalized outputs.
+
+Verification compares update formulas with direct recomputation and preserves counterexamples as deterministic tests. The small exhaustive D benchmark in §4 checks against the actual global optimum. Formal proofs cover selected mathematical statements, not the Python implementation.
+
+Appendix G separates exact fixtures, floating-point checks, and measured benchmarks.
 
 ## 10. Discussion and open problems
 
-### 10.1 What the bridges say
+### 10.1 What the results establish
 
-Finite assignment and quantizer learning are both legitimate; the architecture exposes both, and the criterion decides their relation. D is exceptional: the identity \((\alpha-\beta)/(\alpha\beta)=1/W_a+1/W_b\) meets the leverage bound (4.4) exactly and turns an infinitesimal Voronoi violation into a guaranteed finite improvement, so D exchange is at once an exact sample optimizer and a constructor of inductive geometry. \(D_s\) keeps the population semimetric but not the finite implication; A loses it too; E loses uniqueness of the metric at eigenvalue multiplicity. For \(D_s\) the levels join only through an observable certificate state (§6.3).
+The strongest finite result is the D assignment-to-rule theorem. It makes local exchange optimization useful for constructing a predictor, while leaving global search and population consistency as separate questions.
 
-The core theory needs only a representation of the score law, the classifier route belonging upstream. This separates score-estimation from quantization error: the theorems concern the supplied vectors, and reading their matrix as Fisher information requires those vectors to equal or consistently estimate the true score.
+The profiled results explain why this reasoning cannot simply be reused with nuisance parameters. A well-conditioned sample solution is not automatically a statistically preferable one. Conversely, a high profiled objective may approach a limit at which the nuisance can no longer be fitted from the bins.
 
-The finite-to-population question for \(D_s\) is answered on one class only: on conditionally centered laws with \(d_\psi=d_\lambda=1\) and \(K\ge d_\lambda+2\), global finite optima converge in value to \(v_K\) and to the nuisance-degenerate efficient-score interval quantizer; the mass margin holds automatically and the conditioning margin fails (Theorem 8), a nondegenerate population optimum is approached only by margin-certified labelings paying a definite price, and that branch is almost surely eventually empty; one off-class law admits a transfer through exact global optimizers only; the \(d_\lambda\ge2\) branch, laws with \(d_\psi>1\), exchange-ascent selection, and the E case remain open [novelty: unresolved; ledger V8-41].
+The scalar convergence and obstruction results apply only under their stated distributional assumptions. Vector nuisance parameters, multiple interest parameters, generic selection by local search, and the E consistency question remain unresolved [novelty: unresolved; ledger V8-41].
 
 ### 10.2 Open problems and future work
 
-The programme that produced this paper is closed: every question below is recorded in the project's registry as a backlog item with a stable identifier, none is active work, and this list is their only statement here [novelty: unresolved; ledger V8-42].
+This paper records the established results and their limits. Owner review and research freeze remain pending. The questions below are registered follow-up topics, not claims settled by this manuscript [novelty: unresolved; ledger V8-42].
 
-- **Estimated scores (OP17–OP19).** Theorem 13 controls one frozen rule. Open: uniform-over-rules error control together with a proxy optimization-gap certificate, since uniform control alone cannot make an exchange-stable proxy solution globally optimal; the profiled \(D_s\) retention; rules refitted on the proxy; sharp second-order constants for \(r_3\); and, without truth scores, estimators and error bars for the resolution gap and for representation versus quantization loss by cross-fitting.
-- **Sampling uncertainty (OP27, OP23–OP24).** Theorem 16 needs a frozen rule and an oracle-score sample. Open: rules refitted on the evaluation sample, where the boundary non-smoothness enters and the in-sample optimism has unknown order; importance-weighted samples; the profiled retention, a Schur-complement functional with its own influence function; the degenerate limits at \(\sigma^2=0\) and the joint endpoint limit behind Proposition 18; a second-order correction for heavy-tailed scores. Away from the reference point: a second-order expansion of a frozen rule's retention at \(\theta_0+\delta\) as a diagnostic, and whether expected or minimax objectives over a parameter region keep an affine common-metric geometry.
-- **Bin-count theory (OP14–OP16).** Bounds and inversion rules for \(\eta_D(K)\), the high-rate \(K\to\infty\) expansion of \(\log\det(I_{\rm full}-L)\) against Zador–Gersho theory, and whether determinant retention controls the worst retained direction beyond the arithmetic–geometric ordering of §9 [novelty: unresolved; ledger I1-3, I3-2].
-- **Template fits (OP20–OP22).** Canonical, numerically stable score coordinates for mixture fractions and extended yields under simplex constraints; the count-plus-shape decomposition of extended-likelihood information and what hard quantization changes in it; efficient scores for template-morphing, normalization and correlated nuisance parameters without an impractical score dimension.
-- **The D spine (OP8–OP10, OP29).** Consistency of unrestricted empirical global D optima and of exchange-stable D solutions; whether the non-geometric discrepancy of finite \(D_s\) and E optima vanishes asymptotically; and for \(D_s\) beyond class (L), rigidity for \(d_\psi>1\) and vector-(R) steering for \(d_\lambda\ge2\), which must not be inferred from the scalar results [novelty: unresolved; ledger DS15-5, DS18-2].
-- **Foundations (OP1–OP3, OP11–OP13, OP25–OP26, OP30–OP31).** Which concave criteria admit the finite exchange-to-geometry implication, true for D and false for A, \(D_s\) and E, D not claimed unique [novelty: unresolved; ledger A2-3]; an A analogue of Proposition 3 [novelty: unresolved; ledger A4-1]; a quantitative E bound under a spectral gap and a common minimum-eigenspace supergradient; parameterized complexity of global finite D quantization, XP but not known FPT; stronger local neighbourhoods and branch-and-bound bounds; the atomic randomization gap and the soft-to-hard zero-temperature limit; the (M5)-free tracking of wasted-cell configurations and attainment of \(v^*(\kappa)\), \(v^{*+}(\kappa)\) [novelty: unresolved; ledger DS17-5]; and a polynomial bit bound for the tilt dual at fixed \(d_\lambda\ge2\), for which the lower bounds of [67], [66] do not transfer [novelty: unresolved; ledger DS19-6].
-- **Machine-checked coverage.** The finite D chain through the compiled predictor is checked in Lean; parked are the positive-tolerance compile guarantee, zero-weight rows, the duplicate-label branch of the Voronoi theorem, the equal-optimum half of realizability and the singleton-refinement bound. Population and asymptotic statements, including §8, stay prose with independent audit by decision.
-- **Literature.** Citation snowballing from the seed list has not been run to saturation; the claim-by-claim novelty search was run once against the frozen statements of this paper, and every "we found no direct precedent" above is a recorded search gap, not a priority claim.
+The most immediate extensions concern rules trained on estimated scores, weighted or reused evaluation samples, and template-likelihood fits. The separate HEP assessment will examine count and shape information, nuisance constraints, and finite-template statistics. It is follow-up research, not a capability established here.
+
+Other questions concern bin-count tradeoffs, unrestricted population consistency, and stronger optimization certificates. [Appendix F.6](#appendix-f6) retains the complete list and its registry identifiers. Selected finite D statements are machine-checked; the remaining formal obligations are parked. Neither this editorial revision nor automated checks constitute research freeze or publication acceptance.
 
 ## 11. Conclusion
 
-Hard quantization of multivariate score space has three levels: population design, empirical learning of an inductive rule, and label optimization on a fixed sample. Keeping them apart resolves a conflict between exact exchange optimization and deployability. For D-optimality the conflict disappears at exact one-point stability on merged atoms: the rank-two exchange algebra and a leverage inequality force the terminal partition to be the training realization of a self-consistent Mahalanobis Voronoi quantizer, while the converse fails. For profiled \(D_s\), A, and E finite closure fails even at global sample optima. For \(D_s\) the levels are reconnected conditionally: margin-carrying exchange-stable labelings converge to population-stationary efficient-Voronoi quantizers, but on conditionally centered laws with a scalar nuisance the conditioning margin fails at global optima, margins are priced, and the certified branch is eventually empty; one off-class law transfers through global selection, and a tilt dual brackets the finite optimum, certifying it when the saddle test closes. Profiled compilation is therefore routed through the projected efficient-score rule. The input is a representation of the score law, reachable through exact scores, density ratios, or calibrated classifiers, with score-estimation error kept distinct from quantization error. For a rule in use, that distinction is quantitative: the retention a proxy score reports differs from the truth by an alignment term and a spurious-information term that no error bound alone controls, and the retention a held-out true-score sample reports carries a first-order error bar that vanishes exactly on per-cell ellipsoids and fails at a rank-deficient population retention, where the plug-in is biased upward at a rate slower than the central-limit scale.
+Information-preserving binning has two outputs that should be distinguished: labels for a sample and a rule for future events. For D-optimality, exact single-point exchange stability connects them. Under the merged-atom, positive-weight, nonempty-bin, and nonsingularity assumptions, the sample labels obey a strict nearest-centre rule.
+
+This gives a reusable predictor without claiming that local search found the global optimum.
+
+Profiling nuisance parameters changes the conclusion. Even globally optimal sample labels can fail their own projected nearest-centre rule. Population convergence needs additional conditions, and the scalar results show why those conditions can fail or cost information.
+
+Finite upper and lower bounds still provide useful certificates when they meet.
+
+Evaluation requires another distinction. Retention computed from estimated scores need not equal true retained information. Independent true-score data quantify sampling uncertainty for a fixed rule under the stated conditions. Keeping these guarantees separate makes both the optimization result and its reported performance interpretable.
 
 ## References
 
@@ -769,9 +741,13 @@ Hard quantization of multivariate score space has three levels: population desig
 
 ## Appendix A. Computational access to the score law
 
-This appendix collects the computational material that §3 and §9 summarize: which inputs determine the score law, why density ratios suffice for the local score, how ratios are estimated, the interface catalogue of the reference implementation, and the information-efficiency outputs every fitted result reports. Throughout, \(S=s(X)=\nabla_\theta\log p(X\mid\theta)|_{\theta_0}\), \(Z=q(S)\), and the retained information is \(I_q=\sum_bW_b\mu_b\mu_b^\top=\operatorname{Var}(\mathbb E[S\mid Z])\) with \(I_q\preceq I_{\rm full}=\mathbb E[SS^\top]\), as in §3.
+This appendix describes inputs, density-ratio constructions, interfaces, and retention diagnostics. Section A.6 gives the detailed literature comparisons.
 
-### A.1 Oracle taxonomy
+As in §3, \(S=s(X)=\nabla_\theta\log p(X\mid\theta)|_{\theta_0}\), \(Z=q(S)\), and \(I_q=\sum_bW_b\mu_b\mu_b^\top=\operatorname{Var}(\mathbb E[S\mid Z])\). The reference-law identity gives \(I_q\preceq I_{\rm full}=\mathbb E[SS^\top]\).
+
+<a id="appendix-a1"></a>
+
+### A.1 Ways to supply scores and their distribution
 
 The optimization depends on the original statistical model only through the push-forward score law \(P_S=s_\#P_{\theta_0}\), which may be represented by a finite table, generated from an observation-space simulator, sampled directly in score space, or integrated analytically. The table lists the inputs that determine it and what each supports.
 
@@ -796,6 +772,8 @@ Knowing \(s(x)\), or enough density ratios to construct it, is sufficient to app
 
 </div>
 
+<a id="appendix-a2"></a>
+
 ### A.2 Density ratios are sufficient for the local score
 
 The full likelihood is more information than this framework needs. Fix a reference parameter \(\theta_0\) and define
@@ -808,7 +786,11 @@ s(x)=\nabla_\theta\log p(x\mid\theta)\big|_{\theta_0}
 =\nabla_\theta\log r(x;\theta,\theta_0)\big|_{\theta_0}.
 \tag{A.1}
 \]
-Thus an exact local family of density ratios is an exact score oracle. Neither density needs to be available separately. For coordinate \(j\), one may use a central derivative of the log ratio, or directly estimate the ratio between the two nearby hypotheses \(\theta_0\pm\delta e_j\). This makes **density-ratio estimation**, rather than density estimation, the natural upstream inference problem. Direct ratio methods explicitly exploit this asymmetry: estimating \(p/q\) from samples can be preferable to estimating \(p\) and \(q\) independently and dividing the estimates [22].
+Thus an exact local family of density ratios is an exact score oracle.
+
+Neither density needs to be available separately. For coordinate \(j\), one may use a central derivative of the log ratio, or directly estimate the ratio between the two nearby hypotheses \(\theta_0\pm\delta e_j\). This makes **density-ratio estimation**, rather than density estimation, the natural upstream inference problem.
+
+Direct ratio methods explicitly exploit this asymmetry: estimating \(p/q\) from samples can be preferable to estimating \(p\) and \(q\) independently and dividing the estimates [22].
 
 The statement is especially strong for the linear component model
 \[
@@ -824,7 +806,9 @@ s_\alpha(x)=\frac{\phi_\alpha(x)}{\lambda(x;\theta_0)}
 =\frac{r_\alpha(x)}{\sum_\beta\theta_{0\beta}r_\beta(x)}.
 \tag{A.2}
 \]
-The unknown common factor \(\phi_0(x)\) cancels exactly. Hence a programmatic PDF for every component is unnecessary: ratios to one reference component, or any connected set of pairwise component ratios, are sufficient. Normalized mixtures require the usual normalization or constrained-weight correction, but this correction also depends only on ratios plus known component normalizations. These are bridges over published identities: the local score as the derivative of a log likelihood ratio is the basis of score-based likelihood-free inference [17], the classifier route is the calibrated-classifier likelihood-ratio trick [21], and direct ratio estimation is surveyed in [22] [novelty: known; ledger V8-05] (`RATIO-LOCAL-SCORE`, `MIXTURE-RATIO-SCORE`).
+The unknown common factor \(\phi_0(x)\) cancels exactly. Hence a programmatic PDF for every component is unnecessary: ratios to one reference component, or any connected set of pairwise component ratios, are sufficient.
+
+Normalized mixtures require the usual normalization or constrained-weight correction, but this correction also depends only on ratios plus known component normalizations. These are bridges over published identities: the local score as the derivative of a log likelihood ratio is the basis of score-based likelihood-free inference [17], the classifier route is the calibrated-classifier likelihood-ratio trick [21], and direct ratio estimation is surveyed in [22] [novelty: known; ledger V8-05] (`RATIO-LOCAL-SCORE`, `MIXTURE-RATIO-SCORE`).
 
 <div class="remark" markdown="1">
 <div class="box-title" markdown="span">Ratios, not arbitrary classifier scores</div>
@@ -833,13 +817,17 @@ The cancellation is a statement about numerical density ratios, not arbitrary mo
 
 </div>
 
+<a id="appendix-a3"></a>
+
 ### A.3 Estimating density ratios: classifiers and direct methods
 
 A probabilistic classifier is one convenient density-ratio estimator, but not the only one. If \(D(x)\) distinguishes samples from \(p_1\) and \(p_0\) with training priors \(\pi_1,\pi_0\), then at the Bayes optimum
 \[
 \frac{p_1(x)}{p_0(x)}=\frac{D(x)}{1-D(x)}\frac{\pi_0}{\pi_1}.
 \]
-This is the likelihood-ratio trick used in likelihood-free inference [21]. For nearby hypotheses,
+This is the likelihood-ratio trick used in likelihood-free inference [21].
+
+For nearby hypotheses,
 \[
 \hat s_j(x)=\frac{1}{2\delta_j}
 \left[\operatorname{logit}D_j(x)-\log\frac{\pi_1}{\pi_0}\right],
@@ -859,20 +847,30 @@ s_\alpha(x)=
 {\sum_\beta\theta_{0\beta}\,\eta_\beta(x)/\pi_\beta}.
 \tag{A.4}
 \]
-When \(\pi_\alpha\propto\theta_{0\alpha}\), this simplifies to \(s_\alpha(x)=\eta_\alpha(x)/\theta_{0\alpha}\) for the extended-intensity parameterization. This is the direct mathematical basis of the component-classifier workflow. Calibration error of the classifier is not propagated to the Fisher loss in this manuscript; that propagation is an open problem (§9).
+When \(\pi_\alpha\propto\theta_{0\alpha}\), this simplifies to \(s_\alpha(x)=\eta_\alpha(x)/\theta_{0\alpha}\) for the extended-intensity parameterization. This is the direct mathematical basis of the component-classifier workflow.
 
-Classifier odds are only one backend. Direct density-ratio estimators such as KLIEP or uLSIF fit \(p_1/p_0\) from samples without estimating either density separately [22]. Analytic ratio callbacks, parameterized neural ratio estimators trained elsewhere, and pairwise component-ratio functions are equally valid inputs. The software should expose one ratio-provider abstraction and convert ratios to score coordinates through model-specific algebra.
+Section 8 and Appendix I propagate posterior and score errors for a fixed rule. Calibration alone is insufficient; guarantees uniform over fitted rules remain open (§10.2).
+
+Classifier odds are only one backend. Direct density-ratio estimators such as KLIEP or uLSIF fit \(p_1/p_0\) from samples without estimating either density separately [22]. Analytic ratio callbacks, parameterized neural ratio estimators trained elsewhere, and pairwise component-ratio functions are equally valid inputs.
+
+The software should expose one ratio-provider abstraction and convert ratios to score coordinates through model-specific algebra.
 
 <div class="remark" markdown="1">
 <div class="box-title" markdown="span">Exact score versus estimated ratio/score</div>
 
-The retained-information identity \(I_q=\operatorname{Var}(\mathbb E[S\mid q(S)])\) of §3 is exact for the true score \(s\). If estimated ratios produce \(\hat s\neq s\), then \(\operatorname{Var}(\mathbb E[\hat s\mid q(\hat s)])\) is a surrogate objective; the true retained Fisher information is \(\operatorname{Var}(\mathbb E[s\mid q(\hat s)])\), and score-estimation error separates from quantization error. This is the estimated-summary reading of Brehmer et al. [17], Alsing and Wandelt [27], and Charnock, Lavaux, and Wandelt [28] [novelty: known; ledger V8-06] (`PROXY-TRUE-RETAINED-FI`, `REPRESENTATION-QUANTIZATION-LOSS`). Ratio-estimator provenance, class priors, calibration/direct-ratio validation, and held-out or cross-fitted evaluation should therefore be retained. Quantitative propagation of score error to retained information is open (§9).
+The retained-information identity \(I_q=\operatorname{Var}(\mathbb E[S\mid q(S)])\) of §3 is exact for the true score \(s\). If estimated ratios produce \(\hat s\neq s\), then \(\operatorname{Var}(\mathbb E[\hat s\mid q(\hat s)])\) is a surrogate objective; the true retained Fisher information is \(\operatorname{Var}(\mathbb E[s\mid q(\hat s)])\), and score-estimation error separates from quantization error.
+
+This is the estimated-summary reading of Brehmer et al. [17], Alsing and Wandelt [27], and Charnock, Lavaux, and Wandelt [28] [novelty: known; ledger V8-06] (`PROXY-TRUE-RETAINED-FI`, `REPRESENTATION-QUANTIZATION-LOSS`). Ratio-estimator provenance, class priors, calibration/direct-ratio validation, and held-out or cross-fitted evaluation should therefore be retained.
+
+The fixed-rule bounds are in Appendix I. Uniform guarantees over learned rules remain open (§10.2).
 
 </div>
 
 Density ratios have a second, independent role. If population moments are evaluated from a proposal law \(G\neq P_{\theta_0}\), reference expectations can be obtained with importance weights \(dP_{\theta_0}/dG\). Again the absolute reference density is unnecessary; only its ratio to the sampling law is required.
 
-### A.4 Interface catalogue
+<a id="appendix-a4"></a>
+
+### A.4 Sample results and prediction rules
 
 The theory naturally supports two top-level output types and several interchangeable sources of score information.
 
@@ -886,45 +884,97 @@ Input: a fixed weighted score table. Output: labels, cell moments, criterion val
 <div class="remark" markdown="1">
 <div class="box-title" markdown="span">Quantizer result</div>
 
-Input: a score law representation or finite training source plus a geometric/functional quantizer family. Output: a serializable \(q(s)\) with `predict_score`; observation-space prediction composes it with a supplied score function.
+Input: a score law representation or finite training source plus a geometric/functional quantizer family. Output: a serializable \(q(s)\) with `predict_scores`; observation-space prediction composes it with a supplied score function.
 
 </div>
 
-A reference library should therefore separate the *observation/source model*, *score provider*, *optimization target*, *criterion*, and *solver*. The same criterion can be applied to a finite partition or to a parameterized quantizer, while score coordinates may come from exact functions, automatic differentiation, or a trained classifier-based estimator. Quantizer training can then consume an empirical score table, an observation sampler plus score provider, a direct score sampler, or a moment oracle. This avoids embedding assumptions about analytic probability densities into the core algorithms and keeps score-estimation uncertainty distinct from quantization error.
+A reference library should therefore separate the *observation/source model*, *score provider*, *optimization target*, *criterion*, and *solver*. The same criterion can be applied to a finite partition or to a parameterized quantizer, while score coordinates may come from exact functions, automatic differentiation, or a trained classifier-based estimator.
+
+Quantizer training can then consume an empirical score table, an observation sampler plus score provider, a direct score sampler, or a moment oracle. This avoids embedding assumptions about analytic probability densities into the core algorithms and keeps score-estimation uncertainty distinct from quantization error.
 
 | Criterion | Finite assignment | Inductive quantizer | Theory-backed relationship |
 |---|---|---|---|
 | D | Exact rank-two exchange; exhaustive/B&B options (Appendix B.6) | Mahalanobis or affine/soft fitting | Every terminal exact zero-tolerance one-exchange-stable finite state on merged atoms compiles to its final self-consistent Mahalanobis predictor (Theorem 2); at positive tolerance the compile guarantee is tolerance-stamped (Appendix B.5) |
-| Profiled \(D_s\) | Exact exchange is monotone under the in-bin feasibility convention and useful as a sample optimum/oracle (Appendix C.1); tilt-DP bracket with saddle closure test (Theorem 12, Appendix D) | Efficient-semimetric/affine soft fitting; efficient-score interval initialization, which is an initializer and upper certificate but not a terminal state and not seed-stable (fixture G10, `CE-DS-INTERVAL-SEED-UNSTABLE-001`) | Finite geometry only approximate in general; global finite optimum can be non-geometric; compilation is routed through the projected efficient-score rule with nuisance information supplied externally (Appendix C.2), and a profiled companion rule is certificate-gated: theorem-backed only along sequences satisfying the margins (M1)–(M5) of Theorem 7, which are priced and, on conditionally centered scalar-nuisance laws, eventually empty at exchange-stable states (Theorems 9 and 10); a closed bracket certifies a finite global labeling only, and an open reported bracket certifies nothing (Theorem 12) |
-| A | Exact rank-two exchange with an \(O(d^2)\) trace oracle; tangent screening (Appendix E.3) | Affine/soft fitting with \(G=I^{-2}\) | No exact finite bridge: the D-style exchange-to-geometry mechanism fails (Appendix E.3) |
+| Profiled \(D_s\) | Exact exchange; scalar-interest tilt bounds (Appendices C.1 and D) | Projected or affine families; efficient-score interval initialization | In-bin and externally supplied nuisance information define different problems. The interval seed need not be stable (fixture G10, `CE-DS-INTERVAL-SEED-UNSTABLE-001`). Theorem 7 requires margins; Theorems 9–10 limit them. Theorem 12 certifies finite optimality, not a predictor. |
+| A | Exact rank-two gain and rejection test (Appendix E.3) | Affine/soft fitting with \(G=I^{-2}\) | The recorded move-level counterexample invalidates the D proof mechanism. No finite compilation theorem is established here. |
 | E | Exact eigenvalue exchange plus supergradient screening (Appendix E.2) | Subgradient/smooth spectral geometric fitting | No exact finite bridge; multiplicity makes first-order geometry nonunique (Appendix E.1) |
 
-### A.5 Information-efficiency outputs
+<a id="appendix-a5"></a>
+
+### A.5 Interpreting retention diagnostics
 
 Every fitted result reports the retained information of §3 in normalized form. With \(I_{\rm full}\succ0\), the retention operator
 \[
 R=I_{\rm full}^{-1/2}I_qI_{\rm full}^{-1/2},\qquad 0\preceq R\preceq \mathrm{Id},
 \tag{A.5}
 \]
-has every eigenvalue in \([0,1]\); this is the law of total covariance already used in §3 [1][3] and nothing more. [novelty: known; ledger I1-2] The \(D\)-efficiency
+has every eigenvalue in \([0,1]\); this is the law of total covariance already used in §3 [1][3] and nothing more.
+
+[novelty: known; ledger I1-2] The \(D\)-efficiency
 \[
 \eta_D=\Bigl(\frac{\det I_q}{\det I_{\rm full}}\Bigr)^{1/d}=(\det R)^{1/d}
 \]
-is the standard design efficiency of \(I_q\) against \(I_{\rm full}\) [15][72], the geometric mean of retained Fisher information over normalized parameter directions. Valassi's scalar figure of merit [23] is prior art for the restriction \(d=1\) only; the determinant normalization is neither claimed as new nor attributed to that source. [novelty: known; ledger I1-1] For the profiled criterion the corresponding output is
+is the standard design efficiency of \(I_q\) against \(I_{\rm full}\) [15][72], the geometric mean of retained Fisher information over normalized parameter directions. Valassi's scalar figure of merit [23] is prior art for the restriction \(d=1\) only; the determinant normalization is neither claimed as new nor attributed to that source.
+
+[novelty: known; ledger I1-1] For the profiled criterion the corresponding output is
 \[
 \eta_{D_s}=\Bigl(\frac{\det S_\psi(I_q)}{\det S_\psi(I_{\rm full})}\Bigr)^{1/d_\psi},
 \]
-the parameter-subsystem efficiency of design theory [16][37][15] in the nuisance-hardened reading of [27]. It requires nonsingular nuisance blocks of both matrices and is undefined for in-bin profiling at \(K\le d\), where \(\operatorname{rank}I_q\le K-1\) (Appendix C.2); it is not reported where the Schur complement is singular. [novelty: known; ledger I2-1] Theorem 8 gives the reading on class (L): the in-bin \(\eta_{D_s}\) of a margin-certified rule is bounded by \(1-\delta(\kappa)/v_K\) relative to the \(K\)-cell ceiling, and Theorem 11 records \(\eta_{D_s}=8/9\) for the off-class rule of Appendix C.10.
+the parameter-subsystem efficiency of design theory [16][37][15] in the nuisance-hardened reading of [27]. It requires nonsingular nuisance blocks of both matrices and is undefined for in-bin profiling at \(K\le d\), where \(\operatorname{rank}I_q\le K-1\) (Appendix C.2); it is not reported where the Schur complement is singular.
 
-Because \(D\) optimization does not equalize directions, each result also reports the spectrum of \(R\) with three summaries, the minimum \(\lambda_{\min}(R)\), the geometric mean \((\det R)^{1/d}=\eta_D\), and the arithmetic mean \(\operatorname{tr}R/d\): the \(E\)-, \(D\)- and \(A\)-type matrix means \(\phi_{-\infty},\phi_0,\phi_1\) of Kiefer's criterion family [41][15], ordered \(\lambda_{\min}(R)\le\eta_D\le\operatorname{tr}R/d\) by the arithmetic–geometric mean inequality. The caution that \(D\) does not equalize directions is a diagnostic, not a theorem. [novelty: known; ledger I3-1]
+[novelty: known; ledger I2-1] Theorem 8 gives the reading on class (L): the in-bin \(\eta_{D_s}\) of a margin-certified rule is bounded by \(1-\delta(\kappa)/v_K\) relative to the \(K\)-cell ceiling, and Theorem 11 records \(\eta_{D_s}=8/9\) for the off-class rule of Appendix C.10.
 
-All four outputs are computed from the whitened representation of §3, in which \(I_{\rm full}\) is the identity and \(R\) is the retained information itself, so no additional factorization is needed; numerically singular directions of \(I_{\rm full}\) are projected out before whitening and never repaired by a ridge, and the reported dimension is the rank of the informative subspace. When scores are estimated rather than exact, the same quantities are reported against the estimated reference and carry no exact Fisher semantics. For the profiled criterion the finite bracket of §6 and Appendix D supplements \(\eta_{D_s}\) with a train-sample value interval, \([p_{\rm reg},d]\) on the in-bin domain, which is a statement about the optimization, not about held-out or population retention.
+Because \(D\) optimization does not equalize directions, each result also reports the spectrum of \(R\) with three summaries, the minimum \(\lambda_{\min}(R)\), the geometric mean \((\det R)^{1/d}=\eta_D\), and the arithmetic mean \(\operatorname{tr}R/d\): the minimum, geometric, and arithmetic matrix means \(\phi_{-\infty},\phi_0,\phi_1\) of Kiefer's criterion family [41][15], ordered \(\lambda_{\min}(R)\le\eta_D\le\operatorname{tr}R/d\) by the arithmetic–geometric mean inequality. The caution that \(D\) does not equalize directions is a diagnostic, not a theorem.
 
-Two questions attached to these outputs are open. OP14 asks for distribution-dependent or distribution-free bounds on \(\eta_D(K)=\sup_{|q|=K}(\det I_q/\det I_{\rm full})^{1/d}\) and for inversion rules giving the bin count required for a target efficiency; no required-\(K\) rule or rate is stated here, and the population-level high-rate question is its sibling. [novelty: unresolved; ledger I1-3] OP16 asks whether \(\eta_D\) controls the worst direction: only the trivial ordering above is available, and any sharper link between \(\eta_D\) and \(\lambda_{\min}(R)\) requires assumptions not yet formulated. [novelty: unresolved; ledger I3-2] Registry: `INFO-RETENTION-SPECTRUM`, `INFO-D-EFFICIENCY`, `INFO-DS-EFFICIENCY`, `INFO-DIRECTIONAL-DIAGNOSTICS`, `OPEN-D-EFFICIENCY-VS-K`, `OPEN-D-DIRECTIONAL-BOUND`.
+[novelty: known; ledger I3-1]
+
+All four outputs are computed from the whitened representation of §3, in which \(I_{\rm full}\) is the identity and \(R\) is the retained information itself, so no additional factorization is needed; numerically singular directions of \(I_{\rm full}\) are projected out before whitening and never repaired by a ridge, and the reported dimension is the rank of the informative subspace. When scores are estimated rather than exact, the same quantities are reported against the estimated reference and carry no exact Fisher semantics.
+
+For the profiled criterion the finite bracket of §6 and Appendix D supplements \(\eta_{D_s}\) with a train-sample value interval, \([p_{\rm reg},d]\) on the in-bin domain, which is a statement about the optimization, not about held-out or population retention.
+
+Two questions attached to these outputs are open. OP14 asks for distribution-dependent or distribution-free bounds on \(\eta_D(K)=\sup_{|q|=K}(\det I_q/\det I_{\rm full})^{1/d}\) and for inversion rules giving the bin count required for a target efficiency; no required-\(K\) rule or rate is stated here, and the population-level high-rate question is its sibling.
+
+[novelty: unresolved; ledger I1-3] OP16 asks whether \(\eta_D\) controls the worst direction: only the trivial ordering above is available, and any sharper link between \(\eta_D\) and \(\lambda_{\min}(R)\) requires assumptions not yet formulated. [novelty: unresolved; ledger I3-2] Registry: `INFO-RETENTION-SPECTRUM`, `INFO-D-EFFICIENCY`, `INFO-DS-EFFICIENCY`, `INFO-DIRECTIONAL-DIAGNOSTICS`, `OPEN-D-EFFICIENCY-VS-K`, `OPEN-D-DIRECTIONAL-BOUND`.
+
+<a id="appendix-a6"></a>
+
+### A.6 Detailed relation to prior work
+
+**Fisher-information quantization.** Score-function quantizers for distributed estimation were introduced by Venkitasubramaniam, Tong, and Swami [1], [29]; Farias and Brossier analyzed Fisher-optimal scalar quantization [2]. Barnes, Han, and Özgür showed that the Fisher information of a quantized observation is the scatter of the conditional score means and derived trace bounds [3]; Dülek proved that trace-optimal sufficient-statistic quantizers in exponential families have polytopal cells [4].
+
+Zhang, Blum, Kaplan, and Lu established the alphabet-size obstruction on the rank of quantized Fisher information [30]. Valassi's weight-derivative regression states the scalar retained-information ratio [23]. They supply the score representation and trace geometry used here; our focus is the full-matrix criteria, the finite relocation structure, and the finite-to-population question.
+
+**Determinant clustering, exchange methods, and Voronoi structure.** Determinant-based clustering criteria go back to Friedman and Rubin [5] and Scott and Symons [6], with the determinant of within-cluster scatter; above dimension one, minimizing \(\det W\) is not equivalent to maximizing \(\det B\). Exact point-relocation search has a long history: Hartigan's local search [7], Späth's exchange method [24], [25], and the exchange algorithms for discrete D-optimal designs [71] in the tradition of Fedorov [70], resting on rank-one inverse updates [68], [69] and monotone weight algorithms [40].
+
+Telgarsky and Vattani showed Hartigan stability to be stronger than Lloyd stationarity for \(k\)-means [8]. Inaba, Katoh, and Imai used Voronoi realizability and arrangement enumeration for fixed-parameter exact clustering [9]. Theorem 2 has the flavor of these comparisons but rests on a determinant-specific leverage identity, and the template of [9] gives the algorithm of §4.3.
+
+**Population quantization and consistency.** Centroidal Voronoi tessellations give the population picture for squared-error quantization and Lloyd-type algorithms [13], [14]; [33] gives existence and stationarity of optimal quantizers. Pollard's strong consistency theorem for \(k\)-means [12], its quantization form [50], and Sabin and Gray's generalized-Lloyd consistency [51] are the empirical-to-population templates, with the uniform laws of empirical-process theory [52], [53] as the engine; [54] shows \(k\)-means consistency failing and restored by constraints, and Rakhlin and Caponnetto give the rigidity of almost-minimizing codebooks [56].
+
+In one dimension Fisher's contiguity theorem [43] and the dynamic programmes of [44], [45] solve the grouping problem exactly, and [31], [32] give uniqueness of locally optimal quantizers for log-concave laws; [58] treats the nonregular univariate case. Levrard's margin condition [34] is a hypothesis for fast rates; §5 finds an analogous margin failing at global optima.
+
+Self-consistency [57], principal points of elliptical laws [60], the principal-curve origin of the term [61], and the generalized principal-subspace theorem [62] are the comparators for §5.8's coincident-centroid phenomena. None optimizes a hard-partition matrix information criterion.
+
+**Density-ratio estimation and learned scores.** Direct density-ratio estimation fits \(p_1/p_0\) from samples without estimating either density [22]; calibrated probabilistic classifiers recover the same ratio up to known prior odds [21]. Differentiating a ratio between nearby hypotheses gives the local score, the principle of score-based likelihood-free inference [17].
+
+Nuisance-hardened compression [27] and information-maximizing neural summaries [28] are the continuous-summary precedents. Inference-aware methods learn summaries or categories by differentiating through an inference objective [18], [19], [20]. Neither density-ratio estimation nor differentiable binning is claimed here; what is claimed is the information-quantization problem and its structure given a score.
+
+**Profiled designs, Schur complements, and tilt duality.** Optimal-design equivalence theory gives the convex-analytic language for D, \(D_s\), A and E: Kiefer [41], Whittle [38], Wynn [37], Silvey and Titterington [39], Näther and Reinsch's \(D_s\) equivalence theorem [16], Pukelsheim's monograph with the nondifferentiable E criterion and the matrix means \(\phi_p\) [15], the duality theory of Pukelsheim and Titterington [63], and the efficiency conventions of [72]. Silvey's singular \(D_s\)-optimal design measures [35] and information-based subdata selection [36] frame the design-side reading of §5's nuisance-degenerate limits.
+
+The profiled information is a Schur complement, whose extremal characterization is due to Krein [46] and Anderson [47], [48] in the form of Li and Mathias [26]; Haynsworth's inertia formula [55] gives rank additivity; the statistical reading is the efficient score [42], [49]. Purification of randomized rules under atomless laws is the Dvoretzky–Wald–Wolfowitz theorem [10], [11].
+
+The tilt dual of §6 is the partition-side form of design duality, computed through Megiddo's parametric search [64], Toledo's fixed-dimension concave maximization [65], and parametric-envelope lower bounds [67], [66]; Chebyshev's covariance inequality [59] enters the centering obstruction of §5.8.
+
+**Plug-in asymptotics and estimated scores.** The delta method [49] and matrix differential calculus [73] describe smooth functions of sample moments. Radhakrishnan and Kshirsagar [75] and Romanazzi [74] give influence functions for Wilks-type, generalized-variance, and canonical-correlation parameters; Taskinen et al. [80] restate these results.
+
+Muirhead and Waternaux [76] and Fang and Krishnaiah [77] establish asymptotic normality of the relevant eigenvalue functions under finite fourth moments, without normality. The within/between decomposition is classical [81]. At a zero population canonical correlation the sample coefficients are \(O_p(n^{-1/2})\) with a known limit, from Hsu [85] through the dimensionality tests of Glynn and Muirhead [86], Seo, Kanda and Fujikoshi [78] and the rank tests of Robin and Smith [79]. §8.4 is the fixed-partition, uncentred instance of this theory, with one block a cell indicator that is a fixed map of a *different* variable.
+
+For estimated scores, log-determinant concavity [82] and the margin comparison method of Audibert and Tsybakov [83] supply the machinery of §8.1–§8.2, and Bröcker's decomposition of proper scores [84] the calibration chain of §8.3, together with the classifier-ratio construction [21]. None states the reporting expansion of Theorem 13, which is recorded as a search gap.
 
 ## Appendix B. D-optimality: auxiliary results
 
-This appendix supports §4: the exact relocation algebra it uses, the leverage lemma behind Theorem 2, the proof sketch of Theorem 2, its two boundary fixtures, the corollaries on the canonical extension and on global realizability, and the algorithmic details of exact exchange, guarded Lloyd proposals, enumeration and the exhaustive benchmark. The criterion is \(F_D(I)=\log\det I\) with gradient \(G_D=I^{-1}\).
+This appendix gives the finite D update, the proof of the assignment-to-rule result, and its boundaries. It also records the search algorithms and small exhaustive benchmark. Throughout, \(F_D(I)=\log\det I\) and \(G_D=I^{-1}\).
+
+<a id="appendix-b1"></a>
 
 ### B.1 Exact finite relocation
 
@@ -945,7 +995,11 @@ With \(H=I^{-1}\) and \(q_{aa}=u_a^\top Hu_a\), \(q_{bb}=u_b^\top Hu_b\), \(q_{a
 \Delta F_D=\log\!\left[(1+\alpha q_{aa})(1-\beta q_{bb})+\alpha\beta q_{ab}^2\right].
 \tag{B.3}
 \]
-The candidate move therefore requires only three inverse-metric inner products once the current factorization is available. Identities (B.2)–(B.3) adapt the exchange-method scatter updates of Späth [24], [25], in the determinant-clustering tradition of Friedman and Rubin [5] and Scott and Symons [6], from within-cluster scatter to the between-cell information matrix with centroid-coupled \(\alpha,\beta\); the determinant step is the matrix determinant lemma [novelty: adaptation; ledger V8-09] (`D-RANK2-MOVE`, `D-LOGDET-GAIN`). The identity \((\alpha-\beta)/(\alpha\beta)=1/W_a+1/W_b\), immediate from (B.1), is what couples the relocation algebra to the leverage bound below.
+The candidate move therefore requires only three inverse-metric inner products once the current factorization is available.
+
+Identities (B.2)–(B.3) adapt the exchange-method scatter updates of Späth [24], [25], in the determinant-clustering tradition of Friedman and Rubin [5] and Scott and Symons [6], from within-cluster scatter to the between-cell information matrix with centroid-coupled \(\alpha,\beta\); the determinant step is the matrix determinant lemma [novelty: adaptation; ledger V8-09] (`D-RANK2-MOVE`, `D-LOGDET-GAIN`). The identity \((\alpha-\beta)/(\alpha\beta)=1/W_a+1/W_b\), immediate from (B.1), is what couples the relocation algebra to the leverage bound below.
+
+<a id="appendix-b2"></a>
 
 ### B.2 The leverage bound
 
@@ -957,7 +1011,9 @@ For a nonsingular partition,
 (\mu_a-\mu_b)^\top I^{-1}(\mu_a-\mu_b)\le \frac1{W_a}+\frac1{W_b}.
 \tag{B.4}
 \]
-It follows from the projection matrix associated with \([\sqrt{W_1}\mu_1,\ldots,\sqrt{W_K}\mu_K]\). This is the standard hat-matrix/projection leverage inequality applied to the columns \(\sqrt{W_b}\mu_b\); its role here is to bridge infinitesimal D geometry to exact finite gains. [novelty: known; ledger V8-10]
+It follows from the projection matrix associated with \([\sqrt{W_1}\mu_1,\ldots,\sqrt{W_K}\mu_K]\). This is the standard hat-matrix/projection leverage inequality applied to the columns \(\sqrt{W_b}\mu_b\); its role here is to bridge infinitesimal D geometry to exact finite gains.
+
+[novelty: known; ledger V8-10]
 
 </div>
 
@@ -966,6 +1022,8 @@ It follows from the projection matrix associated with \([\sqrt{W_1}\mu_1,\ldots,
 x^\top\Pi x=(Mx)^\top I^{-1}(Mx)=(\mu_a-\mu_b)^\top I^{-1}(\mu_a-\mu_b),
 \]
 while \(\|x\|^2=1/W_a+1/W_b\). Since \(x^\top\Pi x\le\|x\|^2\), (B.4) follows. \(\square\)
+
+<a id="appendix-b3"></a>
 
 ### B.3 Proof sketch of Theorem 2
 
@@ -976,27 +1034,49 @@ Theorem 2 (§4) is stated for distinct score atoms obtained after merging coinci
 q_\delta=(\mu_a-\mu_b)^\top I^{-1}(\mu_a-\mu_b),
 \tag{B.5}
 \]
-that distinct centroids are forced by stability rather than assumed, and consequently that every one-point-exchange-stable finite D partition under these hypotheses is a strict self-consistent \(I^{-1}\)-Mahalanobis Voronoi partition on the merged atoms, \((s_i-\mu_{z_i})^\top I^{-1}(s_i-\mu_{z_i})<(s_i-\mu_b)^\top I^{-1}(s_i-\mu_b)\) for every \(i\) and every \(b\ne z_i\). [novelty: apparently new; ledger V8-11]
+that distinct centroids are forced by stability rather than assumed, and consequently that every one-point-exchange-stable finite D partition under these hypotheses is a strict self-consistent \(I^{-1}\)-Mahalanobis Voronoi partition on the merged atoms, \((s_i-\mu_{z_i})^\top I^{-1}(s_i-\mu_{z_i})<(s_i-\mu_b)^\top I^{-1}(s_i-\mu_b)\) for every \(i\) and every \(b\ne z_i\).
 
-*Proof sketch.* The first draft of this manuscript carries a sketch only, reproduced here. With \(\det(I+\Delta I)/\det I=1+E\), the exact algebra of (B.3) together with (B.4) gives \(E\ge\frac{\alpha\beta}{4}[q_\delta^2+(q_{aa}-q_{bb})^2]\) whenever \(q_{aa}\ge q_{bb}\); the identity \((\alpha-\beta)/(\alpha\beta)=1/W_a+1/W_b\) is what lets the leverage bound meet the determinant gain exactly. Distinct centroids are a consequence of stability: if \(\mu_a=\mu_b\) and either cell is non-singleton, moving a non-centroid atom between them has determinant ratio \(1+(\alpha-\beta)q_{aa}>1\); if both are singletons, equal centroids would mean duplicate atoms, excluded by merging. A singleton atom is then strictly nearest to its own centroid. The full proof, including the treatment of ties, singletons, and duplicates, is the audited registry statement `D-EXCHANGE-IMPLIES-VORONOI` (`D-EXCHANGE-VIOLATION-LOWER-BOUND`). \(\square\)
+[novelty: apparently new; ledger V8-11]
+
+*Proof sketch.* Write \(\det(I+\Delta I)/\det I=1+E\). Combining (B.3) and (B.4) gives
+\(E\ge\frac{\alpha\beta}{4}[q_\delta^2+(q_{aa}-q_{bb})^2]\)
+when \(q_{aa}\ge q_{bb}\). The identity \((\alpha-\beta)/(\alpha\beta)=1/W_a+1/W_b\) connects the leverage bound to the exact gain.
+
+It remains to exclude coincident centres. If \(\mu_a=\mu_b\) and either bin is non-singleton, move a non-centroid atom between them. The determinant ratio is \(1+(\alpha-\beta)q_{aa}>1\), contradicting stability. If both bins are singletons, equal centres would be duplicate atoms.
+
+Merging has excluded that case.
+
+Every singleton is then strictly closest to its own centre. Together these arguments cover ties, singletons, and duplicates. The full audited proof is recorded under `D-EXCHANGE-IMPLIES-VORONOI` and `D-EXCHANGE-VIOLATION-LOWER-BOUND`. \(\square\)
 
 We found no direct precedent; the nearest prior art is the Hartigan-versus-Lloyd analysis of Telgarsky and Vattani [8], which for squared error reaches the opposite conclusion, together with the exchange traditions of Hartigan [7], Späth [24], and Friedman and Rubin [5]. A numerical stress test on 15,000 random \(N=12,d=2,K=3\) configurations found, among 5,547 moves satisfying the premise of Theorem 2, no violation of the exact lower bound (B.5); the smallest observed slack above the bound was \(2.04\times10^{-4}\) nat (fig-02 in §4).
+
+<a id="appendix-b4"></a>
 
 ### B.4 Boundary of Theorem 2
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">Split duplicate atoms: fixture G3</div>
 
-The merged-atom hypothesis cannot be dropped. Take scalar scores \((1,1,-1)\) with weights \((1/4,1/4,1/2)\) and put each row in one of \(K=3\) singleton cells. Then \(I_q=1\), all cells are nonempty, and no nonempty-preserving relocation exists, so the labeling is vacuously exchange-stable; yet the first two centroids coincide, strict assignment fails, and no deterministic score-only rule can reproduce the split labels. This is the exact-rational fixture G3 (`CE-D-UNMERGED-DUPLICATES-001`, `D-UNMERGED-DUPLICATES-FAIL`). The resolution is to merge coincident score atoms before optimization, or to require labels to be constant on each duplicate class, after which the theorem forces distinct centroids and strict assignment. [novelty: unresolved; ledger V8-12]
+The merged-atom hypothesis cannot be dropped. Take scalar scores \((1,1,-1)\) with weights \((1/4,1/4,1/2)\) and put each row in one of \(K=3\) singleton cells. Then \(I_q=1\), all cells are nonempty, and no nonempty-preserving relocation exists, so the labeling is vacuously exchange-stable; yet the first two centroids coincide, strict assignment fails, and no deterministic score-only rule can reproduce the split labels.
+
+This is the exact-rational fixture G3 (`CE-D-UNMERGED-DUPLICATES-001`, `D-UNMERGED-DUPLICATES-FAIL`). The resolution is to merge coincident score atoms before optimization, or to require labels to be constant on each duplicate class, after which the theorem forces distinct centroids and strict assignment.
+
+[novelty: unresolved; ledger V8-12]
 
 </div>
 
 <div class="remark" markdown="1">
 <div class="box-title" markdown="span">The converse fails: fixture G2</div>
 
-Self-consistent nearest-centroid assignment under the current D metric is strictly weaker than one-point exact exchange stability. An exact \(N=4\), \(d=1\), \(K=2\) witness is a D-Voronoi fixed point whose \(\det I\) rises from \(25/48\) to \(9/16\) under one admissible relocation (fixture G2, `CE-D-VORONOI-CONVERSE-001`, `D-VORONOI-NOT-EXCHANGE`); in a random suite, 35 of 100 Lloyd/Voronoi fixed points still admitted an exact improving one-point move. This is the analogue, for the determinant criterion, of Lloyd fixed points that are not Hartigan-stable in squared-error clustering [8]. The chain is therefore strict: global finite optimum \(\Rightarrow\) exchange-stable \(\Rightarrow\) strict D-Voronoi, with neither arrow reversible. [novelty: unresolved; ledger V8-13]
+Self-consistent nearest-centroid assignment under the current D metric is strictly weaker than one-point exact exchange stability. An exact \(N=4\), \(d=1\), \(K=2\) witness is a D-Voronoi fixed point whose \(\det I\) rises from \(25/48\) to \(9/16\) under one admissible relocation (fixture G2, `CE-D-VORONOI-CONVERSE-001`, `D-VORONOI-NOT-EXCHANGE`); in a random suite, 35 of 100 Lloyd/Voronoi fixed points still admitted an exact improving one-point move.
+
+This is the analogue, for the determinant criterion, of Lloyd fixed points that are not Hartigan-stable in squared-error clustering [8]. The chain is therefore strict: global finite optimum \(\Rightarrow\) exchange-stable \(\Rightarrow\) strict D-Voronoi, with neither arrow reversible.
+
+[novelty: unresolved; ledger V8-13]
 
 </div>
+
+<a id="appendix-b5"></a>
 
 ### B.5 Canonical extension and global realizability
 
@@ -1005,15 +1085,35 @@ Theorem 2 closes the finite-assignment/quantizer gap for D in a strong sense. An
 \widehat q_D(s)=\arg\min_b(s-\mu_b)^\top \widehat I^{-1}(s-\mu_b),
 \tag{B.6}
 \]
-which reproduces every merged-atom training label strictly, without a tie breaker; original duplicate rows inherit the label of their merged atom. A numerical solver that stops at a positive gain tolerance \(\varepsilon>0\) has only the weaker, tolerance-stamped guarantee that no geometric disagreement has exact gain exceeding \(\varepsilon\); strict label reproduction need not hold [novelty: direct corollary; ledger V8-14] (`D-FINITE-INDUCTIVE-CLOSURE`). Every positive-definite global finite D optimum on merged atoms is exchange-stable and therefore geometrically realizable in the canonical form (B.6); consequently unrestricted finite D assignment and optimization over realizable affine-max/D-Voronoi labelings have the same optimum value. This does not say that every D-Voronoi fixed point is globally optimal [novelty: direct corollary; ledger V8-15] (`D-GLOBAL-GEOMETRIC-REALIZABILITY`). Nor does it imply population optimality or statistical consistency; it only proves that finite D optimization does not destroy the natural score-space geometry.
+which reproduces every merged-atom training label strictly, without a tie breaker; original duplicate rows inherit the label of their merged atom.
+
+At positive gain tolerance \(\varepsilon>0\), only admissible individual disagreement moves are bounded by \(\varepsilon\), each evaluated against the original partition. Compilation separately refuses positive-weight singleton disagreements. Strict reproduction and a bound on simultaneous reassignment do not follow [novelty: direct corollary; ledger V8-14] (`D-FINITE-INDUCTIVE-CLOSURE`).
+
+Every positive-definite global finite D optimum on merged atoms is exchange-stable and therefore geometrically realizable in the canonical form (B.6); consequently unrestricted finite D assignment and optimization over realizable affine-max/D-Voronoi labelings have the same optimum value. This does not say that every D-Voronoi fixed point is globally optimal [novelty: direct corollary; ledger V8-15] (`D-GLOBAL-GEOMETRIC-REALIZABILITY`).
+
+Nor does it imply population optimality or statistical consistency; it only proves that finite D optimization does not destroy the natural score-space geometry.
+
+<a id="appendix-b6"></a>
 
 ### B.6 Exact exchange, Lloyd proposals, enumeration, and the exhaustive benchmark
 
-Accepting only moves with positive exact gain yields a strictly monotone finite algorithm. Since there are finitely many labelings, it terminates at a one-point exchange-stable state, which by Theorem 2 compiles to (B.6). This is strict ascent on a finite labeling set, as in Späth's exchange method [24], Hartigan's local search [7], and the monotone finite-design algorithms of Silvey, Titterington, and Torsney [40] [novelty: direct corollary; ledger V8-16] (`D-EXCHANGE-TERMINATES`). The tempting batch iteration that freezes \(I^{-1}\), reassigns all points to nearest current centroids, and recomputes \(I\) is not monotone: the tangent inequality for concave \(\log\det\) is an upper bound, not a minorizer. A batch proposal should therefore be guarded by exact objective evaluation. The non-monotonicity is presented as a witness, not as a novelty; adaptive-metric Lloyd steps have not been prior-art searched, and the squared-error analogue is the Lloyd-versus-Hartigan comparison of [8] [novelty: unresolved; ledger V8-17] (`D-LLOYD-NONMONOTONE`, `D-GUARDED-LLOYD`). The witness is fixture G1 (`CE-D-LLOYD-001`), an explicit \(N=8,K=3,d=2\) state in exact rationals (fig-03 and fig-04 in §4, where crosses mark Euclidean centroids only for visualization while the assignment itself uses the current \(I^{-1}\) metric): after one adaptive-Mahalanobis Lloyd reassignment, on the rounded coordinates reproduced there, \(\log\det I\) falls from \(-3.810643\) to \(-3.947164\), that is by \(0.136521\) nat. [novelty: unresolved; ledger V8-18]
+Accepting only moves with positive exact gain yields a strictly monotone finite algorithm. Since there are finitely many labelings, it terminates at a one-point exchange-stable state, which by Theorem 2 compiles to (B.6). This is strict ascent on a finite labeling set, as in Späth's exchange method [24], Hartigan's local search [7], and the monotone finite-design algorithms of Silvey, Titterington, and Torsney [40] [novelty: direct corollary; ledger V8-16] (`D-EXCHANGE-TERMINATES`).
 
-The finite geometry also restricts global optima to affine-max labelings. For fixed \((d,K)\), arrangement enumeration therefore gives an \(N^{O(Kd)}\) exact algorithm, an application of the fixed-parameter Voronoi-enumeration template of Inaba, Katoh, and Imai [9] to the D criterion; it is XP, not known to be FPT, and the parameterized complexity remains open (§10) [novelty: adaptation; ledger V8-19] (`D-GLOBAL-XP`). A practical branch-and-bound upper bound follows from refinement monotonicity: treating every unassigned point as a singleton produces an information matrix that Loewner-dominates every completion, so \(\log\det\) of the partial-plus-singleton matrix bounds every completion; the same bound serves any Loewner-monotone criterion, E included (`E-BB-APPLIES`) [novelty: direct corollary; ledger V8-20] (`D-BB-SINGLETON-BOUND`).
+The tempting batch iteration that freezes \(I^{-1}\), reassigns all points to nearest current centroids, and recomputes \(I\) is not monotone: the tangent inequality for concave \(\log\det\) is an upper bound, not a minorizer. A batch proposal should therefore be guarded by exact objective evaluation.
 
-The exhaustive small-sample benchmark of §4 (fig-05 and fig-06) was run as follows. Each point cloud was centered and Fisher-whitened; the exhaustive search enumerated all \(S(10,3)=9{,}330\) nonempty unlabeled partitions. Ten-restart Euclidean \(k\)-means was globally D-optimal on 25/30 instances. Exact exchange repaired every miss in this particular seed; ten exchange starts also reached 30/30. The largest \(k\)-means log-determinant gap to the exhaustive optimum over the 30 independent instances was \(0.1397\) nat, and exact exchange from the selected \(k\)-means initialization closed all gaps for this run. This is a small benchmark, not a general global-optimality guarantee.
+The non-monotonicity is presented as a witness, not as a novelty; adaptive-metric Lloyd steps have not been prior-art searched, and the squared-error analogue is the Lloyd-versus-Hartigan comparison of [8] [novelty: unresolved; ledger V8-17] (`D-LLOYD-NONMONOTONE`, `D-GUARDED-LLOYD`). The witness is fixture G1 (`CE-D-LLOYD-001`), an explicit \(N=8,K=3,d=2\) state in exact rationals (fig-03 and fig-04 in §4, where crosses mark Euclidean centroids only for visualization while the assignment itself uses the current \(I^{-1}\) metric): after one adaptive-Mahalanobis Lloyd reassignment, on the rounded coordinates reproduced there, \(\log\det I\) falls from \(-3.810643\) to \(-3.947164\), that is by \(0.136521\) nat.
+
+[novelty: unresolved; ledger V8-18]
+
+The finite geometry also restricts global optima to affine-max labelings. For fixed \((d,K)\), arrangement enumeration therefore gives an \(N^{O(Kd)}\) exact algorithm, an application of the fixed-parameter Voronoi-enumeration template of Inaba, Katoh, and Imai [9] to the D criterion; it is XP, not known to be FPT, and the parameterized complexity remains open (§10) [novelty: adaptation; ledger V8-19] (`D-GLOBAL-XP`).
+
+A practical branch-and-bound upper bound follows from refinement monotonicity: treating every unassigned point as a singleton produces an information matrix that Loewner-dominates every completion, so \(\log\det\) of the partial-plus-singleton matrix bounds every completion; the same bound serves any Loewner-monotone criterion, E included (`E-BB-APPLIES`) [novelty: direct corollary; ledger V8-20] (`D-BB-SINGLETON-BOUND`).
+
+The exhaustive small-sample benchmark of §4 (fig-05 and fig-06) was run as follows. Each point cloud was centered and Fisher-whitened; the exhaustive search enumerated all \(S(10,3)=9{,}330\) nonempty unlabeled partitions. Ten-restart Euclidean \(k\)-means was globally D-optimal on 25/30 instances.
+
+Exact exchange repaired every miss in this particular seed; ten exchange starts also reached 30/30. The largest \(k\)-means log-determinant gap to the exhaustive optimum over the 30 independent instances was \(0.1397\) nat, and exact exchange from the selected \(k\)-means initialization closed all gaps for this run.
+
+This is a small benchmark, not a general global-optimality guarantee.
 
 ## Appendix C. Profiled \(D_s\): proofs and auxiliary results
 
@@ -1023,7 +1123,13 @@ I_q=\begin{pmatrix}I_{\psi\psi}&I_{\psi\lambda}\\ I_{\lambda\psi}&I_{\lambda\lam
 S_\psi(I)=I_{\psi\psi}-I_{\psi\lambda}I_{\lambda\lambda}^{-1}I_{\lambda\psi},\qquad
 F_s(I)=\log\det S_\psi(I)=\log\det I-\log\det I_{\lambda\lambda},
 \]
-with matrix gradient \(G_s=I^{-1}-E_\lambda I_{\lambda\lambda}^{-1}E_\lambda^\top=L^\top S_\psi(I)^{-1}L\succeq0\), \(L=[\mathrm{Id}_{d_\psi},-I_{\psi\lambda}I_{\lambda\lambda}^{-1}]\), of rank \(d_\psi\), and binned efficient score \(e_q(s)=s_\psi-I_{\psi\lambda}I_{\lambda\lambda}^{-1}s_\lambda\) (§3). We write \(B_q^*=I_{\psi\lambda}I_{\lambda\lambda}^{-1}\) for the binned blocks of \(I_q\) and \(e_b=\mu_{b\psi}-B_q^*\mu_{b\lambda}\) for the projected centroids. Two feasibility conventions recur: the *in-bin* convention, under which a relocation is admissible only if its source cell stays nonempty and its destination keeps a nonsingular binned nuisance block, and the *pseudo-inverse* (generalized) convention of Appendix C.3, under which the value is \(S_\psi^+(I)=I_{\psi\psi}-I_{\psi\lambda}I_{\lambda\lambda}^+I_{\lambda\psi}\). Relocation quantities \(u_a,u_b,\alpha,\beta\) are those of (B.1). Appendices C.1–C.6 hold in the dimensions stated; C.7–C.10 are scalar, \(d_\psi=d_\lambda=1\).
+with matrix gradient \(G_s=I^{-1}-E_\lambda I_{\lambda\lambda}^{-1}E_\lambda^\top=L^\top S_\psi(I)^{-1}L\succeq0\), \(L=[\mathrm{Id}_{d_\psi},-I_{\psi\lambda}I_{\lambda\lambda}^{-1}]\), of rank \(d_\psi\), and binned efficient score \(e_q(s)=s_\psi-I_{\psi\lambda}I_{\lambda\lambda}^{-1}s_\lambda\) (§3).
+
+We write \(B_q^*=I_{\psi\lambda}I_{\lambda\lambda}^{-1}\) for the binned blocks of \(I_q\) and \(e_b=\mu_{b\psi}-B_q^*\mu_{b\lambda}\) for the projected centroids. Two feasibility conventions recur: the *in-bin* convention, under which a relocation is admissible only if its source cell stays nonempty and its destination keeps a nonsingular binned nuisance block, and the *pseudo-inverse* (generalized) convention of Appendix C.3, under which the value is \(S_\psi^+(I)=I_{\psi\psi}-I_{\psi\lambda}I_{\lambda\lambda}^+I_{\lambda\psi}\).
+
+Relocation quantities \(u_a,u_b,\alpha,\beta\) are those of (B.1). Appendices C.1–C.6 hold in the dimensions stated; C.7–C.10 are scalar, \(d_\psi=d_\lambda=1\).
+
+<a id="appendix-c1"></a>
 
 ### C.1 Finite exchange for \(D_s\) and the non-geometric global optimum
 
@@ -1032,7 +1138,9 @@ The rank-two update (B.2) remains valid for any criterion. For \(D_s\), the exac
 \Delta F_s=\Delta\log\det I-\Delta\log\det I_{\lambda\lambda},
 \tag{C.1}
 \]
-each evaluable by low-rank determinant algebra provided both blocks remain nonsingular before and after the move [novelty: direct corollary; ledger V8-23] (`DS-EXACT-MOVE-ORACLE`). Positive-gain exchange is therefore still strictly monotone and terminates finitely on the finite labeling set, exactly as for D [24], [7], [40] [novelty: direct corollary; ledger V8-16] (`DS-EXCHANGE-TERMINATES`); the feasibility convention is load-bearing, and throughout we use the in-bin convention (`DS-PROJECTED-K-REQUIREMENT`; fixture G14 in Appendix C.10 is a witness that the pseudo-inverse and in-bin conventions differ). What fails is the D-specific implication from a first-order geometric violation to a positive finite gain: the nuisance determinant can improve enough to offset the full determinant in a way invisible to the efficient semimetric.
+each evaluable by low-rank determinant algebra provided both blocks remain nonsingular before and after the move [novelty: direct corollary; ledger V8-23] (`DS-EXACT-MOVE-ORACLE`).
+
+Positive-gain exchange is therefore still strictly monotone and terminates finitely on the finite labeling set, exactly as for D [24], [7], [40] [novelty: direct corollary; ledger V8-16] (`DS-EXCHANGE-TERMINATES`); the feasibility convention matters, and throughout we use the in-bin convention (`DS-PROJECTED-K-REQUIREMENT`; fixture G14 in Appendix C.10 is a witness that the pseudo-inverse and in-bin conventions differ). What fails is the D-specific implication from a first-order geometric violation to a positive finite gain: the nuisance determinant can improve enough to offset the full determinant in a way invisible to the efficient semimetric.
 
 Proposition 3 (§5) states that at a one-point-exchange-stable \(D_s\) partition with nonsingular blocks, with \(s_{aa}=u_a^\top G_su_a\), \(s_{bb}=u_b^\top G_su_b\) and \(q_{aa}=u_a^\top I^{-1}u_a\), every admissible move of a point of weight \(w_i\) satisfies
 \[
@@ -1045,12 +1153,18 @@ and that under uniform weights \(w_i=1/N\) and cell masses bounded below on the 
 
 *Proof sketch of Proposition 3.* Routine from the exact oracle (C.1) and concavity of \(\log\det\) (`DS-OKN-BOUND`). \(\square\)
 
-Proposition 6 gives an exact profiled leverage bound at exchange-stable states, \(s_{aa}-s_{bb}\le\beta_i\,q_{aa}q_{bb}\), which needs neither balanced masses nor a mass margin and supersedes (C.2) as the finite input to the bridge (Appendix C.5). The bound (C.2) explains how finite exchange-stable solutions can approach the population efficient-Voronoi geometry as individual observation weights vanish. It is not by itself a consistency theorem: convergence of global finite optima, control of cell masses, and stability of the profiled information blocks require additional assumptions, which are exactly the margins of Theorem 7 and the price and obstruction results of Theorems 9 and 10.
+Proposition 6 gives an exact profiled leverage bound at exchange-stable states, \(s_{aa}-s_{bb}\le\beta_i\,q_{aa}q_{bb}\), which needs neither balanced masses nor a mass margin and supersedes (C.2) as the finite input to the bridge (Appendix C.5). The bound (C.2) explains how finite exchange-stable solutions can approach the population efficient-Voronoi geometry as individual observation weights vanish.
+
+It is not by itself a consistency theorem: convergence of global finite optima, control of cell masses, and stability of the profiled information blocks require additional assumptions, which are exactly the margins of Theorem 7 and the price and obstruction results of Theorems 9 and 10.
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">Exact finite counterexample: fixture G4</div>
 
-There exists a centered equal-weight \(N=8,d=2,d_\psi=1,K=3\) score table for which exhaustive enumeration of all 966 unlabeled nonempty three-cell partitions produces a unique global \(D_s\) optimum that violates the nearest-cell rule induced by its own \(G_s\) semimetric. In one exact-rational construction the best profiled scalar information is \(6241/984\), the second-best value is \(4232/669\), and two observations have strictly positive self-induced efficient-Voronoi violation margins \(2862/3239\) and \(618/3239\). Therefore the discrepancy is not a local-search artifact: unrestricted finite \(D_s\) assignment and self-consistent inductive \(D_s\) quantizer fitting are genuinely different finite problems. The witness is presented as a counterexample, not as a novelty claim; no literature search for criterion-separation counterexamples has been recorded. [novelty: unresolved; ledger V8-25] (`DS-GLOBAL-NONGEOMETRIC`, `DS-FINITE-GEOMETRY-FAILS`)
+There exists a centered equal-weight \(N=8,d=2,d_\psi=1,K=3\) score table for which exhaustive enumeration of all 966 unlabeled nonempty three-cell partitions produces a unique global \(D_s\) optimum that violates the nearest-cell rule induced by its own \(G_s\) semimetric. In one exact-rational construction the best profiled scalar information is \(6241/984\), the second-best value is \(4232/669\), and two observations have strictly positive self-induced efficient-Voronoi violation margins \(2862/3239\) and \(618/3239\).
+
+Therefore the discrepancy is not a local-search artifact: unrestricted finite \(D_s\) assignment and self-consistent inductive \(D_s\) quantizer fitting are genuinely different finite problems. The witness is presented as a counterexample, not as a novelty claim; no literature search for criterion-separation counterexamples has been recorded.
+
+[novelty: unresolved; ledger V8-25] (`DS-GLOBAL-NONGEOMETRIC`, `DS-FINITE-GEOMETRY-FAILS`)
 
 Exact data of fixture G4 (`CE-DS-GLOBAL-GEOMETRY-001`). Before exact centering, take the eight score vectors
 
@@ -1065,11 +1179,15 @@ Exact data of fixture G4 (`CE-DS-GLOBAL-GEOMETRY-001`). Before exact centering, 
 ( 6, -6)
 ```
 
-with equal weights and \(d_\psi=1\). "Centered" here means exact sample-mean subtraction in the construction of this fixture only. The unique optimum up to permutation of cell labels is `[0,0,1,0,0,1,2,2]`. The optimum-induced efficient projection is \(e_q(s)=s_1+(16/123)s_2\). [novelty: unresolved; ledger V8-26]
+with equal weights and \(d_\psi=1\). "Centered" here means exact sample-mean subtraction in the construction of this fixture only. The unique optimum up to permutation of cell labels is `[0,0,1,0,0,1,2,2]`. The optimum-induced efficient projection is \(e_q(s)=s_1+(16/123)s_2\).
+
+[novelty: unresolved; ledger V8-26]
 
 </div>
 
 A second exact witness of a unique non-geometric global optimum, fixture G5, and a global optimum that is a 31-fold exact tie class with coincident projected centroids, fixture G6, are given in Appendices C.4 and C.3; both postdate fixture G4.
+
+<a id="appendix-c2"></a>
 
 ### C.2 Efficient-score domination and the projected problem
 
@@ -1084,9 +1202,19 @@ For every quantizer \(q\), the extremal characterization of the Schur complement
 S_\psi(I_q)\preceq \operatorname{Var}\!\left(\mathbb E[\widehat S\mid q(S)]\right).
 \tag{C.4}
 \]
-Inequality (C.4) is the binned transfer of the extremal (Loewner-minimum) characterization of the Schur complement, which is due to Krein and Anderson and is stated in the form used here by Li and Mathias [26]; its statistical reading is the efficient-score variance of semiparametric theory [42] and the nuisance-hardened compression of Alsing and Wandelt [27]. Only the binned transfer is the project's; the identity itself is not claimed [novelty: direct corollary; ledger V8-27] (`DS-EFFICIENT-SCORE-DOMINATION`, `DS-EFFICIENT-SCORE-GLOBAL-UPPER`, `DS-PROFILED-VARIATIONAL`). Consequently the best profiled \(D_s\) value is upper-bounded by the best D value obtainable by quantizing the lower-dimensional efficient score, allowing randomized quantization of \(\widehat S\). Proposition C.1(ii) gives the exact gap in (C.4), the equality condition, and the sense in which the gap vanishes along refining sequences. If the law of \(\widehat S\) is atomless, Dvoretzky–Wald–Wolfowitz purification reduces that upper problem to deterministic hard quantizers of \(\widehat S\) [10], [11] [novelty: known; ledger V8-28] (`SOFT-HARD-ATOMLESS-EQUIVALENCE`). The atomlessness condition belongs to the efficient-score law itself; atomlessness of the original score law does not automatically imply it under an arbitrary dimension-reducing projection.
+Inequality (C.4) is the binned transfer of the extremal (Loewner-minimum) characterization of the Schur complement, which is due to Krein and Anderson and is stated in the form used here by Li and Mathias [26]; its statistical reading is the efficient-score variance of semiparametric theory [42] and the nuisance-hardened compression of Alsing and Wandelt [27]. Only the binned transfer is the project's; the identity itself is not claimed [novelty: direct corollary; ledger V8-27] (`DS-EFFICIENT-SCORE-DOMINATION`, `DS-EFFICIENT-SCORE-GLOBAL-UPPER`, `DS-PROFILED-VARIATIONAL`).
 
-For \(d_\psi=1\), deterministic D-optimal quantization of an atomless scalar efficient score has ordered interval cells, by the contiguity argument of Fisher [43], and can be solved exactly on a finite sample by dynamic programming in \(O(KN)\) time after sorting [44], [45]; exact ties among tilted values with unequal weights require the tie lemma of Appendix D.1 [novelty: known; ledger V8-29] (`DS-SCALAR-EFFICIENT-DP`). This makes (C.4) an initializer and an upper certificate for the profiled problem. It does not make the interval labeling a terminal state: an exact \(N=8\) witness, fixture G10 (`CE-DS-INTERVAL-SEED-UNSTABLE-001`, Appendix C.8), shows that the efficient-score interval seed admits a relocation with profiled gain \(0.447\) that grows the nuisance block 27-fold, so the interval initialization is not exchange-stable and not seed-stable. It also clarifies the case \(K\le d\): full in-bin profiling is singular because \(\operatorname{rank}I_q\le K-1\) (`DS-FULL-PROFILE-K-LE-D-SINGULAR`), while a lower-dimensional efficient-score compression may remain well posed if nuisance information is supplied externally (`DS-PROJECTED-K-REQUIREMENT`). These are different statistical formulations and should be exposed as such rather than conflated.
+Consequently the best profiled \(D_s\) value is upper-bounded by the best D value obtainable by quantizing the lower-dimensional efficient score, allowing randomized quantization of \(\widehat S\). Proposition C.1(ii) gives the exact gap in (C.4), the equality condition, and the sense in which the gap vanishes along refining sequences.
+
+If the law of \(\widehat S\) is atomless, Dvoretzky–Wald–Wolfowitz purification reduces that upper problem to deterministic hard quantizers of \(\widehat S\) [10], [11] [novelty: known; ledger V8-28] (`SOFT-HARD-ATOMLESS-EQUIVALENCE`). The atomlessness condition belongs to the efficient-score law itself; atomlessness of the original score law does not automatically imply it under an arbitrary dimension-reducing projection.
+
+For \(d_\psi=1\), deterministic D-optimal quantization of an atomless scalar efficient score has ordered interval cells, by the contiguity argument of Fisher [43], and can be solved exactly on a finite sample by dynamic programming in \(O(KN)\) time after sorting [44], [45]; exact ties among tilted values with unequal weights require the tie lemma of Appendix D.1 [novelty: known; ledger V8-29] (`DS-SCALAR-EFFICIENT-DP`). This makes (C.4) an initializer and an upper certificate for the profiled problem.
+
+It does not make the interval labeling a terminal state: an exact \(N=8\) witness, fixture G10 (`CE-DS-INTERVAL-SEED-UNSTABLE-001`, Appendix C.8), shows that the efficient-score interval seed admits a relocation with profiled gain \(0.447\) that grows the nuisance block 27-fold, so the interval initialization is not exchange-stable and not seed-stable. It also clarifies the case \(K\le d\): full in-bin profiling is singular because \(\operatorname{rank}I_q\le K-1\) (`DS-FULL-PROFILE-K-LE-D-SINGULAR`), while a lower-dimensional efficient-score compression may remain well posed if nuisance information is supplied externally (`DS-PROJECTED-K-REQUIREMENT`).
+
+These are different statistical formulations and should be exposed as such rather than conflated.
+
+<a id="appendix-c3"></a>
 
 ### C.3 The variational form, refinement, and the exact domination gap
 
@@ -1097,7 +1225,9 @@ S_\psi^+(I_q)
 =\min_B\sum_bW_b(\mu_{b\psi}-B\mu_{b\lambda})(\mu_{b\psi}-B\mu_{b\lambda})^\top,
 \tag{C.5}
 \]
-a Loewner minimum over \(d_\psi\times d_\lambda\) matrices, attained exactly at the solutions of \(BI_{\lambda\lambda}=I_{\psi\lambda}\), in particular at \(B_q^*=I_{\psi\lambda}I_{\lambda\lambda}^+\) [46][47][26]. [novelty: known; ledger DS11-1] This is the extremal characterization of the generalized Schur complement (Krein [46]; Anderson's shorted operator [47][48]; Li–Mathias, Theorem 2.2, with the Loewner order, pseudo-inverse and attainment set [26]), and its statistical reading is textbook semiparametrics [49][42]; the variance reading needs \(\mathbb E[S]=0\). Only the transfer to binned information and the consequences below are project-level. One caveat governs this appendix: at a singular nuisance block the pseudo-inverse value leaves the in-bin formulation of Appendix C.2 and can strictly exceed the feasible in-bin optimum.
+a Loewner minimum over \(d_\psi\times d_\lambda\) matrices, attained exactly at the solutions of \(BI_{\lambda\lambda}=I_{\psi\lambda}\), in particular at \(B_q^*=I_{\psi\lambda}I_{\lambda\lambda}^+\) [46][47][26]. [novelty: known; ledger DS11-1] This is the extremal characterization of the generalized Schur complement (Krein [46]; Anderson's shorted operator [47][48]; Li–Mathias, Theorem 2.2, with the Loewner order, pseudo-inverse and attainment set [26]), and its statistical reading is textbook semiparametrics [49][42]; the variance reading needs \(\mathbb E[S]=0\).
+
+Only the transfer to binned information and the consequences below are project-level. One caveat governs this appendix: at a singular nuisance block the pseudo-inverse value leaves the in-bin formulation of Appendix C.2 and can strictly exceed the feasible in-bin optimum.
 
 <div class="proposition" markdown="1">
 <div class="box-title" markdown="span">Proposition C.1 — refinement monotonicity, neutral splits, and the exact domination gap</div>
@@ -1119,9 +1249,11 @@ with equality for fixed \(q\) iff \((B^*_{\rm full}-B^*_q)I^q_{\lambda\lambda}=0
 
 </div>
 
-*Proof sketch.* Both parts evaluate (C.5) [26]: (i) is the classical between-group variance decomposition with Loewner sandwiching; (ii) evaluates at \(B^*_{\rm full}\) and sharpens the domination bound (C.4) to the exact cost of estimating the nuisance projection from bins, with Lévy upward martingale convergence for \(K\to\infty\). The nonsingular-limit hypothesis is load-bearing, the pseudo-inverse being discontinuous at rank drops. Vanishing of the gap at global optima is asserted only where Theorem 8 proves it. Registry: `DS-PROFILED-VARIATIONAL`, `OPEN-DS-DOMINATION-EQUALITY`. \(\square\)
+*Proof sketch.* Both parts evaluate (C.5) [26]: (i) is the classical between-group variance decomposition with Loewner sandwiching; (ii) evaluates at \(B^*_{\rm full}\) and sharpens the domination bound (C.4) to the exact cost of estimating the nuisance projection from bins, with Lévy upward martingale convergence for \(K\to\infty\). The nonsingular-limit hypothesis is essential, the pseudo-inverse being discontinuous at rank drops.
 
-By (C.6), if a merged configuration is entirely nuisance-degenerate (every \(\mu_{b\lambda}=0\)), every split with distinct sub-cell nuisance means is exactly neutral, whereas a split with equal nuisance means and distinct interest means increases \(S_\psi^+\) but keeps the nuisance block singular. The objective is invariant under neutral splits, so a finite global optimum is identified only up to the reduced configuration \(\{(W_b,e_b(B_q^*))\}\), where deployable content lives.
+Vanishing of the gap at global optima is asserted only where Theorem 8 proves it. Registry: `DS-PROFILED-VARIATIONAL`, `OPEN-DS-DOMINATION-EQUALITY`. \(\square\)
+
+By (C.6), if a merged configuration is entirely nuisance-degenerate (every \(\mu_{b\lambda}=0\)), every split with distinct sub-cell nuisance means is exactly neutral, whereas a split with equal nuisance means and distinct interest means increases \(S_\psi^+\) but keeps the nuisance block singular. The objective is invariant under neutral splits, so a finite global optimum is identified only up to the reduced configuration \(\{(W_b,e_b(B_q^*))\}\), which determines the projected prediction rule.
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">Exact tie witness: fixture G6</div>
@@ -1132,9 +1264,13 @@ Fixture G6 (`CE-DS-DEGENERATE-GLOBAL-TIE-001`): a centered equal-weight \(N=8,d=
 
 The witness refutes uniqueness, separation and reproducibility of finite global optima; zero first-order violations do not yield an inductive rule (`DS-GLOBAL-TIE-DEGENERACY`). The tie is an atomic-grid artifact: the fine-grid audit of Appendix C.7 found zero exact ties on atomless-emulating samples.
 
+<a id="appendix-c4"></a>
+
 ### C.4 Proof of Theorem 5: population stationarity is efficient-Voronoi geometry
 
-Let \(P\) be atomless with \(\mathbb E[S]=0\), \(\mathbb E\|S\|^2<\infty\), and let \(q\) have \(W_b>0\) and \(I_q\succ0\). Relabeling a measurable \(E\subseteq A_a\) of mass \(\varepsilon\) and barycenter \(\bar s\) changes \(I_q\) exactly as the rank-two relocation (B.2) applied to \((\bar s,\varepsilon)\). Call \(q\) bounded-packet stationary if for every \(a\ne b\) and \(R>0\)
+Let \(P\) be atomless with \(\mathbb E[S]=0\), \(\mathbb E\|S\|^2<\infty\), and let \(q\) have \(W_b>0\) and \(I_q\succ0\). Relabeling a measurable \(E\subseteq A_a\) of mass \(\varepsilon\) and barycenter \(\bar s\) changes \(I_q\) exactly as the rank-two relocation (B.2) applied to \((\bar s,\varepsilon)\).
+
+Call \(q\) bounded-packet stationary if for every \(a\ne b\) and \(R>0\)
 \[
 \limsup_{E\subseteq A_a\cap B(0,R),\ P(E)\to0}\ \frac{\Phi_{D_s}(q_{E\to b})-\Phi_{D_s}(q)}{P(E)}\le0 .
 \tag{C.8}
@@ -1146,20 +1282,50 @@ Theorem 5 (§5) states that \(q\) is bounded-packet stationary iff for every \(a
 G_s=C^\top S_\psi(I_q)^{-1}C,\quad C=[\,\mathrm{Id}_{d_\psi},-B_q^*\,],
 \tag{C.9}
 \]
-that is, \(q(s)\in\arg\min_b(e(s)-e_b)^\top S_\psi(I_q)^{-1}(e(s)-e_b)\) a.e. with \(e(s)=Cs\); that sufficiency holds for every \(P\) while necessity needs atomlessness; and that the nearest-projected-centroid correspondence is a.e. single-valued and reproduces \(q\) up to null sets iff (i) the \(e_b\) are pairwise distinct and (ii) \(P\) charges no tie hyperplane, stationarity not forcing (i). [novelty: adaptation; ledger DS12-1]
+that is, \(q(s)\in\arg\min_b(e(s)-e_b)^\top S_\psi(I_q)^{-1}(e(s)-e_b)\) a.e. with \(e(s)=Cs\); that sufficiency holds for every \(P\) while necessity needs atomlessness; and that the nearest-projected-centroid correspondence is a.e. single-valued and reproduces \(q\) up to null sets iff (i) the \(e_b\) are pairwise distinct and (ii) \(P\) charges no tie hyperplane, stationarity not forcing (i).
 
-*Proof sketch of Theorem 5.* The pairwise first-variation function is affine in \(s\) (Proposition 1, §3), \(\nabla F(I_q)=G_s\), and the packet gain is \(P(E)\,\delta_{ab}(\bar s)+O(P(E)^2)\); atomlessness supplies small packets inside any violating set. This is the first-variation template of optimal design [15] and the \(D\) population statement of Appendix F.2 adapted to the solution-dependent semimetric; the k-means analogues are [12][33]. For a finitely atomic law necessity is vacuous and the witness of Appendix C.1 (fixture G4) violates (C.9). Registry: `OPEN-DS-POP-COMMON-METRIC`. \(\square\)
+[novelty: adaptation; ledger DS12-1]
+
+*Proof sketch of Theorem 5.* The pairwise first-variation function is affine in \(s\) (Proposition 1, §3), \(\nabla F(I_q)=G_s\), and the packet gain is \(P(E)\,\delta_{ab}(\bar s)+O(P(E)^2)\); atomlessness supplies small packets inside any violating set. This is the first-variation template of optimal design [15] and the \(D\) population statement of Appendix F.2 adapted to the solution-dependent semimetric; the k-means analogues are [12][33].
+
+For a finitely atomic law necessity is vacuous and the witness of Appendix C.1 (fixture G4) violates (C.9). Registry: `OPEN-DS-POP-COMMON-METRIC`. \(\square\)
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">Wasted cells: stationarity without a separating rule (fixture G7)</div>
 
-Under a nuisance-sign-symmetric law, a \(\psi\)-threshold partition split by \(\operatorname{sign}(s_\lambda)\) is exactly stationary with pairwise-coincident projected centroids and profiled-information-free cells, and its coarsening has an exactly singular nuisance block. Fixture G7 (`CE-DS-POP-WASTED-CELLS-001`) verifies this in exact rational quadrature on an 8-atom symmetric law with \(K=4\): profiled information \(4\), zero violations, nuisance block \(9/4\) at \(K=4\) and exactly \(0\) at the \(K=2\) coarsening. [novelty: unresolved; ledger DS12-2, DS12-3]
+Under a nuisance-sign-symmetric law, a \(\psi\)-threshold partition split by \(\operatorname{sign}(s_\lambda)\) is exactly stationary with pairwise-coincident projected centroids and profiled-information-free cells, and its coarsening has an exactly singular nuisance block. Fixture G7 (`CE-DS-POP-WASTED-CELLS-001`) verifies this in exact rational quadrature on an 8-atom symmetric law with \(K=4\): profiled information \(4\), zero violations, nuisance block \(9/4\) at \(K=4\) and exactly \(0\) at the \(K=2\) coarsening.
+
+[novelty: unresolved; ledger DS12-2, DS12-3]
 
 </div>
 
-No efficient-semimetric rule separates the coincident cells (`DS-POP-WASTED-CELLS`), in contrast to finite \(D\), where Theorem 2 forces distinct centroids; a deployable rule must merge coincident projected centroids first. A second exact witness of the phenomenon of Appendix C.1, fixture G5 (`CE-DS-GLOBAL-GEOMETRY-002`; row 6 violates the self-induced rule by \(8/195\)), lies in the same atomic-law boundary family and postdates the published instance. [novelty: unresolved; ledger DS12-4]
+No efficient-semimetric rule separates the coincident cells (`DS-POP-WASTED-CELLS`), in contrast to finite \(D\), where Theorem 2 forces distinct centroids; a deployable rule must merge coincident projected centroids first. A second exact witness of the phenomenon of Appendix C.1, fixture G5 (`CE-DS-GLOBAL-GEOMETRY-002`; row 6 violates the self-induced rule by \(8/195\)), lies in the same atomic-law boundary family and postdates the published instance.
+
+[novelty: unresolved; ledger DS12-4]
+
+<a id="appendix-c5"></a>
 
 ### C.5 Proof of Proposition 6: the profiled leverage bound
+
+The finite input to the bridge is an exact inequality needing no balance.
+
+<div class="proposition" markdown="1">
+<div class="box-title" markdown="span">Proposition 6 — exact profiled leverage bound at exchange-stable states</div>
+
+Finite level, positive weights, \(I\) and \(I_{\lambda\lambda}\) nonsingular. At a one-point exchange-stable profiled \(D_s\) state, for every \((s_i,w_i)\) in a non-singleton cell \(a\) with \(W_a>w_i\) and every \(b\ne a\),
+\[
+s_{aa}-s_{bb}\le\beta_i\,q_{aa}q_{bb}\le w_i\,q_{aa}q_{bb},
+\qquad
+\beta_i=\frac{w_iW_b}{W_b+w_i},
+\tag{5.5}
+\]
+with \(s_{xx}=u_x^\top G_su_x\), \(q_{xx}=u_x^\top I^{-1}u_x\), \(u_x=s_i-\mu_x\). No merged-atom, balancedness or mass-margin hypothesis is used; moves with a singular destination are covered.
+
+[novelty: apparently new; ledger DS13-1]
+
+</div>
+
+We found no direct precedent; the nearest cousin is the leverage inequality (4.4). Proof in Appendix C. Unlike Proposition 3, (5.5) surfaces ill-conditioned cells through leverage factors rather than a mass floor; exact moves at 171 stable states gave no violation.
 
 Proposition 6 (§5) is a finite-level statement with positive weights and \(I\), \(I_{\lambda\lambda}\) nonsingular: at a one-point exchange-stable profiled \(D_s\) state, for every \((s_i,w_i)\) in a non-singleton cell \(a\) with \(W_a>w_i\) and every \(b\ne a\),
 \[
@@ -1170,19 +1336,74 @@ s_{aa}-s_{bb}\le\beta_i\,q_{aa}q_{bb}\le w_i\,q_{aa}q_{bb},
 \]
 with \(s_{xx}=u_x^\top G_su_x\), \(q_{xx}=u_x^\top I^{-1}u_x\), \(u_x=s_i-\mu_x\); no merged-atom, balancedness or mass-margin hypothesis is used, and moves with a singular destination are covered. [novelty: apparently new; ledger DS13-1]
 
-We found no direct precedent; the nearest cousin is the \(D\)-side leverage inequality, Lemma B.1. *Proof sketch of Proposition 6.* The exact gain is a difference of two determinant-lemma ratios (C.1); with \(s_{xx}=q_{xx}-r_{xx}\), \(r\) the nuisance-block inner products, non-positivity expands to \(\alpha s_{aa}-\beta s_{bb}\le\alpha\beta[(q_{aa}q_{bb}-q_{ab}^2)-(r_{aa}r_{bb}-r_{ab}^2)]\le\alpha\beta q_{aa}q_{bb}\), and \(\beta\le w_i\le\alpha\). A singular destination nuisance block forces singular \(I'\) (Fischer), where the inequality needs no stability input. Registry: `DS-EXCHANGE-LEVERAGE-BOUND`. \(\square\) In verification, 2,706 and, independently, 1,748 exact moves at all 171 stable states of five adversarial tables gave zero violations. Beside Proposition 3, (C.10) lets ill-conditioned cells surface through leverage factors rather than a mass floor.
+We found no direct precedent; the nearest cousin is the \(D\)-side leverage inequality, Lemma B.1. *Proof sketch of Proposition 6.* The exact gain is a difference of two determinant-lemma ratios (C.1); with \(s_{xx}=q_{xx}-r_{xx}\), \(r\) the nuisance-block inner products, non-positivity expands to \(\alpha s_{aa}-\beta s_{bb}\le\alpha\beta[(q_{aa}q_{bb}-q_{ab}^2)-(r_{aa}r_{bb}-r_{ab}^2)]\le\alpha\beta q_{aa}q_{bb}\), and \(\beta\le w_i\le\alpha\).
+
+A singular destination nuisance block forces singular \(I'\) (Fischer), where the inequality needs no stability input. Registry: `DS-EXCHANGE-LEVERAGE-BOUND`. \(\square\) In verification, 2,706 and, independently, 1,748 exact moves at all 171 stable states of five adversarial tables gave zero violations.
+
+Beside Proposition 3, (C.10) lets ill-conditioned cells surface through leverage factors rather than a mass floor.
+
+<a id="appendix-c6"></a>
 
 ### C.6 Proof of Theorem 7: the conditional bridge
 
-Let \(S_1,\dots,S_N\) be i.i.d. from \(P\) with equal weights, \(z^{(N)}\) one-point exchange-stable \(K\)-cell labelings, and \(\rho_N(s)=\arg\min_b(\hat e(s)-\hat e_b)^\top S_\psi(\hat I_N)^{-1}(\hat e(s)-\hat e_b)\) the companion rule built from the labeling's own binned quantities. The margins are (M1) \(P\) atomless, \(\mathbb E[S]=0\), \(\mathbb E\|S\|^2<\infty\); (M2) \(\min_b\hat W_b\ge c_0>0\); (M3) \(\lambda_{\min}(\hat I_N)\ge\kappa>0\); (M4) \(\sup_{\|v\|=1,c}P(|v^\top S-c|\le t)\le\varphi(t)\downarrow0\); (M5) \(\min_{b\ne b'}\|\hat e_b-\hat e_{b'}\|\ge\gamma>0\); (M2), (M3), (M5) along the sequence almost surely eventually. Theorem 7 (§5) asserts, almost surely: (1) \(P_N(z^{(N)}\ne\rho_N)\to0\); (2) along any subsequence with converging rule parameters, \(\rho_N\to q^*\) \(P\)-a.e., \(q^*\) a self-consistent efficient-Voronoi quantizer, hence bounded-packet stationary by Theorem 5, with \(\hat I_N\to I_{q^*}\) and \(\hat\Phi_s(z^{(N)})\to\Phi_s^{\rm pop}(q^*)\); (3) if each \(z^{(N)}\) is a global finite optimum, \(\hat\Phi_s(z^{(N)})\to v^*\), the supremum over the compact class of efficient-Voronoi rules compatible with \((c_0,\kappa,\gamma)\), attained by every subsequential limit; and, without (M5), the same for the reduced rule obtained by merging cells whose projected-centroid separation vanishes. [novelty: adaptation; ledger DS14-1]
+With the population geometry (Theorem 5) and the leverage bound (Proposition 6) in hand, the finite-to-population question can be posed conditionally: which hypotheses on a sequence of exchange-stable labelings make its companion rules converge to that geometry? These five conditions control the proof.
 
-The skeleton is Pollard's uniform law plus argmin continuity [12][50] in the empirical-fixed-point shape of Sabin and Gray [51], with [33] and the VC Glivenko–Cantelli theorem [52][53]; the changes are the solution-dependent semimetric, the Schur self-consistency step, and the leverage route replacing the Voronoi geometry that fixture G4 forbids. *Proof sketch of Theorem 7.* Proposition 6 bounds every violation by \(q_{aa}q_{bb}/N\); the gap band lies in \(\binom K2\) members of a fixed VC class of slabs whose mass (M4) controls; moments identify over the compact affine-max class; the limit rule is built from its own centroids and metric; the global variant is a sandwich against every fixed margin-compatible rule. Registry: `OPEN-DS-FINITE-POP-BRIDGE`. \(\square\) The margins are hypotheses: Theorem 8 shows that on class (L) the conditioning margin (M3) fails at free global optima, so Theorem 7 governs margin-certified, necessarily \(\delta(\kappa)\)-suboptimal solutions there. Lemma 4 through Theorem 7 were independently re-derived and exhaustively attacked (1,748 moves at 171 stable states, 400 singular-block variational instances, an exact \(N=10\) margin scan); `AUDIT-DS-POPULATION-BRIDGE` is cited as verification evidence only. [novelty: n/a — audit record; ledger DS14-2]
+Theorems 8–10 examine whether they hold. Let \(S_1,\ldots,S_N\) be i.i.d. from \(P\) with equal weights, \(z^{(N)}\) one-point exchange-stable \(K\)-cell labelings, and \(\rho_N\) the companion nearest-projected-centroid rule from the labeling's own binned quantities. The margins are (M1) \(P\) atomless, \(\mathbb E[S]=0\), \(\mathbb E\|S\|^2<\infty\); (M2) \(\min_b\hat W_b\ge c_0>0\); (M3) \(\lambda_{\min}(\hat I_N)\ge\kappa>0\); (M4) \(\sup_{\|v\|=1,c}P(|v^\top S-c|\le t)\le\varphi(t)\downarrow0\); (M5) \(\min_{b\ne b'}\|\hat e_b-\hat e_{b'}\|\ge\gamma>0\); (M2), (M3), (M5) along the sequence almost surely eventually.
+
+<div class="theorem" markdown="1">
+<div class="box-title" markdown="span">Theorem 7 — conditional finite-to-population bridge under (M1)–(M5)</div>
+
+Almost surely: (1) \(P_N(z^{(N)}\ne\rho_N)\to0\); (2) along any subsequence with converging rule parameters, \(\rho_N\to q^*\) \(P\)-a.e., \(q^*\) a self-consistent efficient-Voronoi quantizer, hence bounded-packet stationary by Theorem 5, with \(\hat I_N\to I_{q^*}\) and \(\hat\Phi_s(z^{(N)})\to\Phi_s^{\rm pop}(q^*)\); (3) if each \(z^{(N)}\) is a global finite optimum, \(\hat\Phi_s(z^{(N)})\to v^*\), the supremum over the compact class of efficient-Voronoi rules compatible with \((c_0,\kappa,\gamma)\), attained by every subsequential limit. Without (M5) the same holds for the reduced rule obtained by merging cells whose projected-centroid separation vanishes.
+
+[novelty: adaptation; ledger DS14-1]
+
+</div>
+
+Proof in Appendix C. The proof combines uniform convergence with continuity of the assignment rule. Pollard [12], [50], Sabin and Gray [51], and [33], [52], [53] supply the relevant templates. The new ingredients are the bin-dependent projection and the finite leverage bound.
+
+*Proof sketch of Theorem 7.* Proposition 6 bounds each violation by \(q_{aa}q_{bb}/N\). Possible disagreements lie in \(\binom K2\) slabs from a fixed VC class, whose probability is controlled by (M4). Uniform moment convergence identifies the limiting centres and metric.
+
+Their common origin in the labeling establishes self-consistency. For global optima, compare with every fixed rule in the margin-compatible class. Registry: `OPEN-DS-FINITE-POP-BRIDGE`. \(\square\)
+
+Theorem 8 shows why the conditions need checking: on class (L), global optima lose the conditioning margin. Theorem 7 does not assert that sequences satisfying all margins exist there.
+
+The independent audit re-derived Lemma 4 through Theorem 7. It checked 1,748 moves at 171 stable states, 400 singular-block variational instances, and an exact \(N=10\) margin scan. `AUDIT-DS-POPULATION-BRIDGE` is verification evidence [novelty: n/a — audit record; ledger DS14-2].
+
+For the proof, the companion rule is
+\(\rho_N(s)=\arg\min_b(\hat e(s)-\hat e_b)^\top S_\psi(\hat I_N)^{-1}(\hat e(s)-\hat e_b)\). All quantities come from the sample labeling. The assumptions and conclusions are those of Theorem 7 above.
+
+The skeleton is Pollard's uniform law plus argmin continuity [12][50] in the empirical-fixed-point shape of Sabin and Gray [51], with [33] and the VC Glivenko–Cantelli theorem [52][53]; the changes are the solution-dependent semimetric, the Schur self-consistency step, and the leverage route replacing the Voronoi geometry that fixture G4 forbids. *Proof sketch of Theorem 7.* Proposition 6 bounds every violation by \(q_{aa}q_{bb}/N\); the gap band lies in \(\binom K2\) members of a fixed VC class of slabs whose mass (M4) controls; moments identify over the compact affine-max class; the limit rule is built from its own centroids and metric; the global variant is a sandwich against every fixed margin-compatible rule.
+
+Registry: `OPEN-DS-FINITE-POP-BRIDGE`. \(\square\) The margins are hypotheses: Theorem 8 shows that on class (L) the conditioning margin (M3) fails at free global optima, so Theorem 7 governs margin-certified, necessarily \(\delta(\kappa)\)-suboptimal solutions there. Lemma 4 through Theorem 7 were independently re-derived and exhaustively attacked (1,748 moves at 171 stable states, 400 singular-block variational instances, an exact \(N=10\) margin scan); `AUDIT-DS-POPULATION-BRIDGE` is cited as verification evidence only.
+
+[novelty: n/a — audit record; ledger DS14-2]
+
+<a id="appendix-c7"></a>
 
 ### C.7 The scalar dichotomy: auxiliaries and proof of Theorem 8
 
-Let \(d_\psi=d_\lambda=1\), \(\mathbb E S=0\), \(I=\mathbb E[SS^\top]\succ0\), \(\hat s=S_\psi-B^*S_\lambda\), and consider (L) conditional centering, \(\mathbb E[S_\lambda\mid\hat s]=0\) a.s. (jointly Gaussian and elliptical laws in particular); (S) scalar regularity, \(\operatorname{law}(\hat s)\) atomless with positive density near the optimal boundaries and a unique optimal \(K\)-point squared-error quantizer \(J^*\) (log-concavity suffices [31][32]); (R) swap richness, both nuisance signs of bounded magnitude available conditionally near those boundaries. Let \(v_K=\sigma_s^2-W_K\) be the between-value of \(J^*\). Samples are exactly centered, weights equal, and \(K\ge3=d_\lambda+2\), which is load-bearing (rank vacuity below).
+Let \(d_\psi=d_\lambda=1\), \(\mathbb E S=0\), \(I\succ0\), \(\hat s=S_\psi-B^*S_\lambda\), and consider (L) conditional centering, \(\mathbb E[S_\lambda\mid\hat s]=0\) a.s. (Gaussian and elliptical laws); (S) scalar regularity, \(\operatorname{law}(\hat s)\) atomless with positive density near the optimal boundaries and a unique optimal \(K\)-point squared-error quantizer \(J^*\) (log-concavity suffices [31], [32]); (R) swap richness, both nuisance signs of bounded magnitude available there. With \(J^*\) and \(v_K\) as in §5.2, samples are exactly centered, weights equal, and \(K\ge3=d_\lambda+2\), which is essential.
 
-Theorem 8 (§5) states, for exact global finite \(D_s\) optima \(z^{(N)}\) over feasible \(K\)-cell labelings of i.i.d. samples from \(P\) satisfying (L)+(S)+(R), almost surely: (1) \(\hat\Phi_s(z^{(N)})\to v_K=\sup_qS_\psi^+(I_q)\), the supremum over all measurable \(K\)-cell quantizers, attained at \(J^*\) and at nothing else, and \(J^*\) is fully nuisance-degenerate, hence in-bin infeasible; (2) \(\min_b\hat W_b\to\min_bw_b^*>0\): (M2) holds and singleton cells die out; (3) \(\hat I_{\lambda\lambda},\hat I_{\psi\lambda}\to0\), hence \(\lambda_{\min}(\hat I_N)\to0\): (M3) fails for every \(\kappa>0\) and every law in the class; (4) \(v^*(\kappa)=\sup\{\Phi(q):\lambda_{\min}(I_q)\ge\kappa\}<v_K\) for every \(\kappa>0\); (5) the gap (C.7) at \(z^{(N)}\) tends to \(0\). [novelty: apparently new; ledger DS15-1] We found no direct precedent; the nearest prior art is scalar quantizer consistency and uniqueness [12][31][33][32], scalar grouping [43], Levrard's margin-as-hypothesis viewpoint [34] (a contrast), and on the design side Silvey's singular \(D_s\)-optimal designs [35] with the extreme-point frame of [36]. The theorem is stated for \(d_\lambda=1\) only, its (M3) failure is not extended beyond class (L), and the nuisance stays unbinned at the limit.
+<div class="theorem" markdown="1">
+<div class="box-title" markdown="span">Theorem 8 — margins dichotomy at global finite \(D_s\) optima (\(d_\psi=d_\lambda=1\))</div>
+
+Let \(z^{(N)}\) be exact global finite \(D_s\) optima over feasible \(K\)-cell labelings of i.i.d. samples from \(P\) satisfying (L)+(S)+(R). Almost surely: (1) \(\hat\Phi_s(z^{(N)})\to v_K=\sup_qS_\psi^+(I_q)\), the supremum over all measurable \(K\)-cell quantizers, attained at \(J^*\) and at nothing else, and \(J^*\) is fully nuisance-degenerate, hence in-bin infeasible; (2) \(\min_b\hat W_b\to\min_bw_b^*>0\): (M2) holds and singleton cells die out; (3) \(\hat I_{\lambda\lambda},\hat I_{\psi\lambda}\to0\), hence \(\lambda_{\min}(\hat I_N)\to0\): (M3) fails for every \(\kappa>0\) and every law in the class; (4) \(v^*(\kappa)=\sup\{\Phi_s(q):\lambda_{\min}(I_q)\ge\kappa\}<v_K\) for every \(\kappa>0\); (5) the gap (5.2) at \(z^{(N)}\) tends to \(0\).
+
+[novelty: apparently new; ledger DS15-1]
+
+</div>
+
+We found no direct precedent; the nearest prior art is scalar quantizer consistency and uniqueness [12], [31], [33], [32], Levrard's margin-as-hypothesis viewpoint [34], and singular \(D_s\)-optimal designs [35], [36]. The theorem is stated for \(d_\lambda=1\) only, its (M3) failure not extended beyond (L).
+
+Proof in Appendix C. The upper half is an exact empirical sandwich \(\hat\Phi_s(z)\le\mathrm{btw}(\hat s_N;z)\le\hat v_K\), where \(\mathrm{btw}(\hat s_N;z)\) is the empirical between-cell variance of the efficient scores under the labeling \(z\) and \(\hat v_K\) its maximum over \(K\)-cell labelings, with \(\hat v_K\to v_K\) a.s. [43], [12], [26] (Proposition C.2) [novelty: direct corollary; ledger DS15-3]; the lower half is achievability, feasible labelings almost surely reaching \(\hat v_K-O\bigl(N^{-3/4}\sqrt{\log\log N}\bigr)\) by single-point swaps steering the binned nuisance moment onto the constraint plane (Proposition C.3) [novelty: unresolved; ledger DS15-2].
+
+Global optimality squeezes \(z^{(N)}\), and rigidity forces the cells toward \(J^*\). The condition \(K\ge d_\lambda+2\) is sharp [55] (fixture G8) [novelty: direct corollary; ledger DS15-4]. The restriction to \(d_\lambda=1\) is the outcome of an independent re-derivation [novelty: n/a — audit record; ledger DS15-6].
+
+The limit \(J^*\) is the optimal binning of the projected efficient score, with exactly singular binned nuisance block: the free optimizer sheds its own feasibility margin [35]. On class (L) at \(d_\psi=1\) the theorem-backed target is the scalar efficient-score interval rule with the nuisance estimated unbinned, a margin-certified in-bin rule costing at least \(\delta(\kappa)=v_K-v^*(\kappa)>0\).
+
+Let \(d_\psi=d_\lambda=1\), \(\mathbb E S=0\), \(I=\mathbb E[SS^\top]\succ0\), \(\hat s=S_\psi-B^*S_\lambda\), and consider (L) conditional centering, \(\mathbb E[S_\lambda\mid\hat s]=0\) a.s. (jointly Gaussian and elliptical laws in particular); (S) scalar regularity, \(\operatorname{law}(\hat s)\) atomless with positive density near the optimal boundaries and a unique optimal \(K\)-point squared-error quantizer \(J^*\) (log-concavity suffices [31][32]); (R) swap richness, both nuisance signs of bounded magnitude available conditionally near those boundaries. Let \(v_K=\sigma_s^2-W_K\) be the between-value of \(J^*\).
+
+Samples are exactly centered, weights equal, and \(K\ge3=d_\lambda+2\), which is essential (rank vacuity below).
 
 <div class="proposition" markdown="1">
 <div class="box-title" markdown="span">Proposition C.2 — exact empirical sandwich and bracket limits</div>
@@ -1192,7 +1413,9 @@ For every sample and feasible labeling \(z\), with \(\hat s_N\) built from the f
 \hat\Phi_s(z)=\mathrm{btw}(\hat s_N;z)-\hat c(z)^\top\hat I^{z\,-1}_{\lambda\lambda}\hat c(z)\le\mathrm{btw}(\hat s_N;z)\le\hat v_K,
 \tag{C.11}
 \]
-where \(\mathrm{btw}(x;z)=\sum_b(\sum_{i\in b}wx_i)^2/\hat W_b\), \(\hat c(z)\) is the binned cross-moment of \(\hat s\) and \(s_\lambda\), and \(\hat v_K\) is the exact optimal \(K\)-grouping value of \(\hat s_N\), attained by intervals of the sorted sample. Almost surely \(\hat v_K\to v_K\) [43][12][26]. [novelty: direct corollary; ledger DS15-3]
+where \(\mathrm{btw}(x;z)=\sum_b(\sum_{i\in b}wx_i)^2/\hat W_b\), \(\hat c(z)\) is the binned cross-moment of \(\hat s\) and \(s_\lambda\), and \(\hat v_K\) is the exact optimal \(K\)-grouping value of \(\hat s_N\), attained by intervals of the sorted sample. Almost surely \(\hat v_K\to v_K\) [43][12][26].
+
+[novelty: direct corollary; ledger DS15-3]
 
 </div>
 
@@ -1205,14 +1428,20 @@ Under (L)+(S)+(R), almost surely there are feasible labelings \(z'_N\) with \(\h
 
 </div>
 
-The almost-sure rate carries \(\sqrt{\log\log N}\); \(O(N^{-3/4})\) holds only in probability. *Proof sketch.* In the coordinates \(x_b=m_{\hat s,b}/\hat W_b^{1/2}\), \(y_b=m_{\lambda,b}/\hat W_b^{1/2}\), (C.11) reads \(\hat\Phi_s=|x|^2-\langle x,y\rangle^2/|y|^2\); at the interval labeling both \(\langle x,y\rangle\) and \(|y|\) fluctuate at scale \(N^{-1/2}\), so the tax is a \(\Theta_p(1)\) ratio. Single-point swaps between adjacent cells, drawn from boundary slabs of width \(N^{-1/4}\) with prescribed nuisance sign, steer \(y\) in two directions of its constraint plane (nonempty for \(K\ge3\)) to a target with \(\langle x,y^*\rangle=0\), \(|y^*|=N^{-1/2}\); boundary consistency is argmin consistency under (S) [12], the swap budget a VC law of the iterated logarithm. No published swap-steering-to-constraint theorem was found; the nearest structure [54] is to be engaged before submission. \(\square\)
+The almost-sure rate carries \(\sqrt{\log\log N}\); \(O(N^{-3/4})\) holds only in probability. *Proof sketch.* In the coordinates \(x_b=m_{\hat s,b}/\hat W_b^{1/2}\), \(y_b=m_{\lambda,b}/\hat W_b^{1/2}\), (C.11) reads \(\hat\Phi_s=|x|^2-\langle x,y\rangle^2/|y|^2\); at the interval labeling both \(\langle x,y\rangle\) and \(|y|\) fluctuate at scale \(N^{-1/2}\), so the tax is a \(\Theta_p(1)\) ratio.
 
-*Proof sketch of Theorem 8.* Upper bound by Proposition C.2, lower bound by global optimality against Proposition C.3. For every measurable \(q\), \(\Phi(q)\le\sum_bW_b\mathbb E[\hat s\mid b]^2\le v_K\) by (C.5) at \(B^*\) and nearest-mean reassignment; under (L) every \(\hat s\)-measurable partition has zero cell nuisance means, so \(J^*\) attains \(v_K\), uniquely by (S). A rigidity lemma (near-optimal between-value forces cells close to \(J^*\) in measure) yields (2)–(3), the data-dependent slope being absorbed by a Glivenko–Cantelli law over the fixed class of tilted half-planes with (S)-atomlessness, not (M4)–(M5); (4) is rigidity against a margin; (5) is the tax identity. Registry: `OPEN-DS-MARGINS-AT-OPTIMA`. \(\square\)
+Single-point swaps between adjacent cells, drawn from boundary slabs of width \(N^{-1/4}\) with prescribed nuisance sign, steer \(y\) in two directions of its constraint plane (nonempty for \(K\ge3\)) to a target with \(\langle x,y^*\rangle=0\), \(|y^*|=N^{-1/2}\); boundary consistency is argmin consistency under (S) [12], the swap budget a VC law of the iterated logarithm. No published swap-steering-to-constraint theorem was found; the nearest structure [54] is to be engaged before submission. \(\square\)
+
+*Proof sketch of Theorem 8.* Upper bound by Proposition C.2, lower bound by global optimality against Proposition C.3. For every measurable \(q\), \(\Phi(q)\le\sum_bW_b\mathbb E[\hat s\mid b]^2\le v_K\) by (C.5) at \(B^*\) and nearest-mean reassignment; under (L) every \(\hat s\)-measurable partition has zero cell nuisance means, so \(J^*\) attains \(v_K\), uniquely by (S).
+
+A rigidity lemma (near-optimal between-value forces cells close to \(J^*\) in measure) yields (2)–(3), the data-dependent slope being absorbed by a Glivenko–Cantelli law over the fixed class of tilted half-planes with (S)-atomlessness, not (M4)–(M5); (4) is rigidity against a margin; (5) is the tax identity. Registry: `OPEN-DS-MARGINS-AT-OPTIMA`. \(\square\)
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">Rank vacuity at \(K=d_\lambda+1\): fixture G8</div>
 
-Fixture G8 (`CE-DS-MARGINS-RANK-VACUITY-001`): \(N=4\), \(d_\lambda=2\), \(K=3\); all six feasible labelings have profiled value exactly \(0\) while \(v_K=81/50>0\). Exact centering gives \(\sum_bm_b=0\), hence \(\operatorname{rank}(I_z)\le K-1\), so a nonvacuous profiled value needs \(K\ge d_\lambda+2\); at \(d_\lambda=1\) this makes \(K=2\) vacuous [55]. [novelty: direct corollary; ledger DS15-4]
+Fixture G8 (`CE-DS-MARGINS-RANK-VACUITY-001`): \(N=4\), \(d_\lambda=2\), \(K=3\); all six feasible labelings have profiled value exactly \(0\) while \(v_K=81/50>0\). Exact centering gives \(\sum_bm_b=0\), hence \(\operatorname{rank}(I_z)\le K-1\), so a nonvacuous profiled value needs \(K\ge d_\lambda+2\); at \(d_\lambda=1\) this makes \(K=2\) vacuous [55].
+
+[novelty: direct corollary; ledger DS15-4]
 
 </div>
 
@@ -1220,11 +1449,51 @@ The mechanism is classical rank additivity of the Schur complement [55]; it refu
 
 Theorem 8 says the free in-bin optimizer sheds its own feasibility margin: its limit \(J^*\) is the optimal binning of the projected efficient score of Appendix C.2, whose binned nuisance block is exactly singular; the two formulations Appendix C.2 keeps separate merge at the optimum, which is why the margins fail, the partition-side analogue of singular \(D_s\)-optimal designs [35]. On class (L) at \(d_\psi=1\) the theorem-backed deployment target is therefore the scalar efficient-score interval rule with the nuisance estimated unbinned, while a margin-certified in-bin rule under Theorem 7 costs at least \(\delta(\kappa)=v_K-v^*(\kappa)>0\).
 
-The dichotomy beyond this class is open (OP29, `OPEN-DS-MARGINS-NONCENTERED`): for non-centered laws the tax has a \(\Theta(1)\) population component on \(\hat s\)-intervals and the margins may hold (Appendix C.10 exhibits one law); for \(d_\psi>1\) the uniqueness and rigidity theory of vector-\(D\) quantization of the efficient score is needed first; for \(d_\lambda\ge2\), \(K\ge d_\lambda+2\), a vector-(R) steering construction must be built or refuted. [novelty: unresolved; ledger DS15-5] As verification evidence, `AUDIT-DS-MARGINS-AT-OPTIMA` re-derived the theorem, closed Proposition C.3 from a sketch, refuted the \(d_\lambda\)-generality, corrected the Glivenko–Cantelli import in (3), and certified 20 exact global optima at \(N=12\)–\(16\) (about \(42.6\)M exact evaluations, zero full-lattice ties). [novelty: n/a — audit record; ledger DS15-6]
+The dichotomy beyond this class is open (OP29, `OPEN-DS-MARGINS-NONCENTERED`): for non-centered laws the tax has a \(\Theta(1)\) population component on \(\hat s\)-intervals and the margins may hold (Appendix C.10 exhibits one law); for \(d_\psi>1\) the uniqueness and rigidity theory of vector-\(D\) quantization of the efficient score is needed first; for \(d_\lambda\ge2\), \(K\ge d_\lambda+2\), a vector-(R) steering construction must be built or refuted. [novelty: unresolved; ledger DS15-5] As verification evidence, `AUDIT-DS-MARGINS-AT-OPTIMA` re-derived the theorem, closed Proposition C.3 from a sketch, refuted the \(d_\lambda\)-generality, corrected the Glivenko–Cantelli import in (3), and certified 20 exact global optima at \(N=12\)–\(16\) (about \(42.6\)M exact evaluations, zero full-lattice ties).
+
+[novelty: n/a — audit record; ledger DS15-6]
+
+<a id="appendix-c8"></a>
 
 ### C.8 Proof of Theorem 9: the margin price, and the stable-state census
 
-Theorem 8 concerns exact global optima. An exchange solver returns one-point exchange-stable, generally non-global states, and the deployment question is what those states retain: whether the margins of Theorem 7 are priced, which regime the terminal states occupy, and whether the margin-certified branch is inhabited at all. Appendices C.8–C.9 answer the three questions on the scalar class of Appendix C.7 (\(d_\psi=d_\lambda=1\), \(K\ge3\), equal weights, exact scores) and Appendix C.10 exhibits one law outside that class on which the branch is inhabited. Throughout, empirical information is computed from exactly centered rows, feasible labelings have \(\hat I_{\lambda\lambda}>0\), and \(v_K\), \(J^*\), \(\hat v_K\), \(\mathrm{btw}\) are as in Proposition C.2. The cardinality \(K\ge3\) is the centered-sample condition \(K\ge d_\psi+d_\lambda+1\) of Appendix C.7 at \(d_\psi=1\).
+The next theorem prices the margin for every labeling at once, so Theorem 8's degeneracy belongs to the value, not the optimizer. The setting of §5.6 continues, feasible labelings having \(\hat I_{\lambda\lambda}>0\).
+
+<div class="theorem" markdown="1">
+<div class="box-title" markdown="span">Theorem 9 — margin price, value funnel, and floor</div>
+
+Under (L)+(S), \(d_\psi=d_\lambda=1\), \(K\ge3\), equal weights, on one probability-one event, simultaneously over every labeling at every \(N\):
+
+(Price) for every \(\kappa>0\) there is \(\delta(\kappa)>0\), depending only on \((P,K,\kappa)\), with
+\[
+\limsup_N\ \sup\bigl\{\hat\Phi_s(z):z\ \text{feasible},\ \hat I_{\lambda\lambda}(z)\ge\kappa\bigr\}
+\le\limsup_N\ \sup\bigl\{\mathrm{btw}(\hat s_N;z):\hat I_{\lambda\lambda}(z)\ge\kappa\bigr\}
+\le v_K-\delta(\kappa),
+\tag{5.6}
+\]
+the supremum of an empty set being \(-\infty\); since \(\lambda_{\min}(\hat I_N)\le\hat I_{\lambda\lambda}\), the same cap holds under (M3). The hypothesis is a margin, not stability or optimality.
+
+(Funnel) any feasible sequence with \(\hat\Phi_s(z^{(N)})\to v_K\), stable or not, has cells converging in sample measure to \(J^*\), \(\min_b\hat W_b\to\min_bw_b^*>0\), and \(\hat I_{\lambda\lambda},\hat I_{\psi\lambda},\lambda_{\min}(\hat I_N)\to0\); the degeneracy of Theorem 8 is value-topological.
+
+(Floor) for every fixed measurable \(q\) with \(W_b>0\) and \(I_{q,\lambda\lambda}>\kappa\), labeling raw rows by \(q(S_i)\) gives eventually feasible labelings with \(\hat I_{\lambda\lambda}\ge\kappa\) and \(\hat\Phi_s\to\Phi_s(q)\); hence the supremum in (5.6) is asymptotically at least \(v^{*+}(\kappa)=\sup\{\Phi_s(q):I_{q,\lambda\lambda}>\kappa\}\), and \(v^*(\kappa)\le v^{*+}(\kappa)\le v_K-\delta(\kappa)\). Neither attainment nor one-sided continuity in \(\kappa\) of either constrained value is asserted.
+
+[novelty: apparently new; ledger DS16-1]
+
+</div>
+
+We found no direct precedent; the load-bearing ingredient is almost-minimizer codebook rigidity [56], with [12], [33], [35]. Proof in Appendix C; the conclusion is pathwise, covering any data-dependent selection. The reportable quantity is the gap \(\hat v_K-\hat\Phi_s\); \(\delta(\kappa)\) is existential.
+
+The distinction between \(v^{*+}\) and \(v^*\) came out of an independent re-derivation [56], [8], [54] [novelty: direct corollary; ledger DS16-4].
+
+Which regime a solver occupies is measured, not proved. An exact full-lattice census at \(N=10\)–\(14\), \(K=3\) finds exchange-stable states plentiful, overwhelmingly non-global, and margin-retaining in every instance of a centered grid law at a \(\Theta(1)\) price, with near-coincident projected centroids, so (M5) must be checked; larger runs terminate at the \(K/N\) nuisance scale there and at \(\lambda_{\min}\approx1.7\) on a non-centered law; these are observations, not a basin-selection law [novelty: unresolved; ledger DS16-2].
+
+Two exact \(N=8\), \(K=3\) witnesses: an exchange-stable non-global state \(7.7\%\) below \(\hat v_K\) shows that exchange stability prices the degeneracy of Theorem 8 rather than forcing it (fixture G9) [novelty: apparently new; ledger DS16-5]; and the efficient-score interval labeling is not exchange-stable, so the interval dynamic programme is an initializer and an upper certificate, never a terminal state (fixture G10) [novelty: apparently new; ledger DS16-6]. We found no direct precedent for either witness.
+
+Theorem 8 concerns exact global optima. An exchange solver returns one-point exchange-stable, generally non-global states, and the deployment question is what those states retain: whether the margins of Theorem 7 are priced, which regime the terminal states occupy, and whether the margin-certified branch is inhabited at all.
+
+Appendices C.8–C.9 answer the three questions on the scalar class of Appendix C.7 (\(d_\psi=d_\lambda=1\), \(K\ge3\), equal weights, exact scores) and Appendix C.10 exhibits one law outside that class on which the branch is inhabited. Throughout, empirical information is computed from exactly centered rows, feasible labelings have \(\hat I_{\lambda\lambda}>0\), and \(v_K\), \(J^*\), \(\hat v_K\), \(\mathrm{btw}\) are as in Proposition C.2.
+
+The cardinality \(K\ge3\) is the centered-sample condition \(K\ge d_\psi+d_\lambda+1\) of Appendix C.7 at \(d_\psi=1\).
 
 Theorem 9 (§5) states, under (L)+(S), \(d_\psi=d_\lambda=1\), \(K\ge3\), equal weights, on one probability-one event, simultaneously over every labeling at every \(N\): (Price) for every \(\kappa>0\) there is \(\delta(\kappa)>0\), depending only on \((P,K,\kappa)\), with
 \[
@@ -1235,9 +1504,17 @@ Theorem 9 (§5) states, under (L)+(S), \(d_\psi=d_\lambda=1\), \(K\ge3\), equal 
 \]
 the supremum of an empty set being \(-\infty\), the same cap holding under (M3) since \(\lambda_{\min}(\hat I_N)\le\hat I_{\lambda\lambda}\), the hypothesis being a margin rather than stability or optimality; (Funnel) any feasible sequence with \(\hat\Phi_s(z^{(N)})\to v_K\), from any seed, stable or not, has cells converging in sample measure to \(J^*\), \(\min_b\hat W_b\to\min_bw_b^*>0\), and \(\hat I_{\lambda\lambda},\hat I_{\psi\lambda},\lambda_{\min}(\hat I_N)\to0\), so the degeneracy of Theorem 8 is value-topological; (Floor) for every fixed measurable \(q\) with \(W_b>0\) and \(I_{q,\lambda\lambda}>\kappa\), labeling raw rows by \(q(S_i)\) gives eventually feasible labelings with \(\hat I_{\lambda\lambda}\ge\kappa\) and \(\hat\Phi_s\to\Phi(q)\), hence the supremum in (C.12) is asymptotically at least \(v^{*+}(\kappa)=\sup\{\Phi(q):I_{q,\lambda\lambda}>\kappa\}\), and \(v^*(\kappa)\le v^{*+}(\kappa)\le v_K-\delta(\kappa)\), neither attainment nor one-sided continuity in \(\kappa\) of either constrained value being asserted. [novelty: apparently new; ledger DS16-1]
 
-We found no direct precedent; the load-bearing ingredient is the almost-minimizer rigidity of codebooks of Rakhlin and Caponnetto [56], with [12][33] and, on the design side, [35]. *Proof sketch of Theorem 9.* The first inequality is (C.11). Near-optimal between-value forces every grouping, not only measurable partitions, close to \(J^*\) in sample measure; the uniform step is a strong law over compact tilt-codebook sets, \(\sup_{\beta,C}|(P_N-P)\min_c(S_\psi-\beta S_\lambda-c)^2|\to0\), never a pointwise law at a data-dependent centroid limit. Cauchy–Schwarz over the symmetric differences and a signed weighted Glivenko–Cantelli law over all tilted half-planes, with (L), make the cell nuisance moments small, contradicting the margin; intersecting the uniform-law events over rational constants makes the conclusion pathwise over all labelings, so it covers any data-dependent selection. Registry: `DS-STABLE-MARGINS-PRICE`. \(\square\) The reportable quantity is the observable gap \(\hat v_K-\hat\Phi_s\); \(\delta(\kappa)\) is existential and cannot be reported numerically without a law-specific bound. Theorem 9 neither needs nor delivers the existence of margin-carrying exchange-stable sequences; that inhabitation question is Appendix C.9.
+We found no direct precedent; the load-bearing ingredient is the almost-minimizer rigidity of codebooks of Rakhlin and Caponnetto [56], with [12][33] and, on the design side, [35]. *Proof sketch of Theorem 9.* The first inequality is (C.11).
 
-Which regime the solver actually occupies is a measured question (`DS-STABLE-STATE-SELECTION`). An exact full-lattice census at \(N=10\)–\(14\), \(K=3\), on a centered and a non-centered grid law finds exchange-stable states plentiful (5–944 per instance) and overwhelmingly non-global; on the centered law their nuisance blocks span \(10^{-5}\) to \(0.57\) with value gap and nuisance block anti-correlated (\(-0.27\) to \(-0.83\) per instance), margin-retaining non-global stable states occur in every instance at a \(\Theta(1)\) price, and near-coincident projected centroids occur, so (M5) must be checked. Small-\(N\) ascent is seed-dependent. In library runs at \(N=100\)–\(1000\) every seeding on the centered law terminates with the nuisance block at the \(K/N\) scale and near-optimal value (the reported \(0.004\)–\(0.046\) log-gaps to the interval-DP ceiling are an aggregate summary, and an independent seed reached \(0.075\)), while on the non-centered law every seeding keeps \(\lambda_{\min}\approx1.7\). These are observations, not an asymptotic basin-selection law. [novelty: unresolved; ledger DS16-2] The nearest published frame is one-point relocation for ordinary k-means [8] and the monotone weight algorithms of [40].
+Near-optimal between-value forces every grouping, not only measurable partitions, close to \(J^*\) in sample measure; the uniform step is a strong law over compact tilt-codebook sets, \(\sup_{\beta,C}|(P_N-P)\min_c(S_\psi-\beta S_\lambda-c)^2|\to0\), never a pointwise law at a data-dependent centroid limit. Cauchy–Schwarz over the symmetric differences and a signed weighted Glivenko–Cantelli law over all tilted half-planes, with (L), make the cell nuisance moments small, contradicting the margin; intersecting the uniform-law events over rational constants makes the conclusion pathwise over all labelings, so it covers any data-dependent selection.
+
+Registry: `DS-STABLE-MARGINS-PRICE`. \(\square\) The reportable quantity is the observable gap \(\hat v_K-\hat\Phi_s\); \(\delta(\kappa)\) is existential and cannot be reported numerically without a law-specific bound. Theorem 9 neither needs nor delivers the existence of margin-carrying exchange-stable sequences; that inhabitation question is Appendix C.9.
+
+Which regime the solver actually occupies is a measured question (`DS-STABLE-STATE-SELECTION`). An exact full-lattice census at \(N=10\)–\(14\), \(K=3\), on a centered and a non-centered grid law finds exchange-stable states plentiful (5–944 per instance) and overwhelmingly non-global; on the centered law their nuisance blocks span \(10^{-5}\) to \(0.57\) with value gap and nuisance block anti-correlated (\(-0.27\) to \(-0.83\) per instance), margin-retaining non-global stable states occur in every instance at a \(\Theta(1)\) price, and near-coincident projected centroids occur, so (M5) must be checked.
+
+Small-\(N\) ascent is seed-dependent. In library runs at \(N=100\)–\(1000\) every seeding on the centered law terminates with the nuisance block at the \(K/N\) scale and near-optimal value (the reported \(0.004\)–\(0.046\) log-gaps to the interval-DP ceiling are an aggregate summary, and an independent seed reached \(0.075\)), while on the non-centered law every seeding keeps \(\lambda_{\min}\approx1.7\).
+
+These are observations, not an asymptotic basin-selection law. [novelty: unresolved; ledger DS16-2] The nearest published frame is one-point relocation for ordinary k-means [8] and the monotone weight algorithms of [40].
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">Two exact \(N=8\), \(K=3\) witnesses on the centered grid law: fixtures G9 and G10</div>
@@ -1248,9 +1525,34 @@ Fixture G10 (`CE-DS-INTERVAL-SEED-UNSTABLE-001`): the efficient-score interval l
 
 </div>
 
-Both are pre-asymptotic atomic samples; Appendix C.9 shows the margin-retaining branch eventually empty on class (L). The relocation precedent is [8]. The audit `AUDIT-DS-STABLE-MARGINS-COMPILE` hardened all three statements of Theorem 9, supplied the uniform-law repair and the \(v^{*+}/v^*\) distinction, and corrected the census range; it is cited as verification only [56][8][54]. [novelty: direct corollary; ledger DS16-4]
+Both are pre-asymptotic atomic samples; Appendix C.9 shows the margin-retaining branch eventually empty on class (L). The relocation precedent is [8]. The audit `AUDIT-DS-STABLE-MARGINS-COMPILE` hardened all three statements of Theorem 9, supplied the uniform-law repair and the \(v^{*+}/v^*\) distinction, and corrected the census range; it is cited as verification only [56][8][54].
+
+[novelty: direct corollary; ledger DS16-4]
+
+<a id="appendix-c9"></a>
 
 ### C.9 The conditional-centering obstruction: Lemma C.4, Theorem 10, Proposition C.5
+
+For \(\beta\in\mathbb R\) write \(T_\beta=S_\psi-\beta S_\lambda\); a *strip rule* at tilt \(\beta\) is a \(K\)-cell interval partition of \(T_\beta\) with positive masses. Neither (S) nor (R) is assumed, and (L) does not authorize centering of sample rows.
+
+Lemma C.4 supplies the gate: regular self-consistency of a strip rule decomposes into Lloyd stationarity of the cuts for \(\operatorname{law}(T_\beta)\) plus the *root equation* \(\mathbb E[h(T_\beta)S_\lambda]=0\), \(h\) the step function of cell means; as a necessary condition only, exchange-stable sequences inhabiting the full margin triple on an atomless law with (M4) require a population root meeting \((c_0,\kappa,\gamma)\) [57], [58], [59] [novelty: direct corollary; ledger DS17-3]. A root does not establish existence of a corresponding sample sequence.
+
+<div class="theorem" markdown="1">
+<div class="box-title" markdown="span">Theorem 10 — conditional centering empties the margin-certified branch</div>
+
+Let \(P\) be atomless, in class (L), with \(\mathbb E S=0\), \(\mathbb E\|S\|^2<\infty\), \(I\succ0\). (Population) Every root-consistent strip rule has \(I_{q,\lambda\lambda}=0\), at every tilt and every \(K\ge2\); equivalently no regular tilt-consistent strip rule exists, and no full-rank bounded-packet stationary rule has pairwise-distinct projected centroids. (Empirical) If (M4) also holds, then almost surely, for every rational \(\kappa,c_0,\gamma>0\) there is \(N_0<\infty\) such that for all \(N\ge N_0\) no one-point exchange-stable \(K\)-cell labeling of the sample satisfies (M2)+(M3)+(M5) at \((c_0,\kappa,\gamma)\). [novelty: apparently new; ledger DS17-1]
+
+</div>
+
+No direct precedent was found for the compound statement; its ingredients are efficient-score orthogonality [42], Chebyshev's covariance inequality [59], and self-consistency [57]. Proof in Appendix C: conditionally on \(\hat s\) an association inequality signs \(\mathbb E[h(T_\beta)S_\lambda\mid\hat s]\), (L) kills the product of conditional means, and a root forces \(\hat s\)-measurable cells with zero nuisance means.
+
+Gaussian and atomless elliptical laws satisfy (L) and (M4).
+
+What remains when (M5) is dropped is a merged branch. On atomless laws with tie-nullity and linear conditional means, a bounded-packet stationary \(q\) with \(I_q\succ0\) has non-distinct projected centroids; merging coincident groups yields a \(T_{B_q^*}\)-interval rule with at most \(K-1\) cells, vanishing nuisance margin and \(\Phi_s(q)\le v_K\); on \(N(0,I_2)\) the sign-split family is stationary with \(\lambda_{\min}\) up to \(1/\pi\), so the class defining \(v^*(\kappa)\) is nonempty for \(\kappa\le1/\pi\) [57], [60], [61], [62] (Proposition C.5) [novelty: known; ledger DS17-2].
+
+An exact 8-atom \(K=3\) sign-split rule shows margins surviving only as wasted cells (fixture G11) [novelty: adaptation; ledger DS17-7]; the \(N=K=3\) boundary is the algebraic minimum (fixture G12) [novelty: direct corollary; ledger DS17-8]. Off (L) the gate is a diagnostic only: scans found no gate-admissible root on eight (L)-laws, while a non-centered control had one root matching the efficient interval optimum, so a margin may cost little on a particular law [novelty: unresolved; ledger DS17-4].
+
+All four statements were independently re-derived under these hypotheses [42], [59], [60], [57], [62] [novelty: known; ledger DS17-6].
 
 For \(\beta\in\mathbb R\) write \(T_\beta=S_\psi-\beta S_\lambda\); a strip rule at tilt \(\beta\) is a \(K\)-cell interval partition of \(T_\beta\) with positive masses. Neither (S) nor (R) is assumed in this subsection; (L) is the population condition of Appendix C.7 and is not, and does not authorize, centering of sample rows.
 
@@ -1262,37 +1564,81 @@ For any partition \(q\) with masses \(W_b>0\), centroids \((\mu_{\psi,b},\mu_{\l
 \sum_bW_bt_b\mu_{\lambda,b}=I_{\psi\lambda}(q)-\beta I_{\lambda\lambda}(q),
 \tag{C.13}
 \]
-so \(B^*(I_q)-\beta\) is the left side divided by \(I_{\lambda\lambda}(q)\) whenever that block is positive, and only the numerator identity is meaningful when it is zero. For a strip rule the numerator is \(\mathbb E[h(T_\beta)S_\lambda]\) with \(h\) the non-decreasing step function of cell means; regular self-consistency decomposes into Lloyd stationarity of the cuts for \(\operatorname{law}(T_\beta)\) plus the root equation \(\mathbb E[h(T_\beta)S_\lambda]=0\). Necessity only: for any atomless law with (M4), inhabitation of the full margin triple at \((\kappa,c_0,\gamma)\) by exchange-stable sequences requires a population root with \(|\beta|\le2M/\kappa\), \(\lambda_{\min}(I_q)\ge\kappa\), masses \(\ge c_0\), and \(t\)-mean separation \(\ge\gamma\) [57][58][59]. [novelty: direct corollary; ledger DS17-3]
+so \(B^*(I_q)-\beta\) is the left side divided by \(I_{\lambda\lambda}(q)\) whenever that block is positive, and only the numerator identity is meaningful when it is zero. For a strip rule the numerator is \(\mathbb E[h(T_\beta)S_\lambda]\) with \(h\) the non-decreasing step function of cell means; regular self-consistency decomposes into Lloyd stationarity of the cuts for \(\operatorname{law}(T_\beta)\) plus the root equation \(\mathbb E[h(T_\beta)S_\lambda]=0\).
+
+Necessity only: for any atomless law with (M4), inhabitation of the full margin triple at \((\kappa,c_0,\gamma)\) by exchange-stable sequences requires a population root with \(|\beta|\le2M/\kappa\), \(\lambda_{\min}(I_q)\ge\kappa\), masses \(\ge c_0\), and \(t\)-mean separation \(\ge\gamma\) [57][58][59]. [novelty: direct corollary; ledger DS17-3]
 
 </div>
 
-This is routine algebra from the normal equation of Lemma 4 and Lloyd self-consistency [57], with the scalar interval asymptotics of [58] and the covariance equality of [59] as comparators. A root never implies empirical inhabitation; the scan window must be tied to a declared \(\kappa\); finite root searches are probes, not decisions or uniqueness proofs.
+This is routine algebra from the normal equation of Lemma 4 and Lloyd self-consistency [57], with the scalar interval asymptotics of [58] and the covariance equality of [59] as comparators. A root does not establish existence of a corresponding sample sequence; the scan window must be tied to a declared \(\kappa\); finite root searches are probes, not decisions or uniqueness proofs.
 
-Theorem 10 (§5) states, for \(P\) atomless, in class (L), with \(\mathbb E S=0\), \(\mathbb E\|S\|^2<\infty\), \(I\succ0\): (Population) every root-consistent strip rule has \(I_{q,\lambda\lambda}=0\), at every tilt and every \(K\ge2\); equivalently no regular tilt-consistent strip rule exists, and no full-rank bounded-packet stationary rule has pairwise-distinct projected centroids; (Empirical) if (M4) also holds, then almost surely, for every rational \(\kappa,c_0,\gamma>0\) there is \(N_0<\infty\) such that for all \(N\ge N_0\) no one-point exchange-stable \(K\)-cell labeling of the sample satisfies (M2)+(M3)+(M5) at \((c_0,\kappa,\gamma)\). [novelty: apparently new; ledger DS17-1]
+We found no direct precedent for the compound statement; its ingredients are efficient-score orthogonality [42], the equality case of Chebyshev's covariance inequality [59], and self-consistency [57]. *Proof sketch of Theorem 10.* With \(\delta=\beta-B^*\), \(x\mapsto h(\hat s-\delta x)\) is monotone, so conditionally on \(\hat s\) the association inequality gives \(\mathbb E[h(T_\beta)S_\lambda\mid\hat s]\le0\) (or \(\ge0\)), with (L) killing the product of conditional means; a root forces equality, hence \(h(T_\beta)\) a.s. constant given \(\hat s\), hence \(\hat s\)-measurable cells and zero cell nuisance means.
 
-We found no direct precedent for the compound statement; its ingredients are efficient-score orthogonality [42], the equality case of Chebyshev's covariance inequality [59], and self-consistency [57]. *Proof sketch of Theorem 10.* With \(\delta=\beta-B^*\), \(x\mapsto h(\hat s-\delta x)\) is monotone, so conditionally on \(\hat s\) the association inequality gives \(\mathbb E[h(T_\beta)S_\lambda\mid\hat s]\le0\) (or \(\ge0\)), with (L) killing the product of conditional means; a root forces equality, hence \(h(T_\beta)\) a.s. constant given \(\hat s\), hence \(\hat s\)-measurable cells and zero cell nuisance means. The root equation is valid at a singular nuisance block; \(B^*(I_q)=\beta\) needs \(I_{\lambda\lambda}>0\). The empirical half runs Theorem 7 pathwise on one selection-independent event (its uniform laws are over fixed classes) and uses its self-consistency identification, not bare Theorem 5, to exclude coincident centroids under (M5); at \(d_\psi=1\) the limit is a genuinely tilt-consistent strip rule, contradicting the population half. Registry: `DS-STABLE-BASINS-CENTERED-OBSTRUCTION`. \(\square\) Jointly Gaussian and atomless elliptical laws satisfy (L) and (M4), so the canonical law is covered; the population statement is about the law and never a permission to center samples.
+The root equation is valid at a singular nuisance block; \(B^*(I_q)=\beta\) needs \(I_{\lambda\lambda}>0\). The empirical half runs Theorem 7 pathwise on one selection-independent event (its uniform laws are over fixed classes) and uses its self-consistency identification, not bare Theorem 5, to exclude coincident centroids under (M5); at \(d_\psi=1\) the limit is a genuinely tilt-consistent strip rule, contradicting the population half.
+
+Registry: `DS-STABLE-BASINS-CENTERED-OBSTRUCTION`. \(\square\) Jointly Gaussian and atomless elliptical laws satisfy (L) and (M4), so the canonical law is covered; the population statement is about the law and never a permission to center samples.
 
 <div class="proposition" markdown="1">
 <div class="box-title" markdown="span">Proposition C.5 — merged branch on linear-conditional-mean laws</div>
 
-Let \(P\) be atomless with tie-nullity and linear conditional means on the relevant tilt range, and let \(q\) be bounded-packet stationary with \(W_b>0\), \(I_q\succ0\) ((M5) dropped). Then (1) the projected centroids are not pairwise distinct; (2) the reduced rule obtained by merging coincident groups is a genuine \(T_{B_q^*}\)-interval rule with \(K'\le K-1\) cells and \(\operatorname{rank}(I_{\rm reduced})\le1\), so its nuisance margin vanishes; (3) \(\Phi(q)\) equals the between-value of \(e_q(S)=S_\psi-B_q^*S_\lambda\) on the reduced intervals, at most \(v_K\); (4) on \(N(0,I_2)\) the sign-split family (threshold cell \(\{S_\psi\ge0\}\) plus any nontrivial nuisance-measurable split of the left half) is stationary with \(B_q^*=0\), value exactly \(2/\pi\) for every member and \(\lambda_{\min}\) up to \(1/\pi\), so the population class \(\{\lambda_{\min}(I_q)\ge\kappa\}\) defining \(v^*(\kappa)\) is nonempty for \(\kappa\le1/\pi\). Under bare (L) only (1) is asserted [57][60][61][62]. [novelty: known; ledger DS17-2]
+Let \(P\) be atomless with tie-nullity and linear conditional means on the relevant tilt range, and let \(q\) be bounded-packet stationary with \(W_b>0\), \(I_q\succ0\) ((M5) dropped). Then (1) the projected centroids are not pairwise distinct; (2) the reduced rule obtained by merging coincident groups is a genuine \(T_{B_q^*}\)-interval rule with \(K'\le K-1\) cells and \(\operatorname{rank}(I_{\rm reduced})\le1\), so its nuisance margin vanishes; (3) \(\Phi(q)\) equals the between-value of \(e_q(S)=S_\psi-B_q^*S_\lambda\) on the reduced intervals, at most \(v_K\); (4) on \(N(0,I_2)\) the sign-split family (threshold cell \(\{S_\psi\ge0\}\) plus any nontrivial nuisance-measurable split of the left half) is stationary with \(B_q^*=0\), value exactly \(2/\pi\) for every member and \(\lambda_{\min}\) up to \(1/\pi\), so the population class \(\{\lambda_{\min}(I_q)\ge\kappa\}\) defining \(v^*(\kappa)\) is nonempty for \(\kappa\le1/\pi\).
+
+Under bare (L) only (1) is asserted [57][60][61][62]. [novelty: known; ledger DS17-2]
 
 </div>
 
-The non-distinct-centroid conclusion overlaps the self-consistency-to-eigenspace theorems of Tarpey and Flury [57][60], the term originating with Hastie and Stuetzle [61] and extended beyond elliptical laws by [62]; the profiled rank and value conclusions are project-level and scoped to linear conditional means. Nonemptiness proves neither attainment nor continuity of \(v^*(\kappa)\); the loss \(v_3-v_2\approx0.1732\) of the explicit Gaussian family is numerical, not universal. Registry: `DS-STABLE-BASINS-LCM-CLASSIFICATION`.
+The non-distinct-centroid conclusion overlaps the self-consistency-to-eigenspace theorems of Tarpey and Flury [57][60], the term originating with Hastie and Stuetzle [61] and extended beyond elliptical laws by [62]; the profiled rank and value conclusions are project-level and scoped to linear conditional means. Nonemptiness proves neither attainment nor continuity of \(v^*(\kappa)\); the loss \(v_3-v_2\approx0.1732\) of the explicit Gaussian family is numerical, not universal.
+
+Registry: `DS-STABLE-BASINS-LCM-CLASSIFICATION`.
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">Sign-split boundaries: (M5) is load-bearing (fixtures G11 and G12)</div>
 
 Fixture G11 (`CE-DS-LCM-SIGNSPLIT-MARGIN-001`): the exact 8-atom \(K=3\) sign-split sibling of the wasted-cell law of Appendix C.4, stationary with \(I_q=\operatorname{diag}(4,9/8)\), coincident projected centroids \((-2,-2,2)\), value \(4\) equal to the \(K'=2\) group between-value, and a merged rule with zero nuisance block: margins that survive only as wasted cells and never yield an inductive rule; its population version lives on \(N(0,I_2)\) with value \(2/\pi\). [novelty: adaptation; ledger DS17-7]
 
-Fixture G12 (`CE-DS-LCM-SIGNSPLIT-MINIMAL-001`): the support-minimal \(N=K=3\) atomic boundary with the same mechanism; (M4) and (M5) fail and stability is vacuous on singleton atoms. It refutes nothing and is cited only as the algebraic wasted-cell minimum. [novelty: direct corollary; ledger DS17-8]
+Fixture G12 (`CE-DS-LCM-SIGNSPLIT-MINIMAL-001`): the support-minimal \(N=K=3\) atomic boundary with the same mechanism; (M4) and (M5) fail and stability is vacuous on singleton atoms. It refutes nothing and is cited only as the algebraic wasted-cell minimum.
+
+[novelty: direct corollary; ledger DS17-8]
 
 </div>
 
-The first witness is a self-consistent configuration in the sense of [57]. Off class (L) the gate of Lemma C.4 is a necessary diagnostic only. Measured scans (`DS-STABLE-BASINS-GATE-SCANS`) found no gate-admissible root on eight (L)-laws in three structural families within \(\beta\in[-2.5,2.5]\) and at most three tracked Lloyd branches, windowed finite-search evidence rather than proof; on the non-centered control one root was found, at \(\beta=0\) with cuts \(\pm1.00476\), \(\lambda_{\min}\approx1.7364\), and value equal to the efficient interval optimum to the reported tolerance, so a margin may have negligible price on a particular law. Nothing here asserts free certification off (L). [novelty: unresolved; ledger DS17-4] The comparators are [58][62]. Two academic remainders are open (OP30, `OPEN-DS-STABLE-BASINS`): whether ordinary exchange-stable sequences can track (M5)-free wasted-cell configurations, and whether \(v^*(\kappa)\) and \(v^{*+}(\kappa)\) are attained or one-sided continuous under their distinct conventions. [novelty: unresolved; ledger DS17-5] The audit `AUDIT-DS-STABLE-BASINS` hardened all four statements of this subsection, separated the root equation from regular tilt consistency, narrowed the linear-conditional-mean scope, and added the three-atom boundary; it is cited as verification only [42][59][60][57][62]. [novelty: known; ledger DS17-6]
+The first witness is a self-consistent configuration in the sense of [57]. Off class (L) the gate of Lemma C.4 is a necessary diagnostic only. Measured scans (`DS-STABLE-BASINS-GATE-SCANS`) found no gate-admissible root on eight (L)-laws in three structural families within \(\beta\in[-2.5,2.5]\) and at most three tracked Lloyd branches, windowed finite-search evidence rather than proof; on the non-centered control one root was found, at \(\beta=0\) with cuts \(\pm1.00476\), \(\lambda_{\min}\approx1.7364\), and value equal to the efficient interval optimum to the reported tolerance, so a margin may have negligible price on a particular law.
+
+Nothing here asserts free certification off (L). [novelty: unresolved; ledger DS17-4] The comparators are [58][62]. Two questions remain open (OP30, `OPEN-DS-STABLE-BASINS`): whether ordinary exchange-stable sequences can track (M5)-free wasted-cell configurations, and whether \(v^*(\kappa)\) and \(v^{*+}(\kappa)\) are attained or one-sided continuous under their distinct conventions.
+
+[novelty: unresolved; ledger DS17-5] The audit `AUDIT-DS-STABLE-BASINS` hardened all four statements of this subsection, separated the root equation from regular tilt consistency, narrowed the linear-conditional-mean scope, and added the three-atom boundary; it is cited as verification only [42][59][60][57][62]. [novelty: known; ledger DS17-6]
+
+<a id="appendix-c10"></a>
 
 ### C.10 The off-class law: proof of Theorem 11 and boundary fixtures
+
+Two gaps remain off class (L): a regular root with fixed margins, and an empirical sequence inhabiting it. Both close on one law. Let \(X,Z\) be i.i.d. uniform on \([-1,1]\) and
+\[
+S_\psi=X,\qquad S_\lambda=3X^2-1+Z,\qquad
+I_{\rm full}=\operatorname{diag}(1/3,\,17/15),\qquad B^*=0,\qquad \hat s=X .
+\tag{5.7}
+\]
+The law is atomless, bounded, satisfies (M4), and lies outside (L) since \(\mathbb E[S_\lambda\mid\hat s]=3X^2-1\).
+
+Let \(q^*\) be the three-cell \(X\)-interval rule with cuts \(\pm1/3\),
+\[
+I_{q^*}=\operatorname{diag}(8/27,\,32/81),\qquad \Phi_s(q^*)=8/27,\qquad \eta_{D_s}=8/9 .
+\tag{5.8}
+\]
+Lloyd-stationary for \(T_0=X\), it is a regular root at \(\beta=0\) with margins \((1/3,\,8/27,\,2/3)\).
+
+<div class="theorem" markdown="1">
+<div class="box-title" markdown="span">Theorem 11 — exact off-class global basin and empirical transfer through global optima</div>
+
+(1) Among all measurable three-cell quantizers of (5.7), \(q^*\) is the unique population \(D_s\) maximizer, almost surely up to labels and null sets, and it is strictly isolated: for every \(\varepsilon>0\) there is \(\delta(\varepsilon)>0\) with \(\min_\pi\sum_bP(A_b\triangle A^*_{\pi(b)})\ge\varepsilon\Rightarrow\Phi_s(q)\le8/27-\delta(\varepsilon)\). (2) For i.i.d. equal-weight samples without sample centering, on one selection-independent probability-one event, every sequence \(z^{(N)}\) of exact global maximizers of in-bin profiled \(D_s\) over labelings with three nonempty cells satisfies, after relabeling, \(P_N(z^{(N)}\ne q^*)\to0\), \(\hat I_N\to I_{q^*}\), \(\hat\Phi_s\to8/27\), at the computable rate \(P_N(z^{(N)}\ne q^*)\le3\Delta_N/\eta+P_N(|X\mp1/3|\le\eta)\) with \(\Delta_N=\hat v_{3,N}-\hat\Phi_s(z^*_N)\); every such optimum is exact ordinary one-point exchange-stable under the in-bin feasibility convention, and satisfies (M2)+(M3)+(M5) at \((1/4,1/4,1/2)\) eventually, with (M3) read as \(\lambda_{\min}(\hat I_N)\ge\kappa\). [novelty: adaptation; ledger DS18-1]
+
+</div>
+
+Uniqueness and isolation rest on [31], [32], consistency on Pollard [12], rigidity on [56], one-point stability on [8]. Proof in Appendix C: \(\Phi_s(q)\le I_{\psi\psi}(q)\le v_3=8/27\) under both conventions, equality forcing the codebook \(\{-2/3,0,2/3\}\), and empirically the uncentered sandwich squeezes every global optimum.
+
+It is existential through exact global optimizers: it does not prove that exchange ascent finds the basin, and carries no deployment consequence. Two fixtures mark its edges: on a support-minimal \(N=4\) sample the raw \(q^*\) labels admit an improving relocation, so boundary effects at scale \(1/N\) are real, bypassed by global selection [8] (fixture G13) [novelty: direct corollary; ledger DS18-4]; and on four exactly centered rows of the law's support the global regular optimum reaches a nuisance-singular labeling by one relocation, not exchange-stable under the pseudo-inverse domain of Lemma 4 and infeasible in-bin, so the convention must be named (fixture G14) [novelty: apparently new; ledger DS18-5].
+
+We found no direct precedent for this witness. The self-contained proof in Appendix C was independently re-derived [31], [32], [12], [56], [18] [novelty: direct corollary; ledger DS18-3].
 
 Theorem 10 leaves two gaps off class (L): exhibit a regular root with fixed margins, and show that an empirical sequence inhabits it despite boundary-scale one-point gains. Both close on one explicit law. Let \(X,Z\) be i.i.d. uniform on \([-1,1]\) and
 \[
@@ -1300,27 +1646,37 @@ S_\psi=X,\qquad S_\lambda=3X^2-1+Z,\qquad
 I_{\rm full}=\operatorname{diag}(1/3,\,17/15),\qquad B^*=0,\qquad \hat s=X .
 \tag{C.14}
 \]
-The law is atomless, bounded, satisfies (M4) with \(\varphi(t)=\min(1,\sqrt{29}\,t/2)\), and is strictly outside (L) since \(\mathbb E[S_\lambda\mid\hat s]=3X^2-1\). Let \(q^*\) be the three-cell \(X\)-interval rule with cuts \(\pm1/3\): \(W_b=1/3\), \(\mu_{\psi,b}=(-2/3,0,2/3)\), \(\mu_{\lambda,b}=(4/9,-8/9,4/9)\),
+The law is atomless, bounded, satisfies (M4) with \(\varphi(t)=\min(1,\sqrt{29}\,t/2)\), and is strictly outside (L) since \(\mathbb E[S_\lambda\mid\hat s]=3X^2-1\).
+
+Let \(q^*\) be the three-cell \(X\)-interval rule with cuts \(\pm1/3\): \(W_b=1/3\), \(\mu_{\psi,b}=(-2/3,0,2/3)\), \(\mu_{\lambda,b}=(4/9,-8/9,4/9)\),
 \[
 I_{q^*}=\operatorname{diag}(8/27,\,32/81),\qquad \Phi_s(q^*)=8/27,\qquad \eta_{D_s}=8/9 .
 \tag{C.15}
 \]
 It is Lloyd-stationary for \(T_0=X\) with \(I_{\psi\lambda}(q^*)=0\), a regular root of Lemma C.4 at \(\beta=0\), with margins \((1/3,\,8/27,\,2/3)\).
 
-Theorem 11 (§5) states: (1) among all measurable three-cell quantizers of (C.14), \(q^*\) is the unique population \(D_s\) maximizer, almost surely up to labels and null sets, and it is strictly isolated: for every \(\varepsilon>0\) there is \(\delta(\varepsilon)>0\) with \(\min_\pi\sum_bP(A_b\triangle A^*_{\pi(b)})\ge\varepsilon\Rightarrow\Phi_s(q)\le8/27-\delta(\varepsilon)\); (2) for i.i.d. equal-weight samples without sample centering, on one selection-independent probability-one event, every sequence \(z^{(N)}\) of exact global maximizers of in-bin profiled \(D_s\) over labelings with three nonempty cells satisfies, after relabeling, \(P_N(z^{(N)}\ne q^*)\to0\), \(\hat I_N\to I_{q^*}\), \(\hat\Phi_s\to8/27\), at the computable rate \(P_N(z^{(N)}\ne q^*)\le3\Delta_N/\eta+P_N(|X\mp1/3|\le\eta)\) with \(\Delta_N=\hat v_{3,N}-\hat\Phi_s(z^*_N)\); every such optimum is exact ordinary one-point exchange-stable under the in-bin feasibility convention, and satisfies (M2)+(M3)+(M5) at \((1/4,1/4,1/2)\) eventually, with (M3) read as \(\lambda_{\min}(\hat I_N)\ge\kappa\). [novelty: adaptation; ledger DS18-1]
+The scalar uniqueness and isolation rest on Kieffer [31] and Mease–Nair [32] (the three-level uniform optimum has distortion Hessian \(\lambda_{\min}=1/6\)), selection-independent consistency on Pollard [12], rigidity on [56], and the one-point stability notion on [8]. *Proof sketch of Theorem 11.* At \(d_\lambda=1\), \(\Phi_s(q)\le I_{\psi\psi}(q)\le\sum_bW_b\mathbb E[X\mid b]^2\le v_3=8/27\) for arbitrary measurable cells, under both feasibility conventions; equality forces the codebook \(\{-2/3,0,2/3\}\) and nearest-codepoint cells.
 
-The scalar uniqueness and isolation rest on Kieffer [31] and Mease–Nair [32] (the three-level uniform optimum has distortion Hessian \(\lambda_{\min}=1/6\)), selection-independent consistency on Pollard [12], rigidity on [56], and the one-point stability notion on [8]. *Proof sketch of Theorem 11.* At \(d_\lambda=1\), \(\Phi_s(q)\le I_{\psi\psi}(q)\le\sum_bW_b\mathbb E[X\mid b]^2\le v_3=8/27\) for arbitrary measurable cells, under both feasibility conventions; equality forces the codebook \(\{-2/3,0,2/3\}\) and nearest-codepoint cells. Empirically, the fixed-cut labeling attains \(8/27\) in the limit, the uncentered sandwich \(\hat\Phi_s\le\mathrm{btw}_N(X;z)\le\hat v_{3,N}\to8/27\) squeezes every global optimum, and own-codebook excess \(\le\Delta_N\) gives the disagreement bound. Regularity is almost surely vacuous because a zero binned nuisance block forces \(\sum_iS_{\lambda,i}=0\). Registry: `DS-NONCENTERED-GLOBAL-BASIN-TRANSFER`. \(\square\) The theorem is existential through exact global optimizers: it does not prove that raw population labels are finite terminals, that exchange ascent finds the basin, that every root persists, or robustness to law or score estimation, and it carries no deployment consequence.
+Empirically, the fixed-cut labeling attains \(8/27\) in the limit, the uncentered sandwich \(\hat\Phi_s\le\mathrm{btw}_N(X;z)\le\hat v_{3,N}\to8/27\) squeezes every global optimum, and own-codebook excess \(\le\Delta_N\) gives the disagreement bound. Regularity is almost surely vacuous because a zero binned nuisance block forces \(\sum_iS_{\lambda,i}=0\).
+
+Registry: `DS-NONCENTERED-GLOBAL-BASIN-TRANSFER`. \(\square\) The theorem is existential through exact global optimizers: it does not prove that raw population labels are finite terminals, that exchange ascent finds the basin, that every root persists, or robustness to law or score estimation, and it carries no deployment consequence.
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">Boundary fixtures of the transfer: G13 and G14</div>
 
-Fixture G13 (`CE-DS-NONCENTERED-POPULATION-CUT-UNSTABLE-001`): on a support-minimal \(N=4\) sample the raw \(q^*\) labels admit an improving relocation of exact gain \(37/14608\); boundary effects at scale \(1/N\) are real, and Theorem 11 bypasses them by global selection. Precedent for the relocation notion: [8]. [novelty: direct corollary; ledger DS18-4]
+Fixture G13 (`CE-DS-NONCENTERED-POPULATION-CUT-UNSTABLE-001`): on a support-minimal \(N=4\) sample the raw \(q^*\) labels admit an improving relocation of exact gain \(37/14608\); boundary effects at scale \(1/N\) are real, and Theorem 11 bypasses them by global selection. Precedent for the relocation notion: [8].
 
-Fixture G14 (`CE-DS-NONCENTERED-SINGULAR-DESTINATION-001`): on four exactly centered rows of the law's own support, \(X=(-1,0,\tfrac12,\tfrac12)\), \(Z=(-1,1,-\tfrac34,\tfrac14)\), the exact global regular value \(1/12\) is attained twice, and both attainers reach the nuisance-singular labeling by one relocation of pseudo-inverse value \(3/32\), gain \(1/96\); under the pseudo-inverse domain of Lemma 4 no global regular optimum is exchange-stable, under the in-bin convention the move is infeasible. Such tables are null under the law, but the convention must be named. [novelty: apparently new; ledger DS18-5] We found no direct precedent for this witness.
+[novelty: direct corollary; ledger DS18-4]
+
+Fixture G14 (`CE-DS-NONCENTERED-SINGULAR-DESTINATION-001`): on four exactly centered rows of the law's own support, \(X=(-1,0,\tfrac12,\tfrac12)\), \(Z=(-1,1,-\tfrac34,\tfrac14)\), the exact global regular value \(1/12\) is attained twice, and both attainers reach the nuisance-singular labeling by one relocation of pseudo-inverse value \(3/32\), gain \(1/96\); under the pseudo-inverse domain of Lemma 4 no global regular optimum is exchange-stable, under the in-bin convention the move is infeasible. Such tables are null under the law, but the convention must be named.
+
+[novelty: apparently new; ledger DS18-5] We found no direct precedent for this witness.
 
 </div>
 
-The audit `AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER` supplied the self-contained proof (no import of Theorem 8's lemmas, which are registered for class (L)), the explicit event, the finite-\(N\) bound and the exact Hessian, and repaired two attribution defects; verification, not promotion [31][32][12][56][18]. [novelty: direct corollary; ledger DS18-3] The vector-parameter branches of OP29 remain open: uniqueness and rigidity of vector-\(D\) quantization for \(d_\psi>1\), vector-(R) steering for \(d_\lambda\ge2\), always with \(K\ge d_\psi+d_\lambda+1\); the vector dichotomy is not to be inferred from the scalar results of this appendix. [novelty: unresolved; ledger DS18-2]
+The audit `AUDIT-DS-NONCENTERED-GLOBAL-BASIN-TRANSFER` supplied the self-contained proof (no import of Theorem 8's lemmas, which are registered for class (L)), the explicit event, the finite-\(N\) bound and the exact Hessian, and repaired two attribution defects; verification, not promotion [31][32][12][56][18]. [novelty: direct corollary; ledger DS18-3] The vector-parameter branches of OP29 remain open: uniqueness and rigidity of vector-\(D\) quantization for \(d_\psi>1\), vector-(R) steering for \(d_\lambda\ge2\), always with \(K\ge d_\psi+d_\lambda+1\); the vector dichotomy is not to be inferred from the scalar results of this appendix.
+
+[novelty: unresolved; ledger DS18-2]
 
 ## Appendix D. Certified brackets: consistency and complexity
 
@@ -1331,9 +1687,48 @@ V_z(\beta)=\sum_b\frac{\bigl(\sum_{i:z_i=b}w_iT_{\beta i}\bigr)^2}{\sum_{i:z_i=b
 v_K(\beta)=\max_zV_z(\beta),
 \tag{D.1}
 \]
-so that Lemma 4, in the form (C.5), reads \(\Phi^+(z)=\min_\beta V_z(\beta)\). The generalized comparison domain uses the pseudo-inverse value \(\Phi^+\); the ordinary in-bin domain is its subset with nonsingular nuisance block. Let \(g^+=\max_z\Phi^+(z)\), \(g_{\rm reg}\) the in-bin global value, \(d=\min_\beta v_K(\beta)\), and, with \(\mathcal D(\beta)\) the set of labelings optimal at tilt \(\beta\), \(p^+=\max_{\beta,z\in\mathcal D(\beta)}\Phi^+(z)\) and \(p_{\rm reg}\) its regular restriction. By scalar contiguity [43], \(v_K(\beta)\) is the value of the exact interval dynamic programme on the sorted \(T_\beta\).
+so that Lemma 4, in the form (C.5), reads \(\Phi^+(z)=\min_\beta V_z(\beta)\).
+
+The generalized comparison domain uses the pseudo-inverse value \(\Phi^+\); the ordinary in-bin domain is its subset with nonsingular nuisance block. Let \(g^+=\max_z\Phi^+(z)\), \(g_{\rm reg}\) the in-bin global value, \(d=\min_\beta v_K(\beta)\), and, with \(\mathcal D(\beta)\) the set of labelings optimal at tilt \(\beta\), \(p^+=\max_{\beta,z\in\mathcal D(\beta)}\Phi^+(z)\) and \(p_{\rm reg}\) its regular restriction.
+
+By scalar contiguity [43], \(v_K(\beta)\) is the value of the exact interval dynamic programme on the sorted \(T_\beta\).
+
+<a id="appendix-d1"></a>
 
 ### D.1 The bracket and its closure gate: proof sketch of Theorem 12
+
+What can be certified about a finite profiled optimum from the sample alone? By Lemma 4, each labeling has a value obtained by minimizing over nuisance coefficients. The best labeling maximizes these minima; exchanging the two operations gives a dual that is a plain scalar interval problem at each tilt, hence computable, and weak duality makes its value a ceiling.
+
+Take \(d_\psi=1\), a score table with positive rational weights, exactly \(K\) nonempty cells, and moments about the origin. For \(\beta\in\mathbb R^{d_\lambda}\) put
+\[
+T_{\beta i}=s_{\psi i}-\beta s_{\lambda i},\qquad
+V_z(\beta)=\sum_b\frac{\bigl(\sum_{i:z_i=b}w_iT_{\beta i}\bigr)^2}{\sum_{i:z_i=b}w_i},\qquad
+v_K(\beta)=\max_zV_z(\beta),
+\tag{6.1}
+\]
+so Lemma 4 reads \(\Phi^+(z)=\min_\beta V_z(\beta)\). The generalized domain uses \(\Phi^+\), the in-bin domain its subset with nonsingular binned nuisance block; labelings, roots and optima in that subset are called *regular*.
+
+Let \(g^+=\max_z\Phi^+(z)\), \(g_{\rm reg}\) the in-bin global value, \(d=\min_\beta v_K(\beta)\) the dual value (the bare letter \(d\) means this value throughout §6 and Appendix D; dimensions keep their subscripts \(d_\psi,d_\lambda\)), and, with \(\mathcal D(\beta)\) the labelings optimal at tilt \(\beta\), \(p^+=\max_{\beta,z\in\mathcal D(\beta)}\Phi^+(z)\), \(p_{\rm reg}\) its regular restriction. By scalar contiguity [43], \(v_K(\beta)\) is the exact interval dynamic programme on the sorted \(T_\beta\), so the dual is computable.
+
+<div class="theorem" markdown="1">
+<div class="box-title" markdown="span">Theorem 12 — valid two-sided brackets and exact saddle closure</div>
+
+On the generalized domain \(p^+\le g^+\le d\); on the in-bin domain \(p_{\rm reg}\le g_{\rm reg}\le g^+\le d\). The dual \(d\) is attained after quotienting the common nuisance-null directions, and a singular interval-DP state is a generalized but not an in-bin lower bound.
+
+The generalized bracket closes, \(p^+=g^+=d\), iff there are \((\beta^*,z^*)\) with
+\[
+z^*\in\mathcal D(\beta^*),\qquad \beta^*I_{\lambda\lambda}(z^*)=I_{\psi\lambda}(z^*),
+\tag{6.2}
+\]
+a saddle pair; if moreover \(I_{\lambda\lambda}(z^*)\succ0\), (6.2) certifies \(z^*\) as an in-bin global optimum. The gate is set-valued: a closure certificate must exhibit the concrete labeling whose normal equation is checked.
+
+For a supplied rational \(\beta\), \(v_K(\beta)\), one active labeling and the primal values cost \(O(KN)\) rational operations after sorting, tolerating exact ties in every order. [novelty: adaptation; ledger DS19-1]
+
+</div>
+
+The certificate is the partition-side form of design duality [63], [39] on the fixed-partition minimization of [26]; the fixed-tilt evaluation is the classical grouping programme [44], [45], [64], [65]. Proof in Appendix D. The gate applies to a set: an \(N=3\), \(K=2\) table has a closing bracket, yet a deterministic tie policy returns a non-closing member of \(\mathcal D(\beta^*)\) in 362 of 6,688 integer tables (fixture G17) [novelty: direct corollary; ledger DS19-10].
+
+
 
 Theorem 12 (§6) states: on the generalized domain \(p^+\le g^+\le d\); on the in-bin domain \(p_{\rm reg}\le g_{\rm reg}\le g^+\le d\); the dual \(d\) is attained after quotienting the common nuisance-null directions; a singular interval-DP state is a generalized lower bound but not an in-bin lower bound; the generalized bracket closes, \(p^+=g^+=d\), iff there are \((\beta^*,z^*)\) with
 \[
@@ -1342,7 +1737,9 @@ z^*\in\mathcal D(\beta^*),\qquad \beta^*I_{\lambda\lambda}(z^*)=I_{\psi\lambda}(
 \]
 a saddle pair; if moreover \(I_{\lambda\lambda}(z^*)\succ0\), (D.2) certifies \(z^*\) as an in-bin global optimum; the gate is set-valued, so a closure certificate must exhibit the concrete labeling whose normal equation is checked; and for a supplied rational \(\beta\), \(v_K(\beta)\), one active labeling, its exact one-sided derivatives and the primal values cost \(O(KN^2)\) rational operations, \(O(KN)\) after sorting, and tolerate exact ties in every tie order. [novelty: adaptation; ledger DS19-1]
 
-The certificate is the partition-side form of design duality [63][39] built on the fixed-partition minimization of [26]; the fixed-tilt evaluation is the classical one-dimensional grouping programme [44][45], and the parametric-search background is [64][65]. *Proof sketch of Theorem 12.* \(\Phi^+(z)\le V_z(\beta)\le v_K(\beta)\) for every \(z,\beta\); maxima and minimum give weak duality; if \(g^+=d\) then a primal maximizer is optimal at a dual minimizer and the attainment set of Lemma 4 gives (D.2). The tie lemma (each mixed cell's term is convex in the tied mass it receives) makes the interval value tie-order independent. Registry: `DS-TILT-DUAL-CERTIFICATE`. \(\square\) The bracket is weak only: an open reported interval certifies nothing about the gap.
+The certificate is the partition-side form of design duality [63][39] built on the fixed-partition minimization of [26]; the fixed-tilt evaluation is the classical one-dimensional grouping programme [44][45], and the parametric-search background is [64][65]. *Proof sketch of Theorem 12.* \(\Phi^+(z)\le V_z(\beta)\le v_K(\beta)\) for every \(z,\beta\); maxima and minimum give weak duality; if \(g^+=d\) then a primal maximizer is optimal at a dual minimizer and the attainment set of Lemma 4 gives (D.2).
+
+The tie lemma (each mixed cell's term is convex in the tied mass it receives) makes the interval value tie-order independent. Registry: `DS-TILT-DUAL-CERTIFICATE`. \(\square\) An open reported bracket encloses the optimum. Its width alone does not prove a strictly positive optimal primal-dual gap.
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">A reported open bracket is not a gap certificate: fixture G17</div>
@@ -1351,7 +1748,33 @@ Fixture G17 (`CE-DS-TILT-DUAL-TIE-MASK-001`): an \(N=3\), \(K=2\) table with pai
 
 </div>
 
+<a id="appendix-d2"></a>
+
 ### D.2 The bracket is not generically exact
+
+<div class="remark" markdown="1">
+<div class="box-title" markdown="span">Strong duality fails by order one</div>
+
+Minimax interchange fails on the finite nonconvex feasible set [63]; the contribution is the witnesses. On an equal-weight \(N=4\), \(K=3\) table with all six partitions regular, a mixture of two active partition quadratics certifies
+\[
+d-g\ge\frac{105329256}{154014175}>0.68 ,
+\tag{6.3}
+\]
+at \(\beta^*=-8/23\); since \(p^+\le g\), the bracket has at least this gap.
+
+The witness is support-minimal for \(K=3\), and an augmentation family with vanishing added mass keeps the gap \(\Theta(1)\) (fixture G15). [novelty: direct corollary; ledger DS19-2, DS19-8] The support minimum is \(N=3\), \(K=2\), with \(g^+=1/3\), \(d=1/2\); 884 of 2,300 integer tables show gaps (fixture G16).
+
+[novelty: direct corollary; ledger DS19-9]
+
+</div>
+
+The gap falsifies strong duality, not the ceiling; Appendix D records what is computable. On the off-class law (5.7) the \(\beta=0\) interval labeling is almost surely regular eventually with \(\Delta_N\to0\), so the finite-\(N\) bound of Theorem 11 applies [12], [43], [45] (Proposition D.1), a value statement implying neither stability nor deployment [novelty: direct corollary; ledger DS19-3].
+
+Rational bounds on \(d\) of width \(\varepsilon\) cost time polynomial in the input bits and \(\log(1/\varepsilon)\); exact minimization is bit-polynomial at \(d_\lambda=1\) and arithmetically polynomial for fixed \(d_\lambda\ge2\) [65], [45], [64], [66] (Proposition D.2) [novelty: direct corollary; ledger DS19-5]. For \(d_\psi>1\) weak duality persists but the outer log-determinant map need not be quasiconvex, killing convex outer minimization though the upper bound stays valid [26] (fixture G18) [novelty: direct corollary; ledger DS19-4, DS19-11].
+
+The bracket was checked exhaustively over 125,491 partitions [64], [45], [65], [44] [novelty: adaptation; ledger DS19-7].
+
+
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">Strong duality fails by order one: fixtures G15 and G16</div>
@@ -1361,13 +1784,17 @@ Minimax interchange fails on the finite nonconvex feasible set, as expected from
 d-g\ge\frac{105329256}{154014175}>0.68 ,
 \tag{D.3}
 \]
-the exact dual minimum being \(44729/4232\) at \(\beta^*=-8/23\). Since \(p^+\le g\), the primal-dual bracket has at least this gap. The witness is support-minimal for \(K=3\); a positive-weight augmentation family with vanishing added mass keeps the gap bounded below, so it is \(\Theta(1)\). [novelty: direct corollary; ledger DS19-2, DS19-8]
+the exact dual minimum being \(44729/4232\) at \(\beta^*=-8/23\).
+
+Since \(p^+\le g\), the primal-dual bracket has at least this gap. The witness is support-minimal for \(K=3\); a positive-weight augmentation family with vanishing added mass keeps the gap bounded below, so it is \(\Theta(1)\). [novelty: direct corollary; ledger DS19-2, DS19-8]
 
 Fixture G16 (`CE-DS-TILT-DUAL-GAP-002`): the overall support minimum, \(N=3\), \(K=2\), rows \((-1,0),(0,-1),(1,0)\) with equal weights; \(g^+=1/3\) and \(d=1/2\) exactly at \(\beta^*=0\) by the mixture \(\tfrac16\beta^2+\tfrac12\), gap \(1/6\); 884 of 2,300 integer tables show gaps. [novelty: direct corollary; ledger DS19-9]
 
 </div>
 
 Registry: `DS-TILT-DUAL-STRONG-DUALITY-FAILS`. The gap falsifies universal strong duality, not the validity of the ceiling.
+
+<a id="appendix-d3"></a>
 
 ### D.3 Value consistency of the interval programme on the off-class law
 
@@ -1379,22 +1806,32 @@ On the law (C.14) of Appendix C.10 let \(\tilde z_N\) be the exact three-interva
 0\le\Delta_N=\hat v_{3,N}(X)-\hat\Phi_{D_s}(\tilde z_N)=\frac{\hat I_{\psi\lambda}(\tilde z_N)^2}{\hat I_{\lambda\lambda}(\tilde z_N)}\longrightarrow0,
 \tag{D.4}
 \]
-so the finite-\(N\) disagreement bound of Theorem 11 applies to \(\tilde z_N\) [12][43][45]. [novelty: direct corollary; ledger DS19-3]
+so the finite-\(N\) disagreement bound of Theorem 11 applies to \(\tilde z_N\) [12][43][45].
+
+[novelty: direct corollary; ledger DS19-3]
 
 </div>
 
-This follows from Theorem 11 and empirical three-means consistency [12]: the uncentered between-value equals the centered one plus \(\bar x^2\), so \(\tilde z_N\) is the empirical three-means labeling of the \(X_i\) [43][45] and the selection-independent event of Appendix C.10 applies. It is a value statement only: it implies no exchange stability (the interval seed can be unstable, fixture G10), no selection by ascent, no robustness, and no deployment authorization. Verified exactly on dyadic samples up to \(N=4096\). Registry: `DS-STRIP-DP-DELTA-CONSISTENCY`.
+This follows from Theorem 11 and empirical three-means consistency [12]: the uncentered between-value equals the centered one plus \(\bar x^2\), so \(\tilde z_N\) is the empirical three-means labeling of the \(X_i\) [43][45] and the selection-independent event of Appendix C.10 applies. It is a value statement only: it implies no exchange stability (the interval seed can be unstable, fixture G10), no selection by ascent, no robustness, and no deployment authorization.
+
+Verified exactly on dyadic samples up to \(N=4096\). Registry: `DS-STRIP-DP-DELTA-CONSISTENCY`.
+
+<a id="appendix-d4"></a>
 
 ### D.4 Complexity and the multivariate outer problem
 
 <div class="proposition" markdown="1">
 <div class="box-title" markdown="span">Proposition D.2 — what is polynomial</div>
 
-With rational input and a requested rational tolerance \(\varepsilon\), certified rational bounds on \(d\) of width \(\varepsilon\) are computable in time polynomial in the input bits and \(\log(1/\varepsilon)\), by a subgradient separation oracle on the convex map \(v_K\) with an observable coercivity radius and a cutting-plane lower certificate. Exact minimization of \(d\) is polynomial in bit complexity at \(d_\lambda=1\) for every \(K\) (root-separation bisection on the one-sided derivatives; output rational or quadratic-irrational), and polynomial in arithmetic operations for fixed \(d_\lambda\ge2\) with variable \(K\) by parametric search. Exact computation is not described as fixed-\((K,d_\lambda)\) only [65][45][64][66]. [novelty: direct corollary; ledger DS19-5]
+With rational input and a requested rational tolerance \(\varepsilon\), certified rational bounds on \(d\) of width \(\varepsilon\) are computable in time polynomial in the input bits and \(\log(1/\varepsilon)\), by a subgradient separation oracle on the convex map \(v_K\) with an observable coercivity radius and a cutting-plane lower certificate. Exact minimization of \(d\) is polynomial in bit complexity at \(d_\lambda=1\) for every \(K\) (root-separation bisection on the one-sided derivatives; output rational or quadratic-irrational), and polynomial in arithmetic operations for fixed \(d_\lambda\ge2\) with variable \(K\) by parametric search.
+
+Exact computation is not described as fixed-\((K,d_\lambda)\) only [65][45][64][66]. [novelty: direct corollary; ledger DS19-5]
 
 </div>
 
-The fixed-tilt programme is \(O(KN)\) after sorting [45]; the fixed-dimension arithmetic bound is Toledo's [65] building on Megiddo [64]; the warning that the parametric envelope must not be materialized is [66]. Registry: `OPEN-DS-PRACTICAL-CERTIFIED-SOLVER`, an umbrella carrying no independent novelty. What remains is OP31 (`OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY`): a polynomial bit bound for fixed \(d_\lambda\ge2\) with variable \(K\), and any exact statement or hardness obstruction for variable \(d_\lambda\); parametric-envelope lower bounds [67][66] do not transfer automatically to the scalar grouping programme, and Megiddo–Toledo search shows the envelope need not be materialized. [novelty: unresolved; ledger DS19-6]
+The fixed-tilt programme is \(O(KN)\) after sorting [45]; the fixed-dimension arithmetic bound is Toledo's [65] building on Megiddo [64]; the warning that the parametric envelope must not be materialized is [66]. Registry: `OPEN-DS-PRACTICAL-CERTIFIED-SOLVER`, an umbrella carrying no independent novelty.
+
+What remains is OP31 (`OPEN-DS-TILT-DUAL-EXACT-COMPLEXITY`): a polynomial bit bound for fixed \(d_\lambda\ge2\) with variable \(K\), and any exact statement or hardness obstruction for variable \(d_\lambda\); parametric-envelope lower bounds [67][66] do not transfer automatically to the scalar grouping programme, and Megiddo–Toledo search shows the envelope need not be materialized. [novelty: unresolved; ledger DS19-6]
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">The matrix-tilt outer ceiling need not be quasiconvex: fixture G18</div>
@@ -1405,15 +1842,21 @@ f(B)=\log\det(I_2+BB^\top),\qquad
 \det:\ 17,\ 17,\ 25\ \text{at}\ B_0=\operatorname{diag}(4,0),\ B_1=\operatorname{diag}(0,4),\ \tfrac12(B_0+B_1).
 \tag{D.5}
 \]
-The fixed-partition inner value is the minimization of Lemma 4 [26]. [novelty: direct corollary; ledger DS19-4, DS19-11]
+The fixed-partition inner value is the minimization of Lemma 4 [26].
+
+[novelty: direct corollary; ledger DS19-4, DS19-11]
 
 </div>
 
-The witness kills convex or quasiconvex outer minimization only; the ceiling remains valid (680 exact checks), and no approximation follows [26]. Registry: `DS-MATRIX-TILT-NONQUASICONVEX`. The audit `AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER` verified the bracket with hardened assumptions over 125,491 canonical partitions with zero violations, supplied the tie lemma and the \(d_\lambda=1\) bit-polynomial algorithm, and corrected the minimality wording; verification only [64][45][65][44]. [novelty: adaptation; ledger DS19-7]
+The witness rules out the proposed convex or quasiconvex outer optimization. The upper bound remains valid (680 exact checks), but gives no approximation guarantee [26]. Registry: `DS-MATRIX-TILT-NONQUASICONVEX`. The audit `AUDIT-DS-PRACTICAL-CERTIFIED-SOLVER` verified the bracket with hardened assumptions over 125,491 canonical partitions with zero violations, supplied the tie lemma and the \(d_\lambda=1\) bit-polynomial algorithm, and corrected the minimality wording; verification only [64][45][65][44].
+
+[novelty: adaptation; ledger DS19-7]
 
 ## Appendix E. E- and A-optimality
 
 This appendix carries the E and A material summarized in §7. Relocation quantities \(u_a,u_b,\alpha,\beta\) and the rank-two update \(\Delta I=\alpha u_au_a^\top-\beta u_bu_b^\top\) are those of (B.1)–(B.2).
+
+<a id="appendix-e1"></a>
 
 ### E.1 E-optimality: gradient and repeated minimum eigenvalues
 
@@ -1428,20 +1871,34 @@ If the minimum eigenspace has orthonormal basis \(V\in\mathbb R^{d\times r}\), t
 \partial^+\lambda_\min(I)=\{VHV^\top:H\succeq0,\ \operatorname{tr}H=1\}.
 \tag{E.1}
 \]
-The gradient \(vv^\top\) in the simple case and the superdifferential (E.1) at multiplicity are standard convex analysis of \(\lambda_\min\), in the form used by E-optimal design theory [15] [novelty: known; ledger V8-30] (`E-SUPERGRADIENT`). There is no unique metric. More strongly, for a one-point infinitesimal transfer \(\Delta I=aa^\top-bb^\top\),
+The gradient \(vv^\top\) in the simple case and the superdifferential (E.1) at multiplicity are standard convex analysis of \(\lambda_\min\), in the form used by E-optimal design theory [15] [novelty: known; ledger V8-30] (`E-SUPERGRADIENT`). There is no unique metric.
+
+More strongly, for a one-point infinitesimal transfer \(\Delta I=aa^\top-bb^\top\),
 \[
 d\lambda_\min(I;\Delta I)=\lambda_\min\!\left(V^\top\Delta I V\right)\le0
 \]
-whenever \(r\ge2\): the projected update is a difference of two rank-one matrices in \(r\ge2\) dimensions and necessarily has a nonpositive minimum eigenvalue. Thus single-transfer first-order stability can become automatic at the very points where E-optimality equalizes weak directions; this is elementary from (E.1) and the E-equivalence theory of [15] [novelty: direct corollary; ledger V8-31] (`E-REPEATED-EIGEN-DEGENERACY`). A useful global first-order characterization may require a common supergradient satisfying all transfer inequalities simultaneously, in the spirit of E-optimal experimental-design equivalence theory [15], but this remains to be established for the nonconvex quantizer set (`OPEN-E-COMMON-SUPERGRADIENT`; §9).
+whenever \(r\ge2\): the projected update is a difference of two rank-one matrices in \(r\ge2\) dimensions and necessarily has a nonpositive minimum eigenvalue. Thus single-transfer first-order stability can become automatic at the very points where E-optimality equalizes weak directions; this is elementary from (E.1) and the E-equivalence theory of [15] [novelty: direct corollary; ledger V8-31] (`E-REPEATED-EIGEN-DEGENERACY`).
+
+A useful global first-order characterization may require a common supergradient satisfying all transfer inequalities simultaneously, in the spirit of E-optimal experimental-design equivalence theory [15], but this remains to be established for the nonconvex quantizer set (`OPEN-E-COMMON-SUPERGRADIENT`; §10.2).
+
+<a id="appendix-e2"></a>
 
 ### E.2 Finite E assignment and tangent screening
 
-The finite D bridge fails even when the minimum eigenvalue is simple. Exhaustive enumeration on a mean-centered \(N=8,d=2,K=3\) example produces a global E-optimal partition whose own rank-one \(vv^\top\) nearest-cell rule disagrees with a training label; the observed violation margin is approximately \(0.06796\) at a spectral gap of \(0.2748\). Unlike the \(D_s\) witness of Appendix C.1, this witness is floating-point, not exact-rational; it was verified in high precision and is kept as a regression fixture, fixture G19 (`CE-E-GEOMETRY-001`, `E-GLOBAL-GEOMETRY-FAILS`) [novelty: unresolved; ledger V8-33]. At the move level, a positive first-order E margin can correspond to a negative exact eigenvalue change (`E-FIRSTORDER-NOT-FINITE`). Both are presented as witnesses without a novelty claim; no literature search for E criterion-separation examples has been recorded [novelty: unresolved; ledger V8-32]. The reverse direction does admit a safe screening rule from concavity: for any supergradient \(G\),
+The finite D bridge fails even when the minimum eigenvalue is simple. Exhaustive enumeration on a mean-centered \(N=8,d=2,K=3\) example produces a global E-optimal partition whose own rank-one \(vv^\top\) nearest-cell rule disagrees with a training label; the observed violation margin is approximately \(0.06796\) at a spectral gap of \(0.2748\).
+
+Unlike the \(D_s\) witness of Appendix C.1, this witness is floating-point, not exact-rational; it was verified in high precision and is kept as a regression fixture, fixture G19 (`CE-E-GEOMETRY-001`, `E-GLOBAL-GEOMETRY-FAILS`) [novelty: unresolved; ledger V8-33]. At the move level, a positive first-order E margin can correspond to a negative exact eigenvalue change (`E-FIRSTORDER-NOT-FINITE`).
+
+Both are presented as witnesses without a novelty claim; no literature search for E criterion-separation examples has been recorded [novelty: unresolved; ledger V8-32]. The reverse direction does admit a safe screening rule from concavity: for any supergradient \(G\),
 \[
 F_E(I+\Delta I)-F_E(I)\le\operatorname{tr}(G\Delta I)=\alpha\,u_a^\top Gu_a-\beta\,u_b^\top Gu_b.
 \tag{E.2}
 \]
-Therefore a nonpositive weighted tangent gain certifies that the move cannot improve the exact E objective. This is the standard concavity tangent inequality, the discrete form of the sensitivity-function argument of design theory [15]; it holds verbatim for every concave criterion with its own gradient or supergradient, so the same rejection rule screens D moves (the guarded Lloyd remark of Appendix B.6), \(D_s\) moves with \(G_s\), and A moves with \(I^{-2}\) (Appendix E.3), and a state at which every admissible move has nonpositive weighted tangent gain admits no exact improving one-point move [novelty: direct corollary; ledger V8-34] (`E-TANGENT-SCREENING`, `GENERAL-SUPERGRADIENT-SCREENING`, `GENERAL-WEIGHTED-TANGENT-STABILITY`). This makes supergradient screening useful even though it does not identify the exact finite geometry.
+Therefore a nonpositive weighted tangent gain certifies that the move cannot improve the exact E objective.
+
+This is the standard concavity tangent inequality, the discrete form of the sensitivity-function argument of design theory [15]; it holds verbatim for every concave criterion with its own gradient or supergradient, so the same rejection rule screens D moves (the guarded Lloyd remark of Appendix B.6), \(D_s\) moves with \(G_s\), and A moves with \(I^{-2}\) (Appendix E.3), and a state at which every admissible move has nonpositive weighted tangent gain admits no exact improving one-point move [novelty: direct corollary; ledger V8-34] (`E-TANGENT-SCREENING`, `GENERAL-SUPERGRADIENT-SCREENING`, `GENERAL-WEIGHTED-TANGENT-STABILITY`). This makes supergradient screening useful even though it does not identify the exact finite geometry.
+
+<a id="appendix-e3"></a>
 
 ### E.3 A-optimality
 
@@ -1461,16 +1918,22 @@ a \(2\times2\) capacitance identity whose evaluation costs \(O(d^2)\) per candid
 
 </div>
 
-(i) is the Sherman–Morrison–Woodbury identity [68][69] applied to the project's \(\Delta I\), in the rank-update tradition of exchange design [70]: the new inverse is \(H-HU(C^{-1}+U^\top HU)^{-1}U^\top H\), and its trace differs from \(\operatorname{tr}H\) by the displayed \(2\times2\) term, which needs only the two products \(Hu_a\), \(Hu_b\) and their Gram matrix, so a full sweep costs the same order as the \(D\) oracle of Appendix B.1 while the factorization is refreshed once per accepted move. (ii) is single-point exchange on a finite set [24][70][71], with the same zero-tolerance exact gains as the audited \(D\) statement of Appendix B.6. Of the \(D\) hierarchy only "finite global \(\subseteq\) exchange stable" survives for \(A\): termination at a global or Voronoi state is not claimed, and a frozen-metric batch reassignment in the \(I^{-2}\) metric is, as in Appendix B.6, an upper tangent bound rather than a minorizer and must be guarded by exact evaluation. Registry: `A-EXACT-MOVE-ORACLE`, `A-EXCHANGE-TERMINATES`.
+(i) is the Sherman–Morrison–Woodbury identity [68][69] applied to the project's \(\Delta I\), in the rank-update tradition of exchange design [70]: the new inverse is \(H-HU(C^{-1}+U^\top HU)^{-1}U^\top H\), and its trace differs from \(\operatorname{tr}H\) by the displayed \(2\times2\) term, which needs only the two products \(Hu_a\), \(Hu_b\) and their Gram matrix, so a full sweep costs the same order as the \(D\) oracle of Appendix B.1 while the factorization is refreshed once per accepted move. (ii) is single-point exchange on a finite set [24][70][71], with the same zero-tolerance exact gains as the audited \(D\) statement of Appendix B.6. Of the \(D\) hierarchy only "finite global \(\subseteq\) exchange stable" survives for \(A\): termination at a global or Voronoi state is not claimed, and a frozen-metric batch reassignment in the \(I^{-2}\) metric is, as in Appendix B.6, an upper tangent bound rather than a minorizer and must be guarded by exact evaluation.
+
+Registry: `A-EXACT-MOVE-ORACLE`, `A-EXCHANGE-TERMINATES`.
 
 <div class="warning" markdown="1">
 <div class="box-title" markdown="span">The \(D\)-style mechanism fails for \(A\): fixture G20</div>
 
-The implication of Theorem 2, from a first-order \(I^{-2}\) nearest-centroid violation to a positive exact gain, does not hold for \(A\). Fixture G20 (`CE-A-DSTYLE-001`; \(N=6\), \(d=2\), \(K=3\), exact rationals): moving row 2 to cell 0 has \(I^{-2}\) margin \(567/20>0\) and exact \(A\) gain \(-999/250\). The witness is move-level: it is not an exhibited exchange-stable non-Voronoi state. A seeded search (seed 20260828) reported 443 such violating moves. [novelty: unresolved; ledger A2-1, A2-2]
+The implication of Theorem 2, from a first-order \(I^{-2}\) nearest-centroid violation to a positive exact gain, does not hold for \(A\). Fixture G20 (`CE-A-DSTYLE-001`; \(N=6\), \(d=2\), \(K=3\), exact rationals): moving row 2 to cell 0 has \(I^{-2}\) margin \(567/20>0\) and exact \(A\) gain \(-999/250\).
+
+The witness is move-level: it is not an exhibited exchange-stable non-Voronoi state. A seeded search (seed 20260828) reported 443 such violating moves. [novelty: unresolved; ledger A2-1, A2-2]
 
 </div>
 
-Registry: `A-FINITE-GEOMETRY-FAILS`. The second hierarchy inclusion therefore fails, as it does for \(D_s\) (Appendix C.1) and \(E\) (Appendix E.2). No prior-art search is recorded for the \(A\) counterexample, and the count is of moves, not states; the fixture is listed in the catalogue of Appendix G beside the finite \(E\) counterexample.
+Registry: `A-FINITE-GEOMETRY-FAILS`. This refutes the move-level implication used by the D proof. It does not, by itself, refute the exchange-stable-to-Voronoi implication for A. The \(D_s\) and E examples establish the stronger failure directly (Appendices C.1 and E.2).
+
+No prior-art search is recorded for the \(A\) counterexample, and the count is of moves, not states; the fixture is listed in the catalogue of Appendix G beside the finite \(E\) counterexample.
 
 <div class="proposition" markdown="1">
 <div class="box-title" markdown="span">Proposition E.2 — tangent screening for \(A\)</div>
@@ -1479,21 +1942,35 @@ Registry: `A-FINITE-GEOMETRY-FAILS`. The second hierarchy inclusion therefore fa
 
 </div>
 
-This is the concavity of Pukelsheim's matrix mean \(\phi_{-1}\) [15] and Whittle's general concave-criterion viewpoint [38], with the discrete rule a sensitivity-function argument [70]; it is the same rule Appendix E.2 states for \(E\) with a supergradient, the difference being that \(-\operatorname{tr}(I^{-1})\) is differentiable on the cone, so the \(A\) screen is one inequality per candidate with the unique gradient \(I^{-2}\), whereas the nonsmooth \(E\) criterion needs a supergradient choice. Screening rejects only; it does not identify \(A\) geometry, and a screened-in candidate still requires the exact evaluation (E.3). Zero violations in 4,886 measured moves is regression evidence. Registry: `A-TANGENT-SCREENING`.
+This is the concavity of Pukelsheim's matrix mean \(\phi_{-1}\) [15] and Whittle's general concave-criterion viewpoint [38], with the discrete rule a sensitivity-function argument [70]; it is the same rule Appendix E.2 states for \(E\) with a supergradient, the difference being that \(-\operatorname{tr}(I^{-1})\) is differentiable on the cone, so the \(A\) screen is one inequality per candidate with the unique gradient \(I^{-2}\), whereas the nonsmooth \(E\) criterion needs a supergradient choice. Screening rejects only; it does not identify \(A\) geometry, and a screened-in candidate still requires the exact evaluation (E.3).
 
-Two questions are open. OP1 asks which concave criteria admit the finite exchange-to-first-order-geometry implication at all: it is true for \(D\) (Theorem 2), false for \(A\), \(D_s\) and \(E\), while the screening direction holds for all four by concavity; a necessary and sufficient curvature condition, a useful subclass, or an impossibility theorem are equally acceptable answers, and nothing here suggests that \(D\) is the unique such criterion. [novelty: unresolved; ledger A2-3] OP2 asks for an \(A\) analogue of the quantitative violation bound of Proposition 3; no such bound has been derived or disproved. [novelty: unresolved; ledger A4-1] Registry: `OPEN-CRITERION-CHARACTERIZATION`, `OPEN-A-QUANTITATIVE-BOUND`.
+Zero violations in 4,886 measured moves is regression evidence. Registry: `A-TANGENT-SCREENING`.
+
+Two questions are open. OP1 asks which concave criteria admit the finite exchange-to-first-order-geometry implication at all: it is true for \(D\) (Theorem 2) and false for \(D_s\) and \(E\); the A witness refutes the move-level argument, while the screening direction holds for all four by concavity; a necessary and sufficient curvature condition, a useful subclass, or an impossibility theorem are equally acceptable answers, and nothing here suggests that \(D\) is the unique such criterion.
+
+[novelty: unresolved; ledger A2-3] OP2 asks for an \(A\) analogue of the quantitative violation bound of Proposition 3; no such bound has been derived or disproved. [novelty: unresolved; ledger A4-1] Registry: `OPEN-CRITERION-CHARACTERIZATION`, `OPEN-A-QUANTITATIVE-BOUND`.
 
 ## Appendix F. Differentiable quantizers and consistency
 
-This appendix carries the learned-quantizer material summarized in §7: why the hard empirical objective has no ordinary gradient, what is and is not known about population hard geometry, the randomized soft formulation and its gradient, purification, and the restricted-class consistency result.
+This appendix explains soft training and its limits. It gives the randomized information matrix, its gradient, and consistency within a fixed rule family. Section F.6 collects the remaining research questions.
+
+<a id="appendix-f1"></a>
 
 ### F.1 Why hard empirical boundary optimization has no ordinary gradient
 
-Suppose an inductive hard quantizer is parameterized by generators or affine discriminants \(q_\eta\). On a finite dataset, the objective \(F(I_{P_n}(q_\eta))\) is piecewise constant in \(\eta\): as long as no training score crosses a decision boundary, every label and therefore every empirical cell moment remains unchanged. Ordinary gradients are zero almost everywhere and undefined on boundary-crossing surfaces. Consequently, "gradient descent on the hard finite Voronoi objective" is not a useful generic algorithm. This elementary observation is the motivation for soft binning in inference-aware learning [18], [20] [novelty: direct corollary; ledger V8-35] (`HARD-GEOMETRIC-EMPIRICAL-PIECEWISE-CONSTANT`).
+Suppose an inductive hard quantizer is parameterized by generators or affine discriminants \(q_\eta\). On a finite dataset, the objective \(F(I_{P_n}(q_\eta))\) is piecewise constant in \(\eta\): as long as no training score crosses a decision boundary, every label and therefore every empirical cell moment remains unchanged.
+
+Ordinary gradients are zero almost everywhere and undefined on boundary-crossing surfaces. Consequently, "gradient descent on the hard finite Voronoi objective" is not a useful generic algorithm. This elementary observation is the motivation for soft binning in inference-aware learning [18], [20] [novelty: direct corollary; ledger V8-35] (`HARD-GEOMETRIC-EMPIRICAL-PIECEWISE-CONSTANT`).
+
+<a id="appendix-f2"></a>
 
 ### F.2 Population hard geometry
 
-For an absolutely continuous population law, moving a boundary changes positive probability mass and shape derivatives can exist. Classical centroidal Voronoi energies have such a theory [13] and Lloyd convergence has been studied under explicit assumptions [14]. For the present D, \(D_s\), A, and E information objectives, however, a complete theorem giving differentiability with respect to moving generators and convergence to local optima has not been established; the exact population stationarity characterization for \(D_s\) in Theorem 5 is a first-order condition, not such a theorem [novelty: known; ledger V8-36]. Even in smooth nonconvex optimization, first-order methods generically guarantee convergence toward stationary points, not toward a local maximum without additional second-order structure.
+For an absolutely continuous population law, moving a boundary changes positive probability mass and shape derivatives can exist. Classical centroidal Voronoi energies have such a theory [13] and Lloyd convergence has been studied under explicit assumptions [14].
+
+For the present D, \(D_s\), A, and E information objectives, however, a complete theorem giving differentiability with respect to moving generators and convergence to local optima has not been established; the exact population stationarity characterization for \(D_s\) in Theorem 5 is a first-order condition, not such a theorem [novelty: known; ledger V8-36]. Even in smooth nonconvex optimization, first-order methods generically guarantee convergence toward stationary points, not toward a local maximum without additional second-order structure.
+
+<a id="appendix-f3"></a>
 
 ### F.3 Randomized soft quantizers
 
@@ -1504,23 +1981,37 @@ m_b=\sum_iw_ir_{ib}s_i,\qquad
 I_\mathrm{soft}=\sum_b\frac{m_bm_b^\top}{W_b}.
 \tag{F.1}
 \]
-This matrix is not merely a numerical surrogate: provided the randomization rule is held fixed with respect to \(\theta\), it is exactly the Fisher information of the corresponding randomized quantizer at the reference parameter, by the retained-information identity of §3 applied to the randomized label. Soft histograms of the INFERNO type [18], [20] are the applied precedent, and the identity is the randomized form of the geometric characterization in [3] [novelty: direct corollary; ledger V8-37] (`SOFT-RANDOMIZED-FIM`). For differentiable \(F\) with \(G=\nabla F(I_\mathrm{soft})\),
+This matrix is not merely a numerical surrogate: provided the randomization rule is held fixed with respect to \(\theta\), it is exactly the Fisher information of the corresponding randomized quantizer at the reference parameter, by the retained-information identity of §3 applied to the randomized label.
+
+Soft histograms of the INFERNO type [18], [20] are the applied precedent, and the identity is the randomized form of the geometric characterization in [3] [novelty: direct corollary; ledger V8-37] (`SOFT-RANDOMIZED-FIM`). For differentiable \(F\) with \(G=\nabla F(I_\mathrm{soft})\),
 \[
 \frac{\partial F}{\partial r_{ib}}=w_i\left(2s_i^\top G\mu_b-\mu_b^\top G\mu_b\right).
 \tag{F.2}
 \]
-Up to the bin-independent term \(w_is_i^\top Gs_i\), this is the negative squared \(G\)-distance to the cell centroid. Thus the same affine/Mahalanobis geometry appears directly in the gradient of the soft information objective. Equation (F.2) is the chain rule applied to (F.1), as in differentiable inference-aware binning [18] [novelty: direct corollary; ledger V8-38] (`SOFT-ASSIGNMENT-GRADIENT`).
+Up to the bin-independent term \(w_is_i^\top Gs_i\), this is the negative squared \(G\)-distance to the cell centroid.
+
+Thus the same affine/Mahalanobis geometry appears directly in the gradient of the soft information objective. Equation (F.2) is the chain rule applied to (F.1), as in differentiable inference-aware binning [18] [novelty: direct corollary; ledger V8-38] (`SOFT-ASSIGNMENT-GRADIENT`).
 
 A useful inductive family is
 \[
 r_b(s;\eta,\tau)=\operatorname{softmax}_b\!\left(\frac{a_b^\top s+c_b}{\tau}\right),
 \tag{F.3}
 \]
-which approaches a hard affine-max partition as \(\tau\to0\) when ties have zero mass. A softened common-metric Voronoi family is another option. Fixed-temperature D and \(D_s\) objectives are smooth on compact regions bounded away from empty cells and singular information matrices; line-search gradient ascent or quasi-Newton methods can then be made monotone and standard nonconvex theory gives convergence of gradient norms toward zero. This is a stationary-point guarantee, not a generic guarantee of a hard local optimum; it is the standard situation for inference-aware soft categorization [18] and standard nonconvex optimization theory [novelty: known; ledger V8-39] (`SOFT-FIXED-TEMP-STATIONARY`). When stationary points of the softened family converge to hard stationary partitions as \(\tau\to0\) remains open (`OPEN-SOFT-HARD-ZEROTEMP`; §10). For E, one must use subgradients or a smooth spectral approximation near eigenvalue crossings and re-evaluate the exact hard E objective after hardening.
+which approaches a hard affine-max partition as \(\tau\to0\) when ties have zero mass. A softened common-metric Voronoi family is another option. Fixed-temperature D and \(D_s\) objectives are smooth on compact regions bounded away from empty cells and singular information matrices; line-search gradient ascent or quasi-Newton methods can then be made monotone and standard nonconvex theory gives convergence of gradient norms toward zero.
+
+This is a stationary-point guarantee, not a generic guarantee of a hard local optimum; it is the standard situation for inference-aware soft categorization [18] and standard nonconvex optimization theory [novelty: known; ledger V8-39] (`SOFT-FIXED-TEMP-STATIONARY`). When stationary points of the softened family converge to hard stationary partitions as \(\tau\to0\) remains open (`OPEN-SOFT-HARD-ZEROTEMP`; §10).
+
+For E, one must use subgradients or a smooth spectral approximation near eigenvalue crossings and re-evaluate the exact hard E objective after hardening.
+
+<a id="appendix-f4"></a>
 
 ### F.4 Randomization and purification
 
-For an atomless score law \(P_S\), the Dvoretzky–Wald–Wolfowitz theorem implies that every randomized \(K\)-action quantizer can be replaced by a deterministic score-space quantizer preserving all \((W_b,m_b)\) exactly [10], [11] [novelty: known; ledger V8-28] (`DWW-PURIFICATION-MOMENTS`). Therefore soft randomization does not improve the *population optimum value* for any criterion depending only on these moments. This is an existence statement, not an optimization guarantee: it neither says that gradient ascent finds the optimum nor that hardening a particular soft parameterization produces the purifying partition. Finite empirical score laws are atomic and lie outside this exact purification result; whether splitting an atom among labels can strictly improve the objective over every deterministic hard quantizer is open (`OPEN-ATOMIC-RANDOMIZATION-GAP`; §9).
+For an atomless score law \(P_S\), the Dvoretzky–Wald–Wolfowitz theorem implies that every randomized \(K\)-action quantizer can be replaced by a deterministic score-space quantizer preserving all \((W_b,m_b)\) exactly [10], [11] [novelty: known; ledger V8-28] (`DWW-PURIFICATION-MOMENTS`). Therefore soft randomization does not improve the *population optimum value* for any criterion depending only on these moments.
+
+This is an existence statement, not an optimization guarantee: it neither says that gradient ascent finds the optimum nor that hardening a particular soft parameterization produces the purifying partition. Finite empirical score laws are atomic and lie outside this exact purification result; whether splitting an atom among labels can strictly improve the objective over every deterministic hard quantizer is open (`OPEN-ATOMIC-RANDOMIZATION-GAP`; §10.2).
+
+<a id="appendix-f5"></a>
 
 ### F.5 From finite training to population quantization
 
@@ -1529,15 +2020,38 @@ Population stationarity describes the geometry of an ideal optimum; it does not 
 <div class="proposition" markdown="1">
 <div class="box-title" markdown="span">Proposition F.1 — restricted-class empirical consistency</div>
 
-Let \(\mathcal Q\) be a compact parameterized class of \(K\)-cell affine-max quantizers. Assume scores are bounded, or satisfy sufficient uniform integrability conditions; assume the relevant cell masses are uniformly bounded below over \(\mathcal Q\); and restrict to a region where the information matrices required by the chosen criterion remain uniformly nonsingular, with a uniform conditioning margin \(\lambda_\min\ge\kappa>0\). Then the empirical cell probabilities and score first moments converge uniformly to their population counterparts over \(\mathcal Q\). Consequently D, \(D_s\), A, and E objectives converge uniformly on that regular subset. Any sequence of approximate empirical maximizers is therefore value-consistent for the best quantizer in \(\mathcal Q\); with an isolated population maximizer, the usual argmax theorem yields parameter/decision consistency up to label permutations. [novelty: adaptation; ledger V8-40]
+Let \(\mathcal Q\) be a compact parameterized class of \(K\)-cell affine-max quantizers. Assume scores are bounded, or satisfy sufficient uniform integrability conditions; assume the relevant cell masses are uniformly bounded below over \(\mathcal Q\); and restrict to a region where the information matrices required by the chosen criterion remain uniformly nonsingular, with a uniform conditioning margin \(\lambda_\min\ge\kappa>0\).
+
+Then the empirical cell probabilities and score first moments converge uniformly to their population counterparts over \(\mathcal Q\). Consequently D, \(D_s\), A, and E objectives converge uniformly on that regular subset. Any sequence of approximate empirical maximizers is therefore value-consistent for the best quantizer in \(\mathcal Q\); with an isolated population maximizer, the usual argmax theorem yields parameter/decision consistency up to label permutations.
+
+[novelty: adaptation; ledger V8-40]
 
 </div>
 
 *Proof sketch.* The proof is standard empirical-process theory: affine multiclass decision regions have finite capacity, so the indicator classes for the cells satisfy a uniform law of large numbers; bounded score coordinates give the same for \(s_j1_{\{q(s)=b\}}\); and the matrix criteria are continuous away from singular boundaries (`CONSISTENCY-RESTRICTED-AFFINE`). This is analogous in role, though not identical in objective, to Pollard's consistency analysis for \(k\)-means [12]; the need for an explicit mass margin echoes the constraint-restored consistency of Blanchard, Jaffe, and Zhivotovskiy [54]. \(\square\)
 
-For D, Theorem 2 makes the relationship to unrestricted finite assignment unusually favorable because every global finite optimum on merged atoms is already self-consistent geometric; whether unrestricted empirical global D optima converge in value and decision to population D quantizers nevertheless remains open, as does the convergence of exchange-stable D solutions to the population stationary set (`OPEN-D-UNRESTRICTED-CONSISTENCY`, `OPEN-D-EXCHANGE-CONSISTENCY`). For \(D_s\), A, and E, the exact finite counterexamples show that no identical finite reduction is available. For \(D_s\) the unrestricted question is now answered on one class and remains open elsewhere. On conditionally centered laws with \(d_\psi=d_\lambda=1\) and \(K\ge d_\lambda+2\), Theorems 8–10 show that unrestricted global finite \(D_s\) optima converge in value to the unrestricted supremum \(v_K\) and, along any value-optimal sequence, to the nuisance-degenerate efficient-score interval quantizer: the mass margin (M2) holds automatically, the conditioning margin (M3) fails, and the population geometric optimum with a nondegenerate nuisance block is approached only by margin-certified labelings that pay a definite information price; exchange-stable labelings carrying all five margins (M1)–(M5) converge to population-stationary efficient-Voronoi quantizers by the conditional bridge of Theorem 7, and on that class the margin-certified exchange-stable branch is almost surely eventually empty. One exact off-class law (Appendix C.10) admits an unrestricted global transfer, through exact global optimizers only. The general \(d_\lambda\ge2\) branch, laws outside the conditionally centered class with \(d_\psi>1\), generic exchange-ascent selection, and the E case remain open (`OPEN-DS-MARGINS-NONCENTERED`, `OPEN-DS-STABLE-BASINS`, `OPEN-DS-E-UNRESTRICTED-CONSISTENCY`) [novelty: unresolved; ledger V8-41].
+Theorem 2 shows that every nonsingular global finite D optimum on merged atoms is geometrically realizable. It does not settle convergence of unrestricted empirical optima or exchange-stable solutions to population rules (`OPEN-D-UNRESTRICTED-CONSISTENCY`, `OPEN-D-EXCHANGE-CONSISTENCY`).
+
+For \(D_s\) and E, counterexamples rule out the same finite reduction. The A example only refutes the move-level proof mechanism. For scalar \(D_s\), Theorems 8–10 establish convergence and degeneracy under their conditional-centering assumptions. Theorem 7 remains conditional on its margins, and Theorem 11 gives a global-selection result for one distribution outside that class.
+
+Vector parameters, more general distributions, selection by exchange ascent, and E consistency remain open (`OPEN-DS-MARGINS-NONCENTERED`, `OPEN-DS-STABLE-BASINS`, `OPEN-DS-E-UNRESTRICTED-CONSISTENCY`) [novelty: unresolved; ledger V8-41].
+
+<a id="appendix-f6"></a>
+
+### F.6 Open questions and limits of the present results
+
+- **Estimated scores (OP17–OP19).** Theorem 13 controls one frozen rule. Open: uniform-over-rules error control together with a proxy optimization-gap certificate, since uniform control alone cannot make an exchange-stable proxy solution globally optimal; the profiled \(D_s\) retention; rules refitted on the proxy; sharp second-order constants for \(r_3\); and, without truth scores, estimators and error bars for the resolution gap and for representation versus quantization loss by cross-fitting.
+- **Sampling uncertainty (OP27, OP23–OP24).** Theorem 16 needs a frozen rule and an oracle-score sample. Open: rules refitted on the evaluation sample, where the boundary non-smoothness enters and the in-sample optimism has unknown order; importance-weighted samples; the profiled retention, a Schur-complement functional with its own influence function; the degenerate limits at \(\sigma^2=0\) and the joint endpoint limit behind Proposition 18; a second-order correction for heavy-tailed scores. Away from the reference point: a second-order expansion of a frozen rule's retention at \(\theta_0+\delta\) as a diagnostic, and whether expected or minimax objectives over a parameter region keep an affine common-metric geometry.
+- **Bin-count theory (OP14–OP16).** Bounds and inversion rules for \(\eta_D(K)\), the high-rate \(K\to\infty\) expansion of \(\log\det(I_{\rm full}-L)\) against Zador–Gersho theory, and whether determinant retention controls the worst retained direction beyond the arithmetic–geometric ordering of §9 [novelty: unresolved; ledger I1-3, I3-2].
+- **Template fits (OP20–OP22).** Canonical, numerically stable score coordinates for mixture fractions and extended yields under simplex constraints; the count-plus-shape decomposition of extended-likelihood information and what hard quantization changes in it; efficient scores for template-morphing, normalization and correlated nuisance parameters without an impractical score dimension.
+- **The D spine (OP8–OP10, OP29).** Consistency of unrestricted empirical global D optima and of exchange-stable D solutions; whether the non-geometric discrepancy of finite \(D_s\) and E optima vanishes asymptotically; and for \(D_s\) beyond class (L), rigidity for \(d_\psi>1\) and vector-(R) steering for \(d_\lambda\ge2\), which must not be inferred from the scalar results [novelty: unresolved; ledger DS15-5, DS18-2].
+- **Foundations (OP1–OP3, OP11–OP13, OP25–OP26, OP30–OP31).** Which concave criteria admit the finite exchange-to-geometry implication, proved for D and disproved for \(D_s\) and E; for A the recorded witness refutes the move-level mechanism, and D is not claimed unique [novelty: unresolved; ledger A2-3]; an A analogue of Proposition 3 [novelty: unresolved; ledger A4-1]; a quantitative E bound under a spectral gap and a common minimum-eigenspace supergradient; parameterized complexity of global finite D quantization, XP but not known FPT; stronger local neighbourhoods and branch-and-bound bounds; the atomic randomization gap and the soft-to-hard zero-temperature limit; the (M5)-free tracking of wasted-cell configurations and attainment of \(v^*(\kappa)\), \(v^{*+}(\kappa)\) [novelty: unresolved; ledger DS17-5]; and a polynomial bit bound for the tilt dual at fixed \(d_\lambda\ge2\), for which the lower bounds of [67], [66] do not transfer [novelty: unresolved; ledger DS19-6].
+- **Machine-checked coverage.** The finite D chain through the compiled predictor is checked in Lean; parked are the positive-tolerance compile guarantee, zero-weight rows, the duplicate-label branch of the Voronoi theorem, the equal-optimum half of realizability and the singleton-refinement bound. Population and asymptotic statements, including §8, stay prose with independent audit by decision.
+- **Literature.** Citation snowballing from the seed list has not been run to saturation; the claim-by-claim novelty search was run once against the frozen statements of this paper, and every "we found no direct precedent" above is a recorded search gap, not a priority claim.
 
 ## Appendix G. Fixture catalogue
+
+<a id="appendix-g1"></a>
 
 ### G.1 Catalogue
 
@@ -1553,30 +2067,32 @@ Every fixture cited in the manuscript, in the fixed numbering G1–G32 (G21–G3
 | G6 | `CE-DS-DEGENERATE-GLOBAL-TIE-001` | A centered \(N=8,K=3\) sample whose global in-bin optimum \(1083/4096\) is a 31-fold exact tie class with coincident projected centroids, refuting uniqueness and separation of finite global optima. | `DS-GLOBAL-TIE-DEGENERACY` | Appendix C.1; Appendix C.3 |
 | G7 | `CE-DS-POP-WASTED-CELLS-001` | An 8-atom nuisance-sign-symmetric law with \(K=4\) on which a sign-split threshold partition is exactly stationary with coincident projected centroids, nuisance block \(9/4\), and exactly \(0\) at the \(K=2\) coarsening. | `DS-POP-WASTED-CELLS` | Appendix C.4 |
 | G8 | `CE-DS-MARGINS-RANK-VACUITY-001` | \(N=4\), \(d_\lambda=2\), \(K=3\): all six feasible labelings have profiled value \(0\) while \(v_K=81/50\), so \(K\ge d_\lambda+2\) is necessary for a nonvacuous profiled value. | — | Appendix C.7 |
-| G9 | `CE-DS-STABLE-MARGIN-RETAINING-001` | An exchange-stable non-global \(N=8,K=3\) state on the centered grid law retaining all margins (\(\hat I_{\lambda\lambda}\approx0.523\), mass \(1/4\), separation \(0.325\)) at a value \(7.7\%\) below \(\hat v_K\). | — | main text (§5); Appendix C.8 |
+| G9 | `CE-DS-STABLE-MARGIN-RETAINING-001` | An exchange-stable non-global \(N=8,K=3\) state on the centered grid law retaining all margins (\(\hat I_{\lambda\lambda}\approx0.523\), mass \(1/4\), separation \(0.325\)) at a value \(7.7\%\) below \(\hat v_K\). | — | Appendix C.8 |
 | G10 | `CE-DS-INTERVAL-SEED-UNSTABLE-001` | The efficient-score interval labeling of an exact \(N=8\) sample admits one relocation of profiled gain \(0.447\) that grows the nuisance block 27-fold, so the interval seed is neither exchange-stable nor seed-stable. | — | main text (§5); Appendix A.4; Appendix C.2; Appendix C.8; Appendix D.3; Appendix G.2 |
 | G11 | `CE-DS-LCM-SIGNSPLIT-MARGIN-001` | An exact 8-atom \(K=3\) sign-split stationary configuration with \(I_q=\operatorname{diag}(4,9/8)\), coincident projected centroids \((-2,-2,2)\), and a merged rule with zero nuisance block: margins that survive only as wasted cells. | — | Appendix C.9 |
 | G12 | `CE-DS-LCM-SIGNSPLIT-MINIMAL-001` | The support-minimal \(N=K=3\) atomic boundary of the same mechanism, on which (M4) and (M5) fail and stability is vacuous on singleton atoms. | — | Appendix C.9 |
 | G13 | `CE-DS-NONCENTERED-POPULATION-CUT-UNSTABLE-001` | On a support-minimal \(N=4\) sample of the off-class law the raw \(q^*\) labels admit an improving relocation of exact gain \(37/14608\), so \(1/N\)-scale boundary effects are real. | — | Appendix C.10 |
 | G14 | `CE-DS-NONCENTERED-SINGULAR-DESTINATION-001` | Four centered rows on which the global regular value \(1/12\) is attained twice and both attainers reach the nuisance-singular labeling by a pseudo-inverse relocation of gain \(1/96\), so the pseudo-inverse and in-bin conventions differ. | — | Appendix C.1; Appendix C.10 |
-| G15 | `CE-DS-TILT-DUAL-GAP-001` | An equal-weight \(N=4,K=3\) table, all partitions regular, with primal value \(116805/11816\) and dual minimum \(44729/4232\), a duality gap exceeding \(0.68\). | `DS-TILT-DUAL-STRONG-DUALITY-FAILS` | main text (§6); Appendix D.2 |
-| G16 | `CE-DS-TILT-DUAL-GAP-002` | The support-minimal \(N=3,K=2\) duality-gap table, \(g^+=1/3\) against \(d=1/2\). | `DS-TILT-DUAL-STRONG-DUALITY-FAILS` | main text (§6); Appendix D.2 |
-| G17 | `CE-DS-TILT-DUAL-TIE-MASK-001` | An \(N=3,K=2\) table on which the bracket closes at \(2/9\) yet a deterministic tie policy of the interval programme returns a non-closing member of \(\mathcal D(\beta^*)\). | — | main text (§6); Appendix D.1 |
+| G15 | `CE-DS-TILT-DUAL-GAP-001` | An equal-weight \(N=4,K=3\) table, all partitions regular, with primal value \(116805/11816\) and dual minimum \(44729/4232\), a duality gap exceeding \(0.68\). | `DS-TILT-DUAL-STRONG-DUALITY-FAILS` | Appendix D.2 |
+| G16 | `CE-DS-TILT-DUAL-GAP-002` | The support-minimal \(N=3,K=2\) duality-gap table, \(g^+=1/3\) against \(d=1/2\). | `DS-TILT-DUAL-STRONG-DUALITY-FAILS` | Appendix D.2 |
+| G17 | `CE-DS-TILT-DUAL-TIE-MASK-001` | An \(N=3,K=2\) table on which the bracket closes at \(2/9\) yet a deterministic tie policy of the interval programme returns a non-closing member of \(\mathcal D(\beta^*)\). | — | Appendix D.1 |
 | G18 | `CE-DS-MATRIX-TILT-NONQUASICONVEX-001` | Eight rows \(\pm2e_j\) with \(d_\psi=d_\lambda=2\), \(K=N=8\), on which the outer log-determinant map takes determinants \(17,17,25\) at two tilts and their midpoint, so it is not quasiconvex. | `DS-MATRIX-TILT-NONQUASICONVEX` | Appendix D.4 |
 | G19 | `CE-E-GEOMETRY-001` | A floating-point \(N=8,d=2,K=3\) global E-optimal partition whose rank-one \(vv^\top\) rule disagrees with a training label by about \(0.06796\) at spectral gap \(0.2748\). | `E-GLOBAL-GEOMETRY-FAILS` | Appendix E.2; Appendix G.2 |
 | G20 | `CE-A-DSTYLE-001` | An exact-rational \(N=6,d=2,K=3\) move with \(I^{-2}\) nearest-centroid margin \(567/20\) and exact \(A\) gain \(-999/250\), so the D-style mechanism fails for \(A\). | `A-FINITE-GEOMETRY-FAILS` | Appendix E.3 |
-| G21 | `CE-O6-ETA-ZERO-MULTIATOM-VARIANCE-001` | A scalar four-atom law with vanishing cell means (\(\eta=0\)) on which the influence function is identically zero with more than two atoms per cell, so "an atomless or many-atom cell forces \(\sigma^2>0\)" needs \(\eta>0\). | `RETENTION-PLUGIN-CLT-FROZEN-SCALAR` (boundary) | main text (§8.4); Appendix I.4 |
-| G22 | `CE-O7-ELLIPSOID-ZERO-VARIANCE-001` | Four quarter-turn cells with \(S\mid Z=0\) uniform on \(\{(3,4),(3,-4)\}\): \(V=\tfrac{25}2I\), \(I_Z=\tfrac92I\), \(\eta_D=9/25\), \(\psi=0\) at every atom and on the whole cell-0 circle, so an atomless law on the arc has \(\sigma^2=0\) and the scalar atomless remark does not lift to \(d\ge2\). | `RETENTION-PLUGIN-CLT-FROZEN-VECTOR` (boundary) | main text (§8.4); Appendix I.4; Appendix G.2 |
-| G23 | `CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001` | At \(\eta_D=1\) with \(c_0=(1,0)\), \(c_1=(0,1)\), a sample confined to one cell has \(\hat V\) singular, exact plug-in \(0\) and projected library value \(1\); probability \(2^{1-n}\). | `RETENTION-PLUGIN-CLT-FROZEN-VECTOR` (boundary, audit H1) | main text (§8.4); Appendix I.4 |
+| G21 | `CE-O6-ETA-ZERO-MULTIATOM-VARIANCE-001` | A scalar four-atom law with vanishing cell means (\(\eta=0\)) on which the influence function is identically zero with more than two atoms per cell, so "an atomless or many-atom cell forces \(\sigma^2>0\)" needs \(\eta>0\). | `RETENTION-PLUGIN-CLT-FROZEN-SCALAR` (boundary) | Appendix I.4 |
+| G22 | `CE-O7-ELLIPSOID-ZERO-VARIANCE-001` | Four quarter-turn cells with \(S\mid Z=0\) uniform on \(\{(3,4),(3,-4)\}\): \(V=\tfrac{25}2I\), \(I_Z=\tfrac92I\), \(\eta_D=9/25\), \(\psi=0\) at every atom and on the whole cell-0 circle, so an atomless law on the arc has \(\sigma^2=0\) and the scalar atomless remark does not lift to \(d\ge2\). | `RETENTION-PLUGIN-CLT-FROZEN-VECTOR` (boundary) | Appendix I.4; Appendix G.2 |
+| G23 | `CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001` | At \(\eta_D=1\) with \(c_0=(1,0)\), \(c_1=(0,1)\), a sample confined to one cell has \(\hat V\) singular, exact plug-in \(0\) and projected library value \(1\); probability \(2^{1-n}\). | `RETENTION-PLUGIN-CLT-FROZEN-VECTOR` (boundary, audit H1) | Appendix I.4 |
 | G24 | `CE-SCORE-ERROR-RHO-MIN-NECESSARY-001` | A \(d=2\), three-cell centred atomic family with \(\varepsilon^2\in[0.026,0.028]\) on which \(\tilde\eta_D/\eta_D\) runs \(1.75\to5.10\to42.8\) as \(\rho_{\min}\to0\): no uniform relative reporting bound from an error bound alone. | `SCORE-ERROR-RETENTION-BUDGET` (boundary) | main text (§8.1); Appendix I.1; Appendix G.2 |
 | G25 | `CE-SCORE-ERROR-BOUNDARY-ATOM-001` | A scalar centred law with an atom of mass \(1/2\) on the boundary of the threshold rule: every lift has \(\pi=1/2\), \(\eta_D\) jumps \(4/5\to1/2\), the margin bound is vacuous and the sandwich holds with \(\Gamma=4\). | `SCORE-ERROR-RULE-TRANSFER` (boundary) | main text (§8.2); Appendix I.2 |
-| G26 | `CE-SCORE-ERROR-LOG-LOWER-001` | \(\lambda=\lambda_{\min}=5/4\): \(\log(9/4)<65/72\), refuting the scalar bound \(\log(1+\lambda)\ge\lambda-\lambda^2/[2(1+\lambda_{\min})]\) for positive \(\lambda_{\min}\); the \(\varepsilon\)-based remainder survives. | `SCORE-ERROR-RETENTION-BUDGET` (audit) | main text (§8.1); Appendix I.1 |
-| G27 | `CE-SCORE-ERROR-ALIGNMENT-ORDER-001` | Four atoms with \(R=\operatorname{diag}(1/10,1)\) and \(e=(0,s_2/10)\): the squared trace-loss bound \(81/1000\) exceeds the squared crude bound \(2/25\), so the two alignment bounds are not ordered. | `SCORE-ERROR-RETENTION-BUDGET` (audit) | main text (§8.1); Appendix I.1 |
-| G28 | `CE-SCORE-ERROR-TRANSLATION-001` | \(s=(-1,0,1)\), equal weights, labels \((0,0,1)\): retention \(3/4\to9/10\) after adding one, so translation is not an invariance of uncentred retention. | `SCORE-ERROR-RETENTION-BUDGET` (audit) | main text (§8.1); Appendix I.1 |
-| G29 | `CE-SCORE-ERROR-SINGULAR-LS-001` | \(s=\pm1\), \(\hat s=1\): \(V=\tilde V=1\) but \(A^*=0\), an inadmissible least-squares reparameterization. | `SCORE-ERROR-RETENTION-BUDGET` (audit) | main text (§8.1); Appendix I.1 |
-| G30 | `CE-CLASSIFIER-CALIBRATION-CHART-001` | A one-parameter mixture submodel with chart \(T=(1,-1,0)\) on which a posterior perturbation gives reliability \(1/24\) and unchanged scores. | `CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ` (audit) | main text (§8.3); Appendix I.3 |
-| G31 | `CE-CLASSIFIER-CALIBRATION-RETENTION-001` | Binary posteriors \((3/4,1/4)\), \((1/4,3/4)\) replaced by \((5/8,3/8)\), \((3/8,5/8)\): reliability \(1/32\), \(\varepsilon^2=1/4\), both retentions equal to one. | `CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ` (audit) | main text (§8.3); Appendix I.3 |
-| G32 | `CE-AUC-INVARIANT-PROXY-RETENTION-001` | \(s\in\{-2,-1,1,2\}\), threshold at \(0\), true retention \(9/10\); two strictly increasing distortions keep every rank-cut label and the ROC curve and report \(100/101\) and \(5105/10006\). | `SCORE-ERROR-RETENTION-BUDGET` (boundary) | main text (§8.3); Appendix G.2 |
+| G26 | `CE-SCORE-ERROR-LOG-LOWER-001` | \(\lambda=\lambda_{\min}=5/4\): \(\log(9/4)<65/72\), refuting the scalar bound \(\log(1+\lambda)\ge\lambda-\lambda^2/[2(1+\lambda_{\min})]\) for positive \(\lambda_{\min}\); the \(\varepsilon\)-based remainder survives. | `SCORE-ERROR-RETENTION-BUDGET` (audit) | Appendix I.1 |
+| G27 | `CE-SCORE-ERROR-ALIGNMENT-ORDER-001` | Four atoms with \(R=\operatorname{diag}(1/10,1)\) and \(e=(0,s_2/10)\): the squared trace-loss bound \(81/1000\) exceeds the squared crude bound \(2/25\), so the two alignment bounds are not ordered. | `SCORE-ERROR-RETENTION-BUDGET` (audit) | Appendix I.1 |
+| G28 | `CE-SCORE-ERROR-TRANSLATION-001` | \(s=(-1,0,1)\), equal weights, labels \((0,0,1)\): retention \(3/4\to9/10\) after adding one, so translation is not an invariance of uncentred retention. | `SCORE-ERROR-RETENTION-BUDGET` (audit) | Appendix I.1 |
+| G29 | `CE-SCORE-ERROR-SINGULAR-LS-001` | \(s=\pm1\), \(\hat s=1\): \(V=\tilde V=1\) but \(A^*=0\), an inadmissible least-squares reparameterization. | `SCORE-ERROR-RETENTION-BUDGET` (audit) | Appendix I.1 |
+| G30 | `CE-CLASSIFIER-CALIBRATION-CHART-001` | A one-parameter mixture submodel with chart \(T=(1,-1,0)\) on which a posterior perturbation gives reliability \(1/24\) and unchanged scores. | `CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ` (audit) | Appendix I.3 |
+| G31 | `CE-CLASSIFIER-CALIBRATION-RETENTION-001` | Binary posteriors \((3/4,1/4)\), \((1/4,3/4)\) replaced by \((5/8,3/8)\), \((3/8,5/8)\): reliability \(1/32\), \(\varepsilon^2=1/4\), both retentions equal to one. | `CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ` (audit) | Appendix I.3 |
+| G32 | `CE-AUC-INVARIANT-PROXY-RETENTION-001` | \(s\in\{-2,-1,1,2\}\), threshold at \(0\), true retention \(9/10\); two strictly increasing distortions keep every rank-cut label and the ROC curve and report \(100/101\) and \(5105/10006\). | `SCORE-ERROR-RETENTION-BUDGET` (boundary) | Appendix G.2 |
+
+<a id="appendix-g2"></a>
 
 ### G.2 Verification runs
 
@@ -1602,7 +2118,11 @@ The verification evidence for the bridge, margin, transfer, and bracket results 
 
 ## Appendix H. Ledger placement
 
-One line per row of `NOVELTY_LEDGER.md` (version 1.1, 10 September 2026; rows O6-*, O7-*, O8-* added with §8). Location is the main-text section or appendix that states the row's claim and carries its provenance mark; every row is placed, none is deliberately omitted. The renderer's "Show provenance" button reveals the marks in place.
+Main-text locations below give the explanation of each result. Full statements of Theorems 7–11 and Proposition 6 are in Appendix C; Theorem 12 is in Appendix D. Theorem 13 and Propositions 14–15, 17–18 are in Appendix I. Their identifiers and equation tags are unchanged.
+
+One line per row of `NOVELTY_LEDGER.md` (version 1.1, 10 September 2026; rows O6-*, O7-*, O8-* added with §8). Location is the main-text section or appendix that states the row's claim and carries its provenance mark; every row is placed, none is deliberately omitted.
+
+The renderer's "Show provenance" button reveals the marks in place.
 
 <div class="placement" markdown="1">
 
@@ -1636,9 +2156,9 @@ One line per row of `NOVELTY_LEDGER.md` (version 1.1, 10 September 2026; rows O6
 | O8-9 | §8.3; Appendix I.3 | Proposition 15; Bröcker and Cranmer et al. cited; reverse bound needs injective chart |
 | O8-10 | §8.3; Appendix I.3 | fixtures G30, G31; two refuted classifier consequences |
 | O8-11 | §8.3 | fixture G32; corresponding rank-cut thresholds |
-| O8-12 | §8.5 | deployment corollary with the budgets assigned to the right rules |
-| O8-13 | §8.5 | measured classifier-example and synthetic rows; numbers only |
-| O8-14 | §8.5; Appendix I.5 | audit cited as verification evidence |
+| O8-12 | §8.5; Appendix I.1 | deployment corollary with the budgets assigned to the right rules |
+| O8-13 | §8.5; Appendix I.1 | measured classifier-example and synthetic rows; numbers only |
+| O8-14 | §8.5; Appendix I.1; Appendix I.5 | audit cited as verification evidence |
 | A1-2 | §7.2; Appendix E.3 | Proposition E.1(ii) |
 | A2-1 | §7.2; Appendix E.3 | counterexample box; move-level witness |
 | A2-2 | §7.2; Appendix E.3 | fixture in counterexample box; 443 moves not states |
@@ -1703,7 +2223,7 @@ One line per row of `NOVELTY_LEDGER.md` (version 1.1, 10 September 2026; rows O6
 | V8-02 | §1 | framing; cites [12],[8] |
 | V8-03 | §1 | cites [1],[29],[3],[4] |
 | V8-04 | §3.1 | cites [30] |
-| V8-05 | §3.4; Appendix A.2 | cites [17],[21],[22]; calibration not propagated stated in Appendix A |
+| V8-05 | §3.4; Appendix A.2 | cites [17],[21],[22]; fixed-rule propagation in Appendix I; calibration alone insufficient |
 | V8-06 | §3.4; Appendix A.3 | cites [17],[27],[28] |
 | V8-07 | §3.2 | after (3.2); cites [13],[15] |
 | V8-08 | §3.2 | stationarity only; cites [13],[3],[4] |
@@ -1744,11 +2264,77 @@ One line per row of `NOVELTY_LEDGER.md` (version 1.1, 10 September 2026; rows O6
 
 </div>
 
-## Appendix I. Proofs for §8
+## Appendix I. Evaluation results: technical statements and proofs
 
 Registry: `SCORE-ERROR-RETENTION-BUDGET`, `SCORE-ERROR-RULE-TRANSFER`, `CLASSIFIER-CALIBRATION-SCORE-LIPSCHITZ` (§I.1–I.3, `KNOWN_RESULTS/10-oracle.md` § O8, audited in `AUDIT-SCORE-ERROR-BUDGET-001`); `RETENTION-PLUGIN-CLT-FROZEN-SCALAR`, `RETENTION-PLUGIN-CLT-FROZEN-VECTOR`, `RETENTION-PLUGIN-SINGULAR-ENDPOINT-RATE` (§I.4, § O6–O7, audited in `AUDIT-SCORE-ORACLE-ROBUSTNESS-001` and `AUDIT-RETENTION-PLUGIN-VECTOR-001`). The proofs are condensed; the cited sections carry every step, and §I.5 lists what the audits changed.
 
-### I.1 Proof of Theorem 13
+<a id="appendix-i1"></a>
+
+### I.1 Estimated-score reporting error: statement and proof
+
+Fix a law \(P\) on observations, the true score \(s\in\mathbb R^d\) with \(V=E[ss^\top]\succ0\), a proxy \(\hat s=s+e\) with \(\tilde V=E[\hat s\hat s^\top]\), and labels \(Z=q(\hat s)\) with \(p_b=P(Z=b)>0\). Write \(c_b=E[s\mid Z=b]\), \(e_b=E[e\mid Z=b]\), \(I_Z=\sum_bp_bc_bc_b^\top\) for the true retained information of the labels and \(\tilde I_Z=\sum_bp_b(c_b+e_b)(c_b+e_b)^\top\) for the retained information computed from the proxy, the number a library prints when handed \(\hat s\).
+
+Set \(\mathcal E=E[ee^\top]\), \(\mathcal E_Z=\sum_bp_be_be_b^\top\), and the three whitened error scales
+
+\[
+\varepsilon^2=\operatorname{tr}(V^{-1}\mathcal E),\qquad
+\varepsilon_Z^2=\operatorname{tr}(V^{-1}\mathcal E_Z)\le\varepsilon^2,\qquad
+\varepsilon_R^2=\operatorname{tr}(I_Z^{-1}\mathcal E_Z).
+\tag{8.1}
+\]
+
+With \(R=V^{-1/2}I_ZV^{-1/2}\), eigenvalues \(1\ge\rho_1\ge\dots\ge\rho_d=\rho_{\min}\), \(\eta_D=(\det R)^{1/d}\) is the true geometric-mean retention of the labels and \(\tilde\eta_D=(\det\tilde I_Z/\det\tilde V)^{1/d}\) the reported one; \(d-\operatorname{tr}R\) is the rule's trace loss. All of \(\varepsilon,\varepsilon_Z,\varepsilon_R,\rho_i,\eta_D\) are invariant under \((s,\hat s)\mapsto(As,A\hat s)\) for nonsingular \(A\); \(E[e]\ne0\) is allowed; \(E[s]=0\) is never used and is only what makes \(\eta_D\) a Fisher retention by (3.1).
+
+No sampling limit is taken: for the empirical law of a sample on which both scores exist the statements hold sample-wise and exactly. Write \(U_d(x)=2\sqrt d\,x+x^2\) and, for \(x<1\), \(L_d(x)=\max\{2d\log(1-x),\ x^2-2\sqrt d\,x-U_d(x)^2/(2(1-x)^2)\}\). Per direction, the proxy misreports the retention of a whitened direction \(u\) with true retention \(\rho=u^\top Ru\) by at most \(2\sqrt\rho\,\varepsilon_Z+\varepsilon_Z^2\), and the full information by at most \(2\varepsilon+\varepsilon^2\), by Cauchy–Schwarz on the cross term of \(\tilde I_Z-I_Z=E[c_Ze_Z^\top+e_Zc_Z^\top]+\mathcal E_Z\) [novelty: direct corollary; ledger O8-1].
+
+The determinant statement is the one the library's headline number needs.
+
+<div class="theorem" markdown="1">
+<div class="box-title" markdown="span">Theorem 13 — the reporting gap is an alignment term plus a spurious-information term</div>
+
+Let \(I_Z\succ0\), \(\tilde V\succ0\) and \(\tilde I_Z\succ0\). Then
+
+\[
+\log\frac{\tilde\eta_D}{\eta_D}=T_1+T_2+r_3,\qquad
+T_1=\frac2d\Big(E[e_Z^\top I_Z^{-1}c_Z]-E[e^\top V^{-1}s]\Big),\qquad
+T_2=\frac{\varepsilon_R^2-\varepsilon^2}{d},
+\tag{8.2}
+\]
+
+with, for \(\varepsilon_R,\varepsilon<1\), the curvature remainder \(r_3\in\frac1d\big[-U_d(\varepsilon_R)^2/(2(1-\varepsilon_R)^2),\ U_d(\varepsilon)^2/(2(1-\varepsilon)^2)\big]\), and:
+
+(a) *alignment.* Two independent bounds hold, and the smaller applies:
+\[
+|T_1|\le\frac2d\sqrt{d-\operatorname{tr}R}\,\Big(\varepsilon_Z\sqrt{\tfrac{1-\rho_{\min}}{\rho_{\min}}}+\sqrt{\varepsilon^2-\varepsilon_Z^2}\Big),\qquad
+|T_1|\le\frac2{\sqrt d}\,(\varepsilon_R+\varepsilon).
+\]
+
+(b) *spurious information.* \(0\le\varepsilon_R^2\le\varepsilon_Z^2/\rho_{\min}\), so \(-\varepsilon^2/d\le T_2\le(\varepsilon_Z^2/\rho_{\min}-\varepsilon^2)/d\).
+
+(c) *crude bracket, no expansion.* \(\frac1d[L_d(\varepsilon_R)-U_d(\varepsilon)]\le\log(\tilde\eta_D/\eta_D)\le\frac1d[U_d(\varepsilon_R)-L_d(\varepsilon)]\), whose first order is \(\pm\frac2{\sqrt d}(\varepsilon_R+\varepsilon)\).
+
+The numerator first-order constant is attained: with \(e_b=\kappa c_b\) in every cell, \(\log\det\tilde I_Z-\log\det I_Z=2d\log(1+\kappa)\) while \(\varepsilon_R^2=d\kappa^2\), in both signs of \(\kappa\). Sharpness of the retention-ratio bound is not claimed; a common rescaling cancels there.
+</div>
+
+We found no direct precedent for the expansion; its ingredients — log-determinant concavity [82], a rank-one Loewner bound, and an exact integral form of \(\log(1+\lambda)-\lambda\) — are standard, and the specific two-term form on cell moments is a search gap, not a novelty claim [novelty: apparently new; ledger O8-2]. Three readings that the first derivation stated and the audit refuted are worth recording, because each is tempting.
+
+The two alignment bounds in (a) are not ordered: on a four-atom \(d=2\) law with \(R=\operatorname{diag}(1/10,1)\) the trace-loss bound exceeds the crude bound (fixture G27). The scalar inequality \(\log(1+\lambda)\ge\lambda-\lambda^2/[2(1+\lambda_{\min})]\) is false for \(\lambda_{\min}>0\), so the remainder must be derived from the integral identity with the floor \(m=\min(0,\lambda_{\min})\), which leaves the \(\varepsilon\)-based bound unchanged (fixture G26) [novelty: direct corollary; ledger O8-3].
+
+And \(r_3\) is second order despite its position: \(T_2\) alone is not the full quadratic Taylor coefficient.
+
+**No bound on \(\varepsilon\) alone controls the gap.** The retention scale \(\rho_{\min}\) in (a) and (b) is necessary: a \(d=2\), three-cell centred atomic family with \(\varepsilon^2\in[0.026,0.028]\) throughout has \(\tilde\eta_D/\eta_D\) running \(1.75\to5.10\to42.8\) as \(\rho_{\min}\) runs \(0.034\to0.0014\to1.4\cdot10^{-5}\) (fixture G24) [novelty: unresolved; ledger O8-4]. A whitened proxy error of \(16\%\), aligned with a direction the rule barely retains, reports \(75\%\) more retention than there is.
+
+What fails is relative control from an error upper bound; both retentions stay in \([0,1]\). At \(\eta_D=0\) — \(I_Z\) singular, as at \(K\le d\) under the reference law by the rank ceiling of §3 — the expansion is void and the reported number can be anything in \([0,1]\); when \(\varepsilon_R\ge1\) the lower bracket is void and the reported information can vanish (\(e_b=-c_b\)).
+
+Neither is a defect of the bound.
+
+**Invertible reduction and the deployable direction.** For fixed labels \(\tilde\eta_D\) is unchanged by \(\hat s\mapsto A\hat s\), \(A\) nonsingular, provided the rule is transported as \(q_A(u)=q(A^{-1}u)\); feeding transformed scores to an unchanged rule does not do this, and translations are not invariances of uncentred moments (fixture G28). Every reporting bound therefore applies with \(e_A=A\hat s-s\) and the error scales recomputed for the same labels.
+
+The least-squares matrix \(A^*=E[s\hat s^\top]\tilde V^{-1}\) gives \(\varepsilon_{\rm lin}^2=\sum_{i\le d}(1-r_i^2)\) in the uncentred canonical correlations \(r_i\) of \((s,\hat s)\), an identity that holds even when \(A^*\) is singular; applying the budget *at* \(A^*\) requires \(E[s\hat s^\top]\) nonsingular, which \(\varepsilon_{\rm lin}<1\) forces, and otherwise \(A^*\) is an inadmissible minimizer (fixture G29) [novelty: direct corollary; ledger O8-5]. The roles of \(s\) and \(\hat s\) are symmetric, so with \(\tilde\varepsilon^2=\operatorname{tr}(\tilde V^{-1}\mathcal E)\) and \(\tilde\rho_{\min}\) the smallest *reported* retention eigenvalue — the directional diagnostic of §9 — the same expansion bounds \(\log(\eta_D/\tilde\eta_D)\): a user holding a reported \(\tilde\eta_D\), a reported \(\tilde\rho_{\min}\), a reported trace loss and an error budget *in the proxy metric* has a bracket for the truth whenever the small-error conditions hold.
+
+Converting a budget stated in the true metric (§8.3) needs additional spectral control or a truth-labelled hold-out.
+
+
 
 Notation of §8.1. Four lemmas, each for a generic pair \(A=E[cc^\top]\succ0\), \(\tilde A=E[(c+e)(c+e)^\top]\), \(\mathcal E_A=E[ee^\top]\), \(\varepsilon_A^2=\operatorname{tr}(A^{-1}\mathcal E_A)\); they are applied to \((I_Z,\tilde I_Z,\mathcal E_Z,\varepsilon_R)\) with \(c=c_Z\), \(e=e_Z\), and to \((V,\tilde V,\mathcal E,\varepsilon)\) with \(c=s\).
 
@@ -1762,39 +2348,196 @@ Notation of §8.1. Four lemmas, each for a generic pair \(A=E[cc^\top]\succ0\), 
 \[
 \log(1+\lambda)-\lambda=-\lambda^2\int_0^1\frac{t}{1+t\lambda}\,dt ,
 \]
-in which \(1+t\lambda\ge1+m\ge(1-\varepsilon_A)^2\) along the whole interpolation, so \(0\ge\log(1+\lambda)-\lambda\ge-\lambda^2/[2(1-\varepsilon_A)^2]\). Summing over eigenvalues and bounding \(\sum_i\lambda_i^2=\|A^{-1/2}(\tilde A-A)A^{-1/2}\|_F^2\le U_d(\varepsilon_A)^2\) (whiten by \(A^{-1/2}\): \(\|\cdot\|_F\le2E[\|c'\|\|e'\|]+E\|e'\|^2\le U_d(\varepsilon_A)\)) gives \(\log\det\tilde A-\log\det A-\operatorname{tr}(A^{-1}(\tilde A-A))\in[-U_d(\varepsilon_A)^2/(2(1-\varepsilon_A)^2),0]\), and \(L_d(\varepsilon_A)\le\log\det\tilde A-\log\det A\le U_d(\varepsilon_A)\). The floor \(m\) is essential: the pointwise inequality with \(1+\lambda_{\min}\) in place of \(1+m\) fails for \(\lambda_{\min}>0\) (fixture G26, \(\lambda=5/4\), \(\log(9/4)<65/72\)); the final \(\varepsilon\)-based bound is unchanged.
+in which \(1+t\lambda\ge1+m\ge(1-\varepsilon_A)^2\) along the whole interpolation, so \(0\ge\log(1+\lambda)-\lambda\ge-\lambda^2/[2(1-\varepsilon_A)^2]\).
 
-*Proof of the theorem.* Apply Lemmas I.2 and I.4 to both pairs and subtract: the linear parts are \(dT_1\), the \(\varepsilon^2\) parts \(dT_2\), the curvature parts \(dr_3\); \(\tilde I_Z,\tilde V\succ0\) is needed for finite logarithms and is implied by \(\varepsilon_R,\varepsilon<1\) through Lemma I.3. For (a), whiten by \(V\): \(w=V^{-1/2}s\), \(e'=V^{-1/2}e\), \(c'_Z=E[w\mid Z]\), \(R=E[c'_Zc_Z'^\top]\). Then \(T_1=\frac2d(E[e_Z'^\top R^{-1}c'_Z]-E[e'^\top w])\) and, by the tower property, \(E[e'^\top w]=E[e_Z'^\top c'_Z]+E[(e'-e'_Z)^\top(w-c'_Z)]\), so
+Summing over eigenvalues and bounding \(\sum_i\lambda_i^2=\|A^{-1/2}(\tilde A-A)A^{-1/2}\|_F^2\le U_d(\varepsilon_A)^2\) (whiten by \(A^{-1/2}\): \(\|\cdot\|_F\le2E[\|c'\|\|e'\|]+E\|e'\|^2\le U_d(\varepsilon_A)\)) gives \(\log\det\tilde A-\log\det A-\operatorname{tr}(A^{-1}(\tilde A-A))\in[-U_d(\varepsilon_A)^2/(2(1-\varepsilon_A)^2),0]\), and \(L_d(\varepsilon_A)\le\log\det\tilde A-\log\det A\le U_d(\varepsilon_A)\). The floor \(m\) is essential: the pointwise inequality with \(1+\lambda_{\min}\) in place of \(1+m\) fails for \(\lambda_{\min}>0\) (fixture G26, \(\lambda=5/4\), \(\log(9/4)<65/72\)); the final \(\varepsilon\)-based bound is unchanged.
+
+*Proof of the theorem.* Apply Lemmas I.2 and I.4 to both pairs and subtract: the linear parts are \(dT_1\), the \(\varepsilon^2\) parts \(dT_2\), the curvature parts \(dr_3\); \(\tilde I_Z,\tilde V\succ0\) is needed for finite logarithms and is implied by \(\varepsilon_R,\varepsilon<1\) through Lemma I.3. For (a), whiten by \(V\): \(w=V^{-1/2}s\), \(e'=V^{-1/2}e\), \(c'_Z=E[w\mid Z]\), \(R=E[c'_Zc_Z'^\top]\).
+
+Then \(T_1=\frac2d(E[e_Z'^\top R^{-1}c'_Z]-E[e'^\top w])\) and, by the tower property, \(E[e'^\top w]=E[e_Z'^\top c'_Z]+E[(e'-e'_Z)^\top(w-c'_Z)]\), so
 \[
 T_1=\frac2d\Big(E\big[e_Z'^\top(R^{-1}-I)c'_Z\big]-E\big[(e'-e'_Z)^\top(w-c'_Z)\big]\Big).
 \]
-\(H=R^{-1}-I\succeq0\) has operator norm \((1-\rho_{\min})/\rho_{\min}\) and \(E[c_Z'^\top Hc'_Z]=\operatorname{tr}(HR)=d-\operatorname{tr}R\); Cauchy–Schwarz in the \(H\) inner product bounds the first expectation by \(\sqrt{E[e_Z'^\top He'_Z]}\sqrt{d-\operatorname{tr}R}\le\varepsilon_Z\sqrt{(1-\rho_{\min})/\rho_{\min}}\sqrt{d-\operatorname{tr}R}\); for the second, \(E\|e'-e'_Z\|^2=\varepsilon^2-\varepsilon_Z^2\) and \(E\|w-c'_Z\|^2=\operatorname{tr}(I-R)=d-\operatorname{tr}R\) by Pythagoras. The crude bound is Lemma I.2 applied to each expectation of \(T_1\) separately, before subtraction. The two are not comparable (fixture G27: \(R=\operatorname{diag}(1/10,1)\), \(e=(0,s_2/10)\), \(T_1=0\), squared trace-loss bound \(81/1000\) against squared crude bound \(2/25\)). For (b), \(I_Z\succeq\rho_{\min}V\) by definition of \(\rho_{\min}\), so \(I_Z^{-1}\preceq V^{-1}/\rho_{\min}\). (c) is Lemma I.4 twice. Sharpness: with \(e_b=\kappa c_b\), Lemma I.2 is an equality, \(\det\tilde I_Z=(1+\kappa)^{2d}\det I_Z\) and \(\varepsilon_R^2=d\kappa^2\). \(\square\)
+\(H=R^{-1}-I\succeq0\) has operator norm \((1-\rho_{\min})/\rho_{\min}\) and \(E[c_Z'^\top Hc'_Z]=\operatorname{tr}(HR)=d-\operatorname{tr}R\); Cauchy–Schwarz in the \(H\) inner product bounds the first expectation by \(\sqrt{E[e_Z'^\top He'_Z]}\sqrt{d-\operatorname{tr}R}\le\varepsilon_Z\sqrt{(1-\rho_{\min})/\rho_{\min}}\sqrt{d-\operatorname{tr}R}\); for the second, \(E\|e'-e'_Z\|^2=\varepsilon^2-\varepsilon_Z^2\) and \(E\|w-c'_Z\|^2=\operatorname{tr}(I-R)=d-\operatorname{tr}R\) by Pythagoras. The crude bound is Lemma I.2 applied to each expectation of \(T_1\) separately, before subtraction.
 
-*Invertible reduction.* For nonsingular \(A\), \(I_Z\) and \(V\) both transform by \(A(\cdot)A^\top\) and \(\det(A)^2\) cancels, provided the labels are held fixed, i.e. the rule is transported. Translation changes uncentred moments: on \(s=(-1,0,1)\), equal weights, labels \((0,0,1)\), retention moves from \(3/4\) to \(9/10\) after adding one (fixture G28). The least-squares identity \(\varepsilon_{\rm lin}^2=d-\operatorname{tr}(V^{-1}E[s\hat s^\top]\tilde V^{-1}E[\hat ss^\top])=\sum_i(1-r_i^2)\) is the usual canonical-correlation trace; \(A^*\) may be singular (\(s=\pm1\), \(\hat s=1\): \(V=\tilde V=1\), \(A^*=0\); fixture G29), in which case the transformed determinant ratio is not defined and only the infimum over invertible maps is approached.
+The two are not comparable (fixture G27: \(R=\operatorname{diag}(1/10,1)\), \(e=(0,s_2/10)\), \(T_1=0\), squared trace-loss bound \(81/1000\) against squared crude bound \(2/25\)). For (b), \(I_Z\succeq\rho_{\min}V\) by definition of \(\rho_{\min}\), so \(I_Z^{-1}\preceq V^{-1}/\rho_{\min}\). (c) is Lemma I.4 twice. Sharpness: with \(e_b=\kappa c_b\), Lemma I.2 is an equality, \(\det\tilde I_Z=(1+\kappa)^{2d}\det I_Z\) and \(\varepsilon_R^2=d\kappa^2\). \(\square\)
 
-### I.2 Proof of Proposition 14
+*Invertible reduction.* For nonsingular \(A\), \(I_Z\) and \(V\) both transform by \(A(\cdot)A^\top\) and \(\det(A)^2\) cancels, provided the labels are held fixed, i.e. the rule is transported. Translation changes uncentred moments: on \(s=(-1,0,1)\), equal weights, labels \((0,0,1)\), retention moves from \(3/4\) to \(9/10\) after adding one (fixture G28).
 
-(i) The segment \([s,\hat s]\) is connected, meets \(C_{q(s)}\) and its complement, hence meets \(\partial C_{q(s)}\), so \(\operatorname{dist}(s,\partial C_{q(s)})\le\|e\|\). Split on \(\{\operatorname{dist}_V(s,\partial q)\le t\}\) and its complement, on which \(\|e\|_{V^{-1}}>t\); Markov gives \(\pi\le M_q(t)+\varepsilon^2/t^2\). With \(M_q(t)\le Ct^\alpha\), differentiating \(Ct^\alpha+\varepsilon^2/t^2\) gives \(t_*=(2\varepsilon^2/(\alpha C))^{1/(\alpha+2)}\) and the displayed constant; at \(\alpha=1\) it is \(3\cdot2^{-2/3}<1.89\). The nearest-centre boundary distance follows from the difference of two squared \(G\) distances being affine in \(s\) with gradient \(2G(\mu_b-\mu_{b'})\).
+The least-squares identity \(\varepsilon_{\rm lin}^2=d-\operatorname{tr}(V^{-1}E[s\hat s^\top]\tilde V^{-1}E[\hat ss^\top])=\sum_i(1-r_i^2)\) is the usual canonical-correlation trace; \(A^*\) may be singular (\(s=\pm1\), \(\hat s=1\): \(V=\tilde V=1\), \(A^*=0\); fixture G29), in which case the transformed determinant ratio is not defined and only the infimum over invertible maps is approached.
+
+#### Comparing a fitted rule with another rule
+
+Composing the budgets gives the deployment statement. For a rule \(\hat q\) fitted on the proxy and any comparison rule \(q\) that \(\hat q\) beats on the proxy objective — the global proxy optimum does, an exchange-stable solution only if it happens to — with \(-\beta^-(q)\le\log(\tilde\eta_D(q)/\eta_D(q\circ\hat s))\le\beta^+(q)\) from Theorem 13 and \(\gamma_R(q)<1\) from Proposition 14,
+\[
+\log\eta_D(\hat q\circ\hat s)\ \ge\ \log\eta_D(q\circ s)-\beta^+(\hat q)-\beta^-(q)+\log\big(1-\gamma_R(q)\big):
+\]
+the over-reporting budget belongs to the selected rule, the under-reporting budget to the comparator, and a change of score coordinates must transport rule, metric and comparator together [novelty: direct corollary; ledger O8-12].
+
+Measured on the same classifier at 15, 60 and 300 training events per class the whitened score error is large, \(0.50\) at the smallest rung, while the reported retention is only \(8\%\) off — the two cancellations of Theorem 13(a) at work, a mostly linear error and a nearly lossless rule — and the margin bound (8.3) is informative only for \(\varepsilon\lesssim0.1\) [novelty: unresolved; ledger O8-13, O8-14]. The corollary still needs truth-based budgets for two rules and proxy-objective dominance; exchange stability alone supplies neither, and a uniform-over-rules budget with a proxy optimization-gap certificate is future work (§10.2).
+
+<a id="appendix-i2"></a>
+
+### I.2 Changes in labels: statement and proof
+
+Now the rule is applied to both scores, \(Z=q(s)\) and \(\hat Z=q(\hat s)\), and both retentions are computed from \(s\). Let \(M=\{Z\ne\hat Z\}\) and \(\pi=P(M)\). The margin function of the rule is \(M_q(t)=P(\operatorname{dist}_V(s,\partial q)\le t)\), the mass within \(V^{-1}\)-distance \(t\) of a cell boundary; for a nearest-centre rule with metric \(G\succ0\) and distinct centres the distance from \(s\) in cell \(b\) to its boundary is \(\min_{b'\ne b}(\|s-\mu_{b'}\|_G^2-\|s-\mu_b\|_G^2)/(2\|\mu_b-\mu_{b'}\|_G)\), rational on rational data.
+
+<div class="theorem" markdown="1">
+<div class="box-title" markdown="span">Proposition 14 — mislabel mass under a margin, and the label-perturbation sandwich</div>
+
+(i) If \(q(\hat s)\ne q(s)\) then \(\operatorname{dist}(s,\partial C_{q(s)})\le\|e\|\) in any norm. Hence, for the \(L^2(V^{-1})\) error \(\varepsilon\),
+\[
+\pi\le\inf_{t>0}\Big\{M_q(t)+\frac{\varepsilon^2}{t^2}\Big\},\qquad
+M_q(t)\le Ct^\alpha\ (C,\alpha>0)\ \Longrightarrow\ \pi\le\Big(1+\tfrac\alpha2\Big)\Big(\tfrac2\alpha\Big)^{\frac\alpha{\alpha+2}}C^{\frac2{\alpha+2}}\varepsilon^{\frac{2\alpha}{\alpha+2}},
+\tag{8.3}
+\]
+the minimizer \(t_*=(2\varepsilon^2/(\alpha C))^{1/(\alpha+2)}\) lying in the range of the margin hypothesis, else minimize over that range and cap by one; at \(\alpha=1\), \(\pi\le1.89\,C^{2/3}\varepsilon^{2/3}\).
+
+(ii) With \(c_b\) the \(Z\)-cell means and \(\hat c_b\) the \(\hat Z\)-cell means of the true score, a zero centroid on any empty cell, and one label alphabet,
+\[
+I_{\hat Z}\succeq I_Z-\Gamma,\qquad I_Z\succeq I_{\hat Z}-\hat\Gamma,\qquad
+\Gamma=2E\big[(ss^\top+c_{\hat Z}c_{\hat Z}^\top)\mathbf 1_M\big],\quad
+\hat\Gamma=2E\big[(ss^\top+\hat c_Z\hat c_Z^\top)\mathbf 1_M\big].
+\tag{8.4}
+\]
+Consequently \(|\operatorname{tr}R_Z-\operatorname{tr}R_{\hat Z}|\le2E[\|w\|^2\mathbf 1_M]+2\pi\max_b\max(\|c'_b\|^2,\|\hat c'_b\|^2)\) in whitened coordinates \(w=V^{-1/2}s\), and with \(\gamma_R=\operatorname{tr}(I_Z^{-1}\Gamma)<1\), \(\log\eta_D(\hat Z)-\log\eta_D(Z)\ge\log(1-\gamma_R)\), symmetrically above, where \(\gamma_R\le\operatorname{tr}(V^{-1}\Gamma)/\rho_{\min}\).
+</div>
+
+Part (i) is the comparison method of Audibert and Tsybakov [83, §5] with spatial distance to a cell boundary in place of posterior distance to the Bayes boundary; their excess-risk exponent concerns a different, margin-weighted loss [novelty: adaptation; ledger O8-6]. Part (ii) is a Pythagoras argument on conditional expectations [novelty: direct corollary; ledger O8-7].
+
+Orders: bounded whitened scores \(\|w\|\le B\) give trace loss \(O(\pi)\) with constant \(4B^2\); a fourth moment and a uniform bound on the centroids of the compared rules give \(O(\sqrt\pi)\); composing with (8.3) at \(\alpha=1\) gives \(O(\varepsilon^{2/3})\) and \(O(\varepsilon^{1/3})\) respectively. Uniformity across laws or rules needs uniform fourth moments and a common positive floor on the occupied base-cell masses, and the determinant orders a retained-eigenvalue floor.
+
+The margin is necessary: a scalar centred law with an atom of mass \(1/2\) on the boundary of the threshold rule has \(\pi=1/2\) under every lift \(\kappa>0\), \(\eta_D\) jumping \(4/5\to1/2\), and \(M_q(t)\ge1/2\) for all \(t\), so (8.3) is vacuous while (8.4) holds with \(\Gamma=4\) (fixture G25) [novelty: unresolved; ledger O8-8]. The budget is a function of the mislabel mass, and nothing makes that mass small without a margin.
+
+
+
+(i) The segment \([s,\hat s]\) is connected, meets \(C_{q(s)}\) and its complement, hence meets \(\partial C_{q(s)}\), so \(\operatorname{dist}(s,\partial C_{q(s)})\le\|e\|\). Split on \(\{\operatorname{dist}_V(s,\partial q)\le t\}\) and its complement, on which \(\|e\|_{V^{-1}}>t\); Markov gives \(\pi\le M_q(t)+\varepsilon^2/t^2\). With \(M_q(t)\le Ct^\alpha\), differentiating \(Ct^\alpha+\varepsilon^2/t^2\) gives \(t_*=(2\varepsilon^2/(\alpha C))^{1/(\alpha+2)}\) and the displayed constant; at \(\alpha=1\) it is \(3\cdot2^{-2/3}<1.89\).
+
+The nearest-centre boundary distance follows from the difference of two squared \(G\) distances being affine in \(s\) with gradient \(2G(\mu_b-\mu_{b'})\).
 
 (ii) Let \(f=E[s\mid Z]=c_Z\), \(f'=E[s\mid\hat Z]=\hat c_{\hat Z}\), within-scatters \(W=E[(s-f)(s-f)^\top]\), \(W'=E[(s-f')(s-f')^\top]\), so \(V=I_Z+W=I_{\hat Z}+W'\). For any \(\hat Z\)-measurable \(g\), \(E[(s-g)(s-g)^\top]=W'+E[(f'-g)(f'-g)^\top]\succeq W'\) since \(E[s-f'\mid\hat Z]=0\). Take \(g=c_{\hat Z}\), which equals \(f\) off \(M\):
-\(E[(s-g)(s-g)^\top]=W+E[((s-c_{\hat Z})(s-c_{\hat Z})^\top-(s-c_Z)(s-c_Z)^\top)\mathbf 1_M]\preceq W+E[(s-c_{\hat Z})(s-c_{\hat Z})^\top\mathbf 1_M]\preceq W+\Gamma\), using \((x-y)(x-y)^\top\preceq2(xx^\top+yy^\top)\). So \(W'\preceq W+\Gamma\), i.e. \(I_{\hat Z}\succeq I_Z-\Gamma\); swap roles for the other side. The trace corollary is immediate; \(\Gamma\preceq\gamma_RI_Z\) gives the determinant bound when \(\gamma_R<1\). For the orders, bounded whitened scores give \(\operatorname{tr}(V^{-1}\Gamma)\le4B^2\pi\); with fourth moment \(M_4\) and a base partition of minimum occupied mass \(p^*\), Cauchy–Schwarz gives the forward bound \(2\sqrt{M_4}\sqrt\pi+2\pi\max_b\|c'_b\|^2\) and, for \(\pi<p^*/2\), the reverse centroids satisfy \(\|\hat c'_b\|^2\le2d/p^*\); labels originally empty receive only mislabelled points and contribute no reverse cross-centroid term. \(\square\)
+\(E[(s-g)(s-g)^\top]=W+E[((s-c_{\hat Z})(s-c_{\hat Z})^\top-(s-c_Z)(s-c_Z)^\top)\mathbf 1_M]\preceq W+E[(s-c_{\hat Z})(s-c_{\hat Z})^\top\mathbf 1_M]\preceq W+\Gamma\), using \((x-y)(x-y)^\top\preceq2(xx^\top+yy^\top)\). So \(W'\preceq W+\Gamma\), i.e. \(I_{\hat Z}\succeq I_Z-\Gamma\); swap roles for the other side.
 
-### I.3 Proof of Proposition 15
+The trace corollary is immediate; \(\Gamma\preceq\gamma_RI_Z\) gives the determinant bound when \(\gamma_R<1\). For the orders, bounded whitened scores give \(\operatorname{tr}(V^{-1}\Gamma)\le4B^2\pi\); with fourth moment \(M_4\) and a base partition of minimum occupied mass \(p^*\), Cauchy–Schwarz gives the forward bound \(2\sqrt{M_4}\sqrt\pi+2\pi\max_b\|c'_b\|^2\) and, for \(\pi<p^*/2\), the reverse centroids satisfy \(\|\hat c'_b\|^2\le2d/p^*\); labels originally empty receive only mislabelled points and contribute no reverse cross-centroid term. \(\square\)
 
-\(D(\eta)=\sum_\beta(\theta_{0\beta}/\pi_\beta)\eta_\beta\ge D_{\min}\) on the simplex; \(D\ge\theta_{0\alpha}r_\alpha\) gives \(\varphi_\alpha\le1/\theta_{0\alpha}\). The quotient identity \(\varphi'_\alpha-\varphi_\alpha=[(r'_\alpha-r_\alpha)-\varphi_\alpha(\eta)(D'-D)]/D'\) gives the coordinate bound \(|\varphi'_\alpha-\varphi_\alpha|\le D_{\min}^{-1}(|\eta'_\alpha-\eta_\alpha|/\pi_\alpha+\theta_{0\alpha}^{-1}\sum_\beta(\theta_{0\beta}/\pi_\beta)|\eta'_\beta-\eta_\beta|)\) and hence \(L\). The law change \(dP_{\theta_0}/dP_\pi=\sum\theta_{0\beta}\phi_\beta/\sum\pi_\beta\phi_\beta\le Q\). Under \(P_\pi\) with one-hot label \(Y\) and \(\eta=E[Y\mid X]\), \(E\|\hat\eta-\eta\|^2=\mathrm{BS}(\hat\eta)-\mathrm{BS}(\eta)\), and conditioning on \(\hat\eta\) splits it orthogonally into reliability and resolution gap [84, (13), (15)]. For the inverse, \(\eta_a=\pi_a\varphi_a/h\) with \(h=\sum_b\pi_b\varphi_b\in[1/Q,1/D_{\min}]\), and subtracting two ratios with \(\|\eta\|_2\le1\) gives \(L_{\rm inv}\). The score lower bound needs \(\|T h\|_2\ge\sigma_T\|h\|_2\) on \(H\), where \(\varphi'-\varphi\in H\) because \(\theta_0^\top\varphi\equiv1\); a reduced chart can annihilate a nonzero posterior error (fixture G30: two equiprobable observations with posteriors \((1/2,1/6,1/3)\) and its first-two swap, uniform priors and fractions, \(T=(1,-1,0)\); adding \((1/12,1/12,-1/6)\) to both changes reliability to \(1/24\) and no score). Retention distortion does not follow even from a full chart, because an invertible rescaling of the true score preserves every fixed-label retention (fixture G31). \(\square\)
+<a id="appendix-i3"></a>
 
-### I.4 Proofs of Theorem 16 and Propositions 17–18
+### I.3 From posterior error to score error: statement and proof
 
-*Theorem 16.* Let \(T=(\mathbf 1_{Z=b},S\mathbf 1_{Z=b},\operatorname{vech}SS^\top)_{b\le K}\), \(\theta=E[T]=(p,M,V)\). By (A2) \(T\) has finite second moments, so \(\sqrt n(\bar T-\theta)\Rightarrow N(0,\operatorname{Cov}T)\). Define \(\phi(p,M,V)=(\det\sum_{p_b>0}m_bm_b^\top/p_b\,/\det V)^{1/d}\), \(\phi:=0\) where \(\det V=0\) or the ratio is \(\le0\); then \(\hat\eta_D=\phi(\bar T)\) on *every* sample, empty cells included. On the open set \(\{p_b>0,\ V\succ0,\ I_Z\succ0\}\ni\theta\), \(\phi\) coincides with the smooth \(g=\exp\{d^{-1}[\log\det I_Z-\log\det V]\}\), so the delta method [49, Thm 3.1] applies with \(\nabla g\). By \(d\log\det A=\operatorname{tr}A^{-1}dA\) [73, §8.3] and \(dI_Z=\sum_b[(dm_b)m_b^\top+m_b(dm_b)^\top]/p_b-\sum_bm_bm_b^\top dp_b/p_b^2\),
+Appendix A states how a calibrated classifier yields the mixture score: with posteriors \(\eta\in\Delta^m\) under training priors \(\pi\), \(r_\alpha=\eta_\alpha/\pi_\alpha\), \(D(\eta)=\sum_\beta\theta_{0\beta}r_\beta\) and component ratios \(\varphi_\alpha=r_\alpha/D\), the score is a fixed linear image \(s=T\varphi\) of the ratios, in a tangent chart with \(T\mathbf 1=0\). An estimated posterior \(\hat\eta\) gives \(\hat s=T\varphi(\hat\eta)\).
+
+<div class="theorem" markdown="1">
+<div class="box-title" markdown="span">Proposition 15 — posterior error bounds score error; calibration alone bounds neither</div>
+
+For \(\theta_0\) interior, \(D\ge D_{\min}=\min_\beta\theta_{0\beta}/\pi_\beta>0\), \(0\le\varphi_\alpha\le1/\theta_{0\alpha}\), and \(\|\varphi(\eta')-\varphi(\eta)\|_2\le L\|\eta'-\eta\|_2\) on the simplex with \(L=D_{\min}^{-1}(\pi_{\min}^{-1}+Q\sqrt m\,\|1/\theta_0\|_2)\), \(Q=\max_\beta\theta_{0\beta}/\pi_\beta\). Hence
+\[
+\varepsilon^2\le\|V^{-1}\|_{\rm op}\|T\|_{\rm op}^2L^2\,E_{P_{\theta_0}}\|\hat\eta-\eta\|^2\le\|V^{-1}\|_{\rm op}\|T\|_{\rm op}^2L^2Q\,E_{P_\pi}\|\hat\eta-\eta\|^2,
+\]
+and under the training mixture \(E_{P_\pi}\|\hat\eta-\eta\|^2\) is the excess Brier score, which splits orthogonally into reliability \(E\|\hat\eta-E[\eta\mid\hat\eta]\|^2\) and the resolution gap \(E\|\eta-E[\eta\mid\hat\eta]\|^2\).
+
+Conversely \(\|\eta'-\eta\|_2\le L_{\rm inv}\|\varphi'-\varphi\|_2\) with \(L_{\rm inv}=Q(\pi_{\max}+\|\pi\|_2)\), so posterior and full-ratio errors are equivalent; a lower bound on the *score* error, \(\varepsilon^2\ge D_{\min}\sigma_T^2\,(L_{\rm inv}^2\|V\|_{\rm op})^{-1}\,\mathrm{reliability}\), holds only when the chart is injective on \(H=\{h:\theta_0^\top h=0\}\) with restricted singular value \(\sigma_T>0\).
+</div>
+
+This is a bridge from the proper-score decomposition [84] and the classifier-ratio construction [21] with checked project constants [novelty: adaptation; ledger O8-9]. Two consequences the first derivation asserted are false. Positive reliability does not bound score error for an arbitrary chart: a one-parameter submodel with \(T=(1,-1,0)\) has reliability \(1/24\) and unchanged scores (fixture G30).
+
+And bad calibration does not distort reported retention even with a full binary chart: posteriors \((3/4,1/4)\) and \((1/4,3/4)\) replaced by \((5/8,3/8)\) and \((3/8,5/8)\) give reliability \(1/32\), \(\varepsilon^2=1/4\), and both retentions equal to one — an invertible rescaling of the true score (fixture G31) [novelty: unresolved; ledger O8-10]. Calibration certifies nothing about the resolution gap, which needs truth posteriors that only simulation supplies; reliability itself is a population functional estimated under calibration-estimator assumptions.
+
+Nor does ranking quality help. The scalar law \(s\in\{-2,-1,1,2\}\) with the threshold rule at \(0\) has true retention \(9/10\); two strictly increasing distortions of the score keep every rank-cut label under corresponding thresholds, the same ROC curve and the same true retention, and report \(100/101\) and \(5105/10006\) (fixture G32) [novelty: unresolved; ledger O8-11].
+
+AUC is not a function of the whitened \(L^2\) error, and the whitened \(L^2\) error is what Theorem 13 needs.
+
+
+
+\(D(\eta)=\sum_\beta(\theta_{0\beta}/\pi_\beta)\eta_\beta\ge D_{\min}\) on the simplex; \(D\ge\theta_{0\alpha}r_\alpha\) gives \(\varphi_\alpha\le1/\theta_{0\alpha}\). The quotient identity \(\varphi'_\alpha-\varphi_\alpha=[(r'_\alpha-r_\alpha)-\varphi_\alpha(\eta)(D'-D)]/D'\) gives the coordinate bound \(|\varphi'_\alpha-\varphi_\alpha|\le D_{\min}^{-1}(|\eta'_\alpha-\eta_\alpha|/\pi_\alpha+\theta_{0\alpha}^{-1}\sum_\beta(\theta_{0\beta}/\pi_\beta)|\eta'_\beta-\eta_\beta|)\) and hence \(L\). The law change \(dP_{\theta_0}/dP_\pi=\sum\theta_{0\beta}\phi_\beta/\sum\pi_\beta\phi_\beta\le Q\). Under \(P_\pi\) with one-hot label \(Y\) and \(\eta=E[Y\mid X]\), \(E\|\hat\eta-\eta\|^2=\mathrm{BS}(\hat\eta)-\mathrm{BS}(\eta)\), and conditioning on \(\hat\eta\) splits it orthogonally into reliability and resolution gap [84, (13), (15)].
+
+For the inverse, \(\eta_a=\pi_a\varphi_a/h\) with \(h=\sum_b\pi_b\varphi_b\in[1/Q,1/D_{\min}]\), and subtracting two ratios with \(\|\eta\|_2\le1\) gives \(L_{\rm inv}\). The score lower bound needs \(\|T h\|_2\ge\sigma_T\|h\|_2\) on \(H\), where \(\varphi'-\varphi\in H\) because \(\theta_0^\top\varphi\equiv1\); a reduced chart can annihilate a nonzero posterior error (fixture G30: two equiprobable observations with posteriors \((1/2,1/6,1/3)\) and its first-two swap, uniform priors and fractions, \(T=(1,-1,0)\); adding \((1/12,1/12,-1/6)\) to both changes reliability to \(1/24\) and no score).
+
+Retention distortion does not follow even from a full chart, because an invertible rescaling of the true score preserves every fixed-label retention (fixture G31). \(\square\)
+
+<a id="appendix-i4"></a>
+
+### I.4 Sampling uncertainty: exceptional cases and proofs
+
+Keep the rule \(q\), the provider \(\hat s\), the reference point and \(K\) frozen, and draw an evaluation sample \(X_1,\dots,X_n\) iid from the evaluation law, equally weighted, independent of everything used to fit \(q\). Observe the true score \(S_i=s(X_i)\in\mathbb R^d\) and the label \(Z_i=q(\hat s(X_i))\).
+
+Because \(q\circ\hat s\) is a fixed measurable map, the pairs \((S_i,Z_i)\) are iid: the boundary non-smoothness of a refitted rule never enters. Population objects are \(p_b\), \(m_b=E[S\mathbf 1_{Z=b}]\), \(c_b=m_b/p_b\), \(V=E[SS^\top]\), \(I_Z=\sum_bm_bm_b^\top/p_b\) and \(\eta_D=(\det I_Z/\det V)^{1/d}\); under a regular model at the reference law this is the true geometric-mean retention of §9 by (3.1), and it is the geometric mean of the squared uncentred canonical correlations between \(S\) and the cell indicator, so that \(\prod_i(1-\rho_i^2)\) is Wilks' \(\Lambda\) for the grouping.
+
+The estimator is the plug-in on the same sample, \(\hat p_b=n_b/n\), \(\hat m_b=n^{-1}\sum_iS_i\mathbf 1_{Z_i=b}\), \(\hat V=n^{-1}\sum_iS_iS_i^\top\), \(\hat I_Z=\sum_{n_b>0}\hat m_b\hat m_b^\top/\hat p_b\), \(\hat\eta_D=(\det\hat I_Z/\det\hat V)^{1/d}\), with \(0/0:=0\) on empty cells and \(\hat\eta_D:=0\) when \(\det\hat V=0\); scores are never centred. On every sample \(\hat V-\hat I_Z=n^{-1}\sum_i(S_i-\hat c_{Z_i})(S_i-\hat c_{Z_i})^\top\succeq0\), so \(0\le\hat\eta_D\le1\), the uncentred matrix form of the within/between decomposition [81, (26.50)], and \(\hat\eta_D\) is exactly the library's `geometric_mean_retention` when \(\hat V\succ0\) and no direction is projected out [novelty: known; ledger O7-1].
+
+Assume (A1) \(p_b>0\) for all \(b\); (A2) \(E\|S\|^4<\infty\); (A3) \(V\succ0\); (A3′) \(I_Z\succ0\), which by the rank ceiling needs \(K\ge d+1\) at the reference law.
+
+
+
+The method is published: the vector delta method [49, Thm 3.1], the determinant differential [73, §8.3], the influence functions of Wilks-type and canonical-correlation parameters [75], [74], and asymptotic normality of eigenvalue functionals under finite fourth moments without normality, repeated roots allowed [76], [77]. In canonical coordinates \(\psi\) is \((\eta_D/d)\sum_i\operatorname{IF}(\rho_i^2)/\rho_i^2\), the average of Romanazzi's per-coefficient influence functions in the form restated by [80].
+
+What is project algebra is the uncentred fixed-partition form on the cell moments the library computes, the plug-in variance with its consistency, and the \(d=1\) reduction [novelty: adaptation; ledger O7-2, O7-3; scalar case O6-1, O6-2, O6-3]. The "if" in the Wald statement is not an "iff": when \(\sigma^2=0\) the first-order theory gives no level, and the quadratic-form limit of \(n(\hat\eta_D-\eta_D)\) is not derived; measured, the interval is then conservative with width \(O(1/n)\).
+
+<div class="theorem" markdown="1">
+<div class="box-title" markdown="span">Proposition 17 — the variance vanishes exactly on per-cell ellipsoids</div>
+
+Under (A1)–(A3′), \(\sigma^2=0\) iff for every cell \(b\) the conditional law of \(S\) given \(Z=b\) is supported on
+\[
+\mathcal E_b=\Big\{s:\ (s-VI_Z^{-1}c_b)^\top V^{-1}(s-VI_Z^{-1}c_b)=c_b^\top I_Z^{-1}(V-I_Z)I_Z^{-1}c_b\Big\},
+\]
+an ellipsoid in the \(V^{-1}\) metric, a single point when the right side is \(0\). An absolutely continuous cell of positive probability therefore forces (A4).
+
+At \(d=1\), \(\mathcal E_b=\{c_b/(1\mp\sqrt{1-\eta})\}\) for \(0<\eta<1\), and at \(\eta=0\) every law with vanishing cell means has \(\psi\equiv0\). At \(\eta_D=1\), \(S=c_Z\) a.s., \(\psi\equiv0\), and \(\hat\eta_D=1\) on every sample whose occupied cell means span \(\mathbb R^d\).
+</div>
+
+Completing the square gives the ellipsoid [novelty: direct corollary; ledger O7-4, O6-4]. The scalar remark "an atomless cell of positive probability forces \(\sigma^2>0\)" is true for \(0<\eta<1\), fails at \(\eta=0\) (fixture G21), and does not lift to \(d\ge2\): four cells related by quarter turns with \(S\mid Z=0\) uniform on \(\{(3,4),(3,-4)\}\) have \(\eta_D=9/25\) and \(\psi=0\) at every atom, the cell-0 ellipsoid is the circle \(|s-(25/3,0)|=20/3\), and the *atomless* law uniform on the arc of half-angle \(\alpha\approx1.1311\) about the far point has \(\sigma^2=0\) as well (fixture G22) [novelty: unresolved; ledger O7-5].
+
+The \(\eta_D=1\) statement needs its spanning qualifier: a sample confined to fewer spanning cells has \(\hat V\) singular and \(\hat\eta_D=0\) by convention, while a library that projects the singular direction returns \(1\) (fixture G23); the event has probability \(2^{1-n}\) on the witness and vanishes exponentially under (A1) [novelty: unresolved; ledger O7-6].
+
+<div class="theorem" markdown="1">
+<div class="box-title" markdown="span">Proposition 18 — at a singular population retention the plug-in is biased upward at rate \(n^{-(d-r)/d}\)</div>
+
+Let (A1), (A3) hold with \(E\|S\|^2<\infty\), and let \(r=\operatorname{rank}I_Z<d\), so \(\eta_D=0\), with \(U\) an orthonormal basis of the null space of \(I_Z\). Then \(\hat\eta_D=O_p(n^{-(d-r)/d})\), and if \(K\ge d\) and \(E[U^\top SS^\top U\,\mathbf 1_{Z=b}]\succ0\) for every cell, \(n^{(d-r)/d}\hat\eta_D\) converges in law to a strictly positive random variable, namely \((\det A\,\det(WP^{-1}W^\top)/\det V)^{1/d}\) with \(A=R^\top I_ZR\), \(P=\operatorname{diag}(p)\), \(W=G(I-\Lambda)\), \(G\) the Gaussian limit of \(\sqrt n\,U^\top\hat m\) and \(\Lambda\) a rank-\(r\) idempotent.
+
+At \(d=2\), \(K=2\) on the Hermite law with cut \(0\) the limit is \(|G_0+G_1|/\sqrt\pi\), mean \(2/\pi\).
+</div>
+
+The rate is classical in another formulation: sample canonical correlations whose population value is zero are \(O_p(n^{-1/2})\) with a known limit law, from Hsu [85] through the dimensionality tests of Glynn and Muirhead [86] and, under nonnormality, [78]; the rank-test limit of \(n\)-scaled smallest roots as weighted \(\chi^2\) sums [79] has the same shape at \(d-r=1\). What is project algebra is the determinant form, the explicit Schur-complement limit and the bias reading for the retention estimator [novelty: adaptation; ledger O7-7].
+
+The reference-law instance is \(K=d\): the rank ceiling forces \(\eta_D=0\), the plug-in is positive of order \(n^{-1/d}\), and the library's number is that plug-in. For \(r=d-1\), this scale equals the CLT scale at \(d=2\) and is slower at \(d>2\), the measured plug-in and its Wald half-width are of the same order, and coverage of the true \(0\) is measured to stabilise at a law-dependent constant (\(0.95\) on the \(d=2\), \(K=2\) law by coincidence, \(0.80\) on the \(d=3\), \(K=3\) law); the joint limit behind that statement is not derived.
+
+The right tool at the endpoint is a rank test, not this interval.
+
+**Measured.** On a bounded three-component mixture-fraction score (\(d=2\), \(K=4\), \(E\|S\|^4=22\)) the \(95\%\) Wald interval covers \(0.950,0.945,0.956,0.945\) at \(n=100,300,1000,3000\), with \(\mathrm{SD}(\hat\eta_D)=\sigma/\sqrt n\) at every size and \(\hat\sigma\) within \(8\%\) of \(\sigma\) at \(n=100\) and \(3\%\) beyond; on the classifier-estimated scalar mixture rule of Appendix A (a mixture fraction estimated by a classifier trained on 15 events per class, \(d=1\), \(K=4\)) coverage is \(0.913,0.934,0.953,0.949\). On unbounded polynomial scores (Hermite, \(E\|S\|^4=83\) in \(d=2\) and \(4259\) in \(d=3\)) every first-order quantity converges as the theorem says but slowly: \(\hat\sigma\) underestimates \(\sigma\) by \(46\%\) at \(n=100\) and \(5\%\) at \(n=3000\) in \(d=2\), by \(76\%\) and \(25\%\) in \(d=3\), because \(\hat\sigma^2\) is a sample eighth or twelfth moment of the observation, and coverage is \(0.68\to0.94\) and \(0.40\to0.83\).
+
+This is a second-order, heavy-tail effect governed by the fourth moment, not a counterexample; every population reference and every coverage number was replicated on fresh seeds by the independent audit [novelty: unresolved; ledger O6-6, O7-8, O7-9]. Nothing is claimed about coverage on heavy-tailed scores at the sizes shown beyond the numbers themselves.
+
+
+
+*Theorem 16.* Let \(T=(\mathbf 1_{Z=b},S\mathbf 1_{Z=b},\operatorname{vech}SS^\top)_{b\le K}\), \(\theta=E[T]=(p,M,V)\). By (A2) \(T\) has finite second moments, so \(\sqrt n(\bar T-\theta)\Rightarrow N(0,\operatorname{Cov}T)\). Define \(\phi(p,M,V)=(\det\sum_{p_b>0}m_bm_b^\top/p_b\,/\det V)^{1/d}\), \(\phi:=0\) where \(\det V=0\) or the ratio is \(\le0\); then \(\hat\eta_D=\phi(\bar T)\) on *every* sample, empty cells included. On the open set \(\{p_b>0,\ V\succ0,\ I_Z\succ0\}\ni\theta\), \(\phi\) coincides with the smooth \(g=\exp\{d^{-1}[\log\det I_Z-\log\det V]\}\), so the delta method [49, Thm 3.1] applies with \(\nabla g\).
+
+By \(d\log\det A=\operatorname{tr}A^{-1}dA\) [73, §8.3] and \(dI_Z=\sum_b[(dm_b)m_b^\top+m_b(dm_b)^\top]/p_b-\sum_bm_bm_b^\top dp_b/p_b^2\),
 \[
 d\log\det I_Z=\sum_b\big[2c_b^\top I_Z^{-1}dm_b-c_b^\top I_Z^{-1}c_b\,dp_b\big],\qquad d\log\det V=\operatorname{tr}(V^{-1}dV).
 \]
-Substituting one observation's increments \(dp_b=\mathbf 1_{Z=b}-p_b\), \(dm_b=S\mathbf 1_{Z=b}-m_b\), \(dV=SS^\top-V\), the constant part is \((\eta_D/d)(2d-d-d)=0\) because \(\sum_bm_bc_b^\top=\sum_bp_bc_bc_b^\top=I_Z\) and \(\operatorname{tr}V^{-1}V=d\); hence \(\nabla g^\top(T-\theta)=\psi\), \(E\psi=0\) and \(\sigma^2=E\psi^2\). The three sample identities \(\sum_iS_i^\top\hat I_Z^{-1}\hat c_{Z_i}=\sum_i\hat c_{Z_i}^\top\hat I_Z^{-1}\hat c_{Z_i}=\sum_iS_i^\top\hat V^{-1}S_i=nd\) give \(\sum_i\hat\psi_i=0\). \(\hat\sigma^2\) is a fixed polynomial in \(\hat\eta_D\), \(\hat I_Z^{-1}\), \(\hat V^{-1}\), \(\hat c_b\) and within-cell empirical moments of order \(\le4\); by (A2) and the strong law every such moment converges a.s., (A1), (A3), (A3′) put the limit in the continuity set, and empty cells are a.s. transient by Borel–Cantelli under (A1). Slutsky gives the Wald level under (A4). In canonical coordinates (\(Mb_i=\rho_iVa_i\), \(u_i=a_i^\top S\), \(v_i=b_{i,Z}\)) \(S^\top V^{-1}S=\sum u_i^2\), \(c_Z^\top I_Z^{-1}c_Z=\sum v_i^2\), \(S^\top I_Z^{-1}c_Z=\sum u_iv_i/\rho_i\), which gives the Romanazzi form; the determinant route does not need simple \(\rho_i\). At \(d=1\), \(I_Z=\eta v\) and \(2c_ZS-c_Z^2=S^2-(S-c_Z)^2\) give the scalar forms; the finite-sample identity is \(\sum_i(S_i-\hat c_{Z_i})^2=\sum_iS_i^2-\sum_bn_b\hat c_b^2\). \(\square\)
+Substituting one observation's increments \(dp_b=\mathbf 1_{Z=b}-p_b\), \(dm_b=S\mathbf 1_{Z=b}-m_b\), \(dV=SS^\top-V\), the constant part is \((\eta_D/d)(2d-d-d)=0\) because \(\sum_bm_bc_b^\top=\sum_bp_bc_bc_b^\top=I_Z\) and \(\operatorname{tr}V^{-1}V=d\); hence \(\nabla g^\top(T-\theta)=\psi\), \(E\psi=0\) and \(\sigma^2=E\psi^2\). The three sample identities \(\sum_iS_i^\top\hat I_Z^{-1}\hat c_{Z_i}=\sum_i\hat c_{Z_i}^\top\hat I_Z^{-1}\hat c_{Z_i}=\sum_iS_i^\top\hat V^{-1}S_i=nd\) give \(\sum_i\hat\psi_i=0\).
 
-*Proposition 17.* \(\psi=0\) a.s. iff \(s^\top V^{-1}s-2s^\top I_Z^{-1}c_b+c_b^\top I_Z^{-1}c_b=0\) on the support of each conditional law; completing the square in the \(V^{-1}\) metric turns the left side into \((s-VI_Z^{-1}c_b)^\top V^{-1}(s-VI_Z^{-1}c_b)-c_b^\top I_Z^{-1}(V-I_Z)I_Z^{-1}c_b\), and \(V-I_Z\succeq0\) makes the right side of \(\mathcal E_b\) nonnegative. The quadratic part \(-(\eta_D/d)s^\top V^{-1}s\) is a nonzero polynomial, so the zero set is Lebesgue-null. At \(d=1\) the roots are \(c_b/(1\mp\sqrt{1-\eta})\) for \(0<\eta<1\); at \(\eta=0\) all \(c_b=0\) and the equation is \(s^2=s^2\). At \(\eta_D=1\), \(V=I_Z\) forces \(S=c_Z\) a.s.; on a sample whose occupied cell means span \(\mathbb R^d\), \(\hat V=\hat I_Z\succ0\) and the ratio is \(1\); otherwise \(\det\hat V=0\) and the convention returns \(0\) (fixture G23; probability \(2^{1-n}\) on the two-cell witness). The fixture G22 identity \(\psi_r(s)=-(2r/25)(s_1^2+s_2^2-\tfrac{50}3s_1+25)\) with \(V=\tfrac{25}2I\), \(I_Z=\tfrac92I\) is verified in exact arithmetic, and the arc law with \(\sin\alpha/\alpha=4/5\) has mean \((3,0)\) and second moment \(25\) on the circle, so it inherits \(\sigma^2=0\). \(\square\)
+\(\hat\sigma^2\) is a fixed polynomial in \(\hat\eta_D\), \(\hat I_Z^{-1}\), \(\hat V^{-1}\), \(\hat c_b\) and within-cell empirical moments of order \(\le4\); by (A2) and the strong law every such moment converges a.s., (A1), (A3), (A3′) put the limit in the continuity set, and empty cells are a.s. transient by Borel–Cantelli under (A1). Slutsky gives the Wald level under (A4).
 
-*Proposition 18.* Let \(R\) span the range of \(I_Z\) and write \(a_b=R^\top\hat m_b\), \(u_b=U^\top\hat m_b\). Since \(I_Z\succeq m_bm_b^\top/p_b\), \(U^\top m_b=0\) for every \(b\), so \(\sqrt n\,u_b\Rightarrow G_b\) jointly with \(G_b\sim N(0,E[U^\top SS^\top U\mathbf 1_{Z=b}])\), independent across cells because the indicators are disjoint. In the basis \([R\ U]\), \(\hat I_Z\) has blocks \(A_n=\sum_ba_ba_b^\top/\hat p_b\to A\succ0\), \(B_n=O_p(n^{-1/2})\), \(C_n=\sum_bu_bu_b^\top/\hat p_b=O_p(n^{-1})\), and \(\det\hat I_Z=\det A_n\det S_n\) with the Schur complement \(S_n=\sum_b(u_b-\Gamma_na_b)(u_b-\Gamma_na_b)^\top/\hat p_b\), \(\Gamma_n=B_n^\top A_n^{-1}\). By the CLT, the strong law and Slutsky, \(nS_n\Rightarrow WP^{-1}W^\top\) with \(W=G(I-\Lambda)\), \(\Lambda_{b'b}=a_{b'}^{\infty\top}A^{-1}a_b^\infty/p_{b'}\) a rank-\(r\) idempotent. Hence \(n^{d-r}\hat\eta_D^d\Rightarrow\det A\det(WP^{-1}W^\top)/\det V=O_p(1)\). Under the nondegeneracy hypothesis \(G\) has a Lebesgue density on \(\mathbb R^{(d-r)\times K}\), \(W\) one on the \((d-r)(K-r)\)-dimensional image, and when \(K-r\ge d-r\) the rank-deficient matrices form a proper algebraic subvariety, so \(\operatorname{rank}W=d-r\) a.s. On the \(d=2\), \(K=2\) Hermite law with cut \(0\): \(A=2/\pi\), \(\Lambda=\frac12\begin{pmatrix}1&-1\\-1&1\end{pmatrix}\), \(G_b\sim N(0,1)\), \(\det V=2\), giving \(\sqrt n\,\hat\eta_D\Rightarrow|G_0+G_1|/\sqrt\pi\). The heuristic \(\hat\sigma/\sqrt n=O_p(n^{-(d-r)/d})\), and with it the coverage-constant statement of §8.4, is measured and not proved: the joint limit of \((n^{(d-r)/d}\hat\eta_D,\ n^{(d-r)/d}\hat\sigma/\sqrt n)\) is not derived. \(\square\)
+In canonical coordinates (\(Mb_i=\rho_iVa_i\), \(u_i=a_i^\top S\), \(v_i=b_{i,Z}\)) \(S^\top V^{-1}S=\sum u_i^2\), \(c_Z^\top I_Z^{-1}c_Z=\sum v_i^2\), \(S^\top I_Z^{-1}c_Z=\sum u_iv_i/\rho_i\), which gives the Romanazzi form; the determinant route does not need simple \(\rho_i\). At \(d=1\), \(I_Z=\eta v\) and \(2c_ZS-c_Z^2=S^2-(S-c_Z)^2\) give the scalar forms; the finite-sample identity is \(\sum_i(S_i-\hat c_{Z_i})^2=\sum_iS_i^2-\sum_bn_b\hat c_b^2\). \(\square\)
+
+*Proposition 17.* \(\psi=0\) a.s. iff \(s^\top V^{-1}s-2s^\top I_Z^{-1}c_b+c_b^\top I_Z^{-1}c_b=0\) on the support of each conditional law; completing the square in the \(V^{-1}\) metric turns the left side into \((s-VI_Z^{-1}c_b)^\top V^{-1}(s-VI_Z^{-1}c_b)-c_b^\top I_Z^{-1}(V-I_Z)I_Z^{-1}c_b\), and \(V-I_Z\succeq0\) makes the right side of \(\mathcal E_b\) nonnegative. The quadratic part \(-(\eta_D/d)s^\top V^{-1}s\) is a nonzero polynomial, so the zero set is Lebesgue-null.
+
+At \(d=1\) the roots are \(c_b/(1\mp\sqrt{1-\eta})\) for \(0<\eta<1\); at \(\eta=0\) all \(c_b=0\) and the equation is \(s^2=s^2\). At \(\eta_D=1\), \(V=I_Z\) forces \(S=c_Z\) a.s.; on a sample whose occupied cell means span \(\mathbb R^d\), \(\hat V=\hat I_Z\succ0\) and the ratio is \(1\); otherwise \(\det\hat V=0\) and the convention returns \(0\) (fixture G23; probability \(2^{1-n}\) on the two-cell witness).
+
+The fixture G22 identity \(\psi_r(s)=-(2r/25)(s_1^2+s_2^2-\tfrac{50}3s_1+25)\) with \(V=\tfrac{25}2I\), \(I_Z=\tfrac92I\) is verified in exact arithmetic, and the arc law with \(\sin\alpha/\alpha=4/5\) has mean \((3,0)\) and second moment \(25\) on the circle, so it inherits \(\sigma^2=0\). \(\square\)
+
+*Proposition 18.* Let \(R\) span the range of \(I_Z\) and write \(a_b=R^\top\hat m_b\), \(u_b=U^\top\hat m_b\). Since \(I_Z\succeq m_bm_b^\top/p_b\), \(U^\top m_b=0\) for every \(b\), so \(\sqrt n\,u_b\Rightarrow G_b\) jointly with \(G_b\sim N(0,E[U^\top SS^\top U\mathbf 1_{Z=b}])\), independent across cells because the indicators are disjoint. In the basis \([R\ U]\), \(\hat I_Z\) has blocks \(A_n=\sum_ba_ba_b^\top/\hat p_b\to A\succ0\), \(B_n=O_p(n^{-1/2})\), \(C_n=\sum_bu_bu_b^\top/\hat p_b=O_p(n^{-1})\), and \(\det\hat I_Z=\det A_n\det S_n\) with the Schur complement \(S_n=\sum_b(u_b-\Gamma_na_b)(u_b-\Gamma_na_b)^\top/\hat p_b\), \(\Gamma_n=B_n^\top A_n^{-1}\).
+
+By the CLT, the strong law and Slutsky, \(nS_n\Rightarrow WP^{-1}W^\top\) with \(W=G(I-\Lambda)\), \(\Lambda_{b'b}=a_{b'}^{\infty\top}A^{-1}a_b^\infty/p_{b'}\) a rank-\(r\) idempotent. Hence \(n^{d-r}\hat\eta_D^d\Rightarrow\det A\det(WP^{-1}W^\top)/\det V=O_p(1)\). Under the nondegeneracy hypothesis \(G\) has a Lebesgue density on \(\mathbb R^{(d-r)\times K}\), \(W\) one on the \((d-r)(K-r)\)-dimensional image, and when \(K-r\ge d-r\) the rank-deficient matrices form a proper algebraic subvariety, so \(\operatorname{rank}W=d-r\) a.s.
+
+On the \(d=2\), \(K=2\) Hermite law with cut \(0\): \(A=2/\pi\), \(\Lambda=\frac12\begin{pmatrix}1&-1\\-1&1\end{pmatrix}\), \(G_b\sim N(0,1)\), \(\det V=2\), giving \(\sqrt n\,\hat\eta_D\Rightarrow|G_0+G_1|/\sqrt\pi\). The heuristic \(\hat\sigma/\sqrt n=O_p(n^{-(d-r)/d})\), and with it the coverage observations in Appendix I.4, is measured and not proved: the joint limit of \((n^{(d-r)/d}\hat\eta_D,\ n^{(d-r)/d}\hat\sigma/\sqrt n)\) is not derived. \(\square\)
+
+<a id="appendix-i5"></a>
 
 ### I.5 What the audits changed
 
-Two independent audits, run in sessions that had not seen the derivations, verified every statement of §8 and hardened the following. **O7 (6 September 2026).** The \(\eta_D=1\) sentence gained its spanning qualifier (fixture G23); the Wald "iff" became "if"; the endpoint coverage constant was reclassified from proved to measured; the degenerate one-point ellipsoid was named. **O8 (8 September 2026).** The scalar log lower bound was corrected to the floor \(m=\min(0,\lambda_{\min})\) (fixture G26); the two alignment bounds were declared independent rather than ordered (fixture G27); translation invariance was withdrawn in favour of invertible linear invariance with rule transport (fixture G28); the least-squares minimizer was restricted to nonsingular cross moments (fixture G29); the reverse calibration bound was restricted to injective charts with explicit constants (fixture G30) and the claim that bad calibration distorts reported retention was refuted (fixture G31); the AUC fixture's semantics were corrected to corresponding rank-cut thresholds (fixture G32); the deployment corollary's two budgets were assigned to the right rules and the free comparator substitution removed; the transfer rates received explicit metric, moment and mass domains; and the \(\rho_{\min}\) fixture's prose formula was corrected to \(\varepsilon^2=\kappa^2/(9+\delta^2)\). No core inequality changed. The audit instruments and their records are `py/audit_retention_plugin_vector.py`, `py/audit_score_error_budget.py` and the measurement rows `N-ORACLE-*`, `N-VECTOR-*` and `N-SCORE-ERROR-*` of `NUMERICAL_EVIDENCE.md`.
+Two independent audits, run in sessions that had not seen the derivations, verified every statement of §8 and hardened the following. **O7 (6 September 2026).** The \(\eta_D=1\) sentence gained its spanning qualifier (fixture G23); the Wald "iff" became "if"; the endpoint coverage constant was reclassified from proved to measured; the degenerate one-point ellipsoid was named.
+
+**O8 (8 September 2026).** The scalar log lower bound was corrected to the floor \(m=\min(0,\lambda_{\min})\) (fixture G26); the two alignment bounds were declared independent rather than ordered (fixture G27); translation invariance was withdrawn in favour of invertible linear invariance with rule transport (fixture G28); the least-squares minimizer was restricted to nonsingular cross moments (fixture G29); the reverse calibration bound was restricted to injective charts with explicit constants (fixture G30) and the claim that bad calibration distorts reported retention was refuted (fixture G31); the AUC fixture's semantics were corrected to corresponding rank-cut thresholds (fixture G32); the deployment corollary's two budgets were assigned to the right rules and the free comparator substitution removed; the transfer rates received explicit metric, moment and mass domains; and the \(\rho_{\min}\) fixture's prose formula was corrected to \(\varepsilon^2=\kappa^2/(9+\delta^2)\). No core inequality changed.
+
+The audit instruments and their records are `py/audit_retention_plugin_vector.py`, `py/audit_score_error_budget.py` and the measurement rows `N-ORACLE-*`, `N-VECTOR-*` and `N-SCORE-ERROR-*` of `NUMERICAL_EVIDENCE.md`.

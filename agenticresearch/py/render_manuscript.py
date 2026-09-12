@@ -59,6 +59,8 @@ h1{font-family:Georgia,"Times New Roman",serif;font-size:3.05rem;line-height:1.0
 .abstract{border-top:2px solid #222;border-bottom:1px solid var(--line);padding:25px 0;margin:24px 0 36px}
 .abstract h2{font-size:.85rem;text-transform:uppercase;letter-spacing:.11em;margin:0 0 9px;font-family:inherit}
 .abstract p{font-family:Georgia,"Times New Roman",serif;font-size:1.08rem;margin:0}
+.abstract p+p{margin-top:12px}
+mjx-container[jax="SVG"][display="true"]{min-width:0!important;max-width:100%;overflow-x:auto;overflow-y:hidden}
 h2{font-family:Georgia,"Times New Roman",serif;font-size:2.0rem;margin:58px 0 15px;line-height:1.18;font-weight:600;border-top:1px solid var(--line);padding-top:28px}
 h3{font-family:Georgia,"Times New Roman",serif;font-size:1.38rem;margin:34px 0 10px;line-height:1.25}
 h4{font-size:1rem;margin:24px 0 7px}
@@ -98,9 +100,10 @@ sup.ref a{font-size:.75em}
 .downloads{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
 .button{display:inline-block;padding:8px 12px;border:1px solid #bdbdb7;border-radius:8px;background:#fff;font-size:.88rem;color:#222}
 .button:hover{text-decoration:none;background:#f1f1ed}
-@media(max-width:1000px){.layout{display:block;padding:12px}aside{display:none}main{padding:38px 30px;border-radius:12px}.status-grid{grid-template-columns:1fr 1fr}
-@media(max-width:650px){main{padding:30px 20px}h1{font-size:2.2rem}.figure-pair,.two-col,.status-grid{grid-template-columns:1fr}.subtitle{font-size:1.12rem}table{font-size:.82rem}
-@media print{body{background:#fff}.layout{display:block;padding:0}aside{display:none}main{border:0;box-shadow:none;padding:0;max-width:none}.button{display:none}details{break-inside:avoid}details>summary{display:none}details>*{display:block!important}a{color:#000}
+@media(max-width:1000px){.layout{display:block;padding:12px}aside{display:none}main{padding:38px 30px;border-radius:12px}.status-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:1000px){table{display:block;max-width:100%;overflow-x:auto}mjx-container{max-width:100%;overflow-x:auto;overflow-y:hidden}mjx-container:not([display]){display:inline-block;vertical-align:middle}code{overflow-wrap:anywhere}}
+@media(max-width:650px){main{padding:30px 20px}h1{font-size:2.2rem}.figure-pair,.two-col,.status-grid{grid-template-columns:1fr}.subtitle{font-size:1.12rem}table{font-size:.82rem}}
+@media print{body{background:#fff}.layout{display:block;padding:0}aside{display:none}main{border:0;box-shadow:none;padding:0;max-width:none}.button{display:none}details{break-inside:avoid}details>summary{display:none}details>*{display:block!important}a{color:#000}}
 
 .mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
 .mode-card{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fafafa}
@@ -110,7 +113,7 @@ sup.ref a{font-size:.75em}
 .eqbox{background:#f8fafc;border:1px solid #d9dfe8;border-radius:10px;padding:15px 18px;margin:18px 0}
 .badge{display:inline-block;font-size:.73rem;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-right:6px;color:#555;background:#fff}
 .api-table td:first-child{white-space:nowrap;font-weight:650}
-@media(max-width:850px){.mode-grid{grid-template-columns:1fr}
+@media(max-width:850px){.mode-grid{grid-template-columns:1fr}}
 sup.novelty{display:none;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.66rem;color:var(--muted);white-space:nowrap;margin-left:2px;cursor:help}
 body.show-provenance sup.novelty{display:inline}
 .provenance-toggle{display:block;width:100%;margin:18px 0 0;padding:7px 10px;font:inherit;font-size:.82rem;color:#444;background:#fafafa;border:1px solid var(--line);border-radius:8px;cursor:pointer}
@@ -234,7 +237,7 @@ def render(source: str) -> str:
     body = _mark_novelty(body)
     body = _restore_math(body, spans)
     body = _wrap_abstract(body)
-    toc = _toc(md)
+    toc = _restore_math(_toc(md), spans)
     plain_title = re.sub(r"\\\((.*?)\\\)", r"\1", title)
     head = [
         "<!doctype html>",

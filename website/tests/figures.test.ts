@@ -13,7 +13,8 @@ import {describe, expect, it} from "vitest";
 // merely *placed* there resolves on the machine that placed it and nowhere
 // else. This resolves each reference against the lane that actually owns it.
 const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const contentDirs = ["walkthroughs", "get-started"];
+// `src/pages` holds the front and research pages, which show figures too.
+const contentDirs = ["walkthroughs", "get-started", "src/pages"];
 const staticRoot = join(websiteRoot, "static");
 const generatorPath = join(websiteRoot, "scripts/generate_walkthroughs.py");
 
@@ -30,14 +31,14 @@ function generatedFigureNames(): string[] {
   return names;
 }
 
-/** Every `siteUrl("...")` argument in the MDX under `contentDirs`, tagged with its file. */
+/** Every `siteUrl("...")` argument in the pages under `contentDirs`, tagged with its file. */
 function siteUrlReferences(): {file: string; path: string}[] {
   const found: {file: string; path: string}[] = [];
   for (const dir of contentDirs) {
     const root = join(websiteRoot, dir);
     if (!existsSync(root)) continue;
     for (const entry of readdirSync(root)) {
-      if (!entry.endsWith(".mdx") && !entry.endsWith(".md")) continue;
+      if (!/\.(mdx?|tsx)$/.test(entry)) continue;
       const source = readFileSync(join(root, entry), "utf8");
       for (const match of source.matchAll(/siteUrl\("([^"]+)"\)/g)) {
         const [, path] = match;

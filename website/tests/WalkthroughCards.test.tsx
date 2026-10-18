@@ -53,13 +53,13 @@ describe("WalkthroughCards", () => {
     }
   });
 
-  it("types no digit into a problem or data summary except through a fact", () => {
+  it("types no digit into a summary or result except through a fact", () => {
     // A summary may carry a bin budget, which arrives from `factsFor`; the
     // guard is that the data module itself holds no numeral. The generated
     // budgets are small integers, so strip one- or two-digit numbers that a
     // fact resolved and require nothing else.
     for (const card of WALKTHROUGHS) {
-      for (const summary of [card.lead, card.problem, card.data]) {
+      for (const summary of [card.lead, card.problem, card.data, card.result]) {
         const residue = summary.replace(/\b\d{1,2}\b/g, "");
         expect(residue).not.toMatch(/\d/);
       }

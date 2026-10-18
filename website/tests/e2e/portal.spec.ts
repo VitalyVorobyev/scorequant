@@ -41,6 +41,7 @@ const ROUTES = [
   "./walkthroughs/hep/",
   "./walkthroughs/michelson/",
   "./walkthroughs/ratios/",
+  "./research/",
 ];
 
 /**
@@ -57,16 +58,22 @@ const SCANNED = [
   "./walkthroughs/hep/",
   "./walkthroughs/michelson/",
   "./walkthroughs/ratios/",
+  "./research/",
 ];
 
 test("home states the task and runs nothing", async ({page}) => {
   await page.goto("./");
-  // The site root. The equations render through KaTeX at build time.
+  // The site root: one sentence, one picture of score-space cells, then the
+  // reason, the four results and where to start.
   await expect(page.getByRole("heading", {name: "ScoreQuant", level: 1})).toBeVisible();
-  const sections = ["The problem", "Why score space?", "Two ways to use it", "Where do the scores come from?", "What is being optimized?", "Where next?"];
+  await expect(page.getByRole("img", {name: /^Three panels\. Top left: the raw score plane tinted by six convex cells/})).toBeVisible();
+  const sections = ["Why score space", "Walkthroughs", "Get started"];
   const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
   expect(headings).toEqual(sections);
-  expect(await page.locator(".katex-display").count()).toBeGreaterThan(1);
+  await expect(page.locator(".home-card")).toHaveCount(4);
+  await expect(page.getByRole("link", {name: "Phase Estimation in a Michelson Interferometer"})).toHaveAttribute("href", /\/scorequant\/walkthroughs\/michelson\/?$/);
+  // The score is written once, inline, through KaTeX at build time.
+  expect(await page.locator(".katex").count()).toBeGreaterThan(0);
   // The documentation stays one click from the root through the shell: the
   // primary navigation's Reference entry -- asserted
   // in the DOM rather than by role, because at mobile widths it sits behind the
@@ -75,6 +82,17 @@ test("home states the task and runs nothing", async ({page}) => {
   await expect(page.locator('nav[aria-label="Primary"] a').filter({hasText: "Reference"})).toHaveAttribute("href", "/scorequant/docs/");
   await expect(page.getByRole("contentinfo").getByRole("link", {name: "Documentation"})).toHaveAttribute("href", "/scorequant/docs/");
   await expect(page.getByRole("button", {name: /browser/i})).toHaveCount(0);
+});
+
+test("the research page states the theorem, its limits and the record, and is in the navigation", async ({page}) => {
+  await page.goto("./research/");
+  await expect(page.getByRole("heading", {name: "Research", level: 1})).toBeVisible();
+  const sections = ["The theorem", "Where it stops", "What is new", "Proofs and counterexamples"];
+  const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
+  expect(headings).toEqual(sections);
+  await expect(page.locator('nav[aria-label="Primary"] a').filter({hasText: "Research"})).toHaveAttribute("href", /\/scorequant\/research\/?$/);
+  await expect(page.getByRole("link", {name: "research/formal"})).toHaveAttribute("href", "https://github.com/VitalyVorobyev/scorequant/tree/main/research/formal");
+  await expect(page.getByRole("link", {name: "tests/fixtures/counterexamples"})).toHaveAttribute("href", "https://github.com/VitalyVorobyev/scorequant/tree/main/tests/fixtures/counterexamples");
 });
 
 test("every route renders one main landmark and none of them loads a runtime", async ({page}) => {

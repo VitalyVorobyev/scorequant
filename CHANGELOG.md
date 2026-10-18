@@ -9,7 +9,11 @@ An `[Unreleased]` section is created by the first change that lands after a rele
 deliberately carries no empty one: a standing `unreleased` heading was dated by a later commit
 once already, which retroactively asserted that unshipped work had shipped.
 
-## [Unreleased]
+## [0.4.0] — 2026-10-18
+
+**Breaking:** the top level is cut to a core plus five public submodules, and iteration caps are
+all `max_iter`. The table under "Changed (breaking)" maps every old spelling to its new one.
+This release is the candidate for the 1.0 API.
 
 ### Added
 

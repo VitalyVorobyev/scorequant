@@ -110,6 +110,22 @@ jobs:
           axiom-audit-root: ScoreQuantFormal
           axiom-audit-allow: propext,Classical.choice,Quot.sound
 
+  # The paper builds on every run: GitHub filters paths per workflow, not per
+  # job, and the build is cheap. Its figure is read from examples/outputs, so
+  # the whole checkout is needed. The PDF is kept as an artifact.
+  paper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: research/paper
+      - uses: actions/upload-artifact@v6
+        with:
+          name: paper
+          path: research/paper/main.pdf
+
   build:
     runs-on: ubuntu-latest
     env:

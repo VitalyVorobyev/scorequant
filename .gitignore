@@ -31,3 +31,9 @@ agenticresearch/formal/.lake/
 
 # Claude Code session state: local worktrees and transcripts, never committed.
 .claude/
+
+# Local secrets and tool caches: never committed, whatever the file is called.
+.env
+.env.*
+*.pem
+.hypothesis/

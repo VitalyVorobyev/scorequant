@@ -17,7 +17,7 @@ Source + (densities | density ratios | scores) -> ScoreProvider -> score law -> 
   never share an argument, and estimated ratios never claim exact Fisher semantics.
 
 JAX remains the default runtime and Optax owns its gradient updates. NumPy is the approved portable
-runtime from roadmap M9 and must implement the same shared mathematics, never a copied solver tree.
+runtime (ADR 0018) and must implement the same shared mathematics, never a copied solver tree.
 Do not add PyTorch or mutate global JAX configuration. Backend primitives stay private; there is no
 public registry or provisional backend class.
 
@@ -49,7 +49,7 @@ public registry or provisional backend class.
 
 ## Research workflow
 
-- `agenticresearch/` governs itself through its own `agenticresearch/README.md` and `OPEN_PROBLEMS.md`, and is excluded from the Ruff gate.
+- The research programme is frozen (ADR 0043): no research session starts without an explicit owner reopen. `agenticresearch/` governs itself through its own `agenticresearch/README.md` and `OPEN_PROBLEMS.md`, and is excluded from the Ruff gate.
 - The library crosses into it at exactly two points: `tests/test_research_claims.py` reads counterexample fixtures from `agenticresearch/COUNTEREXAMPLES/`, and `tests/test_research_registry.py` runs `agenticresearch/py/registry.py validate` plus the index-freshness check.
 - Research results become library behaviour only by being copied into deterministic regression tests or theorem-cited code paths.
 - Code in `src/` that relies on a theorem names it; code that refuses a capability names the counterexample forcing the refusal.
@@ -59,7 +59,7 @@ public registry or provisional backend class.
 
 - `uv` is the only supported Python environment, dependency, build, and command runner: no pip, Conda, or Poetry, and never hand-edit `uv.lock` — use `uv add`, `uv remove`, and `uv lock` instead.
 - The isolated `website/` workspace uses its own pinned Node and pnpm versions.
-- Every command, test tier, and the handoff gate live in [`docs/development.md`](docs/development.md); run commands through `uv run` so local and CI environments stay aligned.
+- Every command and test tier lives in [`docs/development.md`](docs/development.md); run commands through `uv run` so local and CI environments stay aligned.
 
 ## Engineering and documentation practices
 
@@ -77,7 +77,7 @@ public registry or provisional backend class.
 
 Persistence, services, remote execution, PyTorch, signed weights, and advanced statistical
 objectives remain deferred to the roadmap. The static React portal and NumPy backend are approved
-by M9/M10 and ADRs 0018/0019.
+by ADRs 0031 and 0018.
 
 ## Completion checklist
 

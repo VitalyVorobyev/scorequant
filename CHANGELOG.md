@@ -26,6 +26,14 @@ once already, which retroactively asserted that unshipped work had shipped.
   whose declared gauges differ raises `ContractError` naming the one-gauge recipe, and
   `DensityRatioScore.from_classifier` declares `"training_mixture"`. The user guide shows the
   recipe for a classifier signal next to a background.
+- A soft fit whose schedule ends on a singular soft Fisher matrix raises `RefusalError`
+  (`CE-DS-MARGINS-RANK-VACUITY-001`) instead of returning stalled centres.
+- The soft solver and the profiled geometry report work in memory-bounded row chunks, so memory
+  no longer grows as \(N \times\) bins \(\times\) dimension; the soft gradient is compiled under JAX.
+- Internals only: `partition.py` is split into the exchange engine and Lloyd solver
+  (`solvers/`), the exchange algebra and the stability and geometry diagnostics; nearest-centre
+  assignment is one routine; `retention_uncertainty` moved to its own module. The public API is
+  unchanged, and a missing nuisance block reports one shared message.
 
 ## [0.3.0] — 2026-10-18
 

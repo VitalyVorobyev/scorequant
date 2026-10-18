@@ -61,7 +61,7 @@ Lines of code per area (Python, TypeScript, CSS, Markdown, Lean), excluding comm
 
 | Area | 18 Oct 2026, after M0 | Budget | Holds |
 | --- | ---: | ---: | --- |
-| `src/` | 9.6k | 9.5k | the library |
+| `src/` | 9.9k | 9.5k | the library |
 | `tests/` | 9.8k | 8k | library behaviour, counterexample tests, walkthrough evidence, one prose tier |
 | `examples/` | 11.5k | 8k | the four walkthrough studies and the Lloyd counterexample |
 | `docs/` | 1.6k | 2k | user guide, API guide, symbol reference, glossary, development, system design |

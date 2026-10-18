@@ -113,18 +113,26 @@ behind an adapter and must match the shared reference implementation.
 
 ## Module ownership
 
-- `information.py`: Fisher and retained-information algebra, including `retention_uncertainty`.
+- `information.py`: Fisher and retained-information algebra and the information reports.
+  `uncertainty.py`: `retention_uncertainty`, the plug-in standard error of a frozen rule's
+  retention.
 - `transforms.py`: informative subspace and whitening.
-- `partition.py`: the unified exchange engine (D and profiled-\(D_s\) share one determinant-lemma
-  scan through a private `_ExchangeObjective` protocol), the guarded batch Mahalanobis-Lloyd solver,
-  the standalone stability certificate, and geometry diagnostics.
+- `partition.py`: finite-partition preparation (validation, duplicate collapsing, whitening),
+  routing to the exchange or Lloyd solver, zero-weight extension and `PartitionResult` assembly.
+- `_exchange.py`: the exchange algebra. D and profiled-\(D_s\) share one determinant-lemma gain
+  kernel, rank-two information and inverse updates and cell statistics through the
+  `ExchangeObjective` protocol.
+- `diagnostics.py`: `exchange_stability_report` (one scan of the exchange engine on any labeling)
+  and the D and profiled geometry reports, evaluated in row chunks.
 - `certify.py`: explicit bounded branch-and-bound global certification of D partitions. Its tree
   search is sequential NumPy in float64: per-node JAX dispatch would dominate a search whose nodes
   are one small log determinant each.
 - `_execution.py`: the only backend resolver and the private JAX/NumPy primitive adapters.
-- `solvers/common.py`: shared assignment, distance, trace, and solver result contracts;
-  `solvers/kmeans.py`, `solvers/scalar.py`, and `solvers/soft.py`: responsibility-specific shared
-  solver orchestration.
+- `solvers/common.py`: shared distance and solver result contracts; `solvers/exchange.py`: the
+  exact exchange engine (seeding, scans, guarded batches, stopping); `solvers/lloyd.py`: guarded
+  batch Mahalanobis-Lloyd; `solvers/kmeans.py`, `solvers/scalar.py`, and `solvers/soft.py`:
+  the remaining solver families. The soft solver sums its moments and centre gradient over row
+  chunks through compiled per-chunk kernels.
 - `sources.py`: empirical and quadrature measures plus provenance (`ScoreProvenance` and the
   nested `RatioProvenance`).
 - `providers.py`: framework-neutral observation-to-score adapters, including the ratio-backed
@@ -139,10 +147,12 @@ behind an adapter and must match the shared reference implementation.
   without importing each other.
 - `criteria.py`, `config.py`, `result.py`: backend-free public contracts. `api.py`: public
   orchestration. `artifact.py`: the versioned `Quantizer` rule and its non-pickle archive.
-  `_predict.py`: the leaf prediction kernel.
+  `_predict.py`: the leaf nearest-centre kernel, the one Euclidean or Mahalanobis assignment
+  routine every module uses.
 - `_binstats.py`, `_chunking.py`, `_validation.py`, `_json.py`, `_typing.py`: private helpers shared
   across modules (weighted per-bin scatter-add statistics, the shared memory-bounded row-chunking
-  budget used by exchange scans and assignment kernels, input validation including dtype promotion,
+  budget used by exchange scans, geometry reports, the soft solver and assignment, input validation
+  including dtype promotion, labelings and the interest/nuisance split,
   `to_dict()` JSON conversion, and the shared `ArrayLike`/`JsonValue` type aliases).
 - `visualization.py`: optional Matplotlib views over `PartitionResult`/`QuantizerResult`, imported
   lazily so the core package carries no hard visualization dependency.
@@ -179,7 +189,9 @@ never share an argument: the former enter through providers, the latter through 
 
 The exact exchange scan is \(O(NKP^2)\) per accepted move and avoids \(O(N^2)\) storage; the
 exact rank-one interval DP is the one intentional quadratic exception, capped by
-`ScalarDPConfig.max_rows`. Geometric solvers materialize \([N,K]\) distances. Histories store
+`ScalarDPConfig.max_rows`. The exchange scan, the geometry reports, the soft solver and
+nearest-centre assignment work in row chunks, so their \([N,K,P]\) temporaries stay inside one
+fixed working set; k-means materializes \([N,K]\) distances. Histories store
 aggregate metrics and center snapshots, never per-event responsibilities. `to_dict()` is JSON-ready
 diagnostic state, not a versioned persistence format; that role belongs to `Quantizer.save`, which
 writes a versioned non-pickle artifact holding the rule alone.

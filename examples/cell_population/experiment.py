@@ -159,7 +159,7 @@ def _nearest(points: np.ndarray, centers: np.ndarray) -> np.ndarray:
 
 
 def predict_score_bins(
-    result: sq.QuantizerResult,
+    result: sq.results.QuantizerResult,
     scores: np.ndarray,
     *,
     chunk_size: int = 50_000,

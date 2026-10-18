@@ -152,7 +152,7 @@ def _run_timed[R](
     return best, result
 
 
-def _partition_extra(result: sq.PartitionResult) -> dict[str, JsonValue]:
+def _partition_extra(result: sq.results.PartitionResult) -> dict[str, JsonValue]:
     return {
         "accepted_moves": int(result.accepted_moves),
         "scans": int(result.scans),
@@ -316,12 +316,12 @@ def _bench_certify(cfg: ScenarioConfig, repeats: int) -> RunOutcome:
     it is in the matrix; see ``benchmarks/README.md``.
     """
     scores, weights = _synthetic_sample(cfg.seed, cfg.rows, cfg.dims)
-    config = sq.CertificationConfig(max_rows=cfg.rows)
+    config = sq.certify.CertificationConfig(max_rows=cfg.rows)
     incumbent = sq.optimize_partition(
         scores, weights=weights, n_bins=cfg.bins, config=sq.DExchangeConfig(seed=cfg.seed)
     )
     elapsed, certificate = _run_timed(
-        lambda: sq.certify_partition(
+        lambda: sq.certify.certify_partition(
             scores,
             weights=weights,
             n_bins=cfg.bins,

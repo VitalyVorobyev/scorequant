@@ -36,17 +36,17 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | Public name | Stability | Fields | Methods and properties |
 | --- | --- | --- | --- |
 | `ratios.CentralLogRatioScore` | Stable | `predict`, `deltas`, `class_priors`, `description`, `metadata`, `schema` | `provenance`, `score` |
-| `CertificationConfig` | Stable | `method`, `max_nodes`, `max_rows`, `gain_tolerance` | `to_dict` |
+| `certify.CertificationConfig` | Stable | `method`, `max_nodes`, `max_rows`, `gain_tolerance` | `to_dict` |
 | `ContractError` | Stable | — | — |
 | `DExchangeConfig` | Stable | `method`, `rank_rtol`, `seed`, `initializer_restarts`, `max_iter`, `batch_moves`, `solver_restarts`, `init`, `gain_tolerance`, `first_improvement`, `collapse_duplicates` | `to_dict` |
 | `DOptimality` | Stable | `name` | `to_dict` |
 | `ratios.DensityRatioScore` | Stable | `ratio`, `parameterization`, `provenance`, `schema` | `from_classifier`, `score` |
-| `EfficientScoreBound` | Diagnostic | `upper_bound`, `labels`, `efficient_scores`, `n_bins`, `interest` | `gap_to`, `to_dict` |
+| `results.EfficientScoreBound` | Diagnostic | `upper_bound`, `labels`, `efficient_scores`, `n_bins`, `interest` | `gap_to`, `to_dict` |
 | `ExecutionConfig` | Stable | `backend`, `precision`, `device` | `to_dict` |
-| `FisherTransform` | Stable | `matrix`, `eigenvectors`, `eigenvalues`, `retained_eigenvalues`, `rank_rtol`, `threshold`, `whiten` | `input_dim`, `rank`, `dropped_directions`, `apply`, `to_dict` |
+| `results.FisherTransform` | Stable | `matrix`, `eigenvectors`, `eigenvalues`, `retained_eigenvalues`, `rank_rtol`, `threshold`, `whiten` | `input_dim`, `rank`, `dropped_directions`, `apply`, `to_dict` |
 | `GaussLegendreConfig` | Stable | `order`, `max_points` | — |
-| `GeometryReport` | Diagnostic | `maximum_voronoi_violation`, `guaranteed_violation_gain`, `maximum_violation_gain`, `maximum_separation_residual`, `violating_moves`, `evaluated_moves`, `voronoi_consistent`, `separation_certified`, `gain_tolerance` | `to_dict` |
-| `InformationReport` | Diagnostic | `fisher_unbinned`, `fisher_binned`, `retained_matrix`, `retained_eigenvalues`, `arithmetic_mean_retention`, `geometric_mean_retention`, `logdet_retention`, `bin_weights`, `bin_counts`, `bin_effective_sample_sizes`, `effective_rank`, `rank_threshold`, `psd_residual_min_eigenvalue` | `to_dict` |
+| `results.GeometryReport` | Diagnostic | `maximum_voronoi_violation`, `guaranteed_violation_gain`, `maximum_violation_gain`, `maximum_separation_residual`, `violating_moves`, `evaluated_moves`, `voronoi_consistent`, `separation_certified`, `gain_tolerance` | `to_dict` |
+| `results.InformationReport` | Diagnostic | `fisher_unbinned`, `fisher_binned`, `retained_matrix`, `retained_eigenvalues`, `arithmetic_mean_retention`, `geometric_mean_retention`, `logdet_retention`, `bin_weights`, `bin_counts`, `bin_effective_sample_sizes`, `effective_rank`, `rank_threshold`, `psd_residual_min_eigenvalue` | `to_dict` |
 | `IntegrationSource` | Stable | `bounds`, `density`, `quadrature` | `materialize` |
 | `ratios.IntensityParameterization` | Stable | `coefficients` | `n_components`, `scores` |
 | `KMeansConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `solver_restarts`, `max_iter`, `tolerance`, `record_every` | `to_dict` |
@@ -55,18 +55,18 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `ratios.MixtureParameterization` | Stable | `reference_fractions`, `reference_component` | `n_components`, `scores` |
 | `NormalizedTrace` | Stable | `name` | `to_dict` |
 | `ObservationSample` | Stable | `observations`, `weights` | — |
-| `OptimizationTrace` | Diagnostic | `steps`, `centers`, `objective`, `bin_weights`, `train_hard_retention`, `objective_label`, `validation_hard_retention`, `soft_retention`, `temperatures`, `gradient_norms` | `to_dict` |
-| `PartitionCertificate` | Diagnostic | `status`, `objective`, `labels`, `upper_bound`, `gap`, `nodes_explored`, `incumbent_was_optimal` | `to_dict` |
-| `PartitionResult` | Diagnostic | `labels`, `training_scores`, `cell_weights`, `cell_score_sums`, `cell_score_means`, `information_full`, `information_partitioned`, `objective`, `transform`, `transformed_centers`, `metric`, `criterion`, `config`, `execution`, `train_report`, `provenance`, `accepted_moves`, `scans`, `exchange_stable`, `best_remaining_gain`, `objective_history`, `positive_weight_mask`, `lloyd_iterations`, `accepted_lloyd_steps`, `geometry`, `profiled_report`, `profiled_geometry`, `schema` | `n_bins`, `rank`, `information_kind`, `report`, `compile_quantizer`, `to_dict` |
+| `results.OptimizationTrace` | Diagnostic | `steps`, `centers`, `objective`, `bin_weights`, `train_hard_retention`, `objective_label`, `validation_hard_retention`, `soft_retention`, `temperatures`, `gradient_norms` | `to_dict` |
+| `results.PartitionCertificate` | Diagnostic | `status`, `objective`, `labels`, `upper_bound`, `gap`, `nodes_explored`, `incumbent_was_optimal` | `to_dict` |
+| `results.PartitionResult` | Diagnostic | `labels`, `training_scores`, `cell_weights`, `cell_score_sums`, `cell_score_means`, `information_full`, `information_partitioned`, `objective`, `transform`, `transformed_centers`, `metric`, `criterion`, `config`, `execution`, `train_report`, `provenance`, `accepted_moves`, `scans`, `exchange_stable`, `best_remaining_gain`, `objective_history`, `positive_weight_mask`, `lloyd_iterations`, `accepted_lloyd_steps`, `geometry`, `profiled_report`, `profiled_geometry`, `schema` | `n_bins`, `rank`, `information_kind`, `report`, `compile_quantizer`, `to_dict` |
 | `ProfiledDOptimality` | Stable | `interest`, `name` | `named`, `interest_indices`, `resolve`, `to_dict` |
-| `ProfiledGeometryReport` | Diagnostic | `metric`, `maximum_positive_violation`, `maximum_theoretical_bound`, `maximum_bound_residual`, `violating_moves`, `evaluated_moves`, `bound_certified` | `to_dict` |
-| `ProfiledInformationReport` | Diagnostic | `interest`, `nuisance`, `schur_unbinned`, `schur_binned`, `nuisance_unbinned`, `nuisance_binned`, `objective`, `logdet_retention`, `geometric_mean_retention`, `interest_rank`, `nuisance_rank`, `schema` | `interest_names`, `nuisance_names`, `describe`, `to_dict` |
+| `results.ProfiledGeometryReport` | Diagnostic | `metric`, `maximum_positive_violation`, `maximum_theoretical_bound`, `maximum_bound_residual`, `violating_moves`, `evaluated_moves`, `bound_certified` | `to_dict` |
+| `results.ProfiledInformationReport` | Diagnostic | `interest`, `nuisance`, `schur_unbinned`, `schur_binned`, `nuisance_unbinned`, `nuisance_binned`, `objective`, `logdet_retention`, `geometric_mean_retention`, `interest_rank`, `nuisance_rank`, `schema` | `interest_names`, `nuisance_names`, `describe`, `to_dict` |
 | `Quantizer` | Stable | `transform`, `centers`, `metric`, `schema`, `provenance`, `criterion`, `execution` | `n_bins`, `rank`, `input_dim`, `information_kind`, `predict_scores`, `evaluate_scores`, `to_dict`, `save`, `load` |
-| `QuantizerResult` | Diagnostic | `quantizer`, `criterion`, `config`, `execution`, `trace`, `labels`, `train_report`, `validation_report`, `provenance`, `hardening_gap`, `source_kind`, `train_profiled_report`, `validation_profiled_report` | `centers`, `metric`, `transform`, `schema`, `n_bins`, `rank`, `information_kind`, `predict_scores`, `evaluate_scores`, `report`, `to_dict` |
+| `results.QuantizerResult` | Diagnostic | `quantizer`, `criterion`, `config`, `execution`, `trace`, `labels`, `train_report`, `validation_report`, `provenance`, `hardening_gap`, `source_kind`, `train_profiled_report`, `validation_profiled_report` | `centers`, `metric`, `transform`, `schema`, `n_bins`, `rank`, `information_kind`, `predict_scores`, `evaluate_scores`, `report`, `to_dict` |
 | `ratios.RatioClosureReport` | Diagnostic | `normalizers`, `max_residual` | `to_dict` |
 | `ratios.RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas`, `gauges` | `to_dict` |
 | `RefusalError` | Stable | `counterexample` | — |
-| `RetentionUncertainty` | Diagnostic | `estimate`, `standard_error`, `confidence_interval`, `confidence_level`, `n_observations`, `status` | `to_dict` |
+| `results.RetentionUncertainty` | Diagnostic | `estimate`, `standard_error`, `confidence_interval`, `confidence_level`, `n_observations`, `status` | `to_dict` |
 | `ScalarDPConfig` | Stable | `method`, `whiten`, `rank_rtol`, `max_rows` | `to_dict` |
 | `ScoreFunction` | Stable | `function`, `provenance`, `schema` | `score` |
 | `ScoreProvenance` | Stable | `kind`, `description`, `reference_point`, `metadata`, `ratio` | `exact_fisher`, `to_dict` |
@@ -75,22 +75,22 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `ScoreSample` | Stable | `scores`, `weights`, `provenance`, `schema` | — |
 | `ScoreSchema` | Stable | `parameters` | `dimension`, `index`, `select`, `to_dict` |
 | `SoftVoronoiConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `initializer_restarts`, `kmeans_max_iter`, `kmeans_tolerance`, `max_iter`, `learning_rate`, `gradient_clip`, `temperature_end_ratio`, `record_every` | `to_dict` |
-| `StabilityReport` | Diagnostic | `stable`, `best_gain`, `best_move`, `objective`, `n_bins`, `criterion`, `gain_tolerance` | `to_dict` |
-| `binned_fisher_information` | Stable | — | — |
-| `certify_partition` | Stable | — | — |
+| `results.StabilityReport` | Diagnostic | `stable`, `best_gain`, `best_move`, `objective`, `n_bins`, `criterion`, `gain_tolerance` | `to_dict` |
+| `information.binned_fisher_information` | Stable | — | — |
+| `certify.certify_partition` | Stable | — | — |
 | `efficient_score_bound` | Stable | — | — |
-| `efficient_scores` | Stable | — | — |
-| `exchange_stability_report` | Stable | — | — |
-| `fisher_information` | Stable | — | — |
+| `information.efficient_scores` | Stable | — | — |
+| `certify.exchange_stability_report` | Stable | — | — |
+| `information.fisher_information` | Stable | — | — |
 | `fit_quantizer` | Stable | — | — |
-| `fractional_fisher_information` | Stable | — | — |
+| `information.fractional_fisher_information` | Stable | — | — |
 | `information_report` | Stable | — | — |
 | `optimize_partition` | Stable | — | — |
 | `plotting.plot_information` | Unstable | — | — |
 | `plotting.plot_optimization` | Unstable | — | — |
 | `plotting.plot_partition` | Unstable | — | — |
 | `plotting.plot_summary` | Unstable | — | — |
-| `profiled_information_report` | Stable | — | — |
+| `information.profiled_information_report` | Stable | — | — |
 | `ratios.ratio_closure_report` | Stable | — | — |
 | `ratios.ratios_from_posteriors` | Stable | — | — |
 | `retention_uncertainty` | Stable | — | — |

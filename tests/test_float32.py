@@ -85,7 +85,7 @@ def test_float32_backend_parity_of_continuous_quantities() -> None:
 
     fishers = {
         backend: np.asarray(
-            scorequant.fisher_information(scores, weights, execution=execution(backend))
+            scorequant.information.fisher_information(scores, weights, execution=execution(backend))
         )
         for backend in ("jax", "numpy")
     }
@@ -153,7 +153,7 @@ def test_float32_results_record_the_float32_default() -> None:
     assert result.config.gain_tolerance == pytest.approx(1.192e-6, rel=1e-3)
     assert result.geometry is not None
     assert result.geometry.gain_tolerance == result.config.gain_tolerance
-    report = scorequant.exchange_stability_report(scores, result.labels)
+    report = scorequant.certify.exchange_stability_report(scores, result.labels)
     assert report.gain_tolerance == result.config.gain_tolerance
 
 
@@ -163,7 +163,9 @@ def test_float32_explicit_gain_tolerance_is_used_unchanged() -> None:
     config = scorequant.DExchangeConfig(initializer_restarts=1, gain_tolerance=1e-10)
     result = scorequant.optimize_partition(scores, n_bins=3, config=config)
     assert result.config.gain_tolerance == 1e-10
-    report = scorequant.exchange_stability_report(scores, result.labels, gain_tolerance=1e-10)
+    report = scorequant.certify.exchange_stability_report(
+        scores, result.labels, gain_tolerance=1e-10
+    )
     assert report.gain_tolerance == 1e-10
 
 
@@ -178,7 +180,7 @@ def test_float32_default_keeps_gains_a_coarser_tolerance_left_unused() -> None:
     default = scorequant.optimize_partition(
         scores, n_bins=6, config=scorequant.DExchangeConfig(initializer_restarts=1)
     )
-    left = scorequant.exchange_stability_report(scores, coarse.labels)
+    left = scorequant.certify.exchange_stability_report(scores, coarse.labels)
     assert not left.stable
     assert left.best_gain > 10 * default.config.gain_tolerance
     assert default.exchange_stable

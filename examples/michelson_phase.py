@@ -236,7 +236,9 @@ def unbinned_profiled_information(scores: np.ndarray, weights: np.ndarray) -> fl
     against -- never `I_phiphi`, which is not available to an analyst who does
     not know `epsilon`.
     """
-    information = np.asarray(sq.fisher_information(scores, weights, execution=EXECUTION))
+    information = np.asarray(
+        sq.information.fisher_information(scores, weights, execution=EXECUTION)
+    )
     nuisance = [index for index in range(information.shape[0]) if index not in set(INTEREST)]
     interest_indices = list(INTEREST)
     block = information[np.ix_(interest_indices, interest_indices)]
@@ -255,7 +257,7 @@ def profiled_retention(sample: TrainSample, labels: np.ndarray, n_bins: int) -> 
     weighted score table.
     """
     return float(
-        sq.profiled_information_report(
+        sq.information.profiled_information_report(
             sample.scores,
             labels,
             interest=INTEREST,
@@ -539,9 +541,9 @@ class SweepRow:
     equal_width_labels: np.ndarray = field(repr=False)
     d_labels: np.ndarray = field(repr=False)
     profiled_labels: np.ndarray = field(repr=False)
-    d_partition: sq.PartitionResult = field(repr=False)
-    profiled_partition: sq.PartitionResult = field(repr=False)
-    bound: sq.EfficientScoreBound = field(repr=False)
+    d_partition: sq.results.PartitionResult = field(repr=False)
+    profiled_partition: sq.results.PartitionResult = field(repr=False)
+    bound: sq.results.EfficientScoreBound = field(repr=False)
 
 
 def sweep_bin_budget(
@@ -612,7 +614,7 @@ def sweep_bin_budget(
 
 
 def predictions(
-    rule: sq.Quantizer | sq.QuantizerResult, provider: sq.ScoreFunction
+    rule: sq.Quantizer | sq.results.QuantizerResult, provider: sq.ScoreFunction
 ) -> list[dict[str, float | int]]:
     """Classify `NEW_OBSERVATIONS` with a reusable rule, observation to score to bin.
 
@@ -832,8 +834,8 @@ class ReusableRules:
     """The two reusable rules and their comparison rows."""
 
     rows: list[RuleRow]
-    d_rule: sq.QuantizerResult = field(repr=False)
-    ds_rule: sq.QuantizerResult = field(repr=False)
+    d_rule: sq.results.QuantizerResult = field(repr=False)
+    ds_rule: sq.results.QuantizerResult = field(repr=False)
 
 
 def reusable_rules(
@@ -964,7 +966,7 @@ def run_study(
 
     closed_form = closed_form_information()
     information = np.asarray(
-        sq.fisher_information(sample.scores, sample.weights, execution=EXECUTION)
+        sq.information.fisher_information(sample.scores, sample.weights, execution=EXECUTION)
     )
     i_phiphi, i_phieps, i_epseps = (
         float(information[0, 0]),

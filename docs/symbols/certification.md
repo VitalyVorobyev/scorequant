@@ -3,12 +3,12 @@
 Both entry points are explicit post-fit operations. Neither runs during ordinary fitting, and
 neither repairs a labeling: they report what is true of the labels they are given.
 
-::: scorequant.exchange_stability_report
+::: scorequant.certify.exchange_stability_report
 
-::: scorequant.StabilityReport
+::: scorequant.results.StabilityReport
 
-::: scorequant.certify_partition
+::: scorequant.certify.certify_partition
 
-::: scorequant.CertificationConfig
+::: scorequant.certify.CertificationConfig
 
-::: scorequant.PartitionCertificate
+::: scorequant.results.PartitionCertificate

@@ -121,7 +121,7 @@ def test_artifact_never_imports_fit_layers() -> None:
     # artifact.py is the deployable, backend-free layer; pulling in any fitting
     # module would let loading or predicting drag the fit machinery along.
     forbidden = {
-        "result",
+        "results",
         "api",
         "partition",
         "quantizers",
@@ -141,7 +141,7 @@ def test_solvers_never_import_orchestration() -> None:
         f"scorequant.{module}"
         for module in (
             "api",
-            "result",
+            "results",
             "artifact",
             "partition",
             "quantizers",
@@ -171,8 +171,8 @@ def test_finite_partition_layers_point_one_way() -> None:
     # diagnostics sit above the engine they rerun, and partition.py sits above
     # both. Nothing below may reach back up.
     layers = {
-        "_exchange.py": {"solvers", "diagnostics", "partition", "certify", "api", "result"},
-        "diagnostics.py": {"partition", "certify", "api", "result"},
+        "_exchange.py": {"solvers", "diagnostics", "partition", "certify", "api", "results"},
+        "diagnostics.py": {"partition", "certify", "api", "results"},
     }
     offenders = {
         name: sorted(_package_imports(PACKAGE / name) & forbidden)
@@ -182,7 +182,7 @@ def test_finite_partition_layers_point_one_way() -> None:
 
 
 def test_predict_and_errors_modules_stay_leaf() -> None:
-    # _predict.py is the leaf both artifact.py and result.py depend on, and
+    # _predict.py is the leaf both artifact.py and results.py depend on, and
     # _errors.py is stdlib-only so every module can import it without risking
     # a cycle.
     assert _imports(PACKAGE / "_predict.py") <= {"__future__", "_chunking", "_execution"}

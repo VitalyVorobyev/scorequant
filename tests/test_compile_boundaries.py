@@ -32,7 +32,7 @@ def test_individual_compile_tolerance_does_not_bound_batch_change() -> None:
     assert result.geometry.maximum_violation_gain < 1.2
     np.testing.assert_array_equal(predicted, [0, 0, 1, 1])
     before = np.asarray(result.information_partitioned)[0, 0]
-    after = np.asarray(sq.binned_fisher_information(scores, predicted, n_bins=2))[0, 0]
+    after = np.asarray(sq.information.binned_fisher_information(scores, predicted, n_bins=2))[0, 0]
     assert np.log(after / before) == pytest.approx(np.log(4))
     assert np.log(after / before) > result.config.gain_tolerance
 

@@ -179,8 +179,8 @@ def test_binned_and_unbinned_mixture_recover_known_fractions() -> None:
     )
     mixture_weights = component_values @ theta
     coarse_bins = np.asarray([0, 0, 1, 1, 2, 2])
-    full_fisher = sq.fisher_information(exact_scores, mixture_weights)
-    binned_fisher = sq.binned_fisher_information(
+    full_fisher = sq.information.fisher_information(exact_scores, mixture_weights)
+    binned_fisher = sq.information.binned_fisher_information(
         exact_scores, coarse_bins, mixture_weights, n_bins=3
     )
     residual = np.asarray(full_fisher - binned_fisher)

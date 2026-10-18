@@ -116,7 +116,7 @@ def score_labeling(
 ) -> LabelingScore:
     """Score one hard labeling on both the full and the profiled criterion."""
     full = sq.information_report(scores, labels, weights, n_bins=n_bins)
-    profiled = sq.profiled_information_report(
+    profiled = sq.information.profiled_information_report(
         scores, labels, interest=INTEREST, weights=weights, n_bins=n_bins
     )
     return LabelingScore(
@@ -147,7 +147,7 @@ def unbinned_profiled_information(scores: np.ndarray, weights: np.ndarray) -> fl
 
     This is the certified ceiling's reference denominator.
     """
-    information = np.asarray(sq.fisher_information(scores, weights))
+    information = np.asarray(sq.information.fisher_information(scores, weights))
     nuisance = [index for index in range(information.shape[0]) if index not in set(INTEREST)]
     interest_indices = list(INTEREST)
     block = information[np.ix_(interest_indices, interest_indices)]
@@ -392,7 +392,7 @@ def fit_ds_rule(
     n_bins: int,
     soft_steps: int,
     validation: EventTable | None = None,
-) -> tuple[BinRule, sq.QuantizerResult]:
+) -> tuple[BinRule, sq.results.QuantizerResult]:
     """Fit the reusable profiled-D_s rule with `fit_quantizer` on the reference events.
 
     Finite profiled-D_s labels have no compile bridge, so the deployable
@@ -422,7 +422,7 @@ def fit_ds_rule(
     return rule, result
 
 
-def fit_d_rule(reference: EventTable, *, n_bins: int) -> tuple[BinRule, sq.PartitionResult]:
+def fit_d_rule(reference: EventTable, *, n_bins: int) -> tuple[BinRule, sq.results.PartitionResult]:
     """Fit the plain-D exchange partition and compile it into its Voronoi rule."""
     partition = sq.optimize_partition(
         reference.sample(),
@@ -441,7 +441,9 @@ def fit_d_rule(reference: EventTable, *, n_bins: int) -> tuple[BinRule, sq.Parti
     return rule, partition
 
 
-def finite_ds_partition(reference: EventTable, *, n_bins: int) -> tuple[sq.PartitionResult, float]:
+def finite_ds_partition(
+    reference: EventTable, *, n_bins: int
+) -> tuple[sq.results.PartitionResult, float]:
     """Optimize the finite profiled-D_s labels of a table, seeded by the ceiling's labels.
 
     Returns the partition and the certified ceiling (as a retention) on the
@@ -644,7 +646,7 @@ def build_rules(
     *,
     n_bins: int,
     soft_steps: int,
-) -> tuple[list[BinRule], sq.QuantizerResult]:
+) -> tuple[list[BinRule], sq.results.QuantizerResult]:
     """Build every reusable rule on the reference events, in published order."""
     ds_rule, ds_result = fit_ds_rule(
         reference, n_bins=n_bins, soft_steps=soft_steps, validation=evaluation
@@ -962,8 +964,8 @@ class InSampleStudy:
     rows: list[PartitionRow]
     d_labels: np.ndarray = field(repr=False)
     ds_labels: np.ndarray = field(repr=False)
-    ds_partition: sq.PartitionResult = field(repr=False)
-    ceiling: sq.EfficientScoreBound = field(repr=False)
+    ds_partition: sq.results.PartitionResult = field(repr=False)
+    ceiling: sq.results.EfficientScoreBound = field(repr=False)
     rules: dict[str, BinRule] = field(repr=False)
 
 

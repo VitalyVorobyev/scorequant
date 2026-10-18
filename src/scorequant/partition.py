@@ -34,7 +34,7 @@ from .criteria import DOptimality, ProfiledDOptimality
 from .diagnostics import geometry_report, profiled_geometry_report, voronoi_disagreement_gain
 from .information import information_report, profiled_information_report
 from .reports import GeometryReport, ProfiledGeometryReport, ProfiledInformationReport
-from .result import PartitionResult
+from .results import PartitionResult
 from .solvers.exchange import ExchangeRun, gain_tolerance, optimize_exchange
 from .solvers.lloyd import optimize_lloyd
 from .sources import ScoreProvenance, ScoreSchema

@@ -8,12 +8,12 @@ from scorequant import (
     DOptimality,
     KMeansConfig,
     NormalizedTrace,
-    QuantizerResult,
     ScoreSample,
     SoftVoronoiConfig,
     fit_quantizer,
 )
 from scorequant._typing import ArrayLike
+from scorequant.results import QuantizerResult
 
 
 def fit_test_quantizer(

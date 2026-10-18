@@ -156,7 +156,7 @@ diagnostics = {
 To check labels from anywhere else — another tool, a hand edit — run one exact scan over them:
 
 ```python
-report = sq.exchange_stability_report(scores, partition.labels, weights=weights)
+report = sq.certify.exchange_stability_report(scores, partition.labels, weights=weights)
 stability = (bool(report.stable), float(report.best_gain), report.best_move)
 ```
 
@@ -258,7 +258,7 @@ For a small table, global optimality can be decided:
 ```python
 small = rng.normal(size=(24, 2))
 incumbent = sq.optimize_partition(small, n_bins=3, config=sq.DExchangeConfig(seed=1))
-certificate = sq.certify_partition(small, n_bins=3, incumbent=incumbent.labels)
+certificate = sq.certify.certify_partition(small, n_bins=3, incumbent=incumbent.labels)
 verdict = (certificate.status, float(certificate.gap), bool(certificate.incumbent_was_optimal))
 ```
 

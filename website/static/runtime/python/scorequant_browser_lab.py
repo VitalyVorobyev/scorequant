@@ -217,7 +217,7 @@ def run_lab(payload: str) -> str:
                 raise ValueError("report.profiledInterest requires a score schema")
             indices = schema.select(*interest_names)
             payload_out["profiledRetention"] = float(
-                sq.profiled_information_report(
+                sq.information.profiled_information_report(
                     scores,
                     labels,
                     interest=indices,

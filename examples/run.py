@@ -19,8 +19,8 @@ from examples.synthetic_problems import PROBLEMS, SyntheticDataset, SyntheticPro
 @dataclass(frozen=True, slots=True)
 class ExperimentResult:
     problem: SyntheticProblem
-    kmeans: scorequant.QuantizerResult
-    soft: scorequant.QuantizerResult
+    kmeans: scorequant.results.QuantizerResult
+    soft: scorequant.results.QuantizerResult
     metrics: dict[str, float | int | list[float]]
 
 

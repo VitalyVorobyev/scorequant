@@ -1,24 +1,24 @@
 # Results
 
-::: scorequant.PartitionResult
+::: scorequant.results.PartitionResult
 
-::: scorequant.QuantizerResult
+::: scorequant.results.QuantizerResult
 
 ::: scorequant.Quantizer
 
-::: scorequant.InformationReport
+::: scorequant.results.InformationReport
 
-::: scorequant.ProfiledInformationReport
+::: scorequant.results.ProfiledInformationReport
 
-::: scorequant.RetentionUncertainty
+::: scorequant.results.RetentionUncertainty
 
-::: scorequant.GeometryReport
+::: scorequant.results.GeometryReport
 
-::: scorequant.ProfiledGeometryReport
+::: scorequant.results.ProfiledGeometryReport
 
-::: scorequant.EfficientScoreBound
+::: scorequant.results.EfficientScoreBound
 
-::: scorequant.OptimizationTrace
+::: scorequant.results.OptimizationTrace
 
 ::: scorequant.ScoreProvenance
 

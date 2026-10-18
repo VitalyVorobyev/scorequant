@@ -51,7 +51,7 @@ def test_information_partition_and_prediction_conform(backend: str) -> None:
     execution = _execution(backend)
     labels = np.repeat(np.arange(3), 12)
 
-    fisher = sq.fisher_information(scores, weights, execution=execution)
+    fisher = sq.information.fisher_information(scores, weights, execution=execution)
     report = sq.information_report(
         scores,
         labels,
@@ -283,10 +283,10 @@ def test_execution_validation_precedes_computation() -> None:
     with pytest.raises(ValueError, match="NumPy backend supports only"):
         sq.ExecutionConfig(backend="numpy", device="gpu")
     with pytest.raises(TypeError, match="ExecutionConfig"):
-        sq.fisher_information([[1.0]], execution="numpy")  # type: ignore[arg-type]
+        sq.information.fisher_information([[1.0]], execution="numpy")  # type: ignore[arg-type]
     if not bool(jax.config.x64_enabled):
         with pytest.raises(RuntimeError, match="JAX_ENABLE_X64"):
-            sq.fisher_information(
+            sq.information.fisher_information(
                 [[1.0]],
                 execution=sq.ExecutionConfig(backend="jax", precision="float64"),
             )
@@ -302,10 +302,10 @@ import scorequant as sq
 
 with warnings.catch_warnings(record=True) as caught:
     warnings.simplefilter("always")
-    sq.fisher_information(np.ones((4, 2), dtype=np.float32))
+    sq.information.fisher_information(np.ones((4, 2), dtype=np.float32))
     assert not caught, [str(item.message) for item in caught]
-    sq.fisher_information(np.ones((4, 2)))
-    sq.fisher_information([[1.0, 2.0]])
+    sq.information.fisher_information(np.ones((4, 2)))
+    sq.information.fisher_information([[1.0, 2.0]])
 fallback = [item for item in caught if "JAX_ENABLE_X64" in str(item.message)]
 assert len(fallback) == 1, [str(item.message) for item in caught]
 """
@@ -427,7 +427,7 @@ def test_certificate_backend_parity() -> None:
             config=sq.DExchangeConfig(initializer_restarts=2),
             execution=_execution(backend),
         )
-        certificates[backend] = sq.certify_partition(
+        certificates[backend] = sq.certify.certify_partition(
             scores[:12],
             weights=weights[:12],
             n_bins=3,

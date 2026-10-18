@@ -1,13 +1,22 @@
-"""Information-preserving hard quantization for statistical inference."""
+"""Information-preserving hard quantization for statistical inference.
+
+The top level holds what a first fit needs. Public submodules hold the rest:
+:mod:`scorequant.ratios` (density-ratio providers), :mod:`scorequant.information`
+(the information algebra), :mod:`scorequant.certify` (certificates),
+:mod:`scorequant.results` (result and report types) and
+:mod:`scorequant.plotting` (optional figures, outside the stable API).
+"""
 
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _distribution_version
 
+from . import certify as certify
+from . import information as information
 from . import ratios as ratios
+from . import results as results
 from ._errors import ContractError, RefusalError, ScoreQuantError
 from .api import fit_quantizer, optimize_partition
 from .artifact import Quantizer
-from .certify import CertificationConfig, certify_partition
 from .components import LinearComponentScore
 from .config import (
     DExchangeConfig,
@@ -18,30 +27,8 @@ from .config import (
     SoftVoronoiConfig,
 )
 from .criteria import DOptimality, NormalizedTrace, ProfiledDOptimality
-from .diagnostics import exchange_stability_report
-from .information import (
-    binned_fisher_information,
-    efficient_score_bound,
-    efficient_scores,
-    fisher_information,
-    fractional_fisher_information,
-    information_report,
-    profiled_information_report,
-)
+from .information import efficient_score_bound, information_report
 from .providers import ScoreFunction, ScoreProvider
-from .reports import RetentionUncertainty
-from .result import (
-    EfficientScoreBound,
-    GeometryReport,
-    InformationReport,
-    OptimizationTrace,
-    PartitionCertificate,
-    PartitionResult,
-    ProfiledGeometryReport,
-    ProfiledInformationReport,
-    QuantizerResult,
-    StabilityReport,
-)
 from .sources import (
     GaussLegendreConfig,
     IntegrationSource,
@@ -50,7 +37,6 @@ from .sources import (
     ScoreSample,
     ScoreSchema,
 )
-from .transforms import FisherTransform
 from .uncertainty import retention_uncertainty
 
 #: Installed distribution version. Resolved from package metadata so
@@ -62,32 +48,20 @@ except PackageNotFoundError:  # pragma: no cover - only hit in an uninstalled tr
     __version__ = "0.0.0.dev0"
 
 __all__ = [
-    "CertificationConfig",
     "ContractError",
     "DExchangeConfig",
-    "ExecutionConfig",
     "DOptimality",
-    "EfficientScoreBound",
-    "FisherTransform",
+    "ExecutionConfig",
     "GaussLegendreConfig",
-    "GeometryReport",
-    "InformationReport",
     "IntegrationSource",
     "KMeansConfig",
     "LinearComponentScore",
     "MahalanobisLloydConfig",
     "NormalizedTrace",
     "ObservationSample",
-    "OptimizationTrace",
-    "PartitionCertificate",
-    "PartitionResult",
     "ProfiledDOptimality",
-    "ProfiledGeometryReport",
-    "ProfiledInformationReport",
     "Quantizer",
-    "QuantizerResult",
     "RefusalError",
-    "RetentionUncertainty",
     "ScalarDPConfig",
     "ScoreFunction",
     "ScoreProvenance",
@@ -96,17 +70,9 @@ __all__ = [
     "ScoreSample",
     "ScoreSchema",
     "SoftVoronoiConfig",
-    "StabilityReport",
-    "binned_fisher_information",
-    "certify_partition",
     "efficient_score_bound",
-    "efficient_scores",
-    "exchange_stability_report",
-    "fisher_information",
     "fit_quantizer",
-    "fractional_fisher_information",
     "information_report",
     "optimize_partition",
-    "profiled_information_report",
     "retention_uncertainty",
 ]

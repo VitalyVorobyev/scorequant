@@ -26,7 +26,9 @@ def test_exact_move_gain_matches_direct_recomputation() -> None:
     scores = _scores(n_rows=12)
     weights = np.full(12, 1 / 12)
     labels = np.repeat(np.arange(3), 4)
-    information = np.asarray(sq.binned_fisher_information(scores, labels, weights, n_bins=3))
+    information = np.asarray(
+        sq.information.binned_fisher_information(scores, labels, weights, n_bins=3)
+    )
     row, source, destination = 1, 0, 2
     source_mask = labels == source
     destination_mask = labels == destination
@@ -46,7 +48,7 @@ def test_exact_move_gain_matches_direct_recomputation() -> None:
     )
     moved = labels.copy()
     moved[row] = destination
-    updated = np.asarray(sq.binned_fisher_information(scores, moved, weights, n_bins=3))
+    updated = np.asarray(sq.information.binned_fisher_information(scores, moved, weights, n_bins=3))
     direct = np.linalg.slogdet(updated)[1] - np.linalg.slogdet(information)[1]
     assert predicted == pytest.approx(direct, abs=1e-10)
 

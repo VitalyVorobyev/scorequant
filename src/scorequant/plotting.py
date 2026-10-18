@@ -15,7 +15,7 @@ import numpy as np
 
 from ._errors import ContractError
 from ._typing import ArrayLike
-from .result import InformationReport, OptimizationTrace, QuantizerResult
+from .results import InformationReport, OptimizationTrace, QuantizerResult
 
 __all__ = ["plot_information", "plot_optimization", "plot_partition", "plot_summary"]
 

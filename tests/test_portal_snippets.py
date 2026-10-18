@@ -117,7 +117,7 @@ def test_get_started_cells_execute_and_produce_a_result() -> None:
     produced = [
         value
         for value in namespace.values()
-        if isinstance(value, (sq.PartitionResult, sq.QuantizerResult))
+        if isinstance(value, (sq.results.PartitionResult, sq.results.QuantizerResult))
     ]
     assert produced, (
         "the get-started program never bound a PartitionResult or QuantizerResult; "
@@ -246,7 +246,7 @@ def test_walkthrough_fences_execute_and_produce_a_result(slug: str, blocks: list
     produced = [
         value
         for value in namespace.values()
-        if isinstance(value, (sq.PartitionResult, sq.QuantizerResult))
+        if isinstance(value, (sq.results.PartitionResult, sq.results.QuantizerResult))
     ]
     assert produced, (
         f"walkthrough {slug!r} never bound a PartitionResult or QuantizerResult; "

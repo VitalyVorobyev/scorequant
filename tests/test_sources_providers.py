@@ -305,7 +305,7 @@ def test_integration_source_end_to_end_with_two_score_columns() -> None:
     report = result.evaluate_scores(test.scores, test.weights)
     assert report.geometric_mean_retention > 0.9
 
-    profiled = sq.profiled_information_report(
+    profiled = sq.information.profiled_information_report(
         test.scores,
         np.asarray(result.predict_scores(test.scores)),
         interest=problem.interest,

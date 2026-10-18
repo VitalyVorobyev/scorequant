@@ -23,7 +23,7 @@ from scorequant.artifact import FORMAT_VERSION
 SEED = 19
 
 
-def _fit(dims: int = 3, bins: int = 5) -> sq.QuantizerResult:
+def _fit(dims: int = 3, bins: int = 5) -> sq.results.QuantizerResult:
     scores = np.asarray(np.random.default_rng(SEED).normal(size=(600, dims)))
     schema = sq.ScoreSchema(tuple(f"theta_{index}" for index in range(dims)))
     return sq.fit_quantizer(

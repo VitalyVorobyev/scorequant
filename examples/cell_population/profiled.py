@@ -315,7 +315,7 @@ def score_labeling(
         is what makes the two criteria comparable at all.
     """
     full = sq.information_report(scores, labels, weights, n_bins=n_bins)
-    profiled = sq.profiled_information_report(
+    profiled = sq.information.profiled_information_report(
         scores, labels, interest=(interest_index,), weights=weights, n_bins=n_bins
     )
     conditional_binned = conditional_binned_fisher_information(
@@ -381,7 +381,7 @@ def _partition_row(
     key: str,
     label: str,
     criterion: str,
-    result: sq.PartitionResult,
+    result: sq.results.PartitionResult,
     score: LabelingScore,
     seconds: float,
 ) -> PartitionRow:
@@ -633,7 +633,7 @@ def _optimize(
     criterion: sq.DOptimality | sq.ProfiledDOptimality,
     config: sq.DExchangeConfig,
     initial_labels: np.ndarray | None = None,
-) -> tuple[sq.PartitionResult, float]:
+) -> tuple[sq.results.PartitionResult, float]:
     started = time.perf_counter()
     result = sq.optimize_partition(
         scores,
@@ -676,7 +676,9 @@ def budget_sweep(
     criterion = sq.ProfiledDOptimality((interest_index,))
     config = sq.DExchangeConfig(seed=seed, initializer_restarts=initializer_restarts)
     dp_config = _scalar_dp_config(len(scores), seed=seed)
-    unbinned = profiled_scalar(np.asarray(sq.fisher_information(scores, weights)), interest_index)
+    unbinned = profiled_scalar(
+        np.asarray(sq.information.fisher_information(scores, weights)), interest_index
+    )
     rows: list[BudgetRow] = []
     for n_bins in budgets:
         started = time.perf_counter()
@@ -778,7 +780,7 @@ def interest_sweep(
     scores, weights = inputs.partition_scores, inputs.partition_weights
     config = sq.DExchangeConfig(seed=seed, initializer_restarts=initializer_restarts)
     dp_config = _scalar_dp_config(len(scores), seed=seed)
-    information = np.asarray(sq.fisher_information(scores, weights))
+    information = np.asarray(sq.information.fisher_information(scores, weights))
     rows: list[InterestRow] = []
     for index in range(scores.shape[1]):
         criterion = sq.ProfiledDOptimality((index,))
@@ -1013,7 +1015,7 @@ def run_profiled_study(
         initial_labels=np.asarray(bound.labels),
     )
 
-    def scored(result: sq.PartitionResult) -> LabelingScore:
+    def scored(result: sq.results.PartitionResult) -> LabelingScore:
         return score_labeling(
             scores,
             np.asarray(result.labels),
@@ -1043,7 +1045,9 @@ def run_profiled_study(
             initialized_seconds,
         ),
     ]
-    unbinned = profiled_scalar(np.asarray(sq.fisher_information(scores, weights)), interest_index)
+    unbinned = profiled_scalar(
+        np.asarray(sq.information.fisher_information(scores, weights)), interest_index
+    )
     rules = reusable_rules(
         inputs,
         n_bins=n_bins,

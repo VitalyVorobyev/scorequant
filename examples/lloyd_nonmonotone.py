@@ -132,10 +132,12 @@ def raw_log_determinant(
     -------
     float
         The raw log determinant, in the untransformed score coordinates. It
-        differs from `scorequant.PartitionResult.objective` by the
+        differs from `scorequant.results.PartitionResult.objective` by the
         rule-independent constant ``log det`` of the unbinned information.
     """
-    information = np.asarray(sq.binned_fisher_information(scores, labels, weights, n_bins=n_bins))
+    information = np.asarray(
+        sq.information.binned_fisher_information(scores, labels, weights, n_bins=n_bins)
+    )
     return float(np.linalg.slogdet(information)[1])
 
 
@@ -172,7 +174,9 @@ def frozen_metric_proposal(
         The proposed labeling, the cell means it was measured against, and the
         frozen metric itself.
     """
-    information = np.asarray(sq.binned_fisher_information(scores, labels, weights, n_bins=n_bins))
+    information = np.asarray(
+        sq.information.binned_fisher_information(scores, labels, weights, n_bins=n_bins)
+    )
     means = cell_means(scores, weights, labels, n_bins)
     metric = np.linalg.inv(information)
     residuals = scores[:, None, :] - means[None, :, :]
@@ -352,12 +356,14 @@ def counterexample_study() -> Counterexample:
     before = raw_log_determinant(scores, weights, labels, n_bins=n_bins)
     after = raw_log_determinant(scores, weights, proposal, n_bins=n_bins)
     proposed_information = np.asarray(
-        sq.binned_fisher_information(scores, proposal, weights, n_bins=n_bins)
+        sq.information.binned_fisher_information(scores, proposal, weights, n_bins=n_bins)
     )
     tangent = float(np.trace(metric @ proposed_information)) - scores.shape[1]
 
     unguarded = unguarded_trajectory(scores, weights, labels, n_bins=n_bins)
-    offset = float(np.linalg.slogdet(np.asarray(sq.fisher_information(scores, weights)))[1])
+    offset = float(
+        np.linalg.slogdet(np.asarray(sq.information.fisher_information(scores, weights)))[1]
+    )
 
     rejected = sq.optimize_partition(
         scores,

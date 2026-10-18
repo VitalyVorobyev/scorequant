@@ -22,7 +22,7 @@ from .criteria import DOptimality, ProfiledDOptimality
 from .sources import ScoreSchema
 
 if TYPE_CHECKING:
-    from .result import PartitionResult
+    from .results import PartitionResult
 
 
 @dataclass(frozen=True, slots=True)

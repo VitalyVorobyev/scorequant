@@ -287,7 +287,7 @@ def test_michelson_closed_forms_hold_to_machine_precision() -> None:
     """The page's reason to exist: a check on the library, not only an illustration."""
     provider = build_provider()
     sample = build_train_sample(provider, n_nodes=8_000)
-    information = np.asarray(sq.fisher_information(sample.scores, sample.weights))
+    information = np.asarray(sq.information.fisher_information(sample.scores, sample.weights))
     closed_form = closed_form_information()
     assert abs(float(information[0, 0]) - closed_form["i_phiphi"]) < 1e-12
     assert abs(float(information[0, 1]) - closed_form["i_phieps"]) < 1e-12

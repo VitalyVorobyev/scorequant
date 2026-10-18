@@ -1,7 +1,9 @@
-"""Immutable public result objects.
+"""Result and report types: everything a fit, report or certificate returns.
 
-Diagnostic and certificate report types (``InformationReport`` and friends)
-now live in ``reports.py``, which does not import this module. That is what
+The public submodule to import a type from when annotating code; none of them is
+constructed by hand. Diagnostic and certificate report types
+(``InformationReport`` and friends) are defined in ``reports.py``, which does
+not import this module. That is what
 lets ``QuantizerResult.evaluate_scores`` import ``information_report`` at
 module scope below instead of inside the method: ``result -> information ->
 reports`` is a chain, not a cycle.
@@ -28,6 +30,7 @@ from .reports import (
     PartitionCertificate,
     ProfiledGeometryReport,
     ProfiledInformationReport,
+    RetentionUncertainty,
     StabilityReport,
 )
 from .sources import InformationKind, ScoreProvenance, ScoreSchema, SourceKind
@@ -35,6 +38,7 @@ from .transforms import FisherTransform
 
 __all__ = [
     "EfficientScoreBound",
+    "FisherTransform",
     "GeometryReport",
     "InformationReport",
     "OptimizationTrace",
@@ -43,6 +47,7 @@ __all__ = [
     "ProfiledGeometryReport",
     "ProfiledInformationReport",
     "QuantizerResult",
+    "RetentionUncertainty",
     "StabilityReport",
 ]
 

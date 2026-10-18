@@ -314,7 +314,7 @@ def _fit_partition(
     *,
     seed: int,
     quick: bool,
-) -> sq.QuantizerResult:
+) -> sq.results.QuantizerResult:
     validation_weights = integration_weights(
         inputs.reference.labels[inputs.validation_mask],
         inputs.reference.patients[inputs.validation_mask],
@@ -348,7 +348,7 @@ def _fit_partition(
 
 def _partition_templates(
     inputs: ClosureInputs,
-    result: sq.QuantizerResult,
+    result: sq.results.QuantizerResult,
     n_bins: int,
 ) -> np.ndarray:
     labels = np.asarray(result.predict_scores(inputs.reference_scores[inputs.template_mask]))
@@ -404,7 +404,7 @@ def _summarize_errors(
 
 def _pseudo_patient_audit(
     inputs: ClosureInputs,
-    partitions: Mapping[str, tuple[sq.QuantizerResult, np.ndarray]],
+    partitions: Mapping[str, tuple[sq.results.QuantizerResult, np.ndarray]],
     compositions: list[tuple[str, np.ndarray]],
     *,
     repeats: int,
@@ -586,7 +586,7 @@ def _range(values: list[float]) -> dict[str, float]:
 def _seed_stability_audit(
     inputs: ClosureInputs,
     compositions: list[tuple[str, np.ndarray]],
-    representative: Mapping[str, tuple[sq.QuantizerResult, np.ndarray]],
+    representative: Mapping[str, tuple[sq.results.QuantizerResult, np.ndarray]],
     *,
     seeds: range,
     quick: bool,
@@ -677,7 +677,7 @@ def run_scientific_closure(
 ) -> dict[str, object]:
     """Run the complete reference-only FlowCyt scientific audit."""
     compositions = _composition_grid(inputs.theta0)
-    representative: dict[str, tuple[sq.QuantizerResult, np.ndarray]] = {}
+    representative: dict[str, tuple[sq.results.QuantizerResult, np.ndarray]] = {}
     fixed_total: dict[str, object] = {}
     identifiability: dict[str, object] = {}
     population_limit: dict[str, object] = {}

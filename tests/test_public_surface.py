@@ -8,7 +8,7 @@ from pathlib import Path
 import scorequant as sq
 
 #: Public submodules. Their ``__all__`` names are inventoried as ``module.Name``.
-SUBMODULES = ("ratios", "plotting")
+SUBMODULES = ("ratios", "information", "certify", "results", "plotting")
 
 
 def _supported_names() -> dict[str, object]:

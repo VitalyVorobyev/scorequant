@@ -17,8 +17,8 @@ def test_hard_information_loss_identity_and_psd() -> None:
     scores = jnp.asarray([[-1.0, 0.2], [-0.8, 0.1], [0.7, 0.4], [1.2, 0.5]])
     weights = jnp.asarray([1.0, 2.0, 1.5, 0.5])
     labels = jnp.asarray([0, 0, 1, 1])
-    full = scorequant.fisher_information(scores, weights)
-    binned = scorequant.binned_fisher_information(scores, labels, weights, n_bins=2)
+    full = scorequant.information.fisher_information(scores, weights)
+    binned = scorequant.information.binned_fisher_information(scores, labels, weights, n_bins=2)
     residual = np.asarray(full - binned)
     assert np.linalg.eigvalsh(residual).min() >= -1e-6
 
@@ -34,8 +34,8 @@ def test_hard_information_loss_identity_and_psd() -> None:
 def test_fractional_information_is_bounded() -> None:
     scores = jnp.asarray([[-1.0], [0.0], [1.0], [2.0]])
     responsibilities = jnp.asarray([[0.9, 0.1], [0.6, 0.4], [0.2, 0.8], [0.05, 0.95]])
-    full = scorequant.fisher_information(scores)
-    soft = scorequant.fractional_fisher_information(scores, responsibilities)
+    full = scorequant.information.fisher_information(scores)
+    soft = scorequant.information.fractional_fisher_information(scores, responsibilities)
     assert float((full - soft)[0, 0]) >= -1e-6
 
 
@@ -46,8 +46,8 @@ def test_psd_loss_property_across_seeded_samples(seed: int) -> None:
     scores = rng.normal(size=(30, 3))
     weights = rng.lognormal(size=30)
     labels = rng.integers(0, 5, size=30)
-    full = scorequant.fisher_information(scores, weights)
-    binned = scorequant.binned_fisher_information(scores, labels, weights, n_bins=5)
+    full = scorequant.information.fisher_information(scores, weights)
+    binned = scorequant.information.binned_fisher_information(scores, labels, weights, n_bins=5)
     scale = max(float(np.linalg.eigvalsh(np.asarray(full)).max()), 1.0)
     assert np.linalg.eigvalsh(np.asarray(full - binned)).min() >= -1e-5 * scale
 
@@ -74,7 +74,7 @@ def test_report_reuses_hard_statistics_and_ignores_zero_weight_rows() -> None:
     labels = jnp.asarray([0, 99, 1, 1])
 
     report = scorequant.information_report(scores, labels, weights, n_bins=2)
-    direct = scorequant.binned_fisher_information(scores, labels, weights, n_bins=2)
+    direct = scorequant.information.binned_fisher_information(scores, labels, weights, n_bins=2)
 
     np.testing.assert_allclose(report.fisher_binned, direct)
     np.testing.assert_allclose(report.bin_weights, [1.0, 5.0])
@@ -86,24 +86,28 @@ def test_event_order_bin_relabeling_and_partition_limits() -> None:
     scores = jnp.asarray([[-2.0, 0.5], [-0.5, 1.0], [1.0, -0.2], [2.0, 0.7]])
     weights = jnp.asarray([1.0, 2.0, 0.5, 3.0])
     labels = jnp.asarray([0, 0, 1, 2])
-    expected = scorequant.binned_fisher_information(scores, labels, weights, n_bins=3)
+    expected = scorequant.information.binned_fisher_information(scores, labels, weights, n_bins=3)
     order = jnp.asarray([2, 0, 3, 1])
-    reordered = scorequant.binned_fisher_information(
+    reordered = scorequant.information.binned_fisher_information(
         scores[order], labels[order], weights[order], n_bins=3
     )
-    relabeled = scorequant.binned_fisher_information(
+    relabeled = scorequant.information.binned_fisher_information(
         scores, jnp.asarray([2, 2, 0, 1]), weights, n_bins=3
     )
     np.testing.assert_allclose(expected, reordered, atol=1e-6)
     np.testing.assert_allclose(expected, relabeled, atol=1e-6)
 
-    one_bin = scorequant.binned_fisher_information(
+    one_bin = scorequant.information.binned_fisher_information(
         scores, jnp.zeros(4, dtype=jnp.int32), weights, n_bins=1
     )
     mean = np.average(np.asarray(scores), axis=0, weights=np.asarray(weights))
     np.testing.assert_allclose(one_bin, np.sum(np.asarray(weights)) * np.outer(mean, mean))
-    unique = scorequant.binned_fisher_information(scores, jnp.arange(4), weights, n_bins=4)
-    np.testing.assert_allclose(unique, scorequant.fisher_information(scores, weights), atol=1e-6)
+    unique = scorequant.information.binned_fisher_information(
+        scores, jnp.arange(4), weights, n_bins=4
+    )
+    np.testing.assert_allclose(
+        unique, scorequant.information.fisher_information(scores, weights), atol=1e-6
+    )
 
 
 def test_rank_projection_and_json_are_explicit() -> None:
@@ -134,7 +138,7 @@ def test_component_adapter_allows_signed_basis_terms() -> None:
 @pytest.mark.parametrize("bad_weights", [[1.0, -1.0], [0.0, 0.0], [1.0, np.nan]])
 def test_invalid_weights_fail(bad_weights: list[float]) -> None:
     with pytest.raises(ValueError):
-        scorequant.fisher_information(jnp.asarray([[0.0], [1.0]]), bad_weights)
+        scorequant.information.fisher_information(jnp.asarray([[0.0], [1.0]]), bad_weights)
 
 
 def _nearly_collinear_cells() -> tuple[np.ndarray, np.ndarray]:
@@ -157,21 +161,23 @@ def _nearly_collinear_cells() -> tuple[np.ndarray, np.ndarray]:
 def test_nearly_singular_profiled_report_uses_the_shared_rank_rule() -> None:
     """A deficient binned matrix is singular even when its log-det sign is positive."""
     scores, labels = _nearly_collinear_cells()
-    binned = np.asarray(scorequant.binned_fisher_information(scores, labels, n_bins=3))
+    binned = np.asarray(scorequant.information.binned_fisher_information(scores, labels, n_bins=3))
     schur = binned[:1, :1] - np.outer(binned[0, 1], binned[0, 1]) / binned[1, 1]
     # The rules being replaced call this state regular.
     assert np.linalg.slogdet(binned)[0] > 0
     assert np.linalg.slogdet(schur)[0] > 0
     assert np.linalg.matrix_rank(schur) == 1
 
-    report = scorequant.profiled_information_report(scores, labels, interest=(0,), n_bins=3)
+    report = scorequant.information.profiled_information_report(
+        scores, labels, interest=(0,), n_bins=3
+    )
     assert report.objective == float("-inf")
     assert report.geometric_mean_retention == 0.0
     assert report.interest_rank == 0
     assert report.nuisance_rank == 1
     # The exchange engine reaches the same verdict on the same labels.
     with pytest.raises(scorequant.RefusalError, match="singular"):
-        scorequant.exchange_stability_report(
+        scorequant.certify.exchange_stability_report(
             scores, labels, criterion=scorequant.ProfiledDOptimality((0,))
         )
 
@@ -187,7 +193,7 @@ def test_nearly_singular_information_report_agrees_with_retention_uncertainty() 
     assert uncertainty.estimate == 0.0
     # The exact D exchange judges the same start by the same rule.
     with pytest.raises(scorequant.ContractError, match="initial D partition is singular"):
-        scorequant.exchange_stability_report(scores, labels)
+        scorequant.certify.exchange_stability_report(scores, labels)
 
 
 def test_efficient_scores_refuse_a_nearly_singular_nuisance_block() -> None:
@@ -195,10 +201,10 @@ def test_efficient_scores_refuse_a_nearly_singular_nuisance_block() -> None:
     interest = rng.normal(size=(200, 1))
     nuisance = rng.normal(size=(200, 1))
     scores = np.hstack([interest, nuisance, nuisance + 1e-7 * rng.normal(size=(200, 1))])
-    block = np.asarray(scorequant.fisher_information(scores))[1:, 1:]
+    block = np.asarray(scorequant.information.fisher_information(scores))[1:, 1:]
     assert np.linalg.slogdet(block)[0] > 0
     with pytest.raises(scorequant.ContractError, match="nonsingular nuisance"):
-        scorequant.efficient_scores(scores, interest=(0,))
+        scorequant.information.efficient_scores(scores, interest=(0,))
 
 
 def test_rank_rtol_does_not_judge_the_retained_matrix() -> None:
@@ -221,8 +227,10 @@ def test_profiled_rank_verdict_ignores_the_units_of_a_nuisance_parameter() -> No
     rng = np.random.default_rng(17)
     scores = rng.normal(size=(600, 3)) + 0.3
     labels = np.digitize(scores[:, 0], [-0.5, 0.3, 1.1]) + 4 * (scores[:, 1] > 0.3)
-    base = scorequant.profiled_information_report(scores, labels, interest=(0,), n_bins=8)
-    rescaled = scorequant.profiled_information_report(
+    base = scorequant.information.profiled_information_report(
+        scores, labels, interest=(0,), n_bins=8
+    )
+    rescaled = scorequant.information.profiled_information_report(
         scores * np.array([1.0, 1.0, 1e6]), labels, interest=(0,), n_bins=8
     )
     assert np.isfinite(base.objective)

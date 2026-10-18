@@ -293,66 +293,15 @@ FACTS: tuple[Fact, ...] = (
     ),
     # -------------------------------------------------------------------- hep
     Fact("hep", "nEvents", f"{HEP}#/fixture/n_events", _count),
-    Fact("hep", "effectiveEvents", f"{HEP}#/fixture/effective_events", _fixed(0)),
-    Fact("hep", "signalEvents", f"{HEP}#/fixture/signal_events", _count),
-    Fact("hep", "backgroundEvents", f"{HEP}#/fixture/background_events", _count),
     Fact("hep", "bins", f"{HEP}#/n_bins", _count),
-    Fact("hep", "nParameters", f"{HEP}#/n_parameters", _count),
-    Fact("hep", "delta", f"{HEP}#/delta", _fixed(3)),
-    Fact("hep", "signalAuc", f"{HEP}#/classifiers/signal_weighted_auc", _fixed(4)),
-    Fact("hep", "signalFraction", f"{HEP}#/classifiers/signal_fraction", _fixed(5)),
-    Fact("hep", "tesAuc", f"{HEP}#/classifiers/tes_minus_plus_auc", _fixed(4)),
     Fact(
         "hep",
         "tesScoreCorrelation",
         f"{HEP}#/classifiers/tes_reliability/weighted_correlation",
         _fixed(2),
     ),
-    # In sample, on all events: the finite partitions and the ceiling.
-    Fact(
-        "hep",
-        "dsPartitionProfiled",
-        f"{HEP}#/in_sample/by_key/ds_partition/profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep", "dsPartitionFull", f"{HEP}#/in_sample/by_key/ds_partition/full_retention", _fixed(4)
-    ),
-    Fact(
-        "hep",
-        "dPartitionProfiled",
-        f"{HEP}#/in_sample/by_key/d_partition/profiled_retention",
-        _fixed(4),
-    ),
-    Fact("hep", "dPartitionFull", f"{HEP}#/in_sample/by_key/d_partition/full_retention", _fixed(4)),
-    Fact(
-        "hep",
-        "dsRuleInSampleProfiled",
-        f"{HEP}#/in_sample/by_key/ds_rule/profiled_retention",
-        _fixed(4),
-    ),
-    Fact("hep", "ceilingRetention", f"{HEP}#/in_sample/ceiling/ceiling_retention", _fixed(4)),
-    Fact(
-        "hep", "gapToCeiling", f"{HEP}#/in_sample/ceiling/gap_to_ds_partition_retention", _fixed(4)
-    ),
-    Fact(
-        "hep",
-        "fullRetentionGivenUp",
-        f"{HEP}#/in_sample/criterion_trade/full_retention_given_up",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "profiledRetentionGained",
-        f"{HEP}#/in_sample/criterion_trade/profiled_retention_gained",
-        _fixed(4),
-    ),
     # Held out: every reusable rule built on one half and scored on the other,
-    # averaged over both directions, with the spread of the two directions and
-    # the percentile bootstrap envelope.
-    Fact("hep", "referenceEvents", f"{HEP}#/split/halves/0/reference_events", _count),
-    Fact("hep", "evaluationEvents", f"{HEP}#/split/halves/0/evaluation_events", _count),
-    Fact("hep", "bootstrapReplicates", f"{HEP}#/cross_evaluation/bootstrap_replicates", _count),
+    # averaged over both directions.
     Fact(
         "hep",
         "dsRuleHeldOut",
@@ -361,80 +310,8 @@ FACTS: tuple[Fact, ...] = (
     ),
     Fact(
         "hep",
-        "dsRuleHeldOutAB",
-        f"{HEP}#/cross_evaluation/directions/0/rules/ds_rule/evaluation_profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "dsRuleHeldOutBA",
-        f"{HEP}#/cross_evaluation/directions/1/rules/ds_rule/evaluation_profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "dsRuleHeldOutLow",
-        f"{HEP}#/cross_evaluation/mean/ds_rule/evaluation_p05_min",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "dsRuleHeldOutHigh",
-        f"{HEP}#/cross_evaluation/mean/ds_rule/evaluation_p95_max",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "dsRuleReference",
-        f"{HEP}#/cross_evaluation/mean/ds_rule/reference_profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "dsPartitionReferenceAB",
-        f"{HEP}#/cross_evaluation/directions/0/ds_partition_reference_profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "dsPartitionReferenceBA",
-        f"{HEP}#/cross_evaluation/directions/1/ds_partition_reference_profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "evaluationCeilingAB",
-        f"{HEP}#/cross_evaluation/directions/0/evaluation_ceiling_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "evaluationCeilingBA",
-        f"{HEP}#/cross_evaluation/directions/1/evaluation_ceiling_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "dsRuleMinBinEvents",
-        f"{HEP}#/cross_evaluation/mean/ds_rule/evaluation_min_bin_events",
-        _count,
-    ),
-    Fact(
-        "hep",
         "dRuleHeldOut",
         f"{HEP}#/cross_evaluation/mean/d_rule/evaluation_profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "dRuleHeldOutLow",
-        f"{HEP}#/cross_evaluation/mean/d_rule/evaluation_p05_min",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "dRuleHeldOutHigh",
-        f"{HEP}#/cross_evaluation/mean/d_rule/evaluation_p95_max",
         _fixed(4),
     ),
     Fact(
@@ -445,32 +322,8 @@ FACTS: tuple[Fact, ...] = (
     ),
     Fact(
         "hep",
-        "intervalsHeldOutLow",
-        f"{HEP}#/cross_evaluation/mean/classifier_significance_intervals/evaluation_p05_min",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "intervalsHeldOutHigh",
-        f"{HEP}#/cross_evaluation/mean/classifier_significance_intervals/evaluation_p95_max",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
         "logitHeldOut",
         f"{HEP}#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "logitHeldOutLow",
-        f"{HEP}#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_p05_min",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "logitHeldOutHigh",
-        f"{HEP}#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_p95_max",
         _fixed(4),
     ),
     Fact(
@@ -481,45 +334,13 @@ FACTS: tuple[Fact, ...] = (
     ),
     Fact(
         "hep",
-        "quantileHeldOutLow",
-        f"{HEP}#/cross_evaluation/mean/classifier_quantile/evaluation_p05_min",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "quantileHeldOutHigh",
-        f"{HEP}#/cross_evaluation/mean/classifier_quantile/evaluation_p95_max",
-        _fixed(4),
-    ),
-    Fact("hep", "thresholdBins", f"{HEP}#/cross_evaluation/mean/threshold_cut/n_bins", _count),
-    Fact(
-        "hep",
-        "heldOutBudgetThree",
-        f"{HEP}#/cross_evaluation/held_out_budget_sweep/0/ds_rule_evaluation_profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "heldOutBudgetEight",
-        f"{HEP}#/cross_evaluation/held_out_budget_sweep/3/ds_rule_evaluation_profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "inSampleBudgetEight",
-        f"{HEP}#/in_sample/ceiling_sweep/3/ds_profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "hep",
-        "ceilingBudgetEight",
-        f"{HEP}#/in_sample/ceiling_sweep/3/ceiling_retention",
+        "evaluationCeilingAB",
+        f"{HEP}#/cross_evaluation/directions/0/evaluation_ceiling_retention",
         _fixed(4),
     ),
     # Downstream: the expected relative uncertainty on the signal strength from
     # the count table's own likelihood, with the simulation's actual energy-
-    # scale response. Rules fitted on all events; the held-out directions are
-    # in the reference study.
+    # scale response. Rules fitted on all events.
     Fact("hep", "tesConstraintWidth", f"{HEP}#/downstream/tes_constraint_width", _fixed(2)),
     Fact("hep", "sigmaDsRule", f"{HEP}#/downstream/all_events/rules/ds_rule/sigma_mu", _fixed(3)),
     Fact(
@@ -527,18 +348,6 @@ FACTS: tuple[Fact, ...] = (
         "sigmaDsRuleFixed",
         f"{HEP}#/downstream/all_events/rules/ds_rule/sigma_mu_tes_fixed",
         _fixed(3),
-    ),
-    Fact(
-        "hep",
-        "sigmaDsRuleConstrained",
-        f"{HEP}#/downstream/all_events/rules/ds_rule/sigma_mu_tes_constrained",
-        _fixed(3),
-    ),
-    Fact(
-        "hep",
-        "sigmaDsRuleInflated",
-        f"{HEP}#/downstream/all_events/rules/ds_rule/sigma_mu_mc_inflated",
-        _fixed(1),
     ),
     Fact("hep", "sigmaDRule", f"{HEP}#/downstream/all_events/rules/d_rule/sigma_mu", _fixed(3)),
     Fact(
@@ -573,12 +382,6 @@ FACTS: tuple[Fact, ...] = (
     ),
     Fact(
         "hep",
-        "sigmaLogitInflated",
-        f"{HEP}#/downstream/all_events/rules/classifier_logit_equal_width/sigma_mu_mc_inflated",
-        _fixed(1),
-    ),
-    Fact(
-        "hep",
         "sigmaQuantile",
         f"{HEP}#/downstream/all_events/rules/classifier_quantile/sigma_mu",
         _fixed(3),
@@ -588,48 +391,6 @@ FACTS: tuple[Fact, ...] = (
         "sigmaQuantileFixed",
         f"{HEP}#/downstream/all_events/rules/classifier_quantile/sigma_mu_tes_fixed",
         _fixed(3),
-    ),
-    Fact(
-        "hep",
-        "sigmaThresholdFixed",
-        f"{HEP}#/downstream/all_events/rules/threshold_cut/sigma_mu_tes_fixed",
-        _fixed(3),
-    ),
-    Fact(
-        "hep",
-        "sigmaDsRuleHeldOutAB",
-        f"{HEP}#/downstream/held_out/0/rules/ds_rule/sigma_mu",
-        _fixed(2),
-    ),
-    Fact(
-        "hep",
-        "sigmaDsRuleHeldOutBA",
-        f"{HEP}#/downstream/held_out/1/rules/ds_rule/sigma_mu",
-        _fixed(2),
-    ),
-    Fact(
-        "hep",
-        "sigmaDRuleHeldOutAB",
-        f"{HEP}#/downstream/held_out/0/rules/d_rule/sigma_mu",
-        _fixed(2),
-    ),
-    Fact(
-        "hep",
-        "sigmaDRuleHeldOutBA",
-        f"{HEP}#/downstream/held_out/1/rules/d_rule/sigma_mu",
-        _fixed(2),
-    ),
-    Fact(
-        "hep",
-        "sigmaLogitHeldOutAB",
-        f"{HEP}#/downstream/held_out/0/rules/classifier_logit_equal_width/sigma_mu",
-        _fixed(2),
-    ),
-    Fact(
-        "hep",
-        "sigmaLogitHeldOutBA",
-        f"{HEP}#/downstream/held_out/1/rules/classifier_logit_equal_width/sigma_mu",
-        _fixed(2),
     ),
     # Provenance as three separate facts, from the fixture's own record: the
     # bytes, the code repository they came from, and the archival record the
@@ -955,7 +716,6 @@ def write_walkthrough_score_tables() -> dict[str, int]:
 #: both run this generator, so the copies exist wherever the site is built.
 FIGURES = {
     "hep-cells.png": "examples/outputs/hep-cells.png",
-    "hep-budget.png": "examples/outputs/hep-budget.png",
     "michelson-d-geometry.png": "examples/outputs/michelson-d-geometry.png",
     "michelson-profiled-ds.png": "examples/outputs/michelson-profiled-ds.png",
     "door3-classifier.png": "examples/outputs/door3-classifier.png",

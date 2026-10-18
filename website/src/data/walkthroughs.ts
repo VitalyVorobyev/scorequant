@@ -28,6 +28,8 @@ export interface WalkthroughCard {
   problem: string;
   /** Where the data comes from and what kind of evidence it is. */
   data: string;
+  /** What the page finds, in one line; the front page shows it under the title. */
+  result: string;
   tags: readonly WalkthroughTag[];
 }
 
@@ -59,6 +61,9 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
     data:
       "An idealised photon-arrival model with a closed-form score, integrated by deterministic " +
       "quadrature. No recorded instrument data.",
+    result:
+      "Equal detector segments can lose the phase entirely; cells drawn in score space keep it, " +
+      "and the D-optimal cells compile into a reusable rule.",
     tags: [
       {kind: "task", label: "optimize_partition"},
       {kind: "task", label: "fit_quantizer"},
@@ -86,6 +91,9 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
     data:
       "A synthetic mixture of two normal densities, generated so that the exact score is also " +
       "known and the estimate can be checked against it.",
+    result:
+      "A calibrated classifier can stand in for the likelihood, but the retention ScoreQuant " +
+      "then reports describes the classifier's estimate, not the data.",
     tags: [
       {kind: "task", label: "fit_quantizer"},
       {kind: "input", label: "DensityRatioScore"},
@@ -95,7 +103,7 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
   },
   {
     slug: "hep",
-    title: "A Higgs search with a floating energy scale",
+    title: "A Higgs boson measurement",
     href: "/walkthroughs/hep",
     lead:
       `Fit a ${hep("bins")}-category rule on half the simulated collisions, apply it to the other ` +
@@ -109,6 +117,9 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
     data:
       "Simulated events from the FAIR Universe HiggsML public dataset, each with a Monte Carlo " +
       "weight and shifted-energy-scale copies. A simulation study, not an analysis.",
+    result:
+      "Once the energy scale floats, cuts on the classifier output lose much of their precision " +
+      "on the signal strength; a rule fitted with the energy scale profiled out loses little.",
     tags: [
       {kind: "task", label: "fit_quantizer"},
       {kind: "task", label: "optimize_partition"},
@@ -134,6 +145,9 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
     data:
       "Real cells from the FlowCyt classification benchmark, with whole patients held out before " +
       "anything was fitted.",
+    result:
+      `Reduced to ${flowcyt("bins")} counts each, held-out patients give population fractions ` +
+      "with an error of the same order as using every cell.",
     tags: [
       {kind: "task", label: "fit_quantizer"},
       {kind: "input", label: "ScoreSample"},

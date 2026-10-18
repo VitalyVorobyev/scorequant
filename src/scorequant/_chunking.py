@@ -4,8 +4,9 @@ Several private kernels evaluate one ``[chunk_rows, n_bins]`` (or the
 Mahalanobis ``[chunk_rows, n_bins, rank]`` residual behind it) distance table
 per row chunk instead of materializing the full ``[n_rows, n_bins, rank]``
 tensor at once. ``assignment_chunk_rows`` is the one place that budget is
-computed, so ``partition.py``, ``solvers/``, and ``result.py`` size their
-chunks identically instead of drifting apart under independent edits.
+computed, so the exchange engine, the soft solver, the geometry diagnostics and
+nearest-centre assignment size their chunks identically instead of drifting
+apart under independent edits.
 """
 
 from __future__ import annotations
@@ -32,3 +33,8 @@ def assignment_chunk_rows(dtype: npt.DTypeLike, n_rows: int, n_bins: int, rank: 
     item_size = np.dtype(dtype).itemsize
     values_per_row = n_bins * (rank + 4) + 4 * rank
     return max(1, min(n_rows, WORKING_SET_BYTES // max(item_size * values_per_row, 1)))
+
+
+def chunk_rows_for(points: np.ndarray, n_bins: int) -> int:
+    """Return the chunk size of one ``[N, rank]`` table scanned against ``n_bins`` cells."""
+    return assignment_chunk_rows(points.dtype, points.shape[0], n_bins, points.shape[1])

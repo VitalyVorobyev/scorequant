@@ -73,7 +73,15 @@ def test_execution_libraries_stay_behind_adapter() -> None:
 
 def test_domain_contracts_do_not_import_solver_or_api_layers() -> None:
     domain_modules = ("config.py", "criteria.py", "reports.py", "sources.py")
-    forbidden = {"api", "partition", "quantizers", "certify", "visualization"}
+    forbidden = {
+        "api",
+        "partition",
+        "quantizers",
+        "certify",
+        "diagnostics",
+        "_exchange",
+        "visualization",
+    }
     offenders: dict[str, list[str]] = {}
     for name in domain_modules:
         reverse = sorted(_imports(PACKAGE / name) & forbidden)
@@ -112,7 +120,17 @@ def test_package_import_does_not_require_jax_or_optax(tmp_path: Path) -> None:
 def test_artifact_never_imports_fit_layers() -> None:
     # artifact.py is the deployable, backend-free layer; pulling in any fitting
     # module would let loading or predicting drag the fit machinery along.
-    forbidden = {"result", "api", "partition", "quantizers", "solvers", "certify", "visualization"}
+    forbidden = {
+        "result",
+        "api",
+        "partition",
+        "quantizers",
+        "solvers",
+        "certify",
+        "diagnostics",
+        "_exchange",
+        "visualization",
+    }
     assert sorted(_imports(PACKAGE / "artifact.py") & forbidden) == []
 
 
@@ -129,10 +147,36 @@ def test_solvers_never_import_orchestration() -> None:
             "quantizers",
             "information",
             "certify",
+            "diagnostics",
         )
     }
     offenders = {
         path.name: sorted(_imports(path) & forbidden) for path in (PACKAGE / "solvers").glob("*.py")
+    }
+    assert {name: modules for name, modules in offenders.items() if modules} == {}
+
+
+def _package_imports(path: Path) -> set[str]:
+    """Return the top-level package modules one source imports, however spelled."""
+    names = set()
+    for name in _imports(path):
+        name = name.removeprefix("scorequant.")
+        if not name.startswith(("__future__", "numpy", "typing", "dataclasses")):
+            names.add(name.split(".", 1)[0])
+    return names
+
+
+def test_finite_partition_layers_point_one_way() -> None:
+    # The exchange algebra sits under the solvers that drive it, the
+    # diagnostics sit above the engine they rerun, and partition.py sits above
+    # both. Nothing below may reach back up.
+    layers = {
+        "_exchange.py": {"solvers", "diagnostics", "partition", "certify", "api", "result"},
+        "diagnostics.py": {"partition", "certify", "api", "result"},
+    }
+    offenders = {
+        name: sorted(_package_imports(PACKAGE / name) & forbidden)
+        for name, forbidden in layers.items()
     }
     assert {name: modules for name, modules in offenders.items() if modules} == {}
 

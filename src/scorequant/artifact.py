@@ -26,7 +26,7 @@ import numpy as np
 from ._errors import ContractError
 from ._execution import canonical_array, use_execution
 from ._json import json_ready
-from ._predict import chunked_predict_labels
+from ._predict import assign_nearest
 from ._typing import ArrayLike, JsonValue
 from .config import ExecutionConfig
 from .criteria import Criterion, DOptimality, NormalizedTrace, ProfiledDOptimality
@@ -125,7 +125,7 @@ class Quantizer:
         resolved = execution or self.execution
         with use_execution(resolved):
             coordinates = self.transform.apply(scores, execution=resolved)
-            return canonical_array(chunked_predict_labels(coordinates, self.centers, self.metric))
+            return canonical_array(assign_nearest(coordinates, self.centers, self.metric))
 
     def evaluate_scores(
         self,

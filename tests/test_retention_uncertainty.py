@@ -20,7 +20,7 @@ import pytest
 
 import scorequant as sq
 from scorequant._validation import validate_sample
-from scorequant.information import _retention_influence
+from scorequant.uncertainty import _retention_influence
 
 from ._oracles import _o7_exact_plugin
 

@@ -154,3 +154,52 @@ def collapse_duplicate_scores(
         jnp.asarray(collapsed_weights, dtype=weights.dtype),
         jnp.asarray(inverse),
     )
+
+
+def nuisance_complement(interest: tuple[int, ...], dimension: int) -> tuple[int, ...]:
+    """Return the nuisance complement of ``interest`` among ``dimension`` score columns.
+
+    The one check every profiled path shares: each interest index names a
+    score column, and at least one column is left to profile out.
+    """
+    if any(index >= dimension for index in interest):
+        raise ContractError(f"interest indices must be smaller than score dimension {dimension}")
+    interest_set = set(interest)
+    nuisance = tuple(index for index in range(dimension) if index not in interest_set)
+    if not nuisance:
+        raise ContractError(
+            "profiling requires at least one nuisance score column; with no nuisance "
+            "parameters use DOptimality"
+        )
+    return nuisance
+
+
+def integer_labels(labels: ArrayLike, n_rows: int, name: str) -> jnp.ndarray:
+    """Return an integer ``[n_rows]`` labeling, naming the argument in any error."""
+    array = jnp.asarray(labels)
+    if array.shape != (n_rows,):
+        raise ContractError(f"{name} must have shape [{n_rows}], got {array.shape}")
+    if not jnp.issubdtype(array.dtype, jnp.integer):
+        raise TypeError(f"{name} must contain integer bin labels")
+    return array
+
+
+def validate_assignments(
+    sample: _ValidatedSample,
+    assignments: ArrayLike,
+    n_bins: int | None,
+) -> tuple[jnp.ndarray, int]:
+    """Return the positive-weight labels of a hard assignment and its resolved cell count."""
+    labels = integer_labels(assignments, int(sample.scores.shape[0]), "assignments")
+    labels = labels[sample.positive_weight_mask]
+    if n_bins is None:
+        resolved_n_bins = int(np.asarray(jnp.max(labels))) + 1
+    else:
+        if isinstance(n_bins, bool) or not isinstance(n_bins, int):
+            raise TypeError("n_bins must be an integer")
+        resolved_n_bins = n_bins
+    if resolved_n_bins < 1:
+        raise ContractError("n_bins must be at least one")
+    if bool(np.asarray(jnp.any((labels < 0) | (labels >= resolved_n_bins)))):
+        raise ContractError("assignments contain a label outside [0, n_bins)")
+    return labels, resolved_n_bins

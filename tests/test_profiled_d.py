@@ -1,8 +1,13 @@
+from dataclasses import asdict
+from unittest.mock import patch
+
 import numpy as np
 import pytest
 
 import scorequant as sq
-from scorequant.partition import _cell_statistics, _ProfiledDObjective
+from scorequant._chunking import chunk_rows_for
+from scorequant._exchange import ProfiledDObjective, cell_statistics
+from scorequant.diagnostics import profiled_geometry_report
 
 from ._oracles import _exact_profiled_d_move_gain
 
@@ -21,8 +26,8 @@ def test_exact_profiled_move_gain_matches_direct_recomputation() -> None:
     scores = rng.normal(size=(24, 3))
     weights = rng.uniform(0.2, 1.4, size=len(scores))
     labels = np.tile(np.arange(4), 6)
-    state = _ProfiledDObjective(interest=(0,), nuisance=(1, 2)).init_state(
-        _cell_statistics(scores, weights, labels, 4)
+    state = ProfiledDObjective(interest=(0,), nuisance=(1, 2)).init_state(
+        cell_statistics(scores, weights, labels, 4)
     )
     row, destination = 3, 2
     source = labels[row]
@@ -129,3 +134,29 @@ def test_profiled_contract_rejects_ambiguous_or_singular_cases() -> None:
             criterion=sq.ProfiledDOptimality((0,)),
             config=sq.DExchangeConfig(),
         )
+
+
+def test_chunked_profiled_geometry_matches_one_chunk() -> None:
+    rng = np.random.default_rng(23)
+    scores = rng.normal(size=(200, 3)) + 0.3
+    weights = rng.uniform(0.2, 1.4, size=len(scores))
+    labels = np.tile(np.arange(4), 50)
+    state = ProfiledDObjective(interest=(0,), nuisance=(1, 2)).init_state(
+        cell_statistics(scores, weights, labels, 4)
+    )
+
+    def report(budget: int) -> dict[str, object]:
+        with patch("scorequant._chunking.WORKING_SET_BYTES", budget):
+            if budget < 1 << 40:
+                assert chunk_rows_for(scores, 4) < len(scores) // 4
+            return asdict(
+                profiled_geometry_report(
+                    scores, weights, labels, state, nuisance=(1, 2), exchange_stable=False
+                )
+            )
+
+    chunked = report(2048)
+    whole = report(1 << 40)
+    np.testing.assert_array_equal(chunked.pop("metric"), whole.pop("metric"))
+    assert chunked == pytest.approx(whole, rel=1e-12)
+    assert whole["evaluated_moves"] == len(scores) * 3

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from unittest.mock import patch
 
 import jax
 import jax.numpy as jnp
@@ -8,6 +9,9 @@ import numpy as np
 import pytest
 
 import scorequant
+from scorequant._chunking import chunk_rows_for
+from scorequant._execution import use_execution
+from scorequant.solvers.soft import soft_objective_and_center_gradient
 from tests._fit import fit_test_quantizer
 
 
@@ -85,6 +89,53 @@ def test_soft_voronoi_has_finite_trace_and_hard_result() -> None:
     assert np.isfinite(np.asarray(result.trace.gradient_norms)).all()
     assert np.isfinite(np.asarray(result.trace.soft_retention)).all()
     assert result.train_report.geometric_mean_retention > 0.55
+
+
+def test_soft_refuses_to_stall_on_a_singular_fisher_matrix() -> None:
+    # An exactly centred sample makes the soft moments sum to zero, so two cells
+    # span one direction at every temperature and the two-dimensional soft
+    # Fisher matrix is singular for the whole schedule.
+    half = np.asarray(_scores(60))
+    scores = np.concatenate([half, -half])
+    with pytest.raises(scorequant.RefusalError, match="stalled") as refusal:
+        fit_test_quantizer(
+            scores,
+            n_bins=2,
+            config=scorequant.SoftVoronoiConfig(seed=0, max_steps=5, record_every=5),
+        )
+    assert refusal.value.counterexample == "CE-DS-MARGINS-RANK-VACUITY-001"
+
+
+@pytest.mark.parametrize("backend", ["jax", "numpy"])
+@pytest.mark.parametrize(
+    "criterion", [scorequant.DOptimality(), scorequant.ProfiledDOptimality(interest=(0,))]
+)
+def test_chunked_soft_gradient_matches_one_chunk(
+    backend: str, criterion: scorequant.DOptimality | scorequant.ProfiledDOptimality
+) -> None:
+    rng = np.random.default_rng(7)
+    points = rng.normal(size=(300, 2))
+    objective_scores = np.hstack([points, rng.normal(size=(300, 1))]) + 0.4
+    weights = rng.uniform(0.2, 1.5, size=300)
+    centers = rng.normal(size=(4, 2))
+    execution = scorequant.ExecutionConfig(backend=backend, precision="float64", device="cpu")
+
+    def evaluate(budget: int) -> tuple[float, np.ndarray]:
+        with patch("scorequant._chunking.WORKING_SET_BYTES", budget), use_execution(execution):
+            loss, gradient = soft_objective_and_center_gradient(
+                points, objective_scores, weights, centers, 0.8, criterion
+            )
+        return float(loss), np.asarray(gradient)
+
+    # About forty rows per chunk against a sample of three hundred.
+    budget = 40 * 8 * (4 * 6 + 8)
+    with patch("scorequant._chunking.WORKING_SET_BYTES", budget):
+        assert chunk_rows_for(points, 4) == 40
+    chunked_loss, chunked_gradient = evaluate(budget)
+    loss, gradient = evaluate(1 << 40)
+    assert np.isfinite(loss)
+    assert chunked_loss == pytest.approx(loss, rel=1e-12)
+    np.testing.assert_allclose(chunked_gradient, gradient, rtol=1e-10, atol=1e-12)
 
 
 def test_soft_requires_enough_bins_for_rank() -> None:

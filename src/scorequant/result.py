@@ -17,7 +17,7 @@ import numpy as np
 from ._errors import ContractError, RefusalError
 from ._execution import canonicalize_public, use_execution
 from ._json import json_ready
-from ._predict import chunked_predict_labels
+from ._predict import assign_nearest
 from ._typing import ArrayLike, JsonValue
 from .artifact import Quantizer
 from .config import ExecutionConfig, MahalanobisLloydConfig, PartitionConfig, QuantizerConfig
@@ -361,7 +361,7 @@ class PartitionResult:
             raise ContractError("D compilation geometry is unavailable")
         with use_execution(resolved_execution):
             coordinates = self.transform.apply(self.training_scores, execution=resolved_execution)
-            predicted = chunked_predict_labels(coordinates, self.transformed_centers, self.metric)
+            predicted = assign_nearest(coordinates, self.transformed_centers, self.metric)
         positive = np.asarray(self.positive_weight_mask)
         if not np.array_equal(np.asarray(predicted)[positive], np.asarray(self.labels)[positive]):
             # Only the solver-side certificate can price a disagreement, because

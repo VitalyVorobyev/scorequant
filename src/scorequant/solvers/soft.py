@@ -1,24 +1,34 @@
-"""Analytic-gradient soft-Voronoi optimization shared by all backends."""
+"""Analytic-gradient soft-Voronoi optimization shared by all backends.
+
+Every pass over the rows (soft moments, the centre gradient, checkpoints) runs
+in memory-bounded row chunks through compiled per-chunk kernels, so the
+``[N, B, R]`` residual tensor is never materialized beyond one chunk.
+"""
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 import numpy as np
 
-from scorequant._errors import ContractError
+from scorequant._chunking import chunk_rows_for
+from scorequant._errors import ContractError, RefusalError
 from scorequant._execution import (
     AdamState,
     adam_update,
+    backend_jit,
     create_adam,
     scatter_block_add,
 )
 from scorequant._execution import xp as jnp
+from scorequant._predict import assign_nearest
+from scorequant._validation import nuisance_complement
 from scorequant.config import KMeansConfig, SoftVoronoiConfig
 from scorequant.criteria import DOptimality, ProfiledDOptimality
 from scorequant.transforms import fisher_transform, is_numerically_singular
 
-from .common import QuantizerRun, _bin_weights, chunked_hard_assign, squared_distances
+from .common import QuantizerRun, _bin_weights, squared_distances
 from .kmeans import weighted_kmeans
 
 
@@ -39,15 +49,47 @@ def soft_responsibilities(
     return exponentials / jnp.sum(exponentials, axis=1, keepdims=True)
 
 
-def _soft_fisher(
+type _ChunkKernel = Callable[..., tuple[jnp.ndarray, ...]]
+
+
+def _chunk_totals(
+    kernel: _ChunkKernel,
+    rows: tuple[jnp.ndarray, ...],
+    *shared: jnp.ndarray | float,
+) -> tuple[jnp.ndarray, ...]:
+    """Sum a per-chunk kernel over memory-bounded slices of the row arrays.
+
+    ``rows[0]`` is the ``[N, R]`` point table and ``shared[0]`` the ``[B, R]``
+    centres, which together size the chunk. One chunk calls the kernel on the
+    full arrays, so a sample that fits is computed exactly as before chunking;
+    more chunks change only the order of the final row sums.
+    """
+    n_rows = int(rows[0].shape[0])
+    chunk_rows = chunk_rows_for(rows[0], int(np.shape(shared[0])[0]))
+    if chunk_rows >= n_rows:
+        return kernel(*rows, *shared)
+    totals = kernel(*(array[:chunk_rows] for array in rows), *shared)
+    for start in range(chunk_rows, n_rows, chunk_rows):
+        parts = kernel(*(array[start : start + chunk_rows] for array in rows), *shared)
+        totals = tuple(total + part for total, part in zip(totals, parts, strict=True))
+    return totals
+
+
+@backend_jit
+def _soft_moment_chunk(
+    points: jnp.ndarray,
     objective_scores: jnp.ndarray,
-    responsibilities: jnp.ndarray,
     weights: jnp.ndarray,
-) -> jnp.ndarray:
-    weighted_resp = weights[:, None] * responsibilities
-    occupancies = jnp.sum(weighted_resp, axis=0)
-    sums = weighted_resp.T @ objective_scores
-    means = sums / jnp.maximum(occupancies[:, None], jnp.finfo(weights.dtype).tiny)
+    centers: jnp.ndarray,
+    temperature: float | jnp.ndarray,
+) -> tuple[jnp.ndarray, jnp.ndarray]:
+    """Return one chunk's soft cell occupancies ``[B]`` and score moments ``[B, P]``."""
+    weighted = weights[:, None] * soft_responsibilities(points, centers, temperature)
+    return jnp.sum(weighted, axis=0), weighted.T @ objective_scores
+
+
+def _soft_fisher(occupancies: jnp.ndarray, sums: jnp.ndarray) -> jnp.ndarray:
+    means = sums / jnp.maximum(occupancies[:, None], jnp.finfo(sums.dtype).tiny)
     fisher = jnp.einsum("b,bp,bq->pq", occupancies, means, means)
     return 0.5 * (fisher + fisher.T)
 
@@ -103,9 +145,7 @@ def _criterion_logdet(
     if isinstance(criterion, DOptimality):
         _, value = jnp.linalg.slogdet(fisher)
         return not is_numerically_singular(fisher), value, fisher.shape[0]
-    dimension = fisher.shape[0]
-    interest_set = set(criterion.interest_indices)
-    nuisance = tuple(index for index in range(dimension) if index not in interest_set)
+    nuisance = nuisance_complement(criterion.interest_indices, int(fisher.shape[0]))
     interest_indices = jnp.asarray(criterion.interest)
     nuisance_indices = jnp.asarray(nuisance)
     interest_block = fisher[jnp.ix_(interest_indices, interest_indices)]
@@ -143,12 +183,15 @@ def soft_objective_and_center_gradient(
     asks autodiff to rediscover this equation at runtime. A soft Fisher matrix
     that is singular at the dtype's rank threshold has no finite objective: the loss is
     infinite and the gradient zero.
+
+    The moments and the gradient are each one chunked pass over the rows; the
+    rank verdict between them is the library's host-side rule, which is why
+    the two passes are compiled separately rather than as one kernel.
     """
-    responsibilities = soft_responsibilities(points, centers, temperature)
-    weighted = weights[:, None] * responsibilities
-    occupancies = jnp.sum(weighted, axis=0)
+    occupancies, sums = _chunk_totals(
+        _soft_moment_chunk, (points, objective_scores, weights), centers, temperature
+    )
     safe = jnp.maximum(occupancies, jnp.finfo(weights.dtype).tiny)
-    sums = weighted.T @ objective_scores
     fisher = jnp.einsum("b,bp,bq->pq", 1 / safe, sums, sums)
     fisher = 0.5 * (fisher + fisher.T)
     regular, logdet, _ = _criterion_logdet(fisher, criterion)
@@ -157,12 +200,35 @@ def soft_objective_and_center_gradient(
 
     metric = -jnp.linalg.inv(fisher)
     if isinstance(criterion, ProfiledDOptimality):
-        interest_set = set(criterion.interest_indices)
-        nuisance = tuple(index for index in range(fisher.shape[0]) if index not in interest_set)
-        indices = jnp.asarray(nuisance)
+        indices = jnp.asarray(nuisance_complement(criterion.interest_indices, int(fisher.shape[0])))
         nuisance_information = fisher[jnp.ix_(indices, indices)]
         metric = scatter_block_add(metric, indices, jnp.linalg.inv(nuisance_information))
 
+    (gradient,) = _chunk_totals(
+        _center_gradient_chunk,
+        (points, objective_scores, weights),
+        centers,
+        temperature,
+        metric,
+        sums,
+        safe,
+    )
+    return -logdet, gradient / (jnp.asarray(temperature) ** 2)
+
+
+@backend_jit
+def _center_gradient_chunk(
+    points: jnp.ndarray,
+    objective_scores: jnp.ndarray,
+    weights: jnp.ndarray,
+    centers: jnp.ndarray,
+    temperature: float | jnp.ndarray,
+    metric: jnp.ndarray,
+    sums: jnp.ndarray,
+    safe: jnp.ndarray,
+) -> tuple[jnp.ndarray]:
+    """Return one chunk's share of ``sum_n h_nb (x_n - c_b)``, before the temperature scale."""
+    responsibilities = soft_responsibilities(points, centers, temperature)
     score_moment_cross = objective_scores @ metric @ sums.T
     moment_quadratic = jnp.einsum("bp,pq,bq->b", sums, metric, sums)
     response_gradient = weights[:, None] * (
@@ -172,10 +238,7 @@ def soft_objective_and_center_gradient(
         response_gradient - jnp.sum(responsibilities * response_gradient, axis=1, keepdims=True)
     )
     residuals = points[:, None, :] - centers[None, :, :]
-    center_gradient = jnp.einsum("nb,nbr->br", centered_response_gradient, residuals) / (
-        jnp.asarray(temperature) ** 2
-    )
-    return -logdet, center_gradient
+    return (jnp.einsum("nb,nbr->br", centered_response_gradient, residuals),)
 
 
 @dataclass(slots=True)
@@ -205,9 +268,15 @@ class _SoftHistory:
         gradient_norm: jnp.ndarray,
     ) -> None:
         """Record one aggregate soft-optimization checkpoint."""
-        responsibilities = soft_responsibilities(self.points, centers, temperature)
-        soft_fisher = _soft_fisher(self.objective_scores, responsibilities, self.weights)
-        labels = chunked_hard_assign(self.points, centers)
+        soft_fisher = _soft_fisher(
+            *_chunk_totals(
+                _soft_moment_chunk,
+                (self.points, self.objective_scores, self.weights),
+                centers,
+                temperature,
+            )
+        )
+        labels = assign_nearest(self.points, centers)
         self.steps.append(step)
         self.centers.append(centers)
         self.objectives.append(float(np.asarray(-loss)))
@@ -305,28 +374,14 @@ def _run_soft_schedule(
     for step in range(config.max_steps + 1):
         fraction = step / config.max_steps
         temperature = start_temperature * (end_temperature / start_temperature) ** fraction
+        loss, gradients = soft_objective_and_center_gradient(
+            points, objective_scores, weights, centers, temperature, criterion
+        )
+        gradient_norm = jnp.asarray(0.0, dtype=points.dtype)
         if step > 0:
-            loss, gradients = soft_objective_and_center_gradient(
-                points,
-                objective_scores,
-                weights,
-                centers,
-                temperature,
-                criterion,
-            )
             centers, optimizer, gradient_norm_value = adam_update(centers, gradients, optimizer)
             centers = jnp.asarray(centers)
             gradient_norm = jnp.asarray(gradient_norm_value, dtype=points.dtype)
-        else:
-            loss, _ = soft_objective_and_center_gradient(
-                points,
-                objective_scores,
-                weights,
-                centers,
-                temperature,
-                criterion,
-            )
-            gradient_norm = jnp.asarray(0.0, dtype=points.dtype)
         if step % config.record_every == 0 or step == config.max_steps:
             history.append(
                 step=step,
@@ -336,6 +391,19 @@ def _run_soft_schedule(
                 gradient_norm=gradient_norm,
             )
 
+    if not np.isfinite(float(np.asarray(loss))):
+        # A singular soft Fisher matrix has no objective and a zero gradient, so
+        # the schedule can only coast on momentum; ending there means the fit
+        # stalled and its centres say nothing about the criterion. On an exactly
+        # centred sample the soft moments sum to zero, so n_bins cells span at
+        # most n_bins - 1 directions at every temperature.
+        raise RefusalError(
+            "soft optimization stalled on a singular soft Fisher matrix: the criterion is "
+            "undefined at the end of the temperature schedule. n_bins cells of a centred "
+            "score sample span at most n_bins - 1 directions; add a bin or use "
+            "DExchangeConfig",
+            "CE-DS-MARGINS-RANK-VACUITY-001",
+        )
     return history.finish(centers)
 
 

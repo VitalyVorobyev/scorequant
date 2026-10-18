@@ -6,16 +6,6 @@
         "text": "8",
         "value": 8
       },
-      "dExchangeEfficiency": {
-        "source": "examples/outputs/cell_population.json#/finite_d_exchange:8/held_out_d_efficiency",
-        "text": "0.9853",
-        "value": 0.9852758215441055
-      },
-      "dExchangeRmse": {
-        "source": "examples/outputs/cell_population.json#/finite_d_exchange:8/target_macro_rmse",
-        "text": "0.002094",
-        "value": 0.002093732126606461
-      },
       "fiveBinEfficiency": {
         "source": "examples/outputs/cell_population.json#/soft_voronoi:5/held_out_d_efficiency",
         "text": "0.3911",
@@ -25,11 +15,6 @@
         "source": "examples/outputs/cell_population.json#/scientific_closure/template_identifiability/soft_voronoi:5/rank_bound",
         "text": "4",
         "value": 4
-      },
-      "fiveBinRmse": {
-        "source": "examples/outputs/cell_population.json#/soft_voronoi:5/target_macro_rmse",
-        "text": "0.030002",
-        "value": 0.030002014132350867
       },
       "freeFractions": {
         "source": "examples/outputs/cell_population.json#/scientific_closure/template_identifiability/soft_voronoi:5/required_rank",
@@ -41,55 +26,15 @@
         "text": "10",
         "value": 10
       },
-      "informationKind": {
-        "source": "examples/outputs/cell_population.json#/finite_d_exchange:8/information_kind",
-        "text": "supplied_score_surrogate",
-        "value": "supplied_score_surrogate"
-      },
       "license": {
         "source": "examples/data/flowcyt_fixture.json#/source_license",
         "text": "CC-BY-NC-SA-4.0",
         "value": "CC-BY-NC-SA-4.0"
       },
-      "markerKmeansEfficiency": {
-        "source": "examples/outputs/cell_population.json#/marker_kmeans:8/held_out_d_efficiency",
-        "text": "0.0704",
-        "value": 0.07035593206242213
-      },
       "markerKmeansRmse": {
         "source": "examples/outputs/cell_population.json#/marker_kmeans:8/target_macro_rmse",
         "text": "0.028892",
         "value": 0.028891852157931913
-      },
-      "oneDimensionalEfficiency": {
-        "source": "examples/outputs/cell_population.json#/one_dimensional_score:8/held_out_d_efficiency",
-        "text": "0.0378",
-        "value": 0.03780138996527281
-      },
-      "oneDimensionalRmse": {
-        "source": "examples/outputs/cell_population.json#/one_dimensional_score:8/target_macro_rmse",
-        "text": "0.018088",
-        "value": 0.018087934767159634
-      },
-      "populations": {
-        "source": "examples/outputs/cell_population.json#/scientific_closure/template_identifiability/soft_voronoi:5/n_classes",
-        "text": "6",
-        "value": 6
-      },
-      "profiledCeilingRetention": {
-        "source": "examples/outputs/flowcyt_profiled_ds.json#/fixture_scale/bound/ceiling_retention",
-        "text": "0.9997",
-        "value": 0.9996713041049554
-      },
-      "profiledDPartitionRetention": {
-        "source": "examples/outputs/flowcyt_profiled_ds.json#/fixture_scale/partitions/0/profiled_retention",
-        "text": "0.9954",
-        "value": 0.995386074153505
-      },
-      "referencePerPatientClass": {
-        "source": "examples/data/flowcyt_fixture.json#/reference_per_patient_class",
-        "text": "128",
-        "value": 128
       },
       "softVoronoiEfficiency": {
         "source": "examples/outputs/cell_population.json#/soft_voronoi:8/held_out_d_efficiency",
@@ -111,31 +56,6 @@
         "text": "600,000",
         "value": 600000
       },
-      "tableDExchangeEfficiency": {
-        "source": "examples/data/flowcyt_walkthrough.json#/chain/d_exchange/held_out_d_efficiency",
-        "text": "0.9798",
-        "value": 0.9797868497426743
-      },
-      "tableDExchangeRmse": {
-        "source": "examples/data/flowcyt_walkthrough.json#/chain/d_exchange/macro_rmse",
-        "text": "0.0088",
-        "value": 0.008774361836363792
-      },
-      "tableHeldOutRows": {
-        "source": "examples/data/flowcyt_walkthrough.json#/rows/held_out",
-        "text": "10,240",
-        "value": 10240
-      },
-      "tablePartitionRows": {
-        "source": "examples/data/flowcyt_walkthrough.json#/rows/partition",
-        "text": "7,038",
-        "value": 7038
-      },
-      "tableSoftVoronoiEfficiency": {
-        "source": "examples/data/flowcyt_walkthrough.json#/chain/soft_voronoi/held_out_d_efficiency",
-        "text": "0.9774",
-        "value": 0.977412616625642
-      },
       "tableSoftVoronoiRmse": {
         "source": "examples/data/flowcyt_walkthrough.json#/chain/soft_voronoi/macro_rmse",
         "text": "0.0090",
@@ -151,45 +71,10 @@
         "text": "0.0016",
         "value": 0.0016300505164664407
       },
-      "tenBinEfficiency": {
-        "source": "examples/outputs/cell_population.json#/soft_voronoi:10/held_out_d_efficiency",
-        "text": "0.9903",
-        "value": 0.9903122386755577
-      },
-      "tenBinRmse": {
-        "source": "examples/outputs/cell_population.json#/soft_voronoi:10/target_macro_rmse",
-        "text": "0.002023",
-        "value": 0.002023223825027861
-      },
-      "testPerPatient": {
-        "source": "examples/data/flowcyt_fixture.json#/test_per_patient",
-        "text": "2,048",
-        "value": 2048
-      },
-      "thirtyBinEfficiency": {
-        "source": "examples/outputs/cell_population.json#/soft_voronoi:30/held_out_d_efficiency",
-        "text": "0.9984",
-        "value": 0.9984033208847412
-      },
-      "thirtyBinRmse": {
-        "source": "examples/outputs/cell_population.json#/soft_voronoi:30/target_macro_rmse",
-        "text": "0.002600",
-        "value": 0.002600358348403994
-      },
-      "twoDimensionalGridEfficiency": {
-        "source": "examples/outputs/cell_population.json#/two_dimensional_grid:8/held_out_d_efficiency",
-        "text": "0.0223",
-        "value": 0.022311477389082943
-      },
       "twoDimensionalGridRmse": {
         "source": "examples/outputs/cell_population.json#/two_dimensional_grid:8/target_macro_rmse",
         "text": "0.083325",
         "value": 0.08332510970683164
-      },
-      "twoDimensionalGridRmseThirty": {
-        "source": "examples/outputs/cell_population.json#/two_dimensional_grid:30/target_macro_rmse",
-        "text": "0.062011",
-        "value": 0.062011452341553266
       },
       "unbinnedMacroRmse": {
         "source": "examples/outputs/cell_population.json#/unbinned_classifier_ratio/target_macro_rmse",

@@ -40,7 +40,6 @@ EVIDENCE = (
     "examples/outputs/michelson-phase.json",
     "examples/outputs/door3-classifier.json",
     "examples/outputs/cell_population.json",
-    "examples/outputs/flowcyt_profiled_ds.json",
     "examples/data/flowcyt_fixture.json",
     "examples/data/flowcyt_walkthrough.json",
     "examples/data/hep_higgsml_fixture.json",
@@ -89,7 +88,6 @@ HEP = "examples/outputs/hep-classifier.json"
 MICHELSON = "examples/outputs/michelson-phase.json"
 DOOR3 = "examples/outputs/door3-classifier.json"
 FLOWCYT_STUDY = "examples/outputs/cell_population.json"
-FLOWCYT_PROFILED = "examples/outputs/flowcyt_profiled_ds.json"
 FLOWCYT_FIXTURE = "examples/data/flowcyt_fixture.json"
 FLOWCYT_WALKTHROUGH = "examples/data/flowcyt_walkthrough.json"
 HEP_FIXTURE = "examples/data/hep_higgsml_fixture.json"
@@ -97,34 +95,19 @@ HEP_FIXTURE = "examples/data/hep_higgsml_fixture.json"
 FACTS: tuple[Fact, ...] = (
     # ---------------------------------------------------------------- flowcyt
     Fact("flowcyt", "bins", f"{FLOWCYT_STUDY}#/operating_partition/n_bins", _count),
-    # The study's two ScoreQuant methods disagree about which is better, and they
-    # disagree in opposite directions on the two metrics: soft Voronoi wins on
-    # macro RMSE, the compiled D exchange wins on held-out D-efficiency. Neither
-    # is "the" headline, so every key names its method and a page cannot quote a
-    # number without saying what produced it.
+    Fact(
+        "flowcyt",
+        "heldOutPatients",
+        f"{FLOWCYT_STUDY}#/unbinned_classifier_ratio/likelihood_convergence/total_patients",
+        _count,
+    ),
+    # The headline: the soft Voronoi rule's held-out error against the unbinned
+    # fit it compresses, and against the two marker-space reductions.
     Fact(
         "flowcyt",
         "softVoronoiRmse",
         f"{FLOWCYT_STUDY}#/soft_voronoi:8/target_macro_rmse",
         _fixed(6),
-    ),
-    Fact(
-        "flowcyt",
-        "softVoronoiEfficiency",
-        f"{FLOWCYT_STUDY}#/soft_voronoi:8/held_out_d_efficiency",
-        _fixed(4),
-    ),
-    Fact(
-        "flowcyt",
-        "dExchangeRmse",
-        f"{FLOWCYT_STUDY}#/finite_d_exchange:8/target_macro_rmse",
-        _fixed(6),
-    ),
-    Fact(
-        "flowcyt",
-        "dExchangeEfficiency",
-        f"{FLOWCYT_STUDY}#/finite_d_exchange:8/held_out_d_efficiency",
-        _fixed(4),
     ),
     Fact(
         "flowcyt",
@@ -140,74 +123,12 @@ FACTS: tuple[Fact, ...] = (
     ),
     Fact(
         "flowcyt",
-        "oneDimensionalRmse",
-        f"{FLOWCYT_STUDY}#/one_dimensional_score:8/target_macro_rmse",
-        _fixed(6),
-    ),
-    Fact(
-        "flowcyt",
         "twoDimensionalGridRmse",
         f"{FLOWCYT_STUDY}#/two_dimensional_grid:8/target_macro_rmse",
         _fixed(6),
     ),
-    Fact(
-        "flowcyt",
-        "markerKmeansEfficiency",
-        f"{FLOWCYT_STUDY}#/marker_kmeans:8/held_out_d_efficiency",
-        _fixed(4),
-    ),
-    Fact(
-        "flowcyt",
-        "oneDimensionalEfficiency",
-        f"{FLOWCYT_STUDY}#/one_dimensional_score:8/held_out_d_efficiency",
-        _fixed(4),
-    ),
-    Fact(
-        "flowcyt",
-        "twoDimensionalGridEfficiency",
-        f"{FLOWCYT_STUDY}#/two_dimensional_grid:8/held_out_d_efficiency",
-        _fixed(4),
-    ),
-    Fact(
-        "flowcyt",
-        "informationKind",
-        f"{FLOWCYT_STUDY}#/finite_d_exchange:8/information_kind",
-        _text,
-    ),
-    # The study's own sample size, not the fixture's: the walkthrough has to be
-    # able to say that its headline numbers come from the full acquisition
-    # rather than from the small table CI runs on.
-    Fact("flowcyt", "studyCells", f"{FLOWCYT_STUDY}#/source/sample_rows", _count),
-    Fact("flowcyt", "license", f"{FLOWCYT_FIXTURE}#/source_license", _text),
-    Fact("flowcyt", "sourceRepository", f"{FLOWCYT_FIXTURE}#/source_repository", _text),
-    Fact(
-        "flowcyt",
-        "referencePerPatientClass",
-        f"{FLOWCYT_FIXTURE}#/reference_per_patient_class",
-        _count,
-    ),
-    Fact("flowcyt", "testPerPatient", f"{FLOWCYT_FIXTURE}#/test_per_patient", _count),
-    Fact(
-        "flowcyt",
-        "profiledCeilingRetention",
-        f"{FLOWCYT_PROFILED}#/fixture_scale/bound/ceiling_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "flowcyt",
-        "profiledDPartitionRetention",
-        f"{FLOWCYT_PROFILED}#/fixture_scale/partitions/0/profiled_retention",
-        _fixed(4),
-    ),
-    # The bin-budget story: five bins are structurally short of the five free
-    # composition coordinates, eight is the knee, and past ten the labels keep
-    # more local information while the fraction estimates get slightly worse.
-    Fact(
-        "flowcyt",
-        "populations",
-        f"{FLOWCYT_STUDY}#/scientific_closure/template_identifiability/soft_voronoi:5/n_classes",
-        _count,
-    ),
+    # The bin budget: five bins are structurally short of the five free
+    # composition coordinates, and eight is the knee.
     Fact(
         "flowcyt",
         "freeFractions",
@@ -226,41 +147,22 @@ FACTS: tuple[Fact, ...] = (
         f"{FLOWCYT_STUDY}#/soft_voronoi:5/held_out_d_efficiency",
         _fixed(4),
     ),
-    Fact("flowcyt", "fiveBinRmse", f"{FLOWCYT_STUDY}#/soft_voronoi:5/target_macro_rmse", _fixed(6)),
     Fact(
         "flowcyt",
-        "tenBinEfficiency",
-        f"{FLOWCYT_STUDY}#/soft_voronoi:10/held_out_d_efficiency",
+        "softVoronoiEfficiency",
+        f"{FLOWCYT_STUDY}#/soft_voronoi:8/held_out_d_efficiency",
         _fixed(4),
     ),
-    Fact("flowcyt", "tenBinRmse", f"{FLOWCYT_STUDY}#/soft_voronoi:10/target_macro_rmse", _fixed(6)),
-    Fact(
-        "flowcyt",
-        "thirtyBinEfficiency",
-        f"{FLOWCYT_STUDY}#/soft_voronoi:30/held_out_d_efficiency",
-        _fixed(4),
-    ),
-    Fact(
-        "flowcyt", "thirtyBinRmse", f"{FLOWCYT_STUDY}#/soft_voronoi:30/target_macro_rmse", _fixed(6)
-    ),
-    Fact(
-        "flowcyt",
-        "twoDimensionalGridRmseThirty",
-        f"{FLOWCYT_STUDY}#/two_dimensional_grid:30/target_macro_rmse",
-        _fixed(6),
-    ),
-    Fact(
-        "flowcyt",
-        "heldOutPatients",
-        f"{FLOWCYT_STUDY}#/unbinned_classifier_ratio/likelihood_convergence/total_patients",
-        _count,
-    ),
+    # The study's own sample size, not the fixture's: the walkthrough has to be
+    # able to say that its figures come from the full acquisition rather than
+    # from the small table its code runs on.
+    Fact("flowcyt", "studyCells", f"{FLOWCYT_STUDY}#/source/sample_rows", _count),
+    Fact("flowcyt", "license", f"{FLOWCYT_FIXTURE}#/source_license", _text),
+    Fact("flowcyt", "sourceRepository", f"{FLOWCYT_FIXTURE}#/source_repository", _text),
     # What the page's own code produces on the committed fixture-scale table,
     # so the reader who runs it is told what to expect and why it differs
     # from the full study.
-    Fact("flowcyt", "tablePartitionRows", f"{FLOWCYT_WALKTHROUGH}#/rows/partition", _count),
     Fact("flowcyt", "tableTemplateRows", f"{FLOWCYT_WALKTHROUGH}#/rows/template", _count),
-    Fact("flowcyt", "tableHeldOutRows", f"{FLOWCYT_WALKTHROUGH}#/rows/held_out", _count),
     Fact(
         "flowcyt",
         "tableSoftVoronoiRmse",
@@ -269,26 +171,8 @@ FACTS: tuple[Fact, ...] = (
     ),
     Fact(
         "flowcyt",
-        "tableDExchangeRmse",
-        f"{FLOWCYT_WALKTHROUGH}#/chain/d_exchange/macro_rmse",
-        _fixed(4),
-    ),
-    Fact(
-        "flowcyt",
         "tableUnbinnedRmse",
         f"{FLOWCYT_WALKTHROUGH}#/chain/unbinned_macro_rmse",
-        _fixed(4),
-    ),
-    Fact(
-        "flowcyt",
-        "tableSoftVoronoiEfficiency",
-        f"{FLOWCYT_WALKTHROUGH}#/chain/soft_voronoi/held_out_d_efficiency",
-        _fixed(4),
-    ),
-    Fact(
-        "flowcyt",
-        "tableDExchangeEfficiency",
-        f"{FLOWCYT_WALKTHROUGH}#/chain/d_exchange/held_out_d_efficiency",
         _fixed(4),
     ),
     # -------------------------------------------------------------------- hep

@@ -53,13 +53,13 @@ Now cut the score instead, into the {f("fringeBins")} intervals of $s$ that keep
 
 <Figure
   src={siteUrl("walkthrough-figures/ideas-score-bins.png")}
-  alt="Left: the phase score along the detector, a wave with one period per fringe, coloured by four score intervals so that each colour recurs on every fringe; dashed lines at the fringe boundaries mark the equal segments. Right: information retained against the number of bins, from two to eight. Score intervals start high and approach one; equal segments stay near zero, are exactly zero at two and four bins, and rise only at eight."
+  alt="Left: the phase score along the detector, a wave with one period per fringe, coloured by four score intervals so that each colour recurs on every fringe; dashed lines at the fringe boundaries mark the equal segments. Right: information retained against the number of bins, from two to eight. Score intervals start high and approach one; equal segments are exactly zero at two and four bins, stay low through seven, and rise at eight."
   caption="Left: the phase score along the detector, coloured by the four score intervals; the dashed lines mark the four equal segments. Right: the fraction of the phase information kept by equal segments and by score intervals, as the number of bins grows."
   paper
   wide
 />
 
-Equal segments are not always this bad. At other budgets they keep part of the information, and they improve as the segments shrink. But what they keep depends on how the segments happen to line up with the fringes, and the score intervals keep more at every budget shown.
+Equal segments are not always this bad. At other budgets they keep part of the information, but how much depends on how the segments happen to line up with the fringes, and more segments are not always better. The score intervals keep more at every budget shown.
 
 One caveat belongs here. The score is evaluated at a reference value of the parameter, so bins drawn from it are best for parameters near that value; far from it, bins drawn at another reference value could keep more.
 

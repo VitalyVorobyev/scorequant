@@ -136,3 +136,97 @@ def test_component_adapter_allows_signed_basis_terms() -> None:
 def test_invalid_weights_fail(bad_weights: list[float]) -> None:
     with pytest.raises(ValueError):
         scorequant.fisher_information(jnp.asarray([[0.0], [1.0]]), bad_weights)
+
+
+def _nearly_collinear_cells() -> tuple[np.ndarray, np.ndarray]:
+    """Three cells whose means are collinear up to a 1e-6 bend.
+
+    Each cell holds two rows placed symmetrically about its mean, so the
+    unbinned information is regular while the binned information has a
+    relative eigenvalue near 1e-14: positive, so a ``slogdet`` sign and NumPy's
+    default ``matrix_rank`` call it regular, yet far below the 1e-10 rank
+    threshold.
+    """
+    t = np.array([1.0, 2.0, 4.0])
+    means = np.stack([t, 3.0 * t + 1e-6 * t**2], axis=1)
+    spread = np.array([0.5, -0.25])
+    scores = np.concatenate([means + spread, means - spread])
+    labels = np.concatenate([np.arange(3), np.arange(3)])
+    return scores, labels
+
+
+def test_nearly_singular_profiled_report_uses_the_shared_rank_rule() -> None:
+    """A deficient binned matrix is singular even when its log-det sign is positive."""
+    scores, labels = _nearly_collinear_cells()
+    binned = np.asarray(scorequant.binned_fisher_information(scores, labels, n_bins=3))
+    schur = binned[:1, :1] - np.outer(binned[0, 1], binned[0, 1]) / binned[1, 1]
+    # The rules being replaced call this state regular.
+    assert np.linalg.slogdet(binned)[0] > 0
+    assert np.linalg.slogdet(schur)[0] > 0
+    assert np.linalg.matrix_rank(schur) == 1
+
+    report = scorequant.profiled_information_report(scores, labels, interest=(0,), n_bins=3)
+    assert report.objective == float("-inf")
+    assert report.geometric_mean_retention == 0.0
+    assert report.interest_rank == 0
+    assert report.nuisance_rank == 1
+    # The exchange engine reaches the same verdict on the same labels.
+    with pytest.raises(scorequant.RefusalError, match="singular"):
+        scorequant.exchange_stability_report(
+            scores, labels, criterion=scorequant.ProfiledDOptimality((0,))
+        )
+
+
+def test_nearly_singular_information_report_agrees_with_retention_uncertainty() -> None:
+    scores, labels = _nearly_collinear_cells()
+    report = scorequant.information_report(scores, labels, n_bins=3)
+    assert np.all(np.asarray(report.retained_eigenvalues) > 0)
+    assert report.geometric_mean_retention == 0.0
+    assert report.logdet_retention == float("-inf")
+    uncertainty = scorequant.retention_uncertainty(scores, labels)
+    assert uncertainty.status == "singular_retained_information"
+    assert uncertainty.estimate == 0.0
+    # The exact D exchange judges the same start by the same rule.
+    with pytest.raises(scorequant.ContractError, match="initial D partition is singular"):
+        scorequant.exchange_stability_report(scores, labels)
+
+
+def test_efficient_scores_refuse_a_nearly_singular_nuisance_block() -> None:
+    rng = np.random.default_rng(31)
+    interest = rng.normal(size=(200, 1))
+    nuisance = rng.normal(size=(200, 1))
+    scores = np.hstack([interest, nuisance, nuisance + 1e-7 * rng.normal(size=(200, 1))])
+    block = np.asarray(scorequant.fisher_information(scores))[1:, 1:]
+    assert np.linalg.slogdet(block)[0] > 0
+    with pytest.raises(scorequant.ContractError, match="nonsingular nuisance"):
+        scorequant.efficient_scores(scores, interest=(0,))
+
+
+def test_rank_rtol_does_not_judge_the_retained_matrix() -> None:
+    """``rank_rtol`` selects full-data directions; retained singularity uses the dtype default."""
+    rng = np.random.default_rng(7)
+    scores = rng.normal(size=(2000, 2)) + 0.3
+    labels = np.digitize(scores[:, 0] + 0.2 * scores[:, 1], [-0.2, 0.8])
+    default = scorequant.information_report(scores, labels, n_bins=3)
+    eigenvalues = np.asarray(default.retained_eigenvalues)
+    assert eigenvalues.min() < 0.1 * eigenvalues.max()
+    loose = scorequant.information_report(scores, labels, n_bins=3, rank_rtol=0.1)
+    assert loose.geometric_mean_retention == default.geometric_mean_retention > 0.1
+    uncertainty = scorequant.retention_uncertainty(scores, labels, rank_rtol=0.1)
+    assert uncertainty.status == "ok"
+    assert uncertainty.estimate == pytest.approx(default.geometric_mean_retention, rel=1e-12)
+
+
+def test_profiled_rank_verdict_ignores_the_units_of_a_nuisance_parameter() -> None:
+    """Rescaling a nuisance column leaves the Schur block and the verdict unchanged."""
+    rng = np.random.default_rng(17)
+    scores = rng.normal(size=(600, 3)) + 0.3
+    labels = np.digitize(scores[:, 0], [-0.5, 0.3, 1.1]) + 4 * (scores[:, 1] > 0.3)
+    base = scorequant.profiled_information_report(scores, labels, interest=(0,), n_bins=8)
+    rescaled = scorequant.profiled_information_report(
+        scores * np.array([1.0, 1.0, 1e6]), labels, interest=(0,), n_bins=8
+    )
+    assert np.isfinite(base.objective)
+    assert rescaled.objective == pytest.approx(base.objective, rel=1e-9)
+    assert rescaled.interest_rank == base.interest_rank == 1
+    assert rescaled.nuisance_rank == base.nuisance_rank == 2

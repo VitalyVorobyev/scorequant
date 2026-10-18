@@ -11,11 +11,64 @@ from ._execution import canonical_array, canonicalize_public, execution_scope
 from ._execution import xp as jnp
 from ._json import json_ready
 from ._typing import ArrayLike, JsonValue
-from .config import ExecutionConfig, validate_rank_rtol
+from .config import ExecutionConfig, dtype_tolerance, validate_rank_rtol
+
+_FLOAT64_RANK_RTOL = 1e-10
+
+# An eigenvalue ratio carries the rounding of a sum over every row and of the
+# eigensolver, more than one log-determinant gain does, so its floor is ten
+# times the gain tolerance's: about 1.2e-5 in float32.
+_RANK_EPS_MULTIPLE = 100
 
 
 def _default_rank_rtol(dtype: jnp.dtype) -> float:
-    return 1e-10 if jnp.dtype(dtype) == jnp.float64 else 1e-5
+    """Return the relative rank threshold of the working dtype (1e-10 in float64)."""
+    return dtype_tolerance(_FLOAT64_RANK_RTOL, dtype, _RANK_EPS_MULTIPLE)
+
+
+def numerical_rank(
+    matrix: jnp.ndarray, rank_rtol: float | None = None, *, unit_diagonal: bool = False
+) -> int:
+    """Return the rank of a symmetric matrix at the library's relative threshold.
+
+    This is the one rank rule: an eigenvalue counts only above ``rank_rtol``
+    times the largest one, exactly as :func:`fisher_transform` selects
+    informative directions. NumPy's ``matrix_rank`` default scales with
+    ``max(M, N) * eps`` instead, and a ``slogdet`` sign on an exactly deficient
+    matrix is decided by rounding noise, so neither may disagree with this rule
+    about the same matrix.
+
+    ``unit_diagonal`` first rescales to ``D^-1/2 M D^-1/2`` with ``D`` the
+    diagonal. Rank is invariant under that congruence, so the verdict no longer
+    depends on the units of each parameter; information in a declared
+    interest/nuisance parameterization is judged this way, while whitened
+    coordinates already have a common scale. A zero diagonal entry keeps its
+    zero row and counts as deficient.
+    """
+    if unit_diagonal:
+        diagonal = jnp.diagonal(matrix)
+        scale = jnp.where(diagonal > 0, 1 / jnp.sqrt(jnp.where(diagonal > 0, diagonal, 1)), 0)
+        matrix = matrix * scale[:, None] * scale[None, :]
+    eigenvalues = jnp.linalg.eigvalsh(matrix)
+    maximum = float(np.asarray(jnp.max(eigenvalues)))
+    if maximum <= 0:
+        return 0
+    resolved_rtol = _default_rank_rtol(matrix.dtype) if rank_rtol is None else rank_rtol
+    return int(np.asarray(jnp.sum(eigenvalues > resolved_rtol * maximum)))
+
+
+def is_numerically_singular(
+    matrix: jnp.ndarray, rank_rtol: float | None = None, *, unit_diagonal: bool = False
+) -> bool:
+    """Return whether a symmetric matrix is rank deficient at the library threshold.
+
+    Shared by every singularity guard so that one state cannot be called
+    singular on one platform and regular on another: on an exactly deficient
+    matrix the smallest eigenvalue is rounding noise, and its sign is a property
+    of the host LAPACK rather than of the data. The relative threshold is scale
+    free, so it agrees everywhere.
+    """
+    return numerical_rank(matrix, rank_rtol, unit_diagonal=unit_diagonal) < int(matrix.shape[0])
 
 
 @dataclass(frozen=True, slots=True)

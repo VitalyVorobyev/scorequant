@@ -255,6 +255,30 @@ def test_analytic_soft_gradient_matches_autodiff_and_finite_difference(
     np.testing.assert_allclose(analytic, finite_difference, rtol=1e-5, atol=1e-6)
 
 
+@pytest.mark.parametrize("backend", ["jax", "numpy"])
+def test_soft_objective_is_infinite_on_a_nearly_singular_soft_fisher(backend: str) -> None:
+    """The soft criterion follows the shared rank rule, not the slogdet sign."""
+    rng = np.random.default_rng(13)
+    points = rng.normal(size=(12, 2))
+    base = rng.normal(size=(12, 1))
+    objective_scores = np.hstack([base, base + 1e-7 * rng.normal(size=(12, 1))])
+    weights = np.ones(12)
+    centers = rng.normal(size=(3, 2))
+    logits = -np.sum((points[:, None, :] - centers[None, :, :]) ** 2, axis=2) / (2 * 0.75**2)
+    responsibilities = np.exp(logits - logits.max(axis=1, keepdims=True))
+    responsibilities /= responsibilities.sum(axis=1, keepdims=True)
+    sums = responsibilities.T @ objective_scores
+    fisher = np.einsum("bp,bq,b->pq", sums, sums, 1 / responsibilities.sum(axis=0))
+    assert np.linalg.slogdet(fisher)[0] > 0
+
+    with use_execution(_execution(backend)):
+        loss, gradient = soft_objective_and_center_gradient(
+            points, objective_scores, weights, centers, 0.75, sq.DOptimality()
+        )
+    assert float(loss) == float("inf")
+    assert not np.any(np.asarray(gradient))
+
+
 def test_execution_validation_precedes_computation() -> None:
     with pytest.raises(ValueError, match="NumPy backend supports only"):
         sq.ExecutionConfig(backend="numpy", device="gpu")

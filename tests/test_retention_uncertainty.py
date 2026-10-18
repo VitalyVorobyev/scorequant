@@ -352,7 +352,7 @@ def test_retained_rank_guard_survives_an_ill_conditioned_reparameterization(
     assert after.confidence_interval is None
 
 
-def test_rank_rtol_override_moves_the_retained_guard() -> None:
+def test_rank_rtol_override_moves_only_the_full_moment_guard() -> None:
     rng = np.random.default_rng(41)
     scores = rng.normal(size=(200, 2))
     scores[:, 1] = 1e-4 * scores[:, 1]
@@ -360,7 +360,7 @@ def test_rank_rtol_override_moves_the_retained_guard() -> None:
     default = sq.retention_uncertainty(scores, labels)
     assert default.status == "ok"
     strict = sq.retention_uncertainty(scores, labels, rank_rtol=0.5)
-    assert strict.status in {"singular_full_information", "singular_retained_information"}
+    assert strict.status == "singular_full_information"
 
 
 @pytest.mark.parametrize("backend", BACKENDS)

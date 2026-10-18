@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import jax.numpy as jnp
 import numpy as np
 import pytest
@@ -220,3 +222,112 @@ def test_invalid_mixture_score_inputs_fail(
 def test_reference_component_rejects_non_integer() -> None:
     with pytest.raises(TypeError, match="integer"):
         sq.mixture_scores_from_ratios([[1.0, 0.5]], [0.5, 0.5], reference_component=True)
+
+
+# Signal N(1, 1) over background N(-1, 1), a classifier trained at priors 0.3/0.7,
+# and an intensity model with reference yields (background, signal) = (2, 0.5).
+_GAUGE_PRIORS = np.array([0.3, 0.7])
+_GAUGE_YIELDS = sq.IntensityParameterization([2.0, 0.5])
+
+
+def _gaussian(x: np.ndarray, mean: float) -> np.ndarray:
+    return np.exp(-0.5 * (x - mean) ** 2) / np.sqrt(2 * np.pi)
+
+
+def _signal_background_posteriors(observations: np.ndarray) -> np.ndarray:
+    x = np.asarray(observations)[:, 0]
+    joint = np.column_stack(
+        [_GAUGE_PRIORS[0] * _gaussian(x, 1.0), _GAUGE_PRIORS[1] * _gaussian(x, -1.0)]
+    )
+    return joint / joint.sum(axis=1, keepdims=True)
+
+
+def _exact_intensity_scores(observations: np.ndarray) -> np.ndarray:
+    x = np.asarray(observations)[:, 0]
+    densities = np.column_stack([_gaussian(x, -1.0), _gaussian(x, 1.0)])
+    return densities / (densities @ np.asarray(_GAUGE_YIELDS.coefficients))[:, None]
+
+
+def _background_gauge_ratio(observations: np.ndarray) -> np.ndarray:
+    """The recipe: the classifier's signal ratio over its background ratio, then 1."""
+    eta = _signal_background_posteriors(observations)
+    signal = (eta[:, 0] / _GAUGE_PRIORS[0]) / (eta[:, 1] / _GAUGE_PRIORS[1])
+    return np.column_stack([np.ones_like(signal), signal])
+
+
+def _ratio_provenance(gauges: tuple[str, ...]) -> sq.ScoreProvenance:
+    return sq.ScoreProvenance(
+        kind="estimated_ratio",
+        ratio=sq.RatioProvenance(estimator="calibrated_classifier", gauges=gauges),
+    )
+
+
+def test_classifier_provider_declares_the_training_mixture_gauge() -> None:
+    provider = sq.DensityRatioScore.from_classifier(
+        _signal_background_posteriors, _GAUGE_PRIORS, sq.IntensityParameterization([0.5, 2.0])
+    )
+    assert provider.provenance.ratio is not None
+    assert provider.provenance.ratio.gauges == ("training_mixture", "training_mixture")
+
+
+def test_mixed_gauge_ratio_columns_are_refused_with_the_fix() -> None:
+    def mixed(observations: np.ndarray) -> np.ndarray:
+        # Absolute Monte Carlo background density next to a classifier ratio over p_train.
+        x = np.asarray(observations)[:, 0]
+        eta = _signal_background_posteriors(observations)
+        return np.column_stack([_gaussian(x, -1.0), eta[:, 0] / _GAUGE_PRIORS[0]])
+
+    observations = np.linspace(-3.0, 3.0, 50)[:, None]
+    unchecked = sq.DensityRatioScore(mixed, _GAUGE_YIELDS)
+    # Undeclared, the mixed construction runs and is silently wrong.
+    assert not np.allclose(unchecked.score(observations), _exact_intensity_scores(observations))
+    with pytest.raises(sq.ContractError, match="one gauge"):
+        sq.DensityRatioScore(
+            mixed, _GAUGE_YIELDS, provenance=_ratio_provenance(("absolute", "training_mixture"))
+        )
+    with pytest.raises(sq.ContractError, match="declares 3 columns"):
+        sq.DensityRatioScore(mixed, _GAUGE_YIELDS, provenance=_ratio_provenance(("absolute",) * 3))
+
+
+def test_no_record_can_carry_mixed_gauges() -> None:
+    """External providers and ready score samples meet the same refusal."""
+    with pytest.raises(sq.ContractError, match="different gauges"):
+        sq.RatioProvenance(gauges=("training_mixture", "absolute"))
+    with pytest.raises(TypeError, match="tuple of strings"):
+        sq.RatioProvenance(gauges=["absolute", "absolute"])  # type: ignore[arg-type]
+    with pytest.raises(sq.ContractError, match="different gauges"):
+        sq.ScoreSample(
+            _exact_intensity_scores(np.linspace(-3.0, 3.0, 40)[:, None]),
+            provenance=_ratio_provenance(("training_mixture", "absolute")),
+        )
+
+
+def test_one_gauge_recipe_recovers_the_exact_scores() -> None:
+    """Every column in the background gauge needs no Monte Carlo background density."""
+    observations = np.linspace(-3.0, 3.0, 61)[:, None]
+    recipe = sq.DensityRatioScore(
+        _background_gauge_ratio,
+        _GAUGE_YIELDS,
+        provenance=_ratio_provenance(("background", "background")),
+    )
+    exact = _exact_intensity_scores(observations)
+    np.testing.assert_allclose(recipe.score(observations), exact, rtol=1e-12, atol=1e-12)
+    classifier = sq.DensityRatioScore.from_classifier(
+        lambda rows: _signal_background_posteriors(rows)[:, ::-1],
+        _GAUGE_PRIORS[::-1],
+        _GAUGE_YIELDS,
+    )
+    np.testing.assert_allclose(classifier.score(observations), exact, rtol=1e-12, atol=1e-12)
+
+
+def test_declared_gauges_survive_a_saved_rule(tmp_path: Path) -> None:
+    provider = sq.DensityRatioScore(
+        _background_gauge_ratio,
+        _GAUGE_YIELDS,
+        provenance=_ratio_provenance(("background", "background")),
+    )
+    sample = sq.ObservationSample(np.random.default_rng(3).normal(size=(200, 1)))
+    fit = sq.fit_quantizer(sample, provider=provider, n_bins=3)
+    restored = sq.Quantizer.load(fit.quantizer.save(tmp_path / "rule"))
+    assert restored.provenance.ratio is not None
+    assert restored.provenance.ratio.gauges == ("background", "background")

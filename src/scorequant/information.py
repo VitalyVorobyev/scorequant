@@ -38,7 +38,12 @@ from .reports import (
 from .solvers.common import chunked_hard_assign
 from .solvers.scalar import scalar_interval_dp
 from .sources import ScoreSchema
-from .transforms import _default_rank_rtol, fisher_transform
+from .transforms import (
+    _default_rank_rtol,
+    fisher_transform,
+    is_numerically_singular,
+    numerical_rank,
+)
 
 
 @execution_scope
@@ -232,7 +237,12 @@ def _report_from_fishers(
     retained = 0.5 * (retained + retained.T)
     eigenvalues = jnp.linalg.eigvalsh(retained)
     arithmetic = float(np.asarray(jnp.mean(eigenvalues)))
-    if bool(np.asarray(jnp.any(eigenvalues <= 0))):
+    # The same verdict ``retention_uncertainty`` reaches on these cells: a
+    # retained eigenvalue below the rank threshold is rounding noise, and its
+    # logarithm would report a regular-looking retention. ``rank_rtol`` selects
+    # informative directions of the full matrix; a retained eigenvalue is a
+    # retention fraction on another scale, so it is judged at the dtype default.
+    if is_numerically_singular(retained):
         geometric = 0.0
         logdet = float("-inf")
     else:
@@ -387,7 +397,9 @@ def _retention_influence(
     # between-cell matrix the smallest eigenvalue is rounding noise, and its
     # d-th root is not (the audit measured 3.5e-9 in d = 2), so a determinant
     # ratio would report a regular-looking endpoint that the theorem excludes.
-    if _is_numerically_singular(whitened_retained, rank_rtol):
+    # At the dtype default, never the caller's ``rank_rtol``, exactly as
+    # ``information_report`` judges the same between-cell matrix.
+    if is_numerically_singular(whitened_retained):
         return _RetentionInfluence("singular_retained_information", 0.0, None)
 
     eigenvalues = np.asarray(jnp.linalg.eigvalsh(whitened_retained), dtype=np.float64)
@@ -464,8 +476,10 @@ def retention_uncertainty(
     confidence_level
         Two-sided nominal level, strictly between zero and one.
     rank_rtol
-        Relative eigenvalue threshold for both rank guards. A dtype-aware
-        default is used when omitted. It does not move the cancellation
+        Relative eigenvalue threshold for the informative directions of the
+        full moment. A dtype-aware default is used when omitted. It moves
+        neither the between-cell singularity test, which is judged at the
+        dtype default as in ``information_report``, nor the cancellation
         threshold of the ``degenerate_variance`` guard.
 
     Returns
@@ -516,7 +530,7 @@ def retention_uncertainty(
     \(\mathrm{rms}(B)\le\tau\,\mathrm{rms}(M)\) with \(B_i\) the bracket
     of \(\psi_i\), \(M_i\) the sum of the magnitudes of its three terms and
     \(\tau\) the dtype's rank threshold (\(10^{-10}\) in float64,
-    \(10^{-5}\) in float32, not moved by ``rank_rtol``); it is a numerical
+    about \(1.2\times10^{-5}\) in float32, not moved by ``rank_rtol``); it is a numerical
     guard that can suppress small positive influence variance and never
     asserts that the population variance is zero. The endpoints of an
     ``ok`` interval are not clipped to ``[0, 1]``.
@@ -562,8 +576,8 @@ def retention_uncertainty(
 @backend_jit(static_argnames=("nuisance",))
 def _nuisance_block_slogdet(
     information: jnp.ndarray, nuisance: tuple[int, ...]
-) -> tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
-    """Return the nuisance sub-block of one information matrix with its slogdet.
+) -> tuple[jnp.ndarray, jnp.ndarray]:
+    """Return the nuisance sub-block of one information matrix with its log determinant.
 
     The exact profiled exchange rebuilds this for every candidate labeling, so
     the gather and the factorization are compiled together: on a rank-sized
@@ -572,8 +586,8 @@ def _nuisance_block_slogdet(
     """
     indices = jnp.asarray(nuisance)
     block = information[jnp.ix_(indices, indices)]
-    sign, logdet = jnp.linalg.slogdet(block)
-    return block, sign, logdet
+    _, logdet = jnp.linalg.slogdet(block)
+    return block, logdet
 
 
 PROFILED_RANK_ADVICE = (
@@ -597,10 +611,11 @@ def binned_information_is_degenerate(information: jnp.ndarray) -> bool:
     the smallest eigenvalue is pure rounding noise, so a ``slogdet`` sign is
     decided by its last bits: it can come back positive on one machine and
     non-positive on another, and the two callers then blame different causes
-    for one state. The eigenvalue ratio is scale free and agrees everywhere
-    because the gap it measures is many orders of magnitude wide - over every
-    onto labeling of CE-DS-MARGINS-RANK-VACUITY-001 the largest ratio reached
-    is 1.3e-16, against a 1e-10 float64 threshold.
+    for one state. The eigenvalue ratio is taken after rescaling to unit
+    diagonal, so it does not depend on the units of any parameter, and it
+    agrees everywhere because the gap it measures is many orders of magnitude
+    wide - over every onto labeling of CE-DS-MARGINS-RANK-VACUITY-001 the
+    largest ratio reached is 3.2e-16, against a 1e-10 float64 threshold.
 
     Parameters
     ----------
@@ -612,26 +627,7 @@ def binned_information_is_degenerate(information: jnp.ndarray) -> bool:
     bool
         True when the matrix has no usable profiled value.
     """
-    return _is_numerically_singular(information)
-
-
-def _is_numerically_singular(matrix: jnp.ndarray, rank_rtol: float | None = None) -> bool:
-    """Return whether a symmetric matrix is rank deficient at the library threshold.
-
-    Shared by every profiled guard so that one state cannot be called singular
-    on one platform and regular on another. A ``slogdet`` sign cannot do this
-    job: on an exactly deficient matrix the smallest eigenvalue is rounding
-    noise, and its sign is a property of the host LAPACK rather than of the
-    data. ``rank_rtol`` overrides the dtype default with the same relative
-    rule ``fisher_transform`` applies.
-    """
-    eigenvalues = jnp.linalg.eigvalsh(matrix)
-    maximum = float(np.asarray(jnp.max(eigenvalues)))
-    if maximum <= 0:
-        return True
-    resolved_rtol = _default_rank_rtol(matrix.dtype) if rank_rtol is None else rank_rtol
-    threshold = resolved_rtol * maximum
-    return bool(np.asarray(jnp.min(eigenvalues) <= threshold))
+    return is_numerically_singular(information, unit_diagonal=True)
 
 
 def _nuisance_information(
@@ -654,13 +650,13 @@ def _nuisance_information(
         raise ContractError(
             "profiled D requires at least one nuisance score column; use DOptimality"
         )
-    nuisance_block, _nuisance_sign, nuisance_logdet = _nuisance_block_slogdet(information, nuisance)
+    nuisance_block, nuisance_logdet = _nuisance_block_slogdet(information, nuisance)
     # Decided by the scale-free rank test, not by the log determinant's sign.
     # The sign is unreliable exactly where this guard matters: on a block the
     # bin-budget ceiling makes deficient it is set by the last bits of the
     # factorization, so it can refuse on one machine and pass on another, and
     # a caller that would have blamed the bin budget then never runs.
-    if _is_numerically_singular(nuisance_block):
+    if is_numerically_singular(nuisance_block, unit_diagonal=True):
         raise ContractError("profiled D requires nonsingular nuisance information")
     return nuisance_block, nuisance_logdet, nuisance
 
@@ -717,17 +713,22 @@ def profiled_information_report(
     unbinned = _unbinned_fisher(sample)
     schur_unbinned, nuisance_unbinned, nuisance = _profiled_blocks(unbinned, interest)
     schur_binned, nuisance_binned, _ = _profiled_blocks(binned, interest)
-    binned_sign, binned_logdet = jnp.linalg.slogdet(schur_binned)
-    unbinned_sign, unbinned_logdet = jnp.linalg.slogdet(schur_unbinned)
-    if float(np.asarray(unbinned_sign)) <= 0:
+    # The exchange engine's verdict, not a log-determinant sign, which is
+    # rounding noise on a deficient block. With a regular nuisance block the
+    # ranks add, rank(F) = rank(C) + rank(S), so the Schur rank is read off
+    # the full matrix at the shared threshold; a relative threshold applied
+    # to a one-parameter Schur block alone could never fire.
+    if is_numerically_singular(unbinned, unit_diagonal=True):
         raise ContractError("full-data profiled information is singular")
-    interest_rank = int(np.linalg.matrix_rank(np.asarray(schur_binned)))
-    nuisance_rank = int(np.linalg.matrix_rank(np.asarray(nuisance_binned)))
-    if float(np.asarray(binned_sign)) <= 0:
+    nuisance_rank = numerical_rank(nuisance_binned, unit_diagonal=True)
+    interest_rank = max(numerical_rank(binned, unit_diagonal=True) - nuisance_rank, 0)
+    if interest_rank < len(interest):
         objective = float("-inf")
         logdet_retention = float("-inf")
         retention = 0.0
     else:
+        _, binned_logdet = jnp.linalg.slogdet(schur_binned)
+        _, unbinned_logdet = jnp.linalg.slogdet(schur_unbinned)
         objective = float(np.asarray(binned_logdet))
         logdet_retention = objective - float(np.asarray(unbinned_logdet))
         retention = float(np.exp(logdet_retention / len(interest)))
@@ -794,8 +795,7 @@ def efficient_scores(
     nuisance_indices = jnp.asarray(nuisance)
     cross = information[jnp.ix_(interest_indices, nuisance_indices)]
     nuisance_information = information[jnp.ix_(nuisance_indices, nuisance_indices)]
-    sign, _ = jnp.linalg.slogdet(nuisance_information)
-    if float(np.asarray(sign)) <= 0:
+    if is_numerically_singular(nuisance_information, unit_diagonal=True):
         raise ContractError("efficient-score projection requires nonsingular nuisance information")
     nuisance_coefficients = jnp.linalg.solve(nuisance_information, cross.T)
     return canonical_array(

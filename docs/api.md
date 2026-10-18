@@ -65,7 +65,7 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `Quantizer` | Stable | `transform`, `centers`, `metric`, `schema`, `provenance`, `criterion`, `execution` | `n_bins`, `rank`, `input_dim`, `information_kind`, `predict_scores`, `evaluate_scores`, `to_dict`, `save`, `load` |
 | `QuantizerResult` | Diagnostic | `quantizer`, `criterion`, `config`, `execution`, `trace`, `labels`, `train_report`, `validation_report`, `provenance`, `hardening_gap`, `source_kind`, `train_profiled_report`, `validation_profiled_report` | `centers`, `metric`, `transform`, `schema`, `n_bins`, `rank`, `information_kind`, `predict_scores`, `evaluate_scores`, `report`, `to_dict`, `plot_summary` |
 | `RatioClosureReport` | Diagnostic | `normalizers`, `max_residual` | `to_dict` |
-| `RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas` | `to_dict` |
+| `RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas`, `gauges` | `to_dict` |
 | `RefusalError` | Stable | `counterexample` | — |
 | `RetentionUncertainty` | Diagnostic | `estimate`, `standard_error`, `confidence_interval`, `confidence_level`, `n_observations`, `status` | `to_dict` |
 | `ScalarDPConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `max_rows` | `to_dict` |
@@ -292,7 +292,12 @@ declared measure and returns the per-component normalizers with their largest ab
 and `"custom_estimated"`; `exact_fisher` is derived from `kind` and cannot be set independently.
 Ratio-derived scores carry a structured `ScoreProvenance.ratio` record (`RatioProvenance`) naming
 the estimator, parameterization, reference fractions or coefficients, reference component,
-training priors, calibration method, and finite-difference offsets.
+training priors, calibration method, finite-difference offsets, and the gauge of each ratio column:
+the measure it is a density ratio against. Scores cancel only a factor common to every column of
+an event, so a record whose declared gauges differ raises `ContractError` when it is built;
+`DensityRatioScore.from_classifier` declares `"training_mixture"` for every column. The
+[user guide](guide.md#a-classifier-signal-next-to-a-background) shows the one-gauge recipe for a
+classifier signal next to a background.
 
 ## The deployable rule
 
@@ -362,7 +367,12 @@ sq.ExecutionConfig(backend="jax", precision="preserve", device="default")
 - **`precision`** is `"preserve"` (default: float32 and float64 inputs keep their dtype, integer
   and lower-precision inputs are promoted to float32), `"float32"`, or `"float64"`. JAX keeps
   float64 only with 64-bit mode enabled in the application: without it, `"preserve"` computes in
-  float32 and warns once, and `"float64"` is refused.
+  float32 and warns once, and `"float64"` is refused. Default tolerances follow the working dtype:
+  each is its float64 value or a few epsilon of the working dtype, whichever is larger.
+  `gain_tolerance` is \(10^{-10}\) in float64 and about \(1.2\times10^{-6}\) in float32, the rank
+  threshold \(10^{-10}\) and about \(1.2\times10^{-5}\), so float32 stability and geometry
+  certificates sit just above its rounding noise. A tolerance you set is used unchanged,
+  and results record the value they were computed at.
 - **`device`** is `"default"`, `"cpu"`, `"gpu"`, or `"tpu"`. NumPy accepts only the default CPU
   device; JAX resolves the first available device of the requested family.
 
@@ -492,9 +502,10 @@ Population singularity is a separate boundary of the Wald theorem
 influence values cancelled to rounding noise, so the standard error is zero and the interval is
 withheld. The test is \(\mathrm{rms}(B) \le \tau\,\mathrm{rms}(M)\), with \(B_i\) the bracket of the
 influence value, \(M_i\) the sum of the magnitudes of its three terms, and \(\tau\) the dtype's rank
-threshold, \(10^{-10}\) in float64 and \(10^{-5}\) in float32; `rank_rtol` moves the two rank guards,
-not this threshold. This numerical guard can suppress small positive influence variance; it is not
-a finding that the population variance is zero.
+threshold, \(10^{-10}\) in float64 and about \(1.2\times10^{-5}\) in float32. `rank_rtol` moves only
+the full-moment rank guard; the between-cell test and this threshold stay at the dtype default.
+This numerical guard can suppress small positive influence variance; it is not a finding that the
+population variance is zero.
 
 Scores from a classifier or any other estimator are not true scores. Their reported retention
 carries a separate proxy bias that this error bar never measures; the score-error budget bounds that
@@ -513,7 +524,7 @@ exchange_stability_report(
     weights=None,
     criterion=None,
     rank_rtol=None,
-    gain_tolerance=1e-10,
+    gain_tolerance=None,
 ) -> StabilityReport
 
 certify_partition(
@@ -534,8 +545,8 @@ hand edit — can be checked before they are trusted. It reports the exact objec
 remaining gain, and the improving `(row, destination)` move when one exists. The cell count comes
 from the labels, and every declared cell must hold positive weight. Stability is always a verdict
 at a tolerance: match `gain_tolerance` to the configuration that produced the labels, and read it
-back from `StabilityReport.gain_tolerance`. Pass `gain_tolerance=0.0` to ask the strict question
-instead.
+back from `StabilityReport.gain_tolerance`. The default is the solvers' dtype-aware default. Pass
+`gain_tolerance=0.0` to ask the strict question instead.
 
 `certify_partition` decides global optimality by branch and bound with the singleton-completion
 upper bound: unassigned atoms are left as singleton cells, so refinement monotonicity of the log
@@ -572,9 +583,9 @@ configuration that produced the labels. `voronoi_consistent` means `maximum_viol
 gain_tolerance`: no Voronoi violation is worth more than the threshold the solver stopped at. It is
 not a claim at tolerance zero, and on a large sample it must not be — the Theorem-3 guaranteed gain
 falls like \(1/N^2\), so past roughly a million rows a few rows legitimately sit a hair past a cell
-boundary inside the default \(10^{-10}\). `compile_quantizer()` reads that certificate rather than
-demanding bit-exact label reproduction, so on such a partition `predict_scores` on the training
-scores differs from `PartitionResult.labels` on those boundary rows and nowhere else; the
+boundary inside the float64 default \(10^{-10}\). `compile_quantizer()` reads that certificate
+rather than demanding bit-exact label reproduction, so on such a partition `predict_scores` on the
+training scores differs from `PartitionResult.labels` on those boundary rows and nowhere else; the
 partition's labels stay authoritative for the fixed sample. Assignment itself is unchanged —
 `argmin` decides, resolving a tie toward the lowest cell index. The bound concerns admissible
 individual relocations priced against the original partition, not simultaneous reassignment or

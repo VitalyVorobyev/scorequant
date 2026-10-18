@@ -20,7 +20,7 @@ any origin can be checked before it is trusted.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Protocol
 
 import numpy as np
@@ -55,6 +55,8 @@ from .config import (
     KMeansConfig,
     MahalanobisLloydConfig,
     PartitionConfig,
+    dtype_tolerance,
+    resolve_gain_tolerance,
 )
 from .criteria import DOptimality, ProfiledDOptimality
 from .information import (
@@ -74,12 +76,14 @@ from .result import PartitionResult
 from .solvers.common import hard_assign
 from .solvers.kmeans import weighted_kmeans
 from .sources import ScoreProvenance, ScoreSchema
-from .transforms import FisherTransform, fisher_transform
+from .transforms import FisherTransform, fisher_transform, is_numerically_singular
 
 # Relative slack allowed when certifying the leverage bound q_delta <= 1/W_a +
 # 1/W_b. The bound is exact mathematics, so this only absorbs the rounding of
-# one inverse and two quadratic forms; it never hides a real violation.
+# one inverse and two quadratic forms; it never hides a real violation. This is
+# the float64 value; other dtypes raise it to their noise floor.
 _SEPARATION_RTOL = 1e-8
+_SEPARATION_EPS_MULTIPLE = 100
 
 # Strict positive-gain acceptance cannot revisit a labeling, so the exchange
 # terminates without any scan cap. This bound only stops a run that a numerical
@@ -235,8 +239,12 @@ class _DObjective:
 
     def init_state(self, cells: _CellStatistics) -> _ExchangeState:
         """Build the cell information matrix, its inverse, and its log determinant."""
-        information, inverse, sign, logdet = _cell_information_matrices(cells.weights, cells.means)
-        if float(np.asarray(sign)) <= 0:
+        information, inverse, _sign, logdet = _cell_information_matrices(cells.weights, cells.means)
+        # The library's rank rule, as information_report applies it to the same
+        # whitened between-cell matrix: a positive log-determinant sign on a
+        # deficient matrix is rounding noise, and a start judged regular here
+        # but singular there would certify a partition the report calls empty.
+        if is_numerically_singular(information):
             raise ContractError(
                 "initial D partition is singular; increase n_bins or use a different "
                 "reference sample"
@@ -261,6 +269,8 @@ class _DObjective:
     def apply_move(self, state: _ExchangeState, relocation: _Relocation) -> _ExchangeState:
         """Apply the exact rank-two information and inverse update of one move."""
         block = _rank_two_block(state.information, state.inverse, relocation)
+        # Only a sanity check: an accepted move has a positive gain, so from a
+        # state the rank rule called regular the determinant can only grow.
         if block.sign <= 0:
             raise FloatingPointError("an accepted D move produced singular information")
         return _ExchangeState(
@@ -390,6 +400,7 @@ def optimize_d_partition(
 ) -> PartitionResult:
     """Optimize arbitrary labels of one fixed weighted score table."""
     prepared = _prepare_partition(scores, weights, n_bins=n_bins, config=config)
+    config = _resolve_tolerance(config, prepared)
     _require_d_bin_budget(prepared, n_bins)
     run = _optimize_labels(
         points=prepared.coordinates,
@@ -418,11 +429,11 @@ def optimize_d_partition(
             state,
             _DObjective(),
         )
-        if disagreement > config.gain_tolerance:
+        if disagreement > _gain_tolerance(config):
             raise RefusalError(
                 "terminal D state is geometrically degenerate: relabeling a row by the "
                 f"terminal Mahalanobis rule gains {disagreement:.6g}, above "
-                f"gain_tolerance={config.gain_tolerance:g}; duplicate/tied score atoms "
+                f"gain_tolerance={_gain_tolerance(config):g}; duplicate/tied score atoms "
                 "must be merged or assigned consistently",
                 "CE-D-UNMERGED-DUPLICATES-001",
             )
@@ -443,10 +454,27 @@ def optimize_d_partition(
             prepared.weights,
             run.labels,
             state,
-            gain_tolerance=config.gain_tolerance,
+            gain_tolerance=_gain_tolerance(config),
         ),
         schema=schema,
     )
+
+
+def _resolve_tolerance(config: PartitionConfig, prepared: _PreparedPartition) -> PartitionConfig:
+    """Fix a default ``gain_tolerance`` to the working dtype before any solver reads it.
+
+    The result records this resolved configuration, so its stability and
+    geometry verdicts state the tolerance they actually hold at.
+    """
+    resolved = resolve_gain_tolerance(config.gain_tolerance, prepared.scores.dtype)
+    return config if resolved == config.gain_tolerance else replace(config, gain_tolerance=resolved)
+
+
+def _gain_tolerance(config: PartitionConfig) -> float:
+    """Return the gain tolerance of a configuration the solver entry has resolved."""
+    if config.gain_tolerance is None:
+        raise ContractError("gain_tolerance must be resolved for the working dtype before solving")
+    return config.gain_tolerance
 
 
 def _require_d_bin_budget(prepared: _PreparedPartition, n_bins: int) -> None:
@@ -507,6 +535,7 @@ def optimize_profiled_d_partition(
 ) -> PartitionResult:
     """Optimize same-label profiled-D labels of one fixed score table."""
     prepared = _prepare_partition(scores, weights, n_bins=n_bins, config=config)
+    config = _resolve_tolerance(config, prepared)
     dimension = prepared.scores.shape[1]
     if any(index >= dimension for index in criterion.interest_indices):
         raise ContractError(f"interest indices must be smaller than score dimension {dimension}")
@@ -586,7 +615,7 @@ def exchange_stability_report(
     weights: ArrayLike | None = None,
     criterion: DOptimality | ProfiledDOptimality | None = None,
     rank_rtol: float | None = None,
-    gain_tolerance: float = 1e-10,
+    gain_tolerance: float | None = None,
     execution: ExecutionConfig | None = None,
 ) -> StabilityReport:
     """Certify one supplied labeling against every single-row relocation.
@@ -623,6 +652,7 @@ def exchange_stability_report(
         ``gain_tolerance`` of the solver configuration that produced the
         labels: a labeling optimized at one tolerance is not certified at a
         smaller one, and the returned report records the tolerance it holds at.
+        ``None`` (default) uses the solvers' dtype-aware default.
 
     Returns
     -------
@@ -637,6 +667,7 @@ def exchange_stability_report(
     sample = validate_sample(scores, weights)
     n_bins, effective_labels = _validate_labeling(labels, sample)
     points, objective = _stability_objective(sample, resolved, rank_rtol=rank_rtol)
+    gain_tolerance = resolve_gain_tolerance(gain_tolerance, points.dtype)
     weights_array = sample.effective_weights
     state = objective.init_state(
         _cell_statistics(points, weights_array, jnp.asarray(effective_labels), n_bins)
@@ -1029,7 +1060,7 @@ def _optimize_lloyd(
         if np.array_equal(proposal, labels):
             break
         trial = _trial_state(points, weights, proposal, n_bins, objective)
-        if trial is None or trial.objective <= state.objective + config.gain_tolerance:
+        if trial is None or trial.objective <= state.objective + _gain_tolerance(config):
             break
         state, labels = trial, proposal
         accepted += 1
@@ -1101,7 +1132,7 @@ def _settle_lloyd(
         objective_history=tuple(history),
         accepted_moves=0,
         scans=1,
-        exchange_stable=best_remaining_gain <= config.gain_tolerance,
+        exchange_stable=best_remaining_gain <= _gain_tolerance(config),
         best_remaining_gain=best_remaining_gain,
         lloyd_iterations=iterations,
         accepted_lloyd_steps=accepted,
@@ -1199,12 +1230,15 @@ def _run_exchange(
     batched = config.batch_moves and not config.first_improvement
     batch_size = label_array.shape[0]
     limit = _SAFETY_SCAN_LIMIT if config.max_scans is None else config.max_scans
+    # True once a single move has updated the state by rank-two algebra; a
+    # guarded batch is accepted on an exactly rebuilt state and resets it.
+    incremental = False
 
     while scans < limit:
         scans += 1
         outcome = _scan(points, weights, label_array, state, objective, config, rows=batched)
         best_remaining_gain = float("-inf") if outcome.best is None else outcome.best.gain
-        if outcome.best is None or outcome.best.gain <= config.gain_tolerance:
+        if outcome.best is None or outcome.best.gain <= _gain_tolerance(config):
             exchange_stable = True
             break
         accepted = (
@@ -1227,17 +1261,29 @@ def _run_exchange(
             state = objective.apply_move(state, relocation)
             label_array[outcome.best.row] = outcome.best.destination
             accepted_moves += 1
+            incremental = True
         else:
             state, label_array, moved = accepted
             accepted_moves += moved
             batch_size = min(2 * moved, label_array.shape[0])
+            incremental = False
         history.append(state.objective)
 
     if not exchange_stable:
         scans += 1
         outcome = _scan(points, weights, label_array, state, objective, config, rows=False)
         best_remaining_gain = float("-inf") if outcome.best is None else outcome.best.gain
-        exchange_stable = outcome.best is None or outcome.best.gain <= config.gain_tolerance
+        exchange_stable = outcome.best is None or outcome.best.gain <= _gain_tolerance(config)
+
+    if incremental:
+        # Chained rank-two updates accumulate rounding in the cell means, the
+        # inverse and the log determinant. The reported objective, centres and
+        # metric must be those of the returned labels, so they are rebuilt
+        # exactly from them; the last history entry then states the same value.
+        state = objective.init_state(
+            _cell_statistics(points, weights, jnp.asarray(label_array), n_bins)
+        )
+        history[-1] = state.objective
 
     return _ExchangeRun(
         labels=jnp.asarray(label_array),
@@ -1275,7 +1321,7 @@ def _scan(
             )
         )
         if config.first_improvement:
-            improving = gains > config.gain_tolerance
+            improving = gains > _gain_tolerance(config)
             improving_rows = np.flatnonzero(improving.any(axis=1))
             if improving_rows.size:
                 row = int(improving_rows[0])
@@ -1317,7 +1363,7 @@ def _accept_batch(
     """
     if outcome.row_gains is None or outcome.row_destinations is None:
         return None
-    improving = np.flatnonzero(outcome.row_gains > config.gain_tolerance)
+    improving = np.flatnonzero(outcome.row_gains > _gain_tolerance(config))
     # Below this floor a batch cannot amortize its exact rebuild, and the few
     # surviving rows are strongly interacting boundary atoms whose certified
     # greedy relocation is both cheaper and better conditioned.
@@ -1342,7 +1388,7 @@ def _accept_batch(
         trial_labels = labels.copy()
         trial_labels[order[:size]] = destinations[:size]
         trial = _trial_state(points, weights, trial_labels, n_bins, objective)
-        if trial is not None and trial.objective > state.objective + config.gain_tolerance:
+        if trial is not None and trial.objective > state.objective + _gain_tolerance(config):
             return trial, trial_labels, size
         size //= 2
     return None
@@ -1743,7 +1789,9 @@ def _geometry_report(
         violating_moves=violating,
         evaluated_moves=evaluated,
         voronoi_consistent=violation_gain <= gain_tolerance,
-        separation_certified=separation_residual <= _SEPARATION_RTOL * separation_scale,
+        separation_certified=separation_residual
+        <= dtype_tolerance(_SEPARATION_RTOL, coordinates.dtype, _SEPARATION_EPS_MULTIPLE)
+        * separation_scale,
         gain_tolerance=gain_tolerance,
     )
 

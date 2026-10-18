@@ -120,8 +120,8 @@ def _warn_float64_truncation() -> None:
     # not of one call, and repeating it on every array would bury it.
     warnings.warn(
         "float64 scores were converted to float32 because JAX_ENABLE_X64 is disabled; "
-        "default tolerances such as gain_tolerance assume float64 resolution. Enable X64 "
-        "before importing JAX, pass float32 scores, or select ExecutionConfig(backend='numpy')",
+        "results carry float32 precision and default tolerances are relaxed to match. Enable "
+        "X64 before importing JAX, pass float32 scores, or select ExecutionConfig(backend='numpy')",
         UserWarning,
         stacklevel=3,
     )

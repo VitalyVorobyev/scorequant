@@ -38,8 +38,9 @@ only one informative direction.
 A model density divided by another model density: \(p(x\mid\theta)/p(x\mid\theta_0)\), or a
 component ratio \(\phi_k/\phi_{\rm ref}\). The score is the gradient of a log density
 ratio, so ratios are the minimal statistical representation a score provider needs —
-absolute normalization cancels, and any common event-wise factor is a free gauge. Distinct
-from an [importance ratio](#importance-ratio).
+absolute normalization cancels, and any common event-wise factor is a free gauge. The factor
+must be common to every column: ratio columns taken against different measures do not mix
+(see `RatioProvenance.gauges`). Distinct from an [importance ratio](#importance-ratio).
 
 ### Efficient score
 

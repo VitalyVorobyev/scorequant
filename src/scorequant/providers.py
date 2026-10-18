@@ -136,7 +136,26 @@ def _merge_ratio_provenance(
         training_priors=supplied.training_priors,
         calibration=supplied.calibration,
         deltas=supplied.deltas,
+        gauges=supplied.gauges,
     )
+
+
+_TRAINING_MIXTURE_GAUGE = "training_mixture"
+
+
+def _require_gauge_count(ratio: RatioProvenance | None, n_components: int) -> None:
+    """Require one declared gauge per ratio column the parameterization consumes.
+
+    ``RatioProvenance`` itself refuses mixed gauges, wherever the record is
+    built; only the column count needs the provider's parameterization.
+    """
+    if ratio is None or ratio.gauges is None:
+        return
+    if len(ratio.gauges) != n_components:
+        raise ContractError(
+            f"provenance.ratio.gauges declares {len(ratio.gauges)} columns; the "
+            f"parameterization consumes {n_components}"
+        )
 
 
 @dataclass(frozen=True, slots=True, init=False)
@@ -164,6 +183,8 @@ class DensityRatioScore:
         ``kind="exact"`` under the same caller responsibility as
         ``ScoreFunction``. Parameterization facts are always recorded in
         ``provenance.ratio`` and a conflicting supplied record is rejected.
+        Declaring ``provenance.ratio.gauges`` makes the provider refuse ratio
+        columns taken against different measures.
     """
 
     ratio: Callable[[ArrayLike], ArrayLike]
@@ -198,6 +219,7 @@ class DensityRatioScore:
                 metadata=provenance.metadata,
                 ratio=_merge_ratio_provenance(provenance.ratio, facts),
             )
+        _require_gauge_count(resolved.ratio, parameterization.n_components)
         object.__setattr__(self, "ratio", ratio)
         object.__setattr__(self, "parameterization", parameterization)
         object.__setattr__(self, "provenance", resolved)
@@ -223,7 +245,8 @@ class DensityRatioScore:
         intensity parameterization. When ``pi`` is proportional to
         ``theta_0`` the denominator is identically one. The provider always
         records estimated provenance — a classifier-derived ratio can never
-        claim exact Fisher semantics.
+        claim exact Fisher semantics — and declares every column in the
+        ``"training_mixture"`` gauge.
 
         Parameters
         ----------
@@ -261,6 +284,7 @@ class DensityRatioScore:
                 estimator="calibrated_classifier",
                 training_priors=tuple(float(value) for value in priors),
                 calibration=calibration,
+                gauges=(_TRAINING_MIXTURE_GAUGE,) * parameterization.n_components,
             ),
         )
         return cls(ratio, parameterization, provenance=provenance)

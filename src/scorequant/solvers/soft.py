@@ -16,7 +16,7 @@ from scorequant._execution import (
 from scorequant._execution import xp as jnp
 from scorequant.config import KMeansConfig, SoftVoronoiConfig
 from scorequant.criteria import DOptimality, ProfiledDOptimality
-from scorequant.transforms import fisher_transform
+from scorequant.transforms import fisher_transform, is_numerically_singular
 
 from .common import QuantizerRun, _bin_weights, chunked_hard_assign, squared_distances
 from .kmeans import weighted_kmeans
@@ -91,10 +91,18 @@ def criterion_objective_label(criterion: DOptimality | ProfiledDOptimality) -> s
 
 def _criterion_logdet(
     fisher: jnp.ndarray, criterion: DOptimality | ProfiledDOptimality
-) -> tuple[jnp.ndarray, jnp.ndarray, int]:
+) -> tuple[bool, jnp.ndarray, int]:
+    """Return whether the criterion is regular, its log determinant, and its dimension.
+
+    Regularity is the library's rank rule, not a ``slogdet`` sign: on a
+    deficient soft Fisher matrix the sign is rounding noise, and a positive one
+    would hand the optimizer a finite but meaningless objective and gradient.
+    The profiled criterion is regular exactly when the full matrix and its
+    nuisance block are, the verdict the exact exchange reaches on hard cells.
+    """
     if isinstance(criterion, DOptimality):
-        sign, value = jnp.linalg.slogdet(fisher)
-        return sign, value, fisher.shape[0]
+        _, value = jnp.linalg.slogdet(fisher)
+        return not is_numerically_singular(fisher), value, fisher.shape[0]
     dimension = fisher.shape[0]
     interest_set = set(criterion.interest_indices)
     nuisance = tuple(index for index in range(dimension) if index not in interest_set)
@@ -103,10 +111,12 @@ def _criterion_logdet(
     interest_block = fisher[jnp.ix_(interest_indices, interest_indices)]
     cross_block = fisher[jnp.ix_(interest_indices, nuisance_indices)]
     nuisance_block = fisher[jnp.ix_(nuisance_indices, nuisance_indices)]
-    nuisance_sign, _ = jnp.linalg.slogdet(nuisance_block)
+    if is_numerically_singular(nuisance_block, unit_diagonal=True):
+        return False, jnp.asarray(-jnp.inf, dtype=fisher.dtype), len(criterion.interest_indices)
     schur = interest_block - cross_block @ jnp.linalg.solve(nuisance_block, cross_block.T)
-    schur_sign, value = jnp.linalg.slogdet(0.5 * (schur + schur.T))
-    return nuisance_sign * schur_sign, value, len(criterion.interest_indices)
+    _, value = jnp.linalg.slogdet(0.5 * (schur + schur.T))
+    regular = not is_numerically_singular(fisher, unit_diagonal=True)
+    return regular, value, len(criterion.interest_indices)
 
 
 def soft_objective_and_center_gradient(
@@ -130,7 +140,9 @@ def soft_objective_and_center_gradient(
     For ordinary D-optimality ``G = -F^-1``. For profiled D, the determinant
     identity ``logdet(S) = logdet(F) - logdet(C)`` adds the nuisance-block
     inverse back to that metric. No backend maintains a separate objective or
-    asks autodiff to rediscover this equation at runtime.
+    asks autodiff to rediscover this equation at runtime. A soft Fisher matrix
+    that is singular at the dtype's rank threshold has no finite objective: the loss is
+    infinite and the gradient zero.
     """
     responsibilities = soft_responsibilities(points, centers, temperature)
     weighted = weights[:, None] * responsibilities
@@ -139,8 +151,8 @@ def soft_objective_and_center_gradient(
     sums = weighted.T @ objective_scores
     fisher = jnp.einsum("b,bp,bq->pq", 1 / safe, sums, sums)
     fisher = 0.5 * (fisher + fisher.T)
-    sign, logdet, _ = _criterion_logdet(fisher, criterion)
-    if float(np.asarray(sign)) <= 0:
+    regular, logdet, _ = _criterion_logdet(fisher, criterion)
+    if not regular:
         return jnp.asarray(jnp.inf, dtype=points.dtype), jnp.zeros_like(centers)
 
     metric = -jnp.linalg.inv(fisher)
@@ -200,11 +212,11 @@ class _SoftHistory:
         self.centers.append(centers)
         self.objectives.append(float(np.asarray(-loss)))
         self.bin_weights.append(_bin_weights(labels, self.weights, self.n_bins))
-        sign, value, _ = _criterion_logdet(soft_fisher, self.criterion)
-        retention = jnp.where(
-            sign > 0,
-            jnp.exp((value - self.reference_objective) / self.objective_dimension),
-            0.0,
+        regular, value, _ = _criterion_logdet(soft_fisher, self.criterion)
+        retention = (
+            jnp.exp((value - self.reference_objective) / self.objective_dimension)
+            if regular
+            else 0.0
         )
         self.retentions.append(float(np.asarray(retention)))
         self.temperatures.append(float(temperature))
@@ -256,8 +268,10 @@ def _soft_voronoi_reference(
     elif objective_scores.shape[1] != effective_rank:
         raise ContractError("profiled-D soft fitting requires full-rank supplied-score information")
     full_fisher = jnp.einsum("n,np,nq->pq", weights, objective_scores, objective_scores)
-    reference_sign, reference_value, objective_dimension = _criterion_logdet(full_fisher, criterion)
-    if float(np.asarray(reference_sign)) <= 0:
+    reference_regular, reference_value, objective_dimension = _criterion_logdet(
+        full_fisher, criterion
+    )
+    if not reference_regular:
         raise ContractError("soft fitting requires nonsingular criterion information")
     return objective_scores, float(np.asarray(reference_value)), objective_dimension
 

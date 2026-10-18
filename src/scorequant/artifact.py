@@ -405,7 +405,17 @@ def _ratio_from(facts: dict[str, JsonValue]) -> RatioProvenance:
         training_priors=restored_priors,
         calibration=None if calibration is None else _text(calibration, "ratio.calibration"),
         deltas=_optional_floats(facts.get("deltas"), "ratio.deltas"),
+        gauges=_optional_texts(facts.get("gauges"), "ratio.gauges"),
     )
+
+
+def _optional_texts(value: JsonValue | None, field: str) -> tuple[str, ...] | None:
+    """Narrow an optional manifest field to a tuple of strings."""
+    if value is None:
+        return None
+    if not isinstance(value, list):
+        raise ContractError(f"quantizer artifact field {field!r} must be a list")
+    return tuple(_text(entry, field) for entry in value)
 
 
 def _optional_floats(value: JsonValue | None, field: str) -> tuple[float, ...] | None:

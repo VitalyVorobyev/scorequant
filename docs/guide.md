@@ -265,6 +265,48 @@ verdict = (certificate.status, float(certificate.gap), bool(certificate.incumben
 The search is exponential, so `CertificationConfig` caps nodes and instance size. A spent budget
 returns `status="budget_exhausted"` with the outstanding gap, never a claim of optimality.
 
+## A classifier signal next to a background
+
+In the HEP pattern the signal ratio comes from a trained classifier and the background from a Monte
+Carlo or analytic density. Ratio columns may carry any per-event factor, but only one they all
+share: a prior-corrected classifier ratio is taken over the training mixture, a Monte Carlo density
+over a fixed base measure, and stacking the two leaves the training-mixture density inside every
+score. Return every column in one gauge. For a two-class classifier with training priors
+\(\pi\), \(\phi_\text{sig}/\phi_\text{bkg}=(\eta_\text{sig}/\pi_\text{sig})/(\eta_\text{bkg}/\pi_\text{bkg})\),
+so in the background gauge the background column is 1 and no Monte Carlo density is needed:
+
+```python
+priors = np.array([0.5, 0.5])  # signal, background training priors
+
+
+def classifier(x):  # stands in for a calibrated predict_proba
+    signal = 1.0 / (1.0 + np.exp(-2.0 * x[:, 0]))
+    return np.column_stack([signal, 1.0 - signal])
+
+
+def background_gauge(x):
+    eta = classifier(x)
+    signal = (eta[:, 0] / priors[0]) / (eta[:, 1] / priors[1])
+    return np.column_stack([signal, np.ones_like(signal)])
+
+
+provider = sq.DensityRatioScore(
+    background_gauge,
+    sq.IntensityParameterization([0.1, 1.0]),  # signal, background reference yields
+    provenance=sq.ScoreProvenance(
+        kind="estimated_ratio",
+        ratio=sq.RatioProvenance(gauges=("background", "background")),
+    ),
+)
+events = sq.ObservationSample(np.random.default_rng(5).normal(size=(800, 1)))
+hep_fit = sq.fit_quantizer(events, provider=provider, n_bins=4)
+```
+
+Declaring `gauges` is what lets ScoreQuant check them: a classifier column next to a Monte Carlo
+density, declared `("training_mixture", "absolute")`, raises `ContractError` instead of returning
+wrong scores. `DensityRatioScore.from_classifier` declares the training-mixture gauge for every
+column; an undeclared ratio callback is not checked.
+
 ## Reading the numbers
 
 Check the same handful every time: the retention spectrum and its geometric mean (the

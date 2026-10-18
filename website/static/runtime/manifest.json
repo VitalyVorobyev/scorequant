@@ -1,6 +1,6 @@
 {
   "pyodideVersion": "0.28.3",
   "indexURL": "runtime/pyodide/",
-  "scorequantWheel": "runtime/wheels/scorequant-0.2.0-py3-none-any.whl",
+  "scorequantWheel": "runtime/wheels/scorequant-0.3.0-py3-none-any.whl",
   "pythonRunner": "runtime/python/scorequant_browser_lab.py"
 }

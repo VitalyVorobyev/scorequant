@@ -55,7 +55,7 @@ provenance does not validate the score estimator.
 
 A `ScoreSample` needs no provider. Observation samples and integration sources require one;
 prediction keeps observation-to-score conversion explicit. Model density ratios belong to the
-provider; importance weights belong to the source.
+provider (`scorequant.ratios.DensityRatioScore`); importance weights belong to the source.
 
 `DOptimality` preserves information jointly across parameters. `ProfiledDOptimality` targets
 parameters of interest after profiling nuisance parameters. `NormalizedTrace` provides a

@@ -1,30 +1,41 @@
 # API guide
 
-Almost every use of ScoreQuant is built from a dozen names. The rest of the surface is machinery
-you reach for when you have a specific question about a result.
+ScoreQuant has a small top level and five public submodules. The top level is what a first fit
+needs. Each submodule answers a question you will know you have; none is needed to fit anything.
 
-**Core.** The two tasks, `optimize_partition` and `fit_quantizer`; the inputs `ScoreSample`,
-`ObservationSample`, `IntegrationSource` and `ScoreSchema`; the objectives `DOptimality`,
-`ProfiledDOptimality` and `NormalizedTrace`; a solver configuration; a provider such as
-`ScoreFunction`, `LinearComponentScore` or `DensityRatioScore`; and `Quantizer`, the rule you
-deploy.
+**Top level.** The two tasks, `optimize_partition` and `fit_quantizer`; the sources `ScoreSample`,
+`ObservationSample` and `IntegrationSource` (with its `GaussLegendreConfig`), plus `ScoreSchema` and
+`ScoreProvenance` to say what the score columns are; the providers `ScoreProvider`, `ScoreFunction`
+and `LinearComponentScore`; the criteria `DOptimality`, `ProfiledDOptimality` and
+`NormalizedTrace`; the solver configurations and `ExecutionConfig`; `Quantizer`, the rule you
+deploy, save and load; the reports `information_report`, `efficient_score_bound` and
+`retention_uncertainty`; and the errors.
 
-**Advanced.** Certificates and bounds (`certify_partition`, `exchange_stability_report`,
-`efficient_score_bound`), the information algebra (`fisher_information`,
-`binned_fisher_information`, `information_report`, `profiled_information_report`), the held-out
-error bar (`retention_uncertainty`), the ratio algebra (`ratios_from_posteriors`,
-`mixture_scores_from_ratios`, `ratio_closure_report`), `FisherTransform`, the report types, and the
-plotting helpers. Each answers a question you will know you have; none is needed to fit anything.
+**Submodules.**
+
+- `scorequant.ratios`: density-ratio providers (`DensityRatioScore`, `CentralLogRatioScore`), their
+  parameterizations, `RatioProvenance`, the prior correction and the closure diagnostic.
+- `scorequant.information`: the information algebra behind the reports.
+- `scorequant.certify`: the exchange-stability and global-optimality certificates.
+- `scorequant.results`: every result and report type, for annotations and `isinstance` checks.
+- `scorequant.plotting`: optional Matplotlib figures, outside the stable API.
+
+`import scorequant as sq` also makes the first four available as `sq.ratios`, `sq.information`,
+`sq.certify` and `sq.results`; `scorequant.plotting` is imported on its own. Every supported object
+has one public route: it is exported either by the top level or by one submodule, never both.
 
 The sections below follow that order. The generated [reference](symbols/index.md) covers every
 public object.
 
 ## Stability contract for 1.x
 
-The table inventories the supported top-level surface and its public members.
+The tables inventory the supported surface and its public members, the top level first and then
+each submodule, whose names are written relative to `scorequant`.
 **Stable** preserves names, call semantics, configuration fields and member meaning across 1.x.
 **Diagnostic** preserves existing report fields and their meaning; minor releases may add fields.
-Removal or renaming requires a warning for at least one minor release before removal.
+**Unstable** promises nothing: names, signatures and output may change in any release.
+Removal or renaming of a stable or diagnostic name requires a warning for at least one minor
+release before removal.
 All `to_dict()` payloads are additive diagnostic state, including those on stable inputs and
 `Quantizer`; they are not persistence formats. Consumers must tolerate additional keys.
 `Quantizer.save` / `load` use the separate format-1 compatibility promise.
@@ -33,40 +44,24 @@ docstrings and the contracts below. Result prediction/evaluation and compilation
 stable operations even though their returned reports are diagnostic. No report implies a
 global or population guarantee beyond its stated criterion, sample and tolerance.
 
+### Top level
+
 | Public name | Stability | Fields | Methods and properties |
 | --- | --- | --- | --- |
-| `ratios.CentralLogRatioScore` | Stable | `predict`, `deltas`, `class_priors`, `description`, `metadata`, `schema` | `provenance`, `score` |
-| `certify.CertificationConfig` | Stable | `method`, `max_nodes`, `max_rows`, `gain_tolerance` | `to_dict` |
 | `ContractError` | Stable | — | — |
 | `DExchangeConfig` | Stable | `method`, `rank_rtol`, `seed`, `initializer_restarts`, `max_iter`, `batch_moves`, `solver_restarts`, `init`, `gain_tolerance`, `first_improvement`, `collapse_duplicates` | `to_dict` |
 | `DOptimality` | Stable | `name` | `to_dict` |
-| `ratios.DensityRatioScore` | Stable | `ratio`, `parameterization`, `provenance`, `schema` | `from_classifier`, `score` |
-| `results.EfficientScoreBound` | Diagnostic | `upper_bound`, `labels`, `efficient_scores`, `n_bins`, `interest` | `gap_to`, `to_dict` |
 | `ExecutionConfig` | Stable | `backend`, `precision`, `device` | `to_dict` |
-| `results.FisherTransform` | Stable | `matrix`, `eigenvectors`, `eigenvalues`, `retained_eigenvalues`, `rank_rtol`, `threshold`, `whiten` | `input_dim`, `rank`, `dropped_directions`, `apply`, `to_dict` |
 | `GaussLegendreConfig` | Stable | `order`, `max_points` | — |
-| `results.GeometryReport` | Diagnostic | `maximum_voronoi_violation`, `guaranteed_violation_gain`, `maximum_violation_gain`, `maximum_separation_residual`, `violating_moves`, `evaluated_moves`, `voronoi_consistent`, `separation_certified`, `gain_tolerance` | `to_dict` |
-| `results.InformationReport` | Diagnostic | `fisher_unbinned`, `fisher_binned`, `retained_matrix`, `retained_eigenvalues`, `arithmetic_mean_retention`, `geometric_mean_retention`, `logdet_retention`, `bin_weights`, `bin_counts`, `bin_effective_sample_sizes`, `effective_rank`, `rank_threshold`, `psd_residual_min_eigenvalue` | `to_dict` |
 | `IntegrationSource` | Stable | `bounds`, `density`, `quadrature` | `materialize` |
-| `ratios.IntensityParameterization` | Stable | `coefficients` | `n_components`, `scores` |
 | `KMeansConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `solver_restarts`, `max_iter`, `tolerance`, `record_every` | `to_dict` |
 | `LinearComponentScore` | Stable | `components`, `coefficients`, `component_names`, `variables`, `provenance` | `schema`, `evaluate_components`, `score` |
 | `MahalanobisLloydConfig` | Stable | `method`, `rank_rtol`, `seed`, `initializer_restarts`, `max_iter`, `guard`, `gain_tolerance`, `collapse_duplicates` | `to_dict` |
-| `ratios.MixtureParameterization` | Stable | `reference_fractions`, `reference_component` | `n_components`, `scores` |
 | `NormalizedTrace` | Stable | `name` | `to_dict` |
 | `ObservationSample` | Stable | `observations`, `weights` | — |
-| `results.OptimizationTrace` | Diagnostic | `steps`, `centers`, `objective`, `bin_weights`, `train_hard_retention`, `objective_label`, `validation_hard_retention`, `soft_retention`, `temperatures`, `gradient_norms` | `to_dict` |
-| `results.PartitionCertificate` | Diagnostic | `status`, `objective`, `labels`, `upper_bound`, `gap`, `nodes_explored`, `incumbent_was_optimal` | `to_dict` |
-| `results.PartitionResult` | Diagnostic | `labels`, `training_scores`, `cell_weights`, `cell_score_sums`, `cell_score_means`, `information_full`, `information_partitioned`, `objective`, `transform`, `transformed_centers`, `metric`, `criterion`, `config`, `execution`, `train_report`, `provenance`, `accepted_moves`, `scans`, `exchange_stable`, `best_remaining_gain`, `objective_history`, `positive_weight_mask`, `lloyd_iterations`, `accepted_lloyd_steps`, `geometry`, `profiled_report`, `profiled_geometry`, `schema` | `n_bins`, `rank`, `information_kind`, `report`, `compile_quantizer`, `to_dict` |
 | `ProfiledDOptimality` | Stable | `interest`, `name` | `named`, `interest_indices`, `resolve`, `to_dict` |
-| `results.ProfiledGeometryReport` | Diagnostic | `metric`, `maximum_positive_violation`, `maximum_theoretical_bound`, `maximum_bound_residual`, `violating_moves`, `evaluated_moves`, `bound_certified` | `to_dict` |
-| `results.ProfiledInformationReport` | Diagnostic | `interest`, `nuisance`, `schur_unbinned`, `schur_binned`, `nuisance_unbinned`, `nuisance_binned`, `objective`, `logdet_retention`, `geometric_mean_retention`, `interest_rank`, `nuisance_rank`, `schema` | `interest_names`, `nuisance_names`, `describe`, `to_dict` |
 | `Quantizer` | Stable | `transform`, `centers`, `metric`, `schema`, `provenance`, `criterion`, `execution` | `n_bins`, `rank`, `input_dim`, `information_kind`, `predict_scores`, `evaluate_scores`, `to_dict`, `save`, `load` |
-| `results.QuantizerResult` | Diagnostic | `quantizer`, `criterion`, `config`, `execution`, `trace`, `labels`, `train_report`, `validation_report`, `provenance`, `hardening_gap`, `source_kind`, `train_profiled_report`, `validation_profiled_report` | `centers`, `metric`, `transform`, `schema`, `n_bins`, `rank`, `information_kind`, `predict_scores`, `evaluate_scores`, `report`, `to_dict` |
-| `ratios.RatioClosureReport` | Diagnostic | `normalizers`, `max_residual` | `to_dict` |
-| `ratios.RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas`, `gauges` | `to_dict` |
 | `RefusalError` | Stable | `counterexample` | — |
-| `results.RetentionUncertainty` | Diagnostic | `estimate`, `standard_error`, `confidence_interval`, `confidence_level`, `n_observations`, `status` | `to_dict` |
 | `ScalarDPConfig` | Stable | `method`, `whiten`, `rank_rtol`, `max_rows` | `to_dict` |
 | `ScoreFunction` | Stable | `function`, `provenance`, `schema` | `score` |
 | `ScoreProvenance` | Stable | `kind`, `description`, `reference_point`, `metadata`, `ratio` | `exact_fisher`, `to_dict` |
@@ -75,32 +70,75 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `ScoreSample` | Stable | `scores`, `weights`, `provenance`, `schema` | — |
 | `ScoreSchema` | Stable | `parameters` | `dimension`, `index`, `select`, `to_dict` |
 | `SoftVoronoiConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `initializer_restarts`, `kmeans_max_iter`, `kmeans_tolerance`, `max_iter`, `learning_rate`, `gradient_clip`, `temperature_end_ratio`, `record_every` | `to_dict` |
-| `results.StabilityReport` | Diagnostic | `stable`, `best_gain`, `best_move`, `objective`, `n_bins`, `criterion`, `gain_tolerance` | `to_dict` |
-| `information.binned_fisher_information` | Stable | — | — |
-| `certify.certify_partition` | Stable | — | — |
 | `efficient_score_bound` | Stable | — | — |
-| `information.efficient_scores` | Stable | — | — |
-| `certify.exchange_stability_report` | Stable | — | — |
-| `information.fisher_information` | Stable | — | — |
 | `fit_quantizer` | Stable | — | — |
-| `information.fractional_fisher_information` | Stable | — | — |
 | `information_report` | Stable | — | — |
 | `optimize_partition` | Stable | — | — |
+| `retention_uncertainty` | Stable | — | — |
+
+### `scorequant.ratios`
+
+| Public name | Stability | Fields | Methods and properties |
+| --- | --- | --- | --- |
+| `ratios.CentralLogRatioScore` | Stable | `predict`, `deltas`, `class_priors`, `description`, `metadata`, `schema` | `provenance`, `score` |
+| `ratios.DensityRatioScore` | Stable | `ratio`, `parameterization`, `provenance`, `schema` | `from_classifier`, `score` |
+| `ratios.IntensityParameterization` | Stable | `coefficients` | `n_components`, `scores` |
+| `ratios.MixtureParameterization` | Stable | `reference_fractions`, `reference_component` | `n_components`, `scores` |
+| `ratios.RatioClosureReport` | Diagnostic | `normalizers`, `max_residual` | `to_dict` |
+| `ratios.RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas`, `gauges` | `to_dict` |
+| `ratios.ratio_closure_report` | Stable | — | — |
+| `ratios.ratios_from_posteriors` | Stable | — | — |
+
+### `scorequant.information`
+
+| Public name | Stability | Fields | Methods and properties |
+| --- | --- | --- | --- |
+| `information.binned_fisher_information` | Stable | — | — |
+| `information.efficient_scores` | Stable | — | — |
+| `information.fisher_information` | Stable | — | — |
+| `information.fractional_fisher_information` | Stable | — | — |
+| `information.profiled_information_report` | Stable | — | — |
+
+### `scorequant.certify`
+
+| Public name | Stability | Fields | Methods and properties |
+| --- | --- | --- | --- |
+| `certify.CertificationConfig` | Stable | `method`, `max_nodes`, `max_rows`, `gain_tolerance` | `to_dict` |
+| `certify.certify_partition` | Stable | — | — |
+| `certify.exchange_stability_report` | Stable | — | — |
+
+### `scorequant.results`
+
+| Public name | Stability | Fields | Methods and properties |
+| --- | --- | --- | --- |
+| `results.EfficientScoreBound` | Diagnostic | `upper_bound`, `labels`, `efficient_scores`, `n_bins`, `interest` | `gap_to`, `to_dict` |
+| `results.FisherTransform` | Stable | `matrix`, `eigenvectors`, `eigenvalues`, `retained_eigenvalues`, `rank_rtol`, `threshold`, `whiten` | `input_dim`, `rank`, `dropped_directions`, `apply`, `to_dict` |
+| `results.GeometryReport` | Diagnostic | `maximum_voronoi_violation`, `guaranteed_violation_gain`, `maximum_violation_gain`, `maximum_separation_residual`, `violating_moves`, `evaluated_moves`, `voronoi_consistent`, `separation_certified`, `gain_tolerance` | `to_dict` |
+| `results.InformationReport` | Diagnostic | `fisher_unbinned`, `fisher_binned`, `retained_matrix`, `retained_eigenvalues`, `arithmetic_mean_retention`, `geometric_mean_retention`, `logdet_retention`, `bin_weights`, `bin_counts`, `bin_effective_sample_sizes`, `effective_rank`, `rank_threshold`, `psd_residual_min_eigenvalue` | `to_dict` |
+| `results.OptimizationTrace` | Diagnostic | `steps`, `centers`, `objective`, `bin_weights`, `train_hard_retention`, `objective_label`, `validation_hard_retention`, `soft_retention`, `temperatures`, `gradient_norms` | `to_dict` |
+| `results.PartitionCertificate` | Diagnostic | `status`, `objective`, `labels`, `upper_bound`, `gap`, `nodes_explored`, `incumbent_was_optimal` | `to_dict` |
+| `results.PartitionResult` | Diagnostic | `labels`, `training_scores`, `cell_weights`, `cell_score_sums`, `cell_score_means`, `information_full`, `information_partitioned`, `objective`, `transform`, `transformed_centers`, `metric`, `criterion`, `config`, `execution`, `train_report`, `provenance`, `accepted_moves`, `scans`, `exchange_stable`, `best_remaining_gain`, `objective_history`, `positive_weight_mask`, `lloyd_iterations`, `accepted_lloyd_steps`, `geometry`, `profiled_report`, `profiled_geometry`, `schema` | `n_bins`, `rank`, `information_kind`, `report`, `compile_quantizer`, `to_dict` |
+| `results.ProfiledGeometryReport` | Diagnostic | `metric`, `maximum_positive_violation`, `maximum_theoretical_bound`, `maximum_bound_residual`, `violating_moves`, `evaluated_moves`, `bound_certified` | `to_dict` |
+| `results.ProfiledInformationReport` | Diagnostic | `interest`, `nuisance`, `schur_unbinned`, `schur_binned`, `nuisance_unbinned`, `nuisance_binned`, `objective`, `logdet_retention`, `geometric_mean_retention`, `interest_rank`, `nuisance_rank`, `schema` | `interest_names`, `nuisance_names`, `describe`, `to_dict` |
+| `results.QuantizerResult` | Diagnostic | `quantizer`, `criterion`, `config`, `execution`, `trace`, `labels`, `train_report`, `validation_report`, `provenance`, `hardening_gap`, `source_kind`, `train_profiled_report`, `validation_profiled_report` | `centers`, `metric`, `transform`, `schema`, `n_bins`, `rank`, `information_kind`, `predict_scores`, `evaluate_scores`, `report`, `to_dict` |
+| `results.RetentionUncertainty` | Diagnostic | `estimate`, `standard_error`, `confidence_interval`, `confidence_level`, `n_observations`, `status` | `to_dict` |
+| `results.StabilityReport` | Diagnostic | `stable`, `best_gain`, `best_move`, `objective`, `n_bins`, `criterion`, `gain_tolerance` | `to_dict` |
+
+### `scorequant.plotting`
+
+| Public name | Stability | Fields | Methods and properties |
+| --- | --- | --- | --- |
 | `plotting.plot_information` | Unstable | — | — |
 | `plotting.plot_optimization` | Unstable | — | — |
 | `plotting.plot_partition` | Unstable | — | — |
 | `plotting.plot_summary` | Unstable | — | — |
-| `information.profiled_information_report` | Stable | — | — |
-| `ratios.ratio_closure_report` | Stable | — | — |
-| `ratios.ratios_from_posteriors` | Stable | — | — |
-| `retention_uncertainty` | Stable | — | — |
 
 `ScoreProvider` requires `provenance` and `score(observations)`; optional schema discovery
 is unchanged. Python standard exception members are inherited normally. `__version__` is
 package metadata, outside the callable surface above. Non-underscored helper names in implementation
-modules do not become supported APIs merely by being importable: the table is the supported
-entry-point inventory. `_` modules and `solvers/` remain private. The obsolete private
-`quantizers.py` façade has been removed; internal callers import the owning solver module.
+modules do not become supported APIs merely by being importable: the tables are the supported
+entry-point inventory. Only the five submodules above are public; every other module, `_` modules
+and `solvers/` included, is private.
 
 ### Diagnostic serialization keys
 
@@ -237,8 +275,8 @@ reference point stays with `ScoreProvenance`, and the two are validated against 
 than each carrying a reference point that can drift.
 
 Providers may supply the schema for the observation-space routes. `LinearComponentScore` derives
-it from the component names the model already declares; `ScoreFunction`, `DensityRatioScore` and
-`CentralLogRatioScore` accept `schema=` explicitly. It then reaches `PartitionResult.schema` and
+it from the component names it already declares; `ScoreFunction` and the ratio providers
+`ratios.DensityRatioScore` and `ratios.CentralLogRatioScore` accept `schema=` explicitly. It then reaches `PartitionResult.schema` and
 `QuantizerResult.schema`.
 
 ## The score-provider contract
@@ -258,14 +296,23 @@ class MyExternalScore:
 `score` takes observations alone; the execution backend is ambient context established by the
 public task, so an external implementation needs no knowledge of `ExecutionConfig`. A provider may
 also expose `schema`, which is used when present and is not part of the required contract. The
-four built-in providers are convenience implementations of this protocol.
+built-in providers are convenience implementations of this protocol.
 
 ## Sources, providers, and density ratios
 
 Sources carry the measure (`ScoreSample`, `ObservationSample`, `IntegrationSource`); providers
-carry the observation-to-score map (`ScoreFunction`, `LinearComponentScore`, `DensityRatioScore`,
-`CentralLogRatioScore`). Importance ratios for a sample drawn from a proposal distribution belong
-in the source weights, never in a provider.
+carry the observation-to-score map. Importance ratios for a sample drawn from a proposal
+distribution belong in the source weights, never in a provider. There is one provider per kind of
+model:
+
+- **Scores you can write down**: `ScoreFunction(function)`, an exact or estimated callable
+  `[N, D] -> [N, P]`.
+- **A linear-intensity model**: `LinearComponentScore(components, coefficients)`, named component
+  callables and their reference coefficients, scored as \(\phi_k / \sum_j \theta_j \phi_j\).
+- **Model density ratios**: `ratios.DensityRatioScore(ratio, parameterization)`, in the submodule
+  below.
+
+### Density ratios: `scorequant.ratios`
 
 `DensityRatioScore(ratio, parameterization, *, provenance=None)` pairs a model density-ratio
 callback `[N, D] -> [N, K]` with a declared ratio-to-score map: `MixtureParameterization` for a
@@ -277,16 +324,27 @@ always records estimated provenance. `CentralLogRatioScore(predict, deltas, clas
 paired minus/plus probabilities from classifiers trained at \(\theta_0\pm\delta\) into central
 finite-difference scores.
 
-The underlying array algebra is public: `ratios_from_posteriors(posteriors, class_priors)`,
-`mixture_scores_from_ratios(ratios, reference_fractions, reference_component=-1)`, and
-`scores_from_components(components, coefficients)` — the latter doubles as the intensity
-ratio-to-score map because it is invariant under a common event-wise rescaling of a row.
-`ratio_closure_report(ratios, weights)` checks that each ratio column integrates to one under the
-declared measure and returns the per-component normalizers with their largest absolute residual.
+For ratio arrays already in hand, a parameterization's `scores(ratios)` method is the same map the
+provider applies, and `ratios_from_posteriors(posteriors, class_priors)` is the prior correction.
+Already evaluated linear components are density ratios in the Lebesgue gauge, so
+`IntensityParameterization(coefficients).scores(components)` gives the scores
+`LinearComponentScore` would. `ratio_closure_report(ratios, weights)` checks that each ratio column
+integrates to one under the declared measure and returns the per-component normalizers with their
+largest absolute residual.
+
+<!-- snippet: skip -->
+```python
+from scorequant.ratios import DensityRatioScore, MixtureParameterization
+
+provider = DensityRatioScore.from_classifier(
+    classifier.predict_proba, class_priors, MixtureParameterization(reference_fractions)
+)
+fit = sq.fit_quantizer(sq.ObservationSample(X), provider=provider, n_bins=8)
+```
 
 `ScoreProvenance(kind, ...)` accepts `"unknown"`, `"exact"`, `"autodiff"`, `"estimated_ratio"`,
 and `"custom_estimated"`; `exact_fisher` is derived from `kind` and cannot be set independently.
-Ratio-derived scores carry a structured `ScoreProvenance.ratio` record (`RatioProvenance`) naming
+Ratio-derived scores carry a structured `ScoreProvenance.ratio` record (`ratios.RatioProvenance`) naming
 the estimator, parameterization, reference fractions or coefficients, reference component,
 training priors, calibration method, finite-difference offsets, and the gauge of each ratio column:
 the measure it is a density ratio against. Scores cancel only a factor common to every column of
@@ -513,7 +571,7 @@ bias only under truth-dependent error and conditioning assumptions, and AUC or c
 not certify it. Weighted samples, rules refitted on the evaluation rows and profiled \(D_s\)
 retention are outside this diagnostic.
 
-## Certificates
+## Certificates: `scorequant.certify`
 
 <!-- snippet: skip -->
 ```python

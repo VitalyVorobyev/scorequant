@@ -104,8 +104,9 @@ What you already have decides it:
 - Scores already computed: `ScoreSample`, or pass the array straight to `optimize_partition`.
 - A component or analytic model: `LinearComponentScore` or `ScoreFunction`, paired with
   `ObservationSample` or `IntegrationSource`.
-- Density ratios — analytic, classifier-derived or from a ratio estimator: `DensityRatioScore` (or
-  `CentralLogRatioScore` for paired central classifiers), paired with `ObservationSample`.
+- Density ratios — analytic, classifier-derived or from a ratio estimator:
+  `scorequant.ratios.DensityRatioScore` (or `CentralLogRatioScore` for paired central
+  classifiers), paired with `ObservationSample`.
 
 A source is the measure; a provider maps observations to scores. Estimated scores give a
 supplied-score surrogate, never exact Fisher information.

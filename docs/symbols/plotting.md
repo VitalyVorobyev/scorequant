@@ -1,4 +1,4 @@
-# Plotting
+# Plotting: scorequant.plotting
 
 `scorequant.plotting` is a convenience, not part of the stable API: its figures, layout and
 signatures may change in any release. Code that must keep working should draw from the documented

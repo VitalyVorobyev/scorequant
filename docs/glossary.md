@@ -189,8 +189,8 @@ door 1, precomputed `(event, score)` rows supplied directly as a `ScoreSample`; 
 component densities or an analytic score model, reached through an `ObservationSample` or
 `IntegrationSource` together with `LinearComponentScore` or `ScoreFunction`; door 3,
 [density ratios](#density-ratio) — analytic, classifier-derived, or from a direct ratio
-estimator — reached through an `ObservationSample` with `DensityRatioScore` or
-`CentralLogRatioScore`. All three doors open onto the same object — a weighted score
+estimator — reached through an `ObservationSample` with `scorequant.ratios.DensityRatioScore`
+or `CentralLogRatioScore`. All three doors open onto the same object — a weighted score
 table — and are validated together with a source, never supplied alone.
 
 ### Whitening

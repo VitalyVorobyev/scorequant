@@ -611,10 +611,15 @@ def copy_walkthrough_figures() -> None:
 
     The figures live beside the studies that produce them, outside ``website/``,
     where Docusaurus cannot serve them. Copying at generate time keeps one
-    committed copy of each image while still letting a walkthrough show it.
+    committed copy of each image while still letting a walkthrough show it. The
+    directory holds only these copies, so a figure dropped from ``FIGURES`` is
+    removed rather than left behind for the figure tests to trip over.
     """
     destination = ROOT / "website/static/walkthrough-figures"
     destination.mkdir(parents=True, exist_ok=True)
+    for stale in destination.iterdir():
+        if stale.is_file() and stale.name not in FIGURES:
+            stale.unlink()
     for name, source in FIGURES.items():
         shutil.copyfile(ROOT / source, destination / name)
     print(f"copied {len(FIGURES)} figures into {destination.relative_to(ROOT)}")

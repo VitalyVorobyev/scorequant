@@ -11,6 +11,11 @@ once already, which retroactively asserted that unshipped work had shipped.
 
 ## [Unreleased]
 
+### Added
+
+- A portal benchmark page sets each walkthrough's result beside equal-width, quantile and k-means
+  bins at the same budget; `examples/benchmark_baselines.py` computes the baselines the studies lacked.
+
 ### Changed
 
 - One singularity rule: `information_report`, `profiled_information_report`, `efficient_scores`

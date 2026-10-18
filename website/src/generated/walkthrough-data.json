@@ -1,5 +1,132 @@
 {
   "pages": {
+    "benchmark": {
+      "flowcytBins": {
+        "source": "examples/outputs/cell_population.json#/operating_partition/n_bins",
+        "text": "8",
+        "value": 8
+      },
+      "flowcytGrid": {
+        "source": "examples/outputs/cell_population.json#/two_dimensional_grid:8/held_out_d_efficiency",
+        "text": "0.022",
+        "value": 0.022311477389082943
+      },
+      "flowcytKmeans": {
+        "source": "examples/outputs/cell_population.json#/marker_kmeans:8/held_out_d_efficiency",
+        "text": "0.070",
+        "value": 0.07035593206242213
+      },
+      "flowcytQuantile": {
+        "source": "examples/outputs/cell_population.json#/one_dimensional_score:8/held_out_d_efficiency",
+        "text": "0.038",
+        "value": 0.03780138996527281
+      },
+      "flowcytQuantileRmse": {
+        "source": "examples/outputs/cell_population.json#/one_dimensional_score:8/target_macro_rmse",
+        "text": "0.0181",
+        "value": 0.018087934767159634
+      },
+      "flowcytScoreQuant": {
+        "source": "examples/outputs/cell_population.json#/soft_voronoi:8/held_out_d_efficiency",
+        "text": "0.985",
+        "value": 0.9846216879860943
+      },
+      "flowcytScoreQuantRmse": {
+        "source": "examples/outputs/cell_population.json#/soft_voronoi:8/target_macro_rmse",
+        "text": "0.0019",
+        "value": 0.0019285302742885712
+      },
+      "hepBins": {
+        "source": "examples/outputs/hep-classifier.json#/n_bins",
+        "text": "6",
+        "value": 6
+      },
+      "hepCeiling": {
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/0/evaluation_ceiling_retention",
+        "text": "0.964",
+        "value": 0.9641742886714496
+      },
+      "hepEqualWidth": {
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_profiled_retention",
+        "text": "0.271",
+        "value": 0.27115065206413
+      },
+      "hepKmeans": {
+        "source": "examples/outputs/benchmark-baselines.json#/hep/kmeans_retention",
+        "text": "0.051",
+        "value": 0.05056833618465156
+      },
+      "hepQuantile": {
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_quantile/evaluation_profiled_retention",
+        "text": "0.368",
+        "value": 0.3681631203472413
+      },
+      "hepScoreQuant": {
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_profiled_retention",
+        "text": "0.858",
+        "value": 0.8576000760739684
+      },
+      "michelsonBins": {
+        "source": "examples/outputs/michelson-phase.json#/headline_bins",
+        "text": "6",
+        "value": 6
+      },
+      "michelsonCeiling": {
+        "source": "examples/outputs/michelson-phase.json#/sweep/1/ceiling_retention",
+        "text": "0.948",
+        "value": 0.9482831713778096
+      },
+      "michelsonEqualWidth": {
+        "source": "examples/outputs/michelson-phase.json#/sweep/1/equal_width_retention",
+        "text": "0.205",
+        "value": 0.20540197184571238
+      },
+      "michelsonKmeans": {
+        "source": "examples/outputs/benchmark-baselines.json#/michelson/kmeans_retention",
+        "text": "0.355",
+        "value": 0.354978904750005
+      },
+      "michelsonQuantile": {
+        "source": "examples/outputs/benchmark-baselines.json#/michelson/quantile_retention",
+        "text": "0.075",
+        "value": 0.07536943814115069
+      },
+      "michelsonScoreQuant": {
+        "source": "examples/outputs/michelson-phase.json#/sweep/1/profiled_retention",
+        "text": "0.948",
+        "value": 0.9482591934034806
+      },
+      "ratiosBins": {
+        "source": "examples/outputs/door3-classifier.json#/n_bins",
+        "text": "4",
+        "value": 4
+      },
+      "ratiosEqualWidth": {
+        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/2/equal_width_retention",
+        "text": "0.968",
+        "value": 0.9678089030483656
+      },
+      "ratiosKmeans": {
+        "source": "examples/outputs/benchmark-baselines.json#/ratios/kmeans_retention",
+        "text": "0.973",
+        "value": 0.972624331179771
+      },
+      "ratiosQuantile": {
+        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/2/equal_frequency_retention",
+        "text": "0.938",
+        "value": 0.9377758518182528
+      },
+      "ratiosScoreQuant": {
+        "source": "examples/outputs/door3-classifier.json#/ladder/2/true_retention",
+        "text": "0.966",
+        "value": 0.9664657111274955
+      },
+      "ratiosTrainSize": {
+        "source": "examples/outputs/door3-classifier.json#/ladder/2/n_per_class",
+        "text": "300",
+        "value": 300
+      }
+    },
     "flowcyt": {
       "bins": {
         "source": "examples/outputs/cell_population.json#/operating_partition/n_bins",

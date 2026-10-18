@@ -21,7 +21,7 @@ import {describe, expect, it} from "vitest";
  */
 
 const ROOT = join(__dirname, "..");
-const CONTENT_DIRS = ["walkthroughs", "get-started", "ideas"];
+const CONTENT_DIRS = ["walkthroughs", "get-started", "ideas", "benchmark"];
 const COMPONENT = join(ROOT, "src/components/ReferenceLink.tsx");
 
 /** Every `.md`/`.mdx` file under the portal's authored content directories. */

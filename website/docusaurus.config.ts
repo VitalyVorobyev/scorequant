@@ -109,6 +109,18 @@ const config: Config = {
     [
       "@docusaurus/plugin-content-docs",
       {
+        // One page setting each walkthrough's result beside the simple
+        // binnings. A docs instance so it shares the walkthroughs' frame and
+        // contents list.
+        id: "benchmark",
+        path: "benchmark",
+        routeBasePath: "benchmark",
+        sidebarPath: false
+      }
+    ],
+    [
+      "@docusaurus/plugin-content-docs",
+      {
         // `/get-started` is a docs instance rather than an MDX page route so it
         // inherits the swizzled DocItem table of contents and the single-`<main>`
         // DocRoot layout the e2e suite asserts on every route.

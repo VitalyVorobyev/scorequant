@@ -1,8 +1,8 @@
 import {useCallback, useEffect, useState} from "react";
 
-import {PROTOCOL_VERSION, createRunRequest, validateProblem} from "./protocol";
-import type {LabProblem, LabResult, LabRunRequest} from "./protocol";
-import {acquireRuntimeReference, cancelRun, runOnRuntime, terminateRuntime} from "./runtimeClient";
+import {createRunRequest, validateProblem} from "./protocol";
+import type {LabProblem, LabResult} from "./protocol";
+import {acquireRuntimeReference, cancelRun, runOnRuntime} from "./runtimeClient";
 
 export type LabState = "idle" | "loading" | "running" | "complete" | "error" | "cancelled";
 
@@ -11,7 +11,7 @@ export interface LabRunner {
   error: string | null;
   progress: number;
   result: LabResult | null;
-  run: (problem: LabProblem, runner: LabRunRequest["runner"]) => void;
+  run: (problem: LabProblem) => void;
   stage: string;
   state: LabState;
   /** Whether a warmed runtime is held, so the next run skips the cold start. */
@@ -42,7 +42,7 @@ export function useLabRunner(): LabRunner {
     setProgress(0);
   }, []);
 
-  const run = useCallback((problem: LabProblem, runner: LabRunRequest["runner"]): void => {
+  const run = useCallback((problem: LabProblem): void => {
     const validationError = validateProblem(problem);
     if (validationError !== null) {
       setError(validationError);
@@ -52,19 +52,7 @@ export function useLabRunner(): LabRunner {
     setResult(null);
     setError(null);
     setProgress(0.02);
-    const request = createRunRequest(problem, runner);
-    if (runner === "fixture") {
-      terminateRuntime();
-      setState("complete");
-      setStage("Loaded verified native NumPy fixture");
-      return;
-    }
-    if (runner !== "pyodide-numpy") {
-      terminateRuntime();
-      setError(`${runner} is admitted by the protocol but has no approved runner in v${String(PROTOCOL_VERSION)}.`);
-      setState("error");
-      return;
-    }
+    const request = createRunRequest(problem);
     setState("loading");
     runOnRuntime(request, {
       onReuse: () => setStage("Reusing the warm browser runtime"),

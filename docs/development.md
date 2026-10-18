@@ -59,7 +59,6 @@ for the browser runtime, so it needs network access.
 
 Generated and committed — never hand-edit:
 - `website/src/generated/*.json`, written by the generators from `examples/` outputs and `src/`.
-- `website/src/lab/protocol.generated.ts`, from `website/schema/lab-protocol.schema.json`.
 
 The browser-side Python is `website/static/runtime/python/scorequant_browser_lab.py`;
 `tests/test_browser_lab.py` runs it under CPython against committed fixtures.

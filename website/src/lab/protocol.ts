@@ -1,16 +1,77 @@
-import type {LabCriterion, LabEvent, LabProblem, LabRunRequest} from "./protocol.generated";
+/**
+ * The request and event contract between the page and the browser worker.
+ *
+ * Both ends ship in the same bundle, so these types are the whole contract;
+ * the Python adapter (`static/runtime/python/scorequant_browser_lab.py`) reads
+ * the `LabProblem` fields by the same names.
+ */
 
-export type {
-  LabCriterion,
-  LabEvent,
-  LabProblem,
-  LabResult,
-  LabRunRequest,
-  ScoreRow
-} from "./protocol.generated";
+/** One score row: one column per parameter, at most `LAB_LIMITS.maxDimensions`. */
+export type ScoreRow = number[];
 
-/** Wire version. Bumped with `schema/lab-protocol.schema.json`, never separately. */
-export const PROTOCOL_VERSION = 3;
+/** The objective to optimize. Profiled Dₛ requires parameters of interest. */
+export interface LabCriterion {
+  name: "d_optimality" | "profiled_d_optimality" | "normalized_trace";
+  /** Parameters of interest by name, resolved against `schema`. */
+  interest?: string[];
+}
+
+export interface LabProblem {
+  scores: ScoreRow[];
+  weights: number[];
+  nBins: number;
+  solver: "d_exchange" | "mahalanobis_lloyd" | "kmeans" | "scalar_dp" | "soft_voronoi";
+  seed: number;
+  maxSteps?: number;
+  maxScans?: number;
+  criterion?: LabCriterion;
+  /** Parameter names in score-column order, so a profiled criterion can name them. */
+  schema?: string[];
+  /** Identifier of the score table the request was built from, for provenance. */
+  datasetId?: string;
+  /** Which public task to run. Absent means `fit_quantizer`. */
+  task?: "fit_quantizer" | "optimize_partition";
+  /** Seed the exchange from `efficient_score_bound(...).labels`; profiled `optimize_partition` only. */
+  initialization?: "efficient_score_bound";
+  /** Also report the profiled retention for these parameters, whatever criterion was solved. */
+  report?: {profiledInterest?: string[]};
+}
+
+export interface LabResult {
+  labels: number[];
+  centers: number[][];
+  retention: number;
+  objective: number;
+  execution: string;
+  /** The objective the reported retention is measured against. */
+  criterionLabel?: string;
+  /** Parameters of interest, echoed back by name when the criterion profiled. */
+  interest?: string[];
+  /** Profiled retention for `report.profiledInterest`. */
+  profiledRetention?: number;
+  /** Whether the result is exchange-stable; `optimize_partition` only. */
+  exchangeStable?: boolean;
+}
+
+export interface LabRunRequest {
+  protocolVersion: typeof PROTOCOL_VERSION;
+  type: "run";
+  runId: string;
+  problem: LabProblem;
+}
+
+export interface LabEvent {
+  protocolVersion: typeof PROTOCOL_VERSION;
+  runId: string;
+  type: "ready" | "progress" | "result" | "error" | "cancelled";
+  stage?: string;
+  progress?: number;
+  result?: LabResult;
+  message?: string;
+}
+
+/** Wire version, bumped with any change to the types above. */
+export const PROTOCOL_VERSION = 4;
 
 export const LAB_LIMITS = {
   maxBins: 16,
@@ -126,8 +187,8 @@ export function isLabEvent(value: unknown): value is LabEvent {
   return event.protocolVersion === PROTOCOL_VERSION && typeof event.runId === "string" && ["ready", "progress", "result", "error", "cancelled"].includes(event.type ?? "");
 }
 
-export function createRunRequest(problem: LabProblem, runner: LabRunRequest["runner"]): LabRunRequest {
-  return {protocolVersion: PROTOCOL_VERSION, type: "run", runId: crypto.randomUUID(), runner, problem};
+export function createRunRequest(problem: LabProblem): LabRunRequest {
+  return {protocolVersion: PROTOCOL_VERSION, type: "run", runId: crypto.randomUUID(), problem};
 }
 
 /** Human-readable objective label, used in the diagnostics panel and the result. */

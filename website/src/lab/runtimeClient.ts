@@ -63,18 +63,6 @@ export function acquireRuntimeReference(): () => void {
 }
 
 /**
- * Terminate the shared worker unconditionally.
- *
- * Used for the runner branches that never talk to a worker at all (the
- * verified fixture, or a runner the protocol admits but this version does not
- * approve): today's `useLabRunner` discards any warm worker in those cases,
- * and this preserves that.
- */
-export function terminateRuntime(): void {
-  terminate();
-}
-
-/**
  * Cancel the in-flight run, if the shared worker exists.
  *
  * Returns whether a worker was actually terminated, so a caller with no

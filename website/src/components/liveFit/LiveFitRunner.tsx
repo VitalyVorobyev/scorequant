@@ -1,11 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 
 import {useLabRunner} from "../../lab/useLabRunner";
-import type {LabProblem} from "../../lab/protocol";
 import type {LiveFitRunnerProps} from "./types";
-
-/** `LabProblem["schema"]` without its implicit `| undefined` from being optional. */
-type ScoreSchemaTuple = NonNullable<LabProblem["schema"]>;
 
 /**
  * Talks to the browser runtime. Reached only through `LiveFit`'s
@@ -37,30 +33,7 @@ export function LiveFitRunner({
     if (started.current) return;
     started.current = true;
     problem()
-      .then((resolved) => {
-        // Built without an inline conditional spread for the optional fields:
-        // under `exactOptionalPropertyTypes`, a spread that can vanish still
-        // widens the property's inferred type to include `undefined`, which
-        // `LabProblem` (an optional property means *absent*, never present as
-        // `undefined`) then rejects. Assigning only when defined avoids ever
-        // writing `undefined` into an optional slot.
-        const labProblem: LabProblem = {
-          nBins: resolved.nBins,
-          scores: resolved.scores as unknown as LabProblem["scores"],
-          seed: resolved.seed,
-          solver: resolved.solver,
-          weights: resolved.weights
-        };
-        if (resolved.schema !== undefined) labProblem.schema = resolved.schema as unknown as ScoreSchemaTuple;
-        if (resolved.datasetId !== undefined) labProblem.datasetId = resolved.datasetId;
-        if (resolved.task !== undefined) labProblem.task = resolved.task;
-        if (resolved.initialization !== undefined) labProblem.initialization = resolved.initialization;
-        if (resolved.criterion !== undefined) {
-          labProblem.criterion = resolved.criterion as NonNullable<LabProblem["criterion"]>;
-        }
-        if (resolved.report !== undefined) labProblem.report = resolved.report as NonNullable<LabProblem["report"]>;
-        run(labProblem, "pyodide-numpy");
-      })
+      .then((resolved) => run(resolved))
       .catch((cause: unknown) => {
         setLoadError(cause instanceof Error ? cause.message : String(cause));
       });

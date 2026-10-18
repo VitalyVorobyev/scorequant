@@ -14,8 +14,7 @@ export default tseslint.config(
       // Playwright writes traces here; they contain bundled third-party
       // JavaScript that type-aware linting cannot parse and should not judge.
       "test-results/**",
-      "playwright-report/**",
-      "src/lab/protocol.generated.ts"
+      "playwright-report/**"
     ]
   },
   eslint.configs.recommended,

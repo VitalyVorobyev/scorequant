@@ -8,8 +8,8 @@ import numpy as np
 
 import scorequant as sq
 
-#: Browser ceiling, mirroring `LAB_LIMITS` in `src/lab/protocol.ts` and the
-#: JSON Schema. Six columns admits the five-dimensional FlowCyt mixture score.
+#: Browser ceiling, mirroring `LAB_LIMITS` in `src/lab/protocol.ts`. Six columns
+#: admits the five-dimensional FlowCyt mixture score.
 MAX_DIMENSIONS = 6
 MAX_ROWS = 8_000
 

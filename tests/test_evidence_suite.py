@@ -16,6 +16,7 @@ import pytest
 import scorequant as sq
 from examples.door3_classifier import run_study as run_door3_study
 from examples.hep_classifier.experiment import run_study as run_hep_study
+from examples.ideas_toys import run_study as run_ideas_study
 from examples.lloyd_nonmonotone import (
     COUNTEREXAMPLE_BINS,
     COUNTEREXAMPLE_LABELS,
@@ -41,6 +42,7 @@ OUTPUTS = Path(__file__).resolve().parents[1] / "examples" / "outputs"
 MICHELSON_METRICS = OUTPUTS / "michelson-phase.json"
 HEP_METRICS = OUTPUTS / "hep-classifier.json"
 DOOR3_METRICS = OUTPUTS / "door3-classifier.json"
+IDEAS_METRICS = OUTPUTS / "ideas-toys.json"
 
 
 def test_rank_deficient_fixture_projects_duplicate_direction() -> None:
@@ -822,3 +824,32 @@ def test_fast_rerun_reproduces_the_door3_surrogate_gap() -> None:
     # residual at this scale too.
     mismatch = _mapping(metrics, "closure_measure_mismatch")
     assert float(mismatch["wrong_measure_residual"]) > 10 * float(ceiling["closure_residual"])  # type: ignore[arg-type]
+
+
+def test_ideas_rerun_reproduces_the_committed_toys_and_their_claims() -> None:
+    """The two Ideas toys rerun in seconds, match the evidence, and say what the posts say."""
+    metrics, _ = run_ideas_study()
+    committed = json.loads(IDEAS_METRICS.read_text(encoding="utf-8"))
+    fringe, clusters = metrics["fringe"], metrics["clusters"]
+    assert isinstance(fringe, dict) and isinstance(clusters, dict)
+    np.testing.assert_allclose(
+        fringe["score_intervals"], committed["fringe"]["score_intervals"], rtol=1e-9
+    )
+    np.testing.assert_allclose(
+        fringe["equal_segments"], committed["fringe"]["equal_segments"], rtol=1e-9, atol=1e-12
+    )
+    for key in ("kmeans", "d_optimal"):
+        for field in ("arithmetic_mean_retention", "geometric_mean_retention"):
+            assert clusters[key][field] == pytest.approx(
+                committed["clusters"][key][field], rel=1e-9
+            )
+
+    # One equal segment per fringe keeps nothing; score intervals keep the most at every budget.
+    assert fringe["headline_equal"] == 0.0
+    assert all(
+        s > e for s, e in zip(fringe["score_intervals"], fringe["equal_segments"], strict=True)
+    )
+    # k-means wins the sum of the retention spectrum, D-optimality the product.
+    kmeans, d_optimal = clusters["kmeans"], clusters["d_optimal"]
+    assert kmeans["arithmetic_mean_retention"] > d_optimal["arithmetic_mean_retention"]
+    assert d_optimal["geometric_mean_retention"] > kmeans["geometric_mean_retention"]

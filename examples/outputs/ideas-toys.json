@@ -1,0 +1,56 @@
+{
+  "fringe": {
+    "visibility": 0.6,
+    "fringes": 4,
+    "budgets": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "equal_segments": [
+      0.0,
+      0.036264477977,
+      0.0,
+      0.049488675316,
+      0.175921405783,
+      0.272578620179,
+      0.729513122225
+    ],
+    "score_intervals": [
+      0.729513122225,
+      0.88376851966,
+      0.936436041215,
+      0.9601129539,
+      0.972686657263,
+      0.980140155677,
+      0.984914563928
+    ],
+    "headline_bins": 4,
+    "headline_equal": 0.0,
+    "headline_score": 0.936436041215
+  },
+  "clusters": {
+    "rows": 3000,
+    "bins": 3,
+    "kmeans": {
+      "retained_eigenvalues": [
+        0.3410533048478132,
+        0.9881592648122244
+      ],
+      "arithmetic_mean_retention": 0.6646062848300188,
+      "geometric_mean_retention": 0.5805299156634347
+    },
+    "d_optimal": {
+      "retained_eigenvalues": [
+        0.4938802786397707,
+        0.7813955296748194
+      ],
+      "arithmetic_mean_retention": 0.637637904157295,
+      "geometric_mean_retention": 0.6212212503799842
+    }
+  }
+}

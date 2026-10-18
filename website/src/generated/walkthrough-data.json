@@ -64,7 +64,7 @@
       "hepScoreQuant": {
         "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_profiled_retention",
         "text": "0.858",
-        "value": 0.8576000760739684
+        "value": 0.8582892645339057
       },
       "michelsonBins": {
         "source": "examples/outputs/michelson-phase.json#/headline_bins",

@@ -75,21 +75,6 @@ def _fixed(digits: int) -> Callable[[object], str]:
     return lambda value: f"{float(value):.{digits}f}"
 
 
-def _percent(digits: int) -> Callable[[object], str]:
-    """Return a renderer printing a fraction as a percentage."""
-    return lambda value: f"{100.0 * float(value):.{digits}f}%"
-
-
-def _scientific(digits: int) -> Callable[[object], str]:
-    """Return a renderer printing a float in scientific notation.
-
-    Used where a value is so small that fixed-point rendering would print it
-    as a flat ``0.0000`` and hide the fact that it was computed rather than
-    asserted.
-    """
-    return lambda value: f"{float(value):.{digits}e}"
-
-
 def _count(value: object) -> str:
     """Render an integer with thousands separators."""
     return f"{int(value):,}"
@@ -781,47 +766,16 @@ FACTS: tuple[Fact, ...] = (
     Fact("michelson", "bins", f"{MICHELSON}#/headline_bins", _count),
     Fact("michelson", "fringes", f"{MICHELSON}#/fringes", _count),
     Fact("michelson", "visibility", f"{MICHELSON}#/visibility", _fixed(2)),
-    Fact("michelson", "nNodes", f"{MICHELSON}#/n_nodes", _count),
-    Fact("michelson", "iPhiPhi", f"{MICHELSON}#/closed_form/i_phiphi", _fixed(4)),
-    Fact("michelson", "iPhiEps", f"{MICHELSON}#/closed_form/i_phieps", _fixed(4)),
     Fact("michelson", "correlation", f"{MICHELSON}#/closed_form/correlation", _fixed(4)),
-    Fact("michelson", "costOfProfiling", f"{MICHELSON}#/cost_of_profiling", _fixed(4)),
-    # sweep[0] is the four-bin row and sweep[1] the six-bin one; `bins` above is
-    # the headline budget. Every sweep key names its budget so a page cannot
-    # attach the four-bin aliasing result to the six-bin headline.
-    Fact("michelson", "sweepBinsLow", f"{MICHELSON}#/sweep/0/n_bins", _count),
-    Fact("michelson", "sweepBinsHeadline", f"{MICHELSON}#/sweep/1/n_bins", _count),
-    Fact(
-        "michelson",
-        "equalWidthRetentionAtFour",
-        f"{MICHELSON}#/sweep/0/equal_width_retention",
-        _scientific(1),
-    ),
+    # sweep[1] is the six-bin row, the headline budget `bins` names. The page
+    # quotes only that budget; the rest of the sweep reaches it through the
+    # budget explorer, which reads `michelson-sweep.json` below.
     Fact(
         "michelson",
         "equalWidthRetentionAtSix",
         f"{MICHELSON}#/sweep/1/equal_width_retention",
         _fixed(4),
     ),
-    Fact(
-        "michelson",
-        "dOptimalRetentionAtFour",
-        f"{MICHELSON}#/sweep/0/d_optimal_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "michelson",
-        "profiledRetentionAtFour",
-        f"{MICHELSON}#/sweep/0/profiled_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "michelson",
-        "ceilingRetentionAtFour",
-        f"{MICHELSON}#/sweep/0/ceiling_retention",
-        _fixed(4),
-    ),
-    Fact("michelson", "boundGapAtFour", f"{MICHELSON}#/sweep/0/bound_gap", _fixed(6)),
     Fact(
         "michelson",
         "dOptimalRetentionAtSix",
@@ -840,142 +794,14 @@ FACTS: tuple[Fact, ...] = (
         f"{MICHELSON}#/sweep/1/ceiling_retention",
         _fixed(4),
     ),
-    Fact("michelson", "refusalMessage", f"{MICHELSON}#/compile_bridge/refusal_message", _text),
-    Fact(
-        "michelson",
-        "compiledTestRetention",
-        f"{MICHELSON}#/compile_bridge/compiled_test_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "michelson", "dRuleProfiledRetention", f"{MICHELSON}#/rules/0/profiled_retention", _fixed(4)
-    ),
+    # The reusable profiled rule, against the finite partition it cannot be
+    # compiled from.
     Fact(
         "michelson",
         "dsRuleProfiledRetention",
         f"{MICHELSON}#/rules/1/profiled_retention",
         _fixed(4),
     ),
-    Fact("michelson", "dRuleOwnCriterion", f"{MICHELSON}#/rules/0/criterion_efficiency", _fixed(4)),
-    Fact(
-        "michelson", "dsRuleOwnCriterion", f"{MICHELSON}#/rules/1/criterion_efficiency", _fixed(4)
-    ),
-    # The aliasing signature appears twice in the sweep -- an exact zero at four
-    # bins, and equal-width segments getting *worse* from eight bins to ten --
-    # so the two upper budgets get keys of their own rather than being described
-    # in prose without evidence behind them.
-    Fact("michelson", "sweepBinsEight", f"{MICHELSON}#/sweep/2/n_bins", _count),
-    Fact("michelson", "sweepBinsTen", f"{MICHELSON}#/sweep/3/n_bins", _count),
-    Fact(
-        "michelson",
-        "equalWidthRetentionAtEight",
-        f"{MICHELSON}#/sweep/2/equal_width_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "michelson",
-        "equalWidthRetentionAtTen",
-        f"{MICHELSON}#/sweep/3/equal_width_retention",
-        _fixed(4),
-    ),
-    Fact("michelson", "boundGapAtSix", f"{MICHELSON}#/sweep/1/bound_gap", _scientific(1)),
-    # The achieved profiled retention and its certified ceiling agree to four
-    # decimals, so both are also published at six: a page must be able to show
-    # that the ceiling was approached, not reached.
-    Fact(
-        "michelson",
-        "profiledRetentionAtSixFine",
-        f"{MICHELSON}#/sweep/1/profiled_retention",
-        _fixed(6),
-    ),
-    Fact(
-        "michelson",
-        "ceilingRetentionAtSixFine",
-        f"{MICHELSON}#/sweep/1/ceiling_retention",
-        _fixed(6),
-    ),
-    # Act one: the D-optimal partition's detector pull-back and compiled rule.
-    Fact("michelson", "narrowRunWidth", f"{MICHELSON}#/narrow_run_width", _fixed(2)),
-    Fact("michelson", "dRunsAtSix", f"{MICHELSON}#/d_geometry/n_runs", _count),
-    Fact("michelson", "dNarrowRuns", f"{MICHELSON}#/d_geometry/narrow_runs", _count),
-    Fact("michelson", "dMinRunWidth", f"{MICHELSON}#/d_geometry/min_run_width", _fixed(2)),
-    Fact("michelson", "predictionUOne", f"{MICHELSON}#/compile_bridge/predictions/0/u", _fixed(1)),
-    Fact("michelson", "predictionUTwo", f"{MICHELSON}#/compile_bridge/predictions/1/u", _fixed(1)),
-    Fact(
-        "michelson", "predictionUThree", f"{MICHELSON}#/compile_bridge/predictions/2/u", _fixed(1)
-    ),
-    Fact("michelson", "dPredictionOne", f"{MICHELSON}#/compile_bridge/predictions/0/bin", _count),
-    Fact("michelson", "dPredictionTwo", f"{MICHELSON}#/compile_bridge/predictions/1/bin", _count),
-    Fact("michelson", "dPredictionThree", f"{MICHELSON}#/compile_bridge/predictions/2/bin", _count),
-    # Act two: what the exchange did to the certified initializer, and what the
-    # fragments of the finite profiled partition are worth.
-    Fact("michelson", "dsInitialRuns", f"{MICHELSON}#/profiled_diagnostics/initial/n_runs", _count),
-    Fact(
-        "michelson",
-        "dsInitialNarrowRuns",
-        f"{MICHELSON}#/profiled_diagnostics/initial/narrow_runs",
-        _count,
-    ),
-    Fact(
-        "michelson",
-        "dsInitialRetention",
-        f"{MICHELSON}#/profiled_diagnostics/initial_retention",
-        _fixed(4),
-    ),
-    Fact("michelson", "dsRunsAtSix", f"{MICHELSON}#/profiled_diagnostics/final/n_runs", _count),
-    Fact(
-        "michelson", "dsNarrowRuns", f"{MICHELSON}#/profiled_diagnostics/final/narrow_runs", _count
-    ),
-    Fact(
-        "michelson",
-        "dsMinRunWidth",
-        f"{MICHELSON}#/profiled_diagnostics/final/min_run_width",
-        _fixed(3),
-    ),
-    Fact(
-        "michelson",
-        "dsMinRunMass",
-        f"{MICHELSON}#/profiled_diagnostics/final/min_run_mass",
-        _scientific(1),
-    ),
-    Fact(
-        "michelson", "dsAcceptedMoves", f"{MICHELSON}#/profiled_diagnostics/accepted_moves", _count
-    ),
-    Fact("michelson", "dsScans", f"{MICHELSON}#/profiled_diagnostics/scans", _count),
-    Fact(
-        "michelson",
-        "dsRetentionGain",
-        f"{MICHELSON}#/profiled_diagnostics/retention_gain",
-        _scientific(1),
-    ),
-    Fact(
-        "michelson",
-        "dsRelabelledFraction",
-        f"{MICHELSON}#/profiled_diagnostics/relabelled_fraction",
-        _percent(1),
-    ),
-    *(
-        Fact(
-            "michelson",
-            f"smoothing{name}{column}",
-            f"{MICHELSON}#/profiled_diagnostics/smoothing/{index}/{pointer}",
-            render,
-        )
-        for index, name in enumerate(("One", "Two", "Three", "Four"))
-        for column, pointer, render in (
-            ("MinWidth", "min_width", _fixed(2)),
-            ("Runs", "n_runs", _count),
-            ("BinsUsed", "bins_used", _count),
-            ("Retention", "retention", _fixed(4)),
-        )
-    ),
-    # The reusable profiled rule against the finite partition it cannot be
-    # compiled from.
-    Fact("michelson", "dsRuleRuns", f"{MICHELSON}#/rules/1/n_runs", _count),
-    Fact("michelson", "dsRuleHardeningGap", f"{MICHELSON}#/rules/1/hardening_gap", _scientific(1)),
-    Fact("michelson", "dsRulePredictionOne", f"{MICHELSON}#/rules/1/predictions/0/bin", _count),
-    Fact("michelson", "dsRulePredictionTwo", f"{MICHELSON}#/rules/1/predictions/1/bin", _count),
-    Fact("michelson", "dsRulePredictionThree", f"{MICHELSON}#/rules/1/predictions/2/bin", _count),
 )
 
 

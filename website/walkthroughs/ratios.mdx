@@ -6,6 +6,7 @@ sidebar_position: 5
 
 import {Figure} from "@site/src/components/Figure";
 import {RatioWorkflow} from "@site/src/components/RatioWorkflow";
+import {ReferenceLink} from "@site/src/components/ReferenceLink";
 import {factsFor} from "@site/src/lib/facts";
 import {siteUrl} from "@site/src/lib/site";
 
@@ -13,17 +14,11 @@ export const f = factsFor("ratios");
 
 # From a classifier to Fisher-preserving bins
 
-*When component densities are unavailable but labelled simulations are, a calibrated classifier can provide the density ratios needed to construct a score. ScoreQuant can then compress that estimated score into a small number of bins — but the information it reports is only as reliable as the score it was given.*
+*A signal fraction is to be estimated, the component densities are unknown, and labelled simulations are available. A calibrated classifier supplies the score and ScoreQuant bins it. How much of the information the bins report is real?*
 
-<RatioWorkflow
-  caption="The two lanes of this page. Along the top, the workflow a real analysis can run: labelled simulations train a classifier, its calibrated posteriors become a density ratio and then a score, and ScoreQuant compresses that score into hard bins. Along the bottom, the check only a synthetic model allows: the exact densities give the exact score, and the same fitted bins are evaluated against it."
-/>
+## 1. A mixture without a likelihood
 
-## 1. A mixture fit without an explicit likelihood
-
-Consider a familiar inference problem. Each observed event comes from one of two components — signal or background — and the quantity we want to measure is the signal fraction $\theta$.
-
-If the component densities were known, the event density would be
+Each event comes from signal or background, and the quantity to measure is the signal fraction $\theta$:
 
 $$
 p(x\mid\theta)
@@ -33,180 +28,77 @@ p(x\mid\theta)
 (1-\theta)\,\phi_{\rm bkg}(x).
 $$
 
-In many realistic analyses, however, $\phi_{\rm sig}(x)$ and $\phi_{\rm bkg}(x)$ cannot be evaluated. The observation $x$ may be high-dimensional, and the components may be defined only through simulation. What we do have are labelled simulated events from each component — exactly the setting in which a classifier is easy to train.
+In a realistic analysis neither component density can be evaluated: $x$ may be high-dimensional, and the components exist only as simulation. What is available is labelled simulated events, which is exactly what a classifier is trained on.
 
-This walkthrough uses a deliberately simple synthetic mixture so that we can see both sides of the problem. Signal events follow
+Here the components are two normal densities, $\phi_{\rm sig}=\mathcal N(1,\,0.5^2)$ and $\phi_{\rm bkg}=\mathcal N(0,\,1.5^2)$, and the reference signal fraction $\theta_0$ is {f("signalFraction")}. The fit pretends not to know them. Afterwards the exact densities give the exact score, and that oracle answers a question a real analysis cannot: when the bins report that they keep almost all the information, how much of that is true?
 
-$$
-\phi_{\rm sig}=\mathcal N(1.0,\,0.5^2),
-$$
+<RatioWorkflow
+  caption="The two lanes of this page. Top: the workflow a real analysis can run, from labelled simulations through a calibrated classifier and a density ratio to a score, which ScoreQuant compresses into hard bins. Bottom: the check only a synthetic model allows, in which the exact densities give the exact score and the same bins are evaluated against it."
+/>
 
-background events follow
+## 2. From classifier probabilities to a score {#classifier-to-score}
 
-$$
-\phi_{\rm bkg}=\mathcal N(0.0,\,1.5^2),
-$$
+The score of a mixture depends on the data only through density ratios, and a classifier estimates density ratios.
 
-and the reference point $\theta_0$ is fixed at a signal fraction of {f("signalFraction")}.
-
-For the algorithm, we will pretend that the two densities are unavailable and use only labelled samples and a classifier. Because this is a controlled example, we can also evaluate the exact densities afterward and ask a question that a real analysis usually cannot answer directly:
-
-**when ScoreQuant says that a set of bins retains almost all available information, how much of that statement comes from the binning — and how much depends on the classifier that supplied the score?**
-
-That distinction is the point of this walkthrough. The program that produces every number below is `examples/door3_classifier.py`.
-
-## 2. From classifier probabilities to a score
-
-Suppose the classifier was trained on signal and background samples mixed in known proportions $\pi_{\rm sig}$ and $\pi_{\rm bkg}$. If
+A classifier trained on components mixed in proportions $\pi_k$ estimates the posterior $\eta_k(x)=\pi_k\,\phi_k(x)/p_{\rm train}(x)$, where $p_{\rm train}=\sum_j\pi_j\phi_j$ is the training mixture. Dividing by the training proportion removes the prior:
 
 $$
-\eta_{\rm sig}(x)=P_{\rm train}(\mathrm{sig}\mid x),
-\qquad
-\eta_{\rm bkg}(x)=1-\eta_{\rm sig}(x),
-$$
-
-then Bayes' rule gives
-
-$$
-r(x)
+r_k(x)
 =
-\frac{\phi_{\rm sig}(x)}
-     {\phi_{\rm bkg}(x)}
+\frac{\eta_k(x)}{\pi_k}
 =
-\frac{\eta_{\rm sig}(x)/\pi_{\rm sig}}
-     {\eta_{\rm bkg}(x)/\pi_{\rm bkg}}.
+\frac{\phi_k(x)}{p_{\rm train}(x)}.
 $$
 
-So a classifier gives the required density ratio only if its probabilities are calibrated and the training class proportions are known.
+The proportions to divide by are those of the training sample, not the fractions of the model. A classifier trained on balanced classes has $\pi_k=1/2$ whatever the signal fraction of the data.
 
-For the mixture
+The score is the derivative of the log density at $\theta_0$, and it can be written in ratios alone:
 
 $$
-p(x\mid\theta)
+s(x)
 =
-\theta\,\phi_{\rm sig}(x)
-+
-(1-\theta)\,\phi_{\rm bkg}(x),
-$$
-
-the score is, by definition,
-
-$$
-s(x;\theta)
+\frac{\phi_{\rm sig}(x)-\phi_{\rm bkg}(x)}
+     {\theta_0\,\phi_{\rm sig}(x)+(1-\theta_0)\,\phi_{\rm bkg}(x)}
 =
-\frac{\partial}{\partial\theta}
-\log p(x\mid\theta)
-=
-\frac{
-\phi_{\rm sig}(x)-\phi_{\rm bkg}(x)
-}{
-\theta\,\phi_{\rm sig}(x)
-+
-(1-\theta)\,\phi_{\rm bkg}(x)
-}.
+\frac{r_{\rm sig}(x)-r_{\rm bkg}(x)}
+     {\theta_0\,r_{\rm sig}(x)+(1-\theta_0)\,r_{\rm bkg}(x)}.
 $$
 
-Dividing numerator and denominator by $\phi_{\rm bkg}(x)$ gives
+The reason is simple: numerator and denominator are both linear in the densities, so a factor $c(x)$ that multiplies every ratio of an event cancels. That freedom is the gauge. Ratios to the training mixture, as above, ratios to the background, with $r_{\rm bkg}=1$, and ratios to the reference density all give the same score, and no component density is ever needed on its own. The same cancellation holds with more components, in a normalized mixture and in a rate model whose coefficients float freely.
 
-$$
-s(x;\theta)
-=
-\frac{r(x)-1}
-     {\theta r(x)+(1-\theta)}.
-$$
+The gauge is free only if it is shared. Every ratio column of an event must carry the same factor $c(x)$: a signal ratio from a classifier, relative to the training mixture, placed beside an absolute background density from Monte Carlo gives a wrong score, and ScoreQuant cannot tell. Nor can it check that the posteriors are calibrated, or that $\pi_k$ are the true training proportions.
 
-At the reference point $\theta_0$, this is the score passed to ScoreQuant.
+`DensityRatioScore.from_classifier` performs both steps, the prior correction and the ratio-to-score map. It records the provider as an estimated ratio, so every result built on it is labelled <code>{f("classifierInformationKind")}</code>, never <code>{f("exactInformationKind")}</code> (<ReferenceLink to="api/#sources-providers-and-density-ratios">API guide</ReferenceLink>).
 
-The important point is that the score is defined from the likelihood, but evaluating it does not require the two component densities separately. Their ratio is sufficient.
+## 3. The experiment
 
-In our synthetic example the exact Gaussian densities are also known, so we can compute the exact score afterward and use it as an oracle for validation.
-
-## 3. A controlled experiment
-
-We use the known Gaussian model only to generate a controlled test. The quantizer is fitted on {f("nTrain")} events drawn from the reference mixture at $\theta_0$ equal to {f("signalFraction")}, and another {f("nTest")} events are kept aside for evaluation.
+The classifier is a logistic regression on $x$ and $x^2$, trained on balanced samples of {f("smallTrainSize")}, {f("mediumTrainSize")} and {f("largeTrainSize")} events per component. The exact log-ratio of two normal densities is quadratic in $x$, so the model can represent it; only the amount of training data changes. Everything downstream stays fixed: the events the bins are fitted on, a held-out sample from the same reference mixture, and the budget of {f("bins")} bins. The data and the classifier come from the study code, `examples/door3_classifier.py`; the conversion is shown in full.
 
 ```python
 import numpy as np
-from sklearn.linear_model import LogisticRegression
 
 import scorequant as sq
+from examples.door3_classifier import (
+    draw_reference_mixture,
+    draw_training_mixture,
+    exact_provider,
+    make_features,
+    train_classifier,
+)
+
+train_observations = draw_reference_mixture(2026, 400)
+test_observations = draw_reference_mixture(999, 600)
+model = train_classifier(seed=101, n_per_class=15)
 
 
-signal_mu, signal_sigma = 1.0, 0.5
-background_mu, background_sigma = 0.0, 1.5
-reference_fractions = (0.3, 0.7)
+def posteriors(observations):
+    return model.predict_proba(make_features(np.asarray(observations)[:, 0]))
 
 
-def draw(seed, n, signal_fraction):
-    rng = np.random.default_rng(seed)
-    is_signal = rng.random(n) < signal_fraction
-
-    x = np.where(
-        is_signal,
-        rng.normal(signal_mu, signal_sigma, n),
-        rng.normal(background_mu, background_sigma, n),
-    )
-    return x[:, None]
-
-
-train_observations = draw(2026, 400, reference_fractions[0])
-test_observations = draw(999, 600, reference_fractions[0])
-```
-
-The classifier is trained separately on balanced signal and background samples. We repeat the experiment with {f("smallTrainSize")}, {f("mediumTrainSize")} and {f("largeTrainSize")} labelled events per component.
-
-Because the exact log-density ratio of two Gaussians is quadratic in $x$, we use logistic regression with the features $x$ and $x^2$. The model class is therefore expressive enough for this example; the experimental control we vary is the amount of labelled training data.
-
-Everything downstream stays fixed: the reference mixture, the quantizer training sample, the held-out sample, the budget of {f("bins")} bins, and the ScoreQuant optimization.
-
-## 4. Fit the bins
-
-Training the classifier remains application code. ScoreQuant enters once the classifier can provide calibrated posterior probabilities.
-
-We first define the quadratic feature map and the classifier training step:
-
-```python
-def make_features(x):
-    return np.column_stack([x, x**2])
-
-
-def train_classifier(seed, n_per_class):
-    rng = np.random.default_rng(seed)
-
-    x_signal = rng.normal(signal_mu, signal_sigma, n_per_class)
-    x_background = rng.normal(background_mu, background_sigma, n_per_class)
-
-    x = np.concatenate([x_signal, x_background])
-    y = np.concatenate([
-        np.zeros(n_per_class),
-        np.ones(n_per_class),
-    ])
-
-    return LogisticRegression(max_iter=1000).fit(make_features(x), y)
-```
-
-The classifier output is then wrapped as a density-ratio score provider:
-
-```python
-def classifier_provider(model, description):
-    def predict(x):
-        values = np.asarray(x)[:, 0]
-        return model.predict_proba(make_features(values))
-
-    return sq.DensityRatioScore.from_classifier(
-        predict,
-        [0.5, 0.5],
-        sq.MixtureParameterization(list(reference_fractions)),
-        description=description,
-    )
-```
-
-For the smallest training sample:
-
-```python
-estimated = classifier_provider(
-    train_classifier(seed=101, n_per_class=15),
-    "logistic regression, 15 events per class",
+estimated = sq.DensityRatioScore.from_classifier(
+    posteriors,
+    [0.5, 0.5],  # training proportions: balanced classes
+    sq.MixtureParameterization([0.3, 0.7]),  # reference fractions, background last
 )
 
 quantizer = sq.fit_quantizer(
@@ -219,168 +111,51 @@ quantizer = sq.fit_quantizer(
 assert quantizer.information_kind == "supplied_score_surrogate"
 ```
 
-The provider performs the conversion derived above: classifier posteriors $\rightarrow$ density ratio $\rightarrow$ estimated score $\hat s(x;\theta_0)$. From that point on, `fit_quantizer` treats it like any other score source and finds {f("bins")} hard bins that preserve as much information in that score as possible.
+From the provider onward, `fit_quantizer` treats the estimated score $\hat s$ like any other score. The larger training sizes change only the `model` line.
 
-The result is labelled <code>{f("classifierInformationKind")}</code>, not <code>{f("exactInformationKind")}</code>, and that label is derived from the declared provenance rather than chosen. However good the classifier is, a classifier-backed result never claims exact Fisher semantics.
+## 4. Reported versus achieved retention
 
-We repeat the same procedure for classifiers trained with {f("mediumTrainSize")} and {f("largeTrainSize")} events per component. The quantizer is unchanged; only the score supplied to it changes.
+The retention a fit reports is a ratio: the information the bins keep about a score, over that score's unbinned information. Both are computed from $\hat s$. The reason the report cannot see a bad classifier is simple: the bins are graded against the very score they were fitted to.
 
-## 5. Reported versus achieved information
-
-There are two different questions we can ask about the fitted bins.
-
-First, how much information do they preserve in the **estimated** score supplied to ScoreQuant? This is the quantity the library can report in a real analysis.
+Here the exact score is also known, so the same bins can be graded twice. The held-out events are assigned with $\hat s$, as a real analysis would assign them, and the resulting labels are evaluated once against $\hat s$ and once against the exact score $s$:
 
 ```python
-estimated_test_scores = estimated.score(test_observations)
+estimated_scores = estimated.score(test_observations)
+reported = quantizer.evaluate_scores(estimated_scores).geometric_mean_retention
 
-reported = float(
-    quantizer.evaluate_scores(
-        estimated_test_scores
-    ).geometric_mean_retention
-)
+labels = quantizer.predict_scores(estimated_scores)
+achieved = sq.information_report(
+    exact_provider().score(test_observations), labels, n_bins=quantizer.n_bins
+).geometric_mean_retention
 ```
-
-In our controlled example we can ask a second question. Because the Gaussian component densities are known, we can compute the exact score directly:
-
-```python
-def normal_density(x, mu, sigma):
-    return np.exp(-0.5 * ((x - mu) / sigma) ** 2) / sigma
-
-
-def exact_score(x):
-    values = np.asarray(x)[:, 0]
-
-    signal = normal_density(values, signal_mu, signal_sigma)
-    background = normal_density(values, background_mu, background_sigma)
-
-    theta = reference_fractions[0]
-
-    score = (
-        (signal - background)
-        / (theta * signal + (1.0 - theta) * background)
-    )
-
-    return score[:, None]
-```
-
-We keep the fitted bins unchanged, assign the held-out events using the estimated score, and then evaluate those same labels against the exact score:
-
-```python
-labels = np.asarray(
-    quantizer.predict_scores(estimated_test_scores)
-)
-
-achieved = float(
-    sq.information_report(
-        exact_score(test_observations),
-        labels,
-        n_bins=quantizer.n_bins,
-    ).geometric_mean_retention
-)
-```
-
-The distinction is important:
-
-- **reported retention** measures what the bins preserve about $\hat s(x;\theta_0)$;
-- **achieved retention** measures what the same bins preserve about the exact $s(x;\theta_0)$.
-
-Repeating the experiment for the three classifier training sizes gives:
-
-| Events per component | Reported | Achieved |
-| ---: | ---: | ---: |
-| {f("smallTrainSize")} | {f("smallSurrogate")} | {f("smallTrue")} |
-| {f("mediumTrainSize")} | {f("mediumSurrogate")} | {f("mediumTrue")} |
-| {f("largeTrainSize")} | {f("largeSurrogate")} | {f("largeTrue")} |
 
 <Figure
   src={siteUrl("walkthrough-figures/door3-classifier.png")}
-  alt="Paired bars at three classifier training sizes: the D-efficiency the estimated score reports about itself, beside the D-efficiency its labels actually achieve against the exact score."
-  caption={`The surrogate caveat, drawn. The left bar of each pair is what the library can honestly say about the vectors it was handed; the right bar is what those labels were worth. They converge only as the classifier does.`}
+  alt="Paired bars at three classifier training sizes: the D-efficiency the estimated score reports about itself, beside the D-efficiency its labels achieve against the exact score. The reported bars are nearly equal; the achieved bar is clearly lower at the smallest size and catches up as the training size grows."
+  caption="Reported retention (left of each pair), measured against the estimated score, and achieved retention (right), measured against the exact score with the same labels. They converge only as the classifier does."
 />
 
-The reported retention barely changes: ScoreQuant is consistently good at preserving the score it receives. The achieved retention tells a different story. With only {f("smallTrainSize")} events per component, the bins reach a D-efficiency of {f("smallSurrogate")} against the classifier-derived score but only {f("smallTrue")} against the exact one — a gap of {f("smallGap")} that the self-report cannot see. As the classifier improves the two numbers converge, and by {f("largeTrainSize")} events per component the gap is down to {f("largeGap")}.
+The reported retention barely moves with the training size. With {f("smallTrainSize")} events per component the bins report {f("smallSurrogate")} and achieve {f("smallTrue")}. With {f("largeTrainSize")} the two agree to within {f("largeGap")}: the bins did not change their behaviour, the score they were given got better.
 
-This is the central limitation of a surrogate score. ScoreQuant can measure the information lost by **quantization**, but it cannot recover or measure information that was already lost when the score was estimated.
+ScoreQuant measures the information lost by binning. Information lost earlier, when the score was estimated, is invisible to it, which is what the surrogate label means.
 
-## 6. A simple closure check
+## 5. A check without the exact score
 
-In a real analysis we do not know the exact score, so we cannot repeat the reported-versus-achieved comparison above. We can still perform a simple consistency check on the classifier probabilities themselves.
-
-Our classifiers are trained on balanced samples: half signal and half background. For a large independent sample drawn from that same balanced mixture, a calibrated classifier should therefore predict, on average,
-
-$$
-\langle P(\mathrm{sig}\mid x)\rangle \approx 0.5,
-\qquad
-\langle P(\mathrm{bkg}\mid x)\rangle \approx 0.5.
-$$
-
-ScoreQuant converts these probabilities into component density ratios by dividing by the corresponding training fractions. With balanced training,
-
-$$
-\rho_{\rm sig}(x)
-=
-\frac{P(\mathrm{sig}\mid x)}{0.5},
-\qquad
-\rho_{\rm bkg}(x)
-=
-\frac{P(\mathrm{bkg}\mid x)}{0.5}.
-$$
-
-Their averages should therefore be close to one.
-
-We test this on a large independent sample of {f("nClosure")} events drawn from the same balanced mixture:
+A real analysis has no exact score, but it can test one consequence of the construction. Each ratio to the training mixture averages to one under that mixture, because $\mathbb E_{\rm train}[r_k]=\int\phi_k\,dx=1$. `ratio_closure_report` measures the largest deviation on a sample:
 
 ```python
-closure_observations = draw(4242, 50_000, 0.5)
-
+closure_observations = draw_training_mixture(4242, 50_000)
 closure = sq.ratio_closure_report(
-    estimated.ratio(closure_observations),
-    np.ones(len(closure_observations)),
+    estimated.ratio(closure_observations), np.ones(len(closure_observations))
 )
 ```
 
-Repeating the check for the three classifier training sizes gives:
+The residual falls from {f("smallClosure")} at {f("smallTrainSize")} events per component to {f("largeClosure")} at {f("largeTrainSize")}. A large residual exposes a bad ratio; a small one is necessary but not sufficient, since closure tests the normalization and not the shape (<ReferenceLink to="glossary/#ratio-closure">glossary</ReferenceLink>).
 
-| Events per component | Closure residual |
-| ---: | ---: |
-| {f("smallTrainSize")} | {f("smallClosure")} |
-| {f("mediumTrainSize")} | {f("mediumClosure")} |
-| {f("largeTrainSize")} | {f("largeClosure")} |
+Here the gauge does matter. A ratio to the training mixture averages to one under the training mixture and under nothing else, so the sample must be drawn from it: balanced here, not the reference mixture of the data. On the reference mixture even the exact ratio leaves a residual of {f("wrongMeasureResidual")}, larger than the worst classifier's.
 
-The residual decreases as the classifier improves. This is useful because, unlike the achieved-information test above, it does not require knowing the exact score.
+## 6. What the result means
 
-The check must, however, use the same mixture in which the classifier probabilities were defined. Our classifier was trained with equal signal and background fractions, so the closure sample must be balanced too.
+A classifier makes the score computable without a likelihood. Its calibrated posteriors, divided by the training proportions, are density ratios in a gauge the score does not see, and ScoreQuant bins that score as well as it bins any other. What it reports, though, is how much of the estimated score survives the binning, not how much of the information in the data. A better classifier closes that gap; the binning cannot, and closure on the training mixture is the check a real analysis has.
 
-If we instead evaluate the same check on the reference mixture, whose signal fraction is {f("signalFraction")}, the residual rises to {f("wrongMeasureResidual")} even for an exactly correct ratio — larger than the worst of the three above. Nothing is wrong with the ratio; we have simply averaged it over the wrong distribution.
-
-Closure is therefore a useful diagnostic, but not a proof of correctness. A large residual exposes an inconsistency; a small residual only shows that this normalization check is satisfied.
-
-## 7. Do optimized bins matter here?
-
-This example has only one score coordinate and {f("bins")} bins. In such a simple setting, we should not expect a sophisticated partition to outperform ordinary one-dimensional binning by much.
-
-To check that, we compare the ScoreQuant partition with quantile and equal-width bins built from the same estimated score.
-
-| Classifier training | Quantile bins | Equal-width bins | ScoreQuant |
-| --- | ---: | ---: | ---: |
-| {f("smallTrainSize")} events per component | {f("smallEqualFrequency")} | {f("smallEqualWidth")} | {f("smallTrue")} |
-| {f("largeTrainSize")} events per component | {f("largeEqualFrequency")} | {f("largeEqualWidth")} | {f("largeTrue")} |
-
-All numbers are evaluated on the held-out sample against the exact score. A value of one would mean that the bins retain all Fisher information available in that score.
-
-The differences are small. Fitting the partition wins by at most {f("naiveLargestGap")}, at {f("naiveLargestGapTrainSize")} events per component. With the best-trained classifier, equal-width binning even slightly outperforms the fitted partition: {f("largeEqualWidth")} against {f("largeTrue")}. A quantizer fitted directly from the exact score reaches {f("exactCeiling")} at the same bin budget.
-
-That is a useful boundary case rather than a failure of the example. With one smooth score coordinate, choosing the bin boundaries is not the difficult part of the problem. The important question on this page is instead whether the score supplied to the quantizer is trustworthy.
-
-The advantage of ScoreQuant becomes more consequential when several score coordinates must be compressed simultaneously, or when an apparently natural one-dimensional binning aliases the information. Those cases are covered by the other walkthroughs.
-
-## 8. Takeaway
-
-A classifier can make ScoreQuant usable even when the event-level likelihood cannot be evaluated directly. For the mixture considered here, calibrated classifier probabilities determine the component density ratio, and that ratio is sufficient to reconstruct the score at the reference point.
-
-The important limitation is equally clear: ScoreQuant can optimize and measure the information retained from the score it receives, but it cannot recover information that was already lost when that score was estimated.
-
-In this controlled example we could see both effects separately because the exact Gaussian model was known. In a real analysis that oracle is usually unavailable, so classifier calibration and ratio diagnostics become part of the inference pipeline rather than optional preprocessing.
-
-The binning problem itself was deliberately simple: one score coordinate and {f("bins")} bins. That made it possible to isolate the classifier-to-score step without introducing the genuinely multivariate geometry for which ScoreQuant is designed. Other walkthroughs address that harder regime.
+The binning itself was the easy part here. With one score coordinate, equal-width or quantile bins of the same estimated score come close to the fitted partition, and at the largest training size equal-width bins edge slightly ahead. The choice of cells matters when several score coordinates must share a few bins, as in the [Higgs search](./hep.mdx) and the [cell populations](./flowcyt.mdx), both of which build their scores as described above.

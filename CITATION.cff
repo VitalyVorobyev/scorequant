@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use ScoreQuant, please cite it using the metadata below."
+type: software
+title: "ScoreQuant: information-preserving binning for statistical inference"
+abstract: >-
+  A Python library for assigning observations to a few hard bins while retaining Fisher
+  information about model parameters, by D-optimal and profiled D_s partitioning of score
+  vectors.
+authors:
+  - family-names: Vorobyev
+    given-names: Vitaly
+    email: vit.vorobiev@gmail.com
+    # orcid: "https://orcid.org/0000-0000-0000-0000"  # to be added by the author
+version: 0.3.0
+date-released: "2026-10-18"
+license: MIT
+repository-code: "https://github.com/VitalyVorobyev/scorequant"
+url: "https://vitalyvorobyev.github.io/scorequant/"
+keywords:
+  - binning
+  - Fisher information
+  - D-optimality
+  - JAX
+  - statistics
+# Once the JOSS paper is accepted, add its DOI here so that citation tools prefer it:
+# preferred-citation:
+#   type: article
+#   title: "ScoreQuant: hard binning in score space that keeps Fisher information"
+#   authors:
+#     - family-names: Vorobyev
+#       given-names: Vitaly
+#   journal: "Journal of Open Source Software"
+#   year: 2027
+#   volume: 0
+#   issue: 0
+#   start: 0
+#   doi: "10.21105/joss.00000"

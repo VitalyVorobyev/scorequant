@@ -13,20 +13,20 @@ in git history.
 | | Milestone | Done when | Status |
 | --- | --- | --- | --- |
 | M0 | **Lean repository.** Research apparatus, Research Atlas, ADR journal and duplicated narrative removed; MkDocs reduced to reference; examples and tests cut to what the product and its demos use. | The size budget below holds and the handoff gate is green. | Done, except the budget (see below). |
-| M1 | **Release 0.3.0.** Version bump, Beta classifier, changelog, `prepare:runtime`, local wheel rehearsal; the owner tags. | 0.3.0 on PyPI. | Prepared on `main`; waiting for the owner's `v0.3.0` tag. |
-| M2 | **Library quality for 1.0.** Dtype-aware tolerances, one singularity rule, chunked memory, `partition.py` split, mixed-gauge guard, API cut to a core plus five submodules. | Every item done with tests; the API inventory in `docs/api.md` is final. | Done. The API change is breaking, so the next release is 0.4.0. |
+| M1 | **Release 0.3.0.** Version bump, Beta classifier, changelog, `prepare:runtime`, local wheel rehearsal; the owner tags. | 0.3.0 on PyPI. | Done: released 18 Oct 2026. |
+| M2 | **Library quality for 1.0.** Dtype-aware tolerances, one singularity rule, chunked memory, `partition.py` split, mixed-gauge guard, API cut to a core plus five submodules. | Every item done with tests; the API inventory in `docs/api.md` is final. | Done; released as 0.4.0, the candidate for 1.0. |
 | M3 | **Portal.** Landing, get-started on `fit_quantizer`, four walkthroughs at about half length, the Ideas series, a research page, simpler machinery. | A newcomer can say what the library does, why score space, and what a walkthrough's result means, without help. | Done; needs the owner's read. |
-| M4 | **Science in three formats.** The arXiv paper (`research/paper`), the JOSS paper (`research/joss`), the Ideas series. | The paper and the JOSS paper are submitted. | Drafts done and building in CI; the owner fills the placeholders and submits. |
-| M5 | **Recognition.** PyPI 1.0 and conda-forge; JOSS and arXiv; a Zenodo DOI; a pyhf template-fit demo; a benchmark page against equal-width, quantile and k-means binning; posts to the HEP, ML and cytometry communities. | External users, citations or a talk. | `CITATION.cff` done; demos in progress. |
+| M4 | **Science in three formats.** The arXiv paper (`research/paper`), the JOSS paper (`research/joss`), the Ideas series. | The paper and the JOSS paper are submitted. | Drafts done and building in CI. The arXiv paper waits until a mathematician on the team has reviewed it. |
+| M5 | **Recognition.** PyPI 1.0 and conda-forge; JOSS and arXiv; a Zenodo DOI; a pyhf template-fit demo; a benchmark page against equal-width, quantile and k-means binning; posts to the HEP, ML and cytometry communities. | External users, citations or a talk. | `CITATION.cff`, the pyhf demo and the benchmark page done; outreach is the owner's. |
 
 ## What remains
 
-**Owner actions:** push the `v0.3.0` tag; read the portal and the two papers; fill the JOSS
-placeholders (ORCID, affiliation, AI-use wording, acknowledgements); submit to arXiv, then JOSS;
-connect Zenodo to the repository; write the community posts.
+**Owner actions:** read the portal, the benchmark page and the two papers; bring a mathematician
+onto the team to review the paper before arXiv; fill the JOSS placeholders (ORCID, affiliation,
+AI-use wording, acknowledgements); connect Zenodo to the repository; outreach.
 
 **Engineering:**
-- Release 0.4.0 with the trimmed API; 1.0.0 after the JOSS review.
+- 1.0.0 after the owner's review of the 0.4.0 API and the JOSS review.
 - A conda-forge recipe after 1.0.
 - Bring `tests/` and `examples/` back inside their budgets: the walkthrough evidence tests and the
   HEP and FlowCyt study packages carry the most weight.

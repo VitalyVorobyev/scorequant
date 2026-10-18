@@ -11,7 +11,7 @@ authors:
     given-names: Vitaly
     email: vit.vorobiev@gmail.com
     # orcid: "https://orcid.org/0000-0000-0000-0000"  # to be added by the author
-version: 0.3.0
+version: 0.4.0
 date-released: "2026-10-18"
 license: MIT
 repository-code: "https://github.com/VitalyVorobyev/scorequant"

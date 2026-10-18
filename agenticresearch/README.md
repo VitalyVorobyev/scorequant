@@ -1,5 +1,7 @@
 # ScoreQuant research workspace
 
+**Frozen 18 October 2026 (ADR 0043):** a session here needs an explicit owner reopen.
+
 **Version:** 5.1 · 11 September 2026. This file is the whole operating contract for research
 sessions; everything else here is either scientific memory or a protocol read on demand.
 

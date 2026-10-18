@@ -274,6 +274,16 @@ evaluation and compilation operations retain their documented stable semantics. 
 by the isolated v0.2.0 format-1 writer guards historical loading without JAX. Version changes,
 research freeze, publication and human acceptance remain separate gates.
 
+## ADR 0043 · Research frozen; release decoupled from publication
+
+Adopted 18 October 2026, closing step 6 of the research closure programme. The research programme
+is frozen: no theorem, audit or formal packet is selected, the P5 HEP template-likelihood
+assessment is parked as a possible application demonstration, and reopening any research needs a
+new owner decision. Work moves to software, demonstrations and documentation (roadmap M14).
+Releases gate on the engineering handoff gate alone: manuscript assurance (dispute provenance,
+attribution, registry wording) and the human reader gates bind publication and 1.0, not 0.3.
+This narrows ADR 0042's sequence; ADR 0040's façade removal is already done.
+
 ## Absorbed and superseded records
 
 | Record | Where it lives now |

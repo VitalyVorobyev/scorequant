@@ -1,27 +1,17 @@
 # Open problems — the closure programme and the backlog
 
-**Version:** 5.3 · 11 September 2026
+**Version:** 5.4 · 18 October 2026
 **Rule:** this file selects work. It holds the finite programme that ends the research, a
 three-line status, and the backlog of unresolved questions. Established results live in the
 claim graph and `KNOWN_RESULTS/`; they are not restated here.
 
-## Status (11 September 2026)
+## Status (18 October 2026)
 
-- Active: none. Next: the separate non-blocking HEP template-likelihood assessment (P5).
-  Step 5a's review and local corrections are delivered; manuscript dispute/attribution assurance,
-  owner freeze and human gates remain open in development phase H. Steps 2 and 4 remain dropped.
-- Done: step 5a (11 September 2026, `AUDITS/AUDIT-D-COMPILE-TOLERANCE-001.md`,
-  two exact fixtures, narrowed guarantee and publication disposition in development phase H); step 0 (O7 audit, PR #59); step 3's corrected verdict plus independent audit
-  (`AUDITS/AUDIT-SCORE-ERROR-BUDGET-001.md`); step 1 shipped on 8 September 2026 as
-  `retention_uncertainty` (PR #66, ADR 0039); step 5, manuscript v10 (merged PR #68, 10 September 2026,
-  `manuscripts/README.md`), harvesting O6–O8 and both audits, with §10.2 absorbing this backlog and
-  the bounded novelty pass `LITERATURE/audits/NOVELTY-STEP5-10-September-2026.md`. The formal-D
-  packet is retired as partial, with its unresolved obligations preserved under the
-  formal-verification backlog below.
-- Parked: OP31 and `WORK/active/DS-TILT-DUAL-EXACT-COMPLEXITY.md`; formal residue below,
-  the informal positive-tolerance contract audit is completed, while its Lean proof remains parked.
-  Neither is selected work. P1 deployment verdict closed on 1 September 2026
-  (`KNOWN_RESULTS/05b-ds-bridge.md`).
+- **Frozen** (step 6, ADR 0043): the closure programme is complete; nothing is selected. P5 is
+  parked as a possible application demonstration. Steps 2 and 4 remain dropped.
+- Publication assurance (dispute provenance, attribution, two registry wording corrections) lives
+  in `manuscripts/README.md` and binds only publication.
+- Reopening any item below needs an owner decision recorded in `docs/decisions.md`.
 
 ## Closure programme
 
@@ -41,7 +31,7 @@ programme and does not delay closure. Other questions remain backlog.
 | 4 | Parameter mismatch (OP23): second-order local expansion of a frozen rule's retention at \(\theta_0+\delta\), as a diagnostic | P4 | a story for the reference-point assumption | verdict; optional, drop second |
 | 5 | Manuscript v10: harvest O6, O7, both audits and step 3; the future-work section absorbs the backlog below | publication | the paper | **merged PR #68** (10 September 2026, `manuscripts/score_space_quantization_article_v10.md`); owner review pending |
 | 5a | Bounded v1.0 readiness review, the same session as `docs/roadmap.md` phase H: compilation contract and publication assurance | assurance | verified scope of shipped guarantees and an explicit publication disposition | reviewed 11 September 2026; independent audit and local corrections delivered; manuscript publication blocker remains in phase H |
-| 6 | Freeze the current programme: retain backlog and the separate P5 assessment, mark the current research programme closed in the roadmap; release tag under phase H's sequence | — | — | owner decision after step 5a disposition; release actions separately authorized |
+| 6 | Freeze the current programme: retain backlog and the separate P5 assessment, mark the current research programme closed in the roadmap; release tag under phase H's sequence | — | — | **done** (18 October 2026, ADR 0043); release decoupled from publication |
 
 Steps 2 and 4 remain dropped. Bin-count theory (P3), the D-core spine (P6), foundations (P7)
 and the literature graph (P8) receive no further work in this programme. HEP specialisation (P5)
@@ -155,10 +145,11 @@ interval for heavy-tailed scores. Target claim: `OPEN-RETENTION-UNCERTAINTY`.
 
 # P5 · HEP-SPECIALIZATION — template fits made mathematically explicit
 
-## Scheduled follow-up — HEP template-likelihood research assessment
+## Parked — HEP template-likelihood research assessment
 
-After the v1.0 readiness review (step 5a / development phase H), run one bounded assessment,
-independent of the freeze and release schedule. Start from OP20–22, their claim nodes, the current
+Parked by the freeze (ADR 0043); reopened only by owner decision, most likely as an application
+demonstration. The scope below is kept for that case: one bounded assessment,
+independent of the release schedule. Start from OP20–22, their claim nodes, the current
 HEP study and its committed evidence, and primary literature under `protocols/literature.md`.
 Assess four connected questions:
 

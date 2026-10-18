@@ -47,13 +47,12 @@ public registry or provisional backend class.
   intentional capacity-limited exception guarded by `ScalarDPConfig.max_rows`. Optimization
   histories store aggregate metrics and center snapshots, never per-observation responsibilities.
 
-## Research workflow
+## Research
 
-- The research programme is frozen (ADR 0043): no research session starts without an explicit owner reopen. `agenticresearch/` governs itself through its own `agenticresearch/README.md` and `OPEN_PROBLEMS.md`, and is excluded from the Ruff gate.
-- The library crosses into it at exactly two points: `tests/test_research_claims.py` reads counterexample fixtures from `agenticresearch/COUNTEREXAMPLES/`, and `tests/test_research_registry.py` runs `agenticresearch/py/registry.py validate` plus the index-freshness check.
-- Research results become library behaviour only by being copied into deterministic regression tests or theorem-cited code paths.
-- Code in `src/` that relies on a theorem names it; code that refuses a capability names the counterexample forcing the refusal.
-- Selected claims carry a machine-checked Lean `formal_proof` under `agenticresearch/formal/` (ADR 0030/0037); no Lean result certifies the Python/JAX implementation.
+- Research is finished; new research needs an explicit owner decision. `research/` holds the paper
+  and the Lean proofs (`research/formal`), which certify the stated theorems, not the Python code.
+- Code in `src/` that relies on a theorem names it; a refusal names the exact counterexample that
+  forces it, kept as `tests/fixtures/counterexamples/<id>.json` and pinned by a test.
 
 ## Tooling: use uv
 

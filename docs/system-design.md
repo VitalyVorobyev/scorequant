@@ -113,10 +113,8 @@ behind an adapter and must match the shared reference implementation.
   `to_dict()` JSON conversion, and the shared `ArrayLike`/`JsonValue` type aliases).
 - `visualization.py`: optional Matplotlib views over `PartitionResult`/`QuantizerResult`, imported
   lazily so the core package carries no hard visualization dependency.
-- `examples/`, `tests/`, `benchmarks/`, `agenticresearch/`: datasets, tuning, counterexample
-  search, and application logic. Research exploration is provenance, excluded from the product
-  Ruff gate; every relied-upon identity or counterexample is copied into a deterministic
-  regression test.
+- `examples/`, `tests/`, `benchmarks/`: datasets, tuning and application logic. Every
+  relied-upon identity or counterexample is a deterministic regression test.
 
 JAX is the default execution backend and Optax supplies its soft-optimizer updates. NumPy is the
 portable CPU backend and supplies every declared solver, including an analytic-gradient soft

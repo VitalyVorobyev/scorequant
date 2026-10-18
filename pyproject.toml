@@ -83,9 +83,6 @@ markers = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-# Incoming proposals are verbatim source documents, and their code fences are
-# illustrative rather than runnable, so they stay outside the style gate.
-extend-exclude = ["agenticresearch", "docs/proposals"]
 
 [tool.ruff.lint]
 ignore = ["D105", "D107"]

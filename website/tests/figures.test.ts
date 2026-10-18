@@ -13,7 +13,7 @@ import {describe, expect, it} from "vitest";
 // merely *placed* there resolves on the machine that placed it and nowhere
 // else. This resolves each reference against the lane that actually owns it.
 const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const contentDirs = ["walkthroughs", "get-started", "research"];
+const contentDirs = ["walkthroughs", "get-started"];
 const staticRoot = join(websiteRoot, "static");
 const generatorPath = join(websiteRoot, "scripts/generate_walkthroughs.py");
 

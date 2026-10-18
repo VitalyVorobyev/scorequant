@@ -13,7 +13,6 @@ import {SearchDialog} from "./SearchDialog";
 const navigation = [
   ["Get started", "/get-started"],
   ["Walkthroughs", "/walkthroughs"],
-  ["Research", "/research"],
   ["Reference", REFERENCE_BASE]
 ] as const;
 
@@ -110,12 +109,12 @@ export function AppShell({children}: AppShellProps): React.JSX.Element {
             <p>Hard bins, and a measurement of what the binning cost.</p>
           </div>
           <div className="site-footer__links">
-            <span>Learn</span><Link to="/get-started">Get started</Link><Link to="/walkthroughs">Walkthroughs</Link><Link to="/research">Research</Link>
+            <span>Learn</span><Link to="/get-started">Get started</Link><Link to="/walkthroughs">Walkthroughs</Link>
           </div>
           <div className="site-footer__links">
             <span>Reference</span><a href={REFERENCE_BASE}>Documentation</a><a href="https://github.com/VitalyVorobyev/scorequant">GitHub</a>
           </div>
-          <small>Open source · research provenance is explicit · no browser data leaves your device</small>
+          <small>Open source · no browser data leaves your device</small>
         </footer>
         <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
       </div>

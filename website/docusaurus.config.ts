@@ -63,8 +63,8 @@ const config: Config = {
   organizationName: "VitalyVorobyev",
   projectName: "scorequant",
   // Every route must emit its own index.html. With `false`, a docs section emits
-  // both `research.html` and a `research/` directory with no index.html, and which
-  // one a static host serves for `/research` is host-dependent — `docusaurus serve`
+  // both `walkthroughs.html` and a `walkthroughs/` directory with no index.html, and which
+  // one a static host serves for `/walkthroughs` is host-dependent — `docusaurus serve`
   // resolves the directory and renders the 404 shell. Directory URLs also match the
   // MkDocs reference mounted at /docs/ beneath this site (ADR 0035), so the whole
   // domain reads one way.
@@ -93,9 +93,6 @@ const config: Config = {
         rehypePlugins: [rehypeKatex]
       }
     ],
-    // The Research Atlas: one static route per view and per research entity,
-    // generated from src/generated/atlas.json (ADR 0035). It owns /research.
-    "./plugins/research-atlas/index.mjs",
     [
       "@docusaurus/plugin-content-docs",
       {
@@ -165,9 +162,6 @@ const config: Config = {
             "./src/css/responsive.css",
             "./src/css/prose.css",
             "./src/css/charts.css",
-            "./src/css/atlas.css",
-            "./src/css/atlas-views.css",
-            "./src/css/atlas-literature.css",
             "./src/css/live-fit.css"
           ]
         }

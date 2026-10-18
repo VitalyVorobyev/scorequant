@@ -73,7 +73,7 @@
 .doc-article .markdown a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .doc-article .markdown a:hover { color: var(--accent-strong); }
 
-/* Docs-plugin article content (/walkthroughs, /research). */
+/* Docs-plugin article content (/walkthroughs, /get-started). */
 .doc-article .markdown table:not(.visually-hidden) { display: block; overflow-x: auto; width: 100%; font-size: 15px; }
 .doc-article .markdown th, .doc-article .markdown td { border: 1px solid var(--border); }
 .doc-article .markdown blockquote {

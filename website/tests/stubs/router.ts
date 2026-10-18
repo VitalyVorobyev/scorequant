@@ -13,7 +13,7 @@ export function useLocation(): {pathname: string; search: string; hash: string} 
   const href = useSyncExternalStore(
     subscribe,
     () => window.location.href,
-    () => "http://localhost/scorequant/research/",
+    () => "http://localhost/scorequant/walkthroughs/",
   );
   const url = new URL(href);
   return {pathname: url.pathname, search: url.search, hash: url.hash};

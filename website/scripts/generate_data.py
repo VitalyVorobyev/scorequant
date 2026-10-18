@@ -1,7 +1,4 @@
-"""Generate the portal's API and solver-matrix data.
-
-The research projection moved to ``generate_atlas.py`` (the Research Atlas).
-"""
+"""Generate the portal's API and solver-matrix data."""
 
 from __future__ import annotations
 

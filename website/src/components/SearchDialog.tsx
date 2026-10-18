@@ -32,8 +32,7 @@ interface SearchDialogProps {
 
 const routes = [
   ["Get started", "/get-started", "Install it and follow the first fit through to what it means."],
-  ["Walkthroughs", "/walkthroughs", "One applied question followed end to end, with real numbers."],
-  ["Research", "/research", "Follow claims, dependencies, and counterexamples."]
+  ["Walkthroughs", "/walkthroughs", "One applied question followed end to end, with real numbers."]
 ] as const;
 
 export function SearchDialog({open, onClose}: SearchDialogProps): React.JSX.Element | null {

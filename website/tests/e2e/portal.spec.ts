@@ -1,4 +1,3 @@
-import {atlas} from "../../src/data/atlas";
 import AxeBuilder from "@axe-core/playwright";
 import type {Page} from "@playwright/test";
 import {expect, test} from "@playwright/test";
@@ -42,21 +41,6 @@ const ROUTES = [
   "./walkthroughs/hep/",
   "./walkthroughs/michelson/",
   "./walkthroughs/ratios/",
-  "./research/",
-  "./research/map/",
-  "./research/landscape/",
-  "./research/frontier/",
-  "./research/literature/",
-  "./research/machine-checked/",
-  "./research/library/",
-  "./research/how-to-read/",
-  "./research/claims/",
-  "./research/counterexamples/",
-  "./research/claims/d-exchange-implies-voronoi/",
-  "./research/claims/open-ds-margins-noncentered/",
-  "./research/counterexamples/ce-ds-global-geometry-001/",
-  "./research/literature/telgarsky-vattani-2010/",
-  "./research/authors/kiefer/",
 ];
 
 /**
@@ -68,17 +52,11 @@ const ROUTES = [
 const SCANNED = [
   "./",
   "./get-started/",
-  "./research/",
   "./walkthroughs/",
   "./walkthroughs/flowcyt/",
   "./walkthroughs/hep/",
   "./walkthroughs/michelson/",
   "./walkthroughs/ratios/",
-  "./research/map/",
-  "./research/landscape/",
-  "./research/literature/",
-  "./research/claims/d-exchange-implies-voronoi/",
-  "./research/counterexamples/ce-ds-global-geometry-001/",
 ];
 
 test("home states the task and runs nothing", async ({page}) => {
@@ -131,18 +109,9 @@ test("every route renders one main landmark and none of them loads a runtime", a
  * its own budget and the projects' workers run them in parallel; the set of
  * assertions is unchanged.
  *
- * That budget is set here rather than left at the default 30s, because what a
- * scan costs is set by the page and not by this suite: axe walks every node
- * twice over, once per theme, and the atlas routes are generated from the
- * registry, so they grow whenever the research graph does. `./research/literature/`
- * is the largest of them — one annotated entry per source, 11.5k nodes, a
- * quarter of them KaTeX spans — and its two analyses take ~10s on a developer
- * machine and ~31s on a contended CI runner. Under the default it failed on
- * main having passed its own pull request only by a retry that came in at 29.1s,
- * which is the same as not being tested at all. 120s is the observed CI cost
- * with room for a registry several times the present size; a scan that ever
- * approaches it is reporting a page that has grown past what a reader can use,
- * not a flaky test.
+ * That budget is set here rather than left at the default 30s: an axe scan
+ * walks every node twice, once per theme, and a long walkthrough on a
+ * contended CI runner can approach the default.
  */
 for (const route of SCANNED) {
   test(`${route} has no accessibility violations in either theme`, async ({page}) => {
@@ -372,88 +341,3 @@ test("the michelson refit reproduces the committed profiled retention at the hea
   await expect(page.getByRole("img", {name: /Your browser's readout at 6 counters/})).toBeVisible();
 });
 
-test("research tells the story and graph navigation follows URL history", async ({page}) => {
-  await page.goto("./research/");
-  await expect(page.getByRole("heading", {name: "Research", level: 1})).toBeVisible();
-  const sections = ["Stable D-optimal partitions have a geometric rule.", "What we established", "Where it breaks", "Open frontier", "Explore further"];
-  expect(await page.getByRole("heading", {level: 2}).allInnerTexts()).toEqual(sections);
-  await expect(page.locator(".result-card, .band-strip, .atlas-legend")).toHaveCount(0);
-  await expect(page.locator(".research-finding--central .research-trust")).toHaveText("Proved here · machine-checked in Lean · independently audited");
-  await page.goto("./research/map/?focus=D-EXCHANGE-IMPLIES-VORONOI");
-  await expect(page.getByRole("heading", {name: "Research graph", level: 1})).toBeVisible();
-  const panel = page.locator(".argument-map__panel");
-  await expect(panel.getByRole("heading", {level: 2})).toHaveText(/exchange stability implies/i);
-  await panel.getByRole("button", {name: "Where does it stop?"}).click();
-  await expect(page).toHaveURL(/ask=stops/);
-  await page.goBack();
-  await expect(panel.getByRole("button", {name: "Where does it stop?"})).toHaveAttribute("aria-pressed", "false");
-  await page.goForward();
-  await expect(panel.getByRole("button", {name: "Where does it stop?"})).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", {name: "Show full graph"}).click();
-  await expect(page.locator(".argument-map .node")).toHaveCount(Object.keys(atlas.layout.positions).length);
-  await page.getByRole("button", {name: "Show neighbourhood"}).click();
-  expect(await page.locator(".argument-map .node").count()).toBeLessThan(30);
-});
-
-test("claim evidence disclosures open from permanent fragments", async ({page}) => {
-  await page.goto("./research/claims/d-exchange-implies-voronoi/");
-  await expect(page.getByRole("heading", {level: 1})).toHaveText("Stable D partitions have a geometric rule");
-  for (const section of ["Statement", "Where it stops", "Proof"]) await expect(page.getByRole("heading", {name: section, level: 2})).toBeVisible();
-  await expect(page.locator("#relationships")).not.toHaveAttribute("open");
-  await page.goto("./research/claims/d-exchange-implies-voronoi/#rests-on");
-  await expect(page.locator("#relationships")).toHaveAttribute("open");
-  await expect(page.getByRole("heading", {name: "Rests on", exact: true})).toBeVisible();
-  await page.goto("./research/claims/d-exchange-implies-voronoi/#machine-checked");
-  await expect(page.getByRole("link", {name: "Frozen specification"})).toBeVisible();
-  await page.goto("./research/claims/d-exchange-implies-voronoi/#proof");
-  await expect(page.locator(".proof")).toHaveAttribute("open");
-  await expect(page.locator(".proof .katex").first()).toBeVisible();
-  await page.goto("./research/claims/d-exchange-implies-voronoi/#local-map");
-  await expect(page.getByRole("link", {name: "Open in the map"})).toBeVisible();
-});
-
-test("explore filters and literature links preserve the research trail", async ({page}) => {
-  await page.goto("./research/landscape/");
-  await page.getByRole("button", {name: /^D-optimality/}).click();
-  await expect(page).toHaveURL(/theme=d/);
-  await page.getByRole("link", {name: "Stable D partitions have a geometric rule"}).click();
-  await page.locator("#prior-work a").first().click();
-  await expect(page.locator(".paper-meta__authors a").first()).toBeVisible();
-  await page.locator(".paper-meta__authors a").first().click();
-  await expect(page).toHaveURL(/research\/authors\//);
-  await expect(page.getByRole("heading", {name: "Claims that cite this work"})).toBeVisible();
-  await page.goto("./research/literature/");
-  await page.getByText("View the publication timeline", {exact: true}).click();
-  const marks = page.locator(".year-strip circle");
-  expect(await marks.count()).toBeGreaterThan(20);
-  const cy = await marks.evaluateAll((nodes) => nodes.map((node) => Number(node.getAttribute("cy"))));
-  expect(cy.every(Number.isFinite)).toBe(true);
-  expect(new Set(cy.map((value) => Math.round(value / 20))).size).toBeGreaterThan(3);
-  await page.getByRole("searchbox").fill("Nuisance Hardened");
-  await expect(page.locator(".research-paper-row")).toHaveCount(1);
-  await page.getByRole("button", {name: "Clear filters"}).click();
-  await page.getByRole("combobox").selectOption({label: "Kiefer"});
-  await expect(page.getByRole("link", {name: /View Kiefer/})).toBeVisible();
-});
-
-test("research navigation exposes its tools and collapses on mobile", async ({page}, testInfo) => {
-  await page.goto("./research/");
-  const nav = page.getByRole("navigation", {name: "Research atlas"});
-  if (testInfo.project.name === "mobile") {
-    const toggle = nav.getByRole("button", {name: "Research navigation"});
-    await expect(toggle).toHaveAttribute("aria-expanded", "false");
-    await expect(nav.getByRole("link", {name: "Explore"})).toBeHidden();
-    await toggle.click();
-    await expect(toggle).toHaveAttribute("aria-expanded", "true");
-  }
-  await expect(nav.getByRole("link", {name: "Graph"})).toBeHidden();
-  await nav.getByText("Research tools", {exact: true}).click();
-  await nav.getByRole("link", {name: "Graph"}).click();
-  await expect(page).toHaveURL(/research\/map\//);
-  await expect(page.getByRole("heading", {name: "Research graph", level: 1})).toBeVisible();
-  await page.goBack();
-  if (testInfo.project.name === "mobile") await nav.getByRole("button", {name: "Research navigation"}).click();
-  await nav.getByRole("link", {name: "Explore"}).click();
-  await expect(page).toHaveURL(/research\/landscape\//);
-  await expect(page.getByRole("button", {name: /^D-optimality/})).toContainText("Start here");
-});

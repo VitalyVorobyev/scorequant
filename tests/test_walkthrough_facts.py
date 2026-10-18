@@ -196,9 +196,6 @@ _GUARDED_CONTENT_ROOTS = ("walkthroughs", "get-started")
 #: test below fails if a new docs instance appears in neither collection, so a
 #: route cannot be added without someone deciding which side it is on.
 _UNGUARDED_CONTENT_ROOTS: dict[str, str] = {}
-# The research section is no longer an MDX docs instance: the Research Atlas
-# (website/plugins/research-atlas) generates its routes from the registry export,
-# and tests/test_atlas_data.py is its own guard (ADR 0033).
 
 
 def _guarded_prose_pages() -> list[Path]:

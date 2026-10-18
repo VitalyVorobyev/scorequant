@@ -1,4 +1,10 @@
-"""Optional Matplotlib views over structured ScoreQuant results."""
+"""Optional Matplotlib views over ScoreQuant results. Not part of the stable API.
+
+These figures are conveniences for looking at a fit. Their layout, styling and
+signatures may change in any release, so code that has to keep working should
+build its own figures from the documented result fields instead. Matplotlib is
+imported only when a function is called; install the ``viz`` extra to use them.
+"""
 
 from __future__ import annotations
 
@@ -9,7 +15,9 @@ import numpy as np
 
 from ._errors import ContractError
 from ._typing import ArrayLike
-from .result import InformationReport, OptimizationTrace, QuantizerResult
+from .results import InformationReport, OptimizationTrace, QuantizerResult
+
+__all__ = ["plot_information", "plot_optimization", "plot_partition", "plot_summary"]
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
@@ -19,7 +27,7 @@ def _require_matplotlib() -> None:
     try:
         import_module("matplotlib.pyplot")
     except ImportError as error:  # pragma: no cover - exercised without the optional extra
-        raise ImportError("visualization requires the `viz` optional dependency") from error
+        raise ImportError("plotting requires the `viz` optional dependency") from error
 
 
 def plot_optimization(trace: OptimizationTrace) -> Figure:

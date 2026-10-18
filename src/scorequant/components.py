@@ -1,4 +1,4 @@
-"""Linear-intensity models and the intensity score adapter."""
+"""Linear-intensity models: the component score provider and its score map."""
 
 from __future__ import annotations
 
@@ -10,10 +10,10 @@ import numpy as np
 from ._errors import ContractError
 from ._execution import canonical_array, execution_scope, input_array
 from ._execution import xp as jnp
-from ._json import json_ready
-from ._typing import ArrayLike, JsonValue
+from ._typing import ArrayLike
 from ._validation import promote_low_precision
 from .config import ExecutionConfig
+from .sources import ScoreProvenance, ScoreSchema
 
 ComponentFunction = Callable[[np.ndarray], ArrayLike]
 
@@ -37,7 +37,7 @@ def _names(
 
 
 @execution_scope
-def scores_from_components(
+def _scores_from_components(
     components: ArrayLike,
     coefficients: ArrayLike,
     *,
@@ -100,8 +100,14 @@ def scores_from_components(
 
 
 @dataclass(frozen=True, slots=True, init=False)
-class LinearComponents:
-    """Define vectorized linear-intensity components on physical variables.
+class LinearComponentScore:
+    """Score observations under a linear-intensity model of named components.
+
+    The model is ``lambda(x; theta) = sum_k theta_k phi_k(x)``, and its score
+    at the reference coefficients ``theta_0`` is
+    ``phi_k(x) / lambda(x; theta_0)``, one column per component. Components
+    and coefficients may be signed and need not be normalized; the reference
+    intensity must be strictly positive at every evaluated row.
 
     Parameters
     ----------
@@ -110,16 +116,26 @@ class LinearComponents:
         sequence of callables. Each callable receives ``X`` with shape
         ``[N, K]`` and returns one finite value per row.
     coefficients
-        A mapping with exactly the component keys or a coefficient sequence
-        aligned with sequence components.
+        Reference coefficients ``theta_0``: a mapping with exactly the
+        component keys, or a sequence aligned with sequence components.
     variables
         Optional unique physical-variable names used to validate ``K``.
+    provenance
+        Score provenance. Exact by default, because the components are the
+        model itself rather than an estimate of it.
+
+    Notes
+    -----
+    Already evaluated component values are density ratios in the Lebesgue
+    gauge, so ``scorequant.ratios.IntensityParameterization(coefficients)``
+    maps them to the same scores.
     """
 
     components: tuple[ComponentFunction, ...]
     coefficients: tuple[float, ...]
     component_names: tuple[str, ...]
     variables: tuple[str, ...] | None
+    provenance: ScoreProvenance
 
     def __init__(
         self,
@@ -127,6 +143,7 @@ class LinearComponents:
         coefficients: Mapping[str, float] | Sequence[float],
         *,
         variables: Sequence[str] | None = None,
+        provenance: ScoreProvenance | None = None,
     ) -> None:
         """Validate and freeze component order, coefficients, and metadata."""
         if isinstance(components, Mapping):
@@ -167,10 +184,25 @@ class LinearComponents:
             if variable_names is None
             else _names(variable_names, len(variable_names), prefix="variable")
         )
+        if provenance is None:
+            provenance = ScoreProvenance(kind="exact", description="linear-component event score")
+        elif not isinstance(provenance, ScoreProvenance):
+            raise TypeError("provenance must be a ScoreProvenance")
         object.__setattr__(self, "components", functions)
         object.__setattr__(self, "coefficients", tuple(float(value) for value in coefficient_array))
         object.__setattr__(self, "component_names", resolved_names)
         object.__setattr__(self, "variables", resolved_variables)
+        object.__setattr__(self, "provenance", provenance)
+
+    @property
+    def schema(self) -> ScoreSchema:
+        """Name each score column after the component it differentiates.
+
+        A linear-intensity model emits one score column per component and the
+        component names are already declared, so the schema is derived rather
+        than asked for.
+        """
+        return ScoreSchema(self.component_names)
 
     @execution_scope
     def evaluate_components(
@@ -214,12 +246,13 @@ class LinearComponents:
             columns.append(values)
         return canonical_array(jnp.stack(columns, axis=1))
 
-    def to_dict(self) -> dict[str, JsonValue]:
-        """Return serializable model metadata; callables are intentionally omitted."""
-        return json_ready(
-            {
-                "coefficients": self.coefficients,
-                "component_names": self.component_names,
-                "variables": self.variables,
-            }
-        )
+    @execution_scope
+    def score(
+        self,
+        observations: ArrayLike,
+        *,
+        execution: ExecutionConfig | None = None,
+    ) -> np.ndarray:
+        """Evaluate the components and their reference score ``phi_k / lambda``."""
+        components = self.evaluate_components(observations, execution=execution)
+        return _scores_from_components(components, self.coefficients, execution=execution)

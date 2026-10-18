@@ -1,13 +1,18 @@
 # Python reference
 
-The generated reference mirrors the task-explicit public surface.
+The reference mirrors the public surface: the top level first, then one page per public
+submodule. The [API guide](../api.md) says which names are stable.
 
-- [Tasks and sources](fitting.md)
-- [Configuration and criteria](configuration.md)
-- [Results](results.md)
-- [Certificates](certification.md)
-- [Linear models](models.md)
-- [Density ratios](ratios.md)
-- [Information](information.md)
-- [Transforms](transforms.md)
-- [Visualization](visualization.md)
+Top level:
+
+- [Tasks, sources and providers](fitting.md)
+- [Criteria and configuration](configuration.md)
+- [Rule, reports and errors](core.md)
+
+Submodules:
+
+- [`scorequant.ratios`](ratios.md): density-ratio providers
+- [`scorequant.information`](information.md): the information algebra
+- [`scorequant.certify`](certification.md): certificates
+- [`scorequant.results`](results.md): result and report types
+- [`scorequant.plotting`](plotting.md): figures, not part of the stable API

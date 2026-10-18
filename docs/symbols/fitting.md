@@ -1,4 +1,4 @@
-# Tasks, sources, and providers
+# Tasks, sources and providers
 
 ::: scorequant.optimize_partition
 
@@ -6,24 +6,18 @@
 
 ::: scorequant.ScoreSample
 
-::: scorequant.ScoreSchema
-
 ::: scorequant.ObservationSample
 
 ::: scorequant.IntegrationSource
 
 ::: scorequant.GaussLegendreConfig
 
+::: scorequant.ScoreSchema
+
+::: scorequant.ScoreProvenance
+
 ::: scorequant.ScoreProvider
 
 ::: scorequant.ScoreFunction
 
 ::: scorequant.LinearComponentScore
-
-::: scorequant.DensityRatioScore
-
-::: scorequant.CentralLogRatioScore
-
-::: scorequant.ScoreProvenance
-
-::: scorequant.RatioProvenance

@@ -1,29 +1,28 @@
-# Results
+# Results: scorequant.results
 
-::: scorequant.PartitionResult
+Every type a task, report or certificate returns. None is constructed by hand; import one to
+annotate code or check a type.
 
-::: scorequant.QuantizerResult
+::: scorequant.results.PartitionResult
 
-::: scorequant.Quantizer
+::: scorequant.results.QuantizerResult
 
-::: scorequant.InformationReport
+::: scorequant.results.OptimizationTrace
 
-::: scorequant.ProfiledInformationReport
+::: scorequant.results.FisherTransform
 
-::: scorequant.RetentionUncertainty
+::: scorequant.results.InformationReport
 
-::: scorequant.GeometryReport
+::: scorequant.results.ProfiledInformationReport
 
-::: scorequant.ProfiledGeometryReport
+::: scorequant.results.RetentionUncertainty
 
-::: scorequant.EfficientScoreBound
+::: scorequant.results.EfficientScoreBound
 
-::: scorequant.OptimizationTrace
+::: scorequant.results.GeometryReport
 
-::: scorequant.ScoreProvenance
+::: scorequant.results.ProfiledGeometryReport
 
-::: scorequant.ScoreQuantError
+::: scorequant.results.StabilityReport
 
-::: scorequant.ContractError
-
-::: scorequant.RefusalError
+::: scorequant.results.PartitionCertificate

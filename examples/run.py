@@ -19,8 +19,8 @@ from examples.synthetic_problems import PROBLEMS, SyntheticDataset, SyntheticPro
 @dataclass(frozen=True, slots=True)
 class ExperimentResult:
     problem: SyntheticProblem
-    kmeans: scorequant.QuantizerResult
-    soft: scorequant.QuantizerResult
+    kmeans: scorequant.results.QuantizerResult
+    soft: scorequant.results.QuantizerResult
     metrics: dict[str, float | int | list[float]]
 
 
@@ -79,7 +79,7 @@ def run_experiment(
         config=scorequant.SoftVoronoiConfig(
             seed=42,
             initializer_restarts=4,
-            max_steps=soft_steps,
+            max_iter=soft_steps,
             record_every=max(soft_steps // 30, 1),
         ),
         # The optimization plot below draws the full train/validation hard

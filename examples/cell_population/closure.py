@@ -227,9 +227,11 @@ def ratio_model_audit(
             strategy, raw, reference.labels, reference.patients
         )
         probabilities = calibration.apply(raw)
-        ratios = np.asarray(sq.ratios_from_posteriors(probabilities, calibration.class_priors))
-        closure = sq.ratio_closure_report(ratios, uniform_weights)
-        scores = np.asarray(sq.mixture_scores_from_ratios(ratios, theta0))
+        ratios = np.asarray(
+            sq.ratios.ratios_from_posteriors(probabilities, calibration.class_priors)
+        )
+        closure = sq.ratios.ratio_closure_report(ratios, uniform_weights)
+        scores = np.asarray(sq.ratios.MixtureParameterization(theta0).scores(ratios))
         mean_score = np.sum(theta_weights[:, None] * scores, axis=0)
         patient_residuals = _patient_residuals(ratios, reference.labels, reference.patients)
         rows[strategy] = {
@@ -312,7 +314,7 @@ def _fit_partition(
     *,
     seed: int,
     quick: bool,
-) -> sq.QuantizerResult:
+) -> sq.results.QuantizerResult:
     validation_weights = integration_weights(
         inputs.reference.labels[inputs.validation_mask],
         inputs.reference.patients[inputs.validation_mask],
@@ -326,7 +328,7 @@ def _fit_partition(
         config = sq.SoftVoronoiConfig(
             seed=seed,
             initializer_restarts=3 if quick else 4,
-            max_steps=50 if quick else 160,
+            max_iter=50 if quick else 160,
             record_every=10,
         )
     else:
@@ -346,7 +348,7 @@ def _fit_partition(
 
 def _partition_templates(
     inputs: ClosureInputs,
-    result: sq.QuantizerResult,
+    result: sq.results.QuantizerResult,
     n_bins: int,
 ) -> np.ndarray:
     labels = np.asarray(result.predict_scores(inputs.reference_scores[inputs.template_mask]))
@@ -402,7 +404,7 @@ def _summarize_errors(
 
 def _pseudo_patient_audit(
     inputs: ClosureInputs,
-    partitions: Mapping[str, tuple[sq.QuantizerResult, np.ndarray]],
+    partitions: Mapping[str, tuple[sq.results.QuantizerResult, np.ndarray]],
     compositions: list[tuple[str, np.ndarray]],
     *,
     repeats: int,
@@ -584,7 +586,7 @@ def _range(values: list[float]) -> dict[str, float]:
 def _seed_stability_audit(
     inputs: ClosureInputs,
     compositions: list[tuple[str, np.ndarray]],
-    representative: Mapping[str, tuple[sq.QuantizerResult, np.ndarray]],
+    representative: Mapping[str, tuple[sq.results.QuantizerResult, np.ndarray]],
     *,
     seeds: range,
     quick: bool,
@@ -675,7 +677,7 @@ def run_scientific_closure(
 ) -> dict[str, object]:
     """Run the complete reference-only FlowCyt scientific audit."""
     compositions = _composition_grid(inputs.theta0)
-    representative: dict[str, tuple[sq.QuantizerResult, np.ndarray]] = {}
+    representative: dict[str, tuple[sq.results.QuantizerResult, np.ndarray]] = {}
     fixed_total: dict[str, object] = {}
     identifiability: dict[str, object] = {}
     population_limit: dict[str, object] = {}

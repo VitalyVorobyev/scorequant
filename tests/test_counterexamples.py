@@ -46,7 +46,7 @@ def test_small_d_exchange_matches_exhaustive_global_oracle() -> None:
     result = sq.optimize_partition(
         scores,
         n_bins=3,
-        config=sq.DExchangeConfig(seed=8, initializer_restarts=12, max_scans=200),
+        config=sq.DExchangeConfig(seed=8, initializer_restarts=12, max_iter=200),
     )
     assert result.objective == pytest.approx(optimum, abs=1e-10)
 
@@ -83,7 +83,9 @@ def test_d_voronoi_violation_has_positive_gain_lower_bound() -> None:
             for label in range(3)
         ]
     )
-    information = np.asarray(sq.binned_fisher_information(scores, labels, weights, n_bins=3))
+    information = np.asarray(
+        sq.information.binned_fisher_information(scores, labels, weights, n_bins=3)
+    )
     metric = np.linalg.inv(information)
     checked = 0
     for row, source in enumerate(labels):
@@ -162,12 +164,16 @@ def test_adaptive_mahalanobis_lloyd_step_can_decrease_d_objective() -> None:
     )
     labels = np.array([1, 0, 0, 1, 2, 2, 2, 1])
     weights = np.full(len(scores), 1 / len(scores))
-    information = np.asarray(sq.binned_fisher_information(scores, labels, weights, n_bins=3))
+    information = np.asarray(
+        sq.information.binned_fisher_information(scores, labels, weights, n_bins=3)
+    )
     means = np.asarray([scores[labels == label].mean(axis=0) for label in range(3)])
     residuals = scores[:, None, :] - means[None, :, :]
     distances = np.einsum("nkp,pq,nkq->nk", residuals, np.linalg.inv(information), residuals)
     updated_labels = np.argmin(distances, axis=1)
-    updated = np.asarray(sq.binned_fisher_information(scores, updated_labels, weights, n_bins=3))
+    updated = np.asarray(
+        sq.information.binned_fisher_information(scores, updated_labels, weights, n_bins=3)
+    )
     decrease = np.linalg.slogdet(information)[1] - np.linalg.slogdet(updated)[1]
     assert np.array_equal(updated_labels, [0, 0, 1, 1, 2, 1, 0, 1])
     assert decrease == pytest.approx(0.136521, abs=2e-6)

@@ -32,8 +32,47 @@ once already, which retroactively asserted that unshipped work had shipped.
   no longer grows as \(N \times\) bins \(\times\) dimension; the soft gradient is compiled under JAX.
 - Internals only: `partition.py` is split into the exchange engine and Lloyd solver
   (`solvers/`), the exchange algebra and the stability and geometry diagnostics; nearest-centre
-  assignment is one routine; `retention_uncertainty` moved to its own module. The public API is
-  unchanged, and a missing nuisance block reports one shared message.
+  assignment is one routine; `retention_uncertainty` moved to its own module. The split leaves
+  the public API alone, and a missing nuisance block reports one shared message.
+
+### Changed (breaking)
+
+The public surface is cut from 62 top-level names to 27, plus five public submodules, ahead of
+the 1.0 freeze. Every supported object now has exactly one route. A saved quantizer artifact is
+unchanged and still loads.
+
+- The top level keeps what a first fit needs: the two tasks, the sources, `ScoreProvider`,
+  `ScoreFunction` and `LinearComponentScore`, the criteria and configurations, `Quantizer`,
+  `information_report`, `efficient_score_bound`, `retention_uncertainty` and the errors.
+- `scorequant.ratios` holds the density-ratio stack: `DensityRatioScore`,
+  `CentralLogRatioScore`, `MixtureParameterization`, `IntensityParameterization`,
+  `RatioProvenance`, `ratios_from_posteriors`, `ratio_closure_report` and `RatioClosureReport`.
+- `scorequant.information` holds the information algebra, `scorequant.certify` the certificates,
+  and `scorequant.results` every result and report type, `FisherTransform` included.
+- One route each for linear models and ratios. `LinearComponentScore` takes the components and
+  coefficients itself, so `LinearComponents` is removed. `scores_from_components` and
+  `mixture_scores_from_ratios` duplicated the parameterizations' `scores` methods and are removed.
+- The plot helpers move to `scorequant.plotting`, which is outside the stable API.
+  `QuantizerResult.plot_summary` is removed.
+- Every iteration cap is `max_iter`: `DExchangeConfig.max_scans` and `SoftVoronoiConfig.max_steps`
+  are renamed. `SoftVoronoiConfig.tolerance`, which only ever governed its k-means initializer,
+  is `kmeans_tolerance`, next to `kmeans_max_iter`.
+- `ScalarDPConfig.seed` is removed: the dynamic program consumes no randomness.
+
+| 0.3 | Now |
+| --- | --- |
+| `sq.LinearComponentScore(sq.LinearComponents(f, c))` | `sq.LinearComponentScore(f, c)` |
+| `sq.scores_from_components(values, c)` | `sq.ratios.IntensityParameterization(c).scores(values)` |
+| `sq.mixture_scores_from_ratios(r, f, reference_component=k)` | `sq.ratios.MixtureParameterization(f, reference_component=k).scores(r)` |
+| `sq.DensityRatioScore`, `sq.CentralLogRatioScore`, `sq.MixtureParameterization`, `sq.IntensityParameterization`, `sq.RatioProvenance`, `sq.ratios_from_posteriors`, `sq.ratio_closure_report`, `sq.RatioClosureReport` | the same names in `sq.ratios` |
+| `sq.fisher_information`, `sq.binned_fisher_information`, `sq.fractional_fisher_information`, `sq.efficient_scores`, `sq.profiled_information_report` | the same names in `sq.information` |
+| `sq.certify_partition`, `sq.CertificationConfig`, `sq.exchange_stability_report` | the same names in `sq.certify` |
+| `sq.PartitionResult`, `sq.QuantizerResult`, `sq.OptimizationTrace`, `sq.FisherTransform` and the report types | the same names in `sq.results` |
+| `sq.plot_*`, `result.plot_summary(scores)` | `scorequant.plotting.plot_*`, `plotting.plot_summary(result, scores)` |
+| `DExchangeConfig(max_scans=...)` | `DExchangeConfig(max_iter=...)` |
+| `SoftVoronoiConfig(max_steps=...)` | `SoftVoronoiConfig(max_iter=...)` |
+| `SoftVoronoiConfig(tolerance=...)` | `SoftVoronoiConfig(kmeans_tolerance=...)` |
+| `ScalarDPConfig(seed=...)` | `ScalarDPConfig()` |
 
 ## [0.3.0] — 2026-10-18
 

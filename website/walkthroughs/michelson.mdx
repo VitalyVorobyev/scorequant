@@ -233,7 +233,7 @@ ds_quantizer = sq.fit_quantizer(
     provider=provider,
     n_bins=N_BINS,
     criterion=sq.ProfiledDOptimality(interest=INTEREST),
-    config=sq.SoftVoronoiConfig(seed=4, initializer_restarts=8, max_steps=1000),
+    config=sq.SoftVoronoiConfig(seed=4, initializer_restarts=8, max_iter=1000),
     execution=EXECUTION,
 )
 

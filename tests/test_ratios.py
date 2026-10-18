@@ -23,7 +23,9 @@ def test_mixture_scores_match_simplex_derivative() -> None:
     density = ratios @ np.asarray(reference)
     expected = (ratios[:, :2] - ratios[:, [2]]) / density[:, None]
 
-    scores = sq.mixture_scores_from_ratios(sq.ratios_from_posteriors(posteriors, priors), reference)
+    scores = sq.ratios.MixtureParameterization(reference).scores(
+        sq.ratios.ratios_from_posteriors(posteriors, priors)
+    )
 
     np.testing.assert_allclose(scores, expected, rtol=1e-6, atol=1e-7)
     assert scores.shape == (2, 2)
@@ -33,7 +35,7 @@ def test_ratios_from_posteriors_apply_the_declared_prior_correction() -> None:
     posteriors = np.asarray([[0.6, 0.3, 0.1], [0.15, 0.35, 0.5]])
     priors = np.asarray([0.5, 0.3, 0.2])
 
-    ratios = sq.ratios_from_posteriors(posteriors, priors)
+    ratios = sq.ratios.ratios_from_posteriors(posteriors, priors)
 
     np.testing.assert_allclose(ratios, posteriors / priors[None, :], rtol=1e-6)
 
@@ -45,14 +47,16 @@ def test_prior_correction_recovers_the_same_density_ratio_scores() -> None:
     uniform_prior = np.full(4, 0.25)
     skewed_prior = np.asarray([0.45, 0.15, 0.10, 0.30])
 
-    uniform = sq.ratios_from_posteriors(
+    uniform = sq.ratios.ratios_from_posteriors(
         _posteriors_from_ratios(ratios, uniform_prior), uniform_prior
     )
-    skewed = sq.ratios_from_posteriors(_posteriors_from_ratios(ratios, skewed_prior), skewed_prior)
+    skewed = sq.ratios.ratios_from_posteriors(
+        _posteriors_from_ratios(ratios, skewed_prior), skewed_prior
+    )
 
     np.testing.assert_allclose(
-        sq.mixture_scores_from_ratios(uniform, reference),
-        sq.mixture_scores_from_ratios(skewed, reference),
+        sq.ratios.MixtureParameterization(reference).scores(uniform),
+        sq.ratios.MixtureParameterization(reference).scores(skewed),
         rtol=1e-6,
         atol=1e-6,
     )
@@ -64,8 +68,8 @@ def test_mixture_scores_are_gauge_invariant() -> None:
     gauge = np.exp(rng.normal(size=(60, 1)))
     reference = np.asarray([0.2, 0.3, 0.5])
 
-    plain = sq.mixture_scores_from_ratios(ratios, reference)
-    rescaled = sq.mixture_scores_from_ratios(ratios * gauge, reference)
+    plain = sq.ratios.MixtureParameterization(reference).scores(ratios)
+    rescaled = sq.ratios.MixtureParameterization(reference).scores(ratios * gauge)
 
     np.testing.assert_allclose(plain, rescaled, rtol=1e-6, atol=1e-6)
 
@@ -76,8 +80,8 @@ def test_intensity_scores_are_gauge_invariant() -> None:
     gauge = np.exp(rng.normal(size=(60, 1)))
     coefficients = np.asarray([0.6, 1.4, 0.9])
 
-    plain = sq.scores_from_components(ratios, coefficients)
-    rescaled = sq.scores_from_components(ratios * gauge, coefficients)
+    plain = sq.ratios.IntensityParameterization(coefficients).scores(ratios)
+    rescaled = sq.ratios.IntensityParameterization(coefficients).scores(ratios * gauge)
 
     np.testing.assert_allclose(plain, rescaled, rtol=1e-6, atol=1e-6)
 
@@ -87,8 +91,8 @@ def test_mixture_scores_are_pairwise_differences_of_intensity_scores() -> None:
     ratios = np.exp(rng.normal(size=(40, 4)))
     reference = np.asarray([0.16, 0.14, 0.20, 0.50])
 
-    intensity = np.asarray(sq.scores_from_components(ratios, reference))
-    mixture = np.asarray(sq.mixture_scores_from_ratios(ratios, reference))
+    intensity = np.asarray(sq.ratios.IntensityParameterization(reference).scores(ratios))
+    mixture = np.asarray(sq.ratios.MixtureParameterization(reference).scores(ratios))
 
     np.testing.assert_allclose(mixture, intensity[:, :3] - intensity[:, [3]], rtol=1e-6, atol=1e-6)
 
@@ -99,8 +103,8 @@ def test_priors_proportional_to_reference_reduce_to_raw_ratios() -> None:
     reference = np.asarray([0.2, 0.3, 0.5])
     posteriors = _posteriors_from_ratios(ratios, reference)
 
-    corrected = sq.ratios_from_posteriors(posteriors, reference)
-    intensity = sq.scores_from_components(corrected, reference)
+    corrected = sq.ratios.ratios_from_posteriors(posteriors, reference)
+    intensity = sq.ratios.IntensityParameterization(reference).scores(corrected)
 
     np.testing.assert_allclose(intensity, corrected, rtol=1e-6, atol=1e-6)
 
@@ -110,9 +114,11 @@ def test_reference_component_changes_only_the_score_parameterization() -> None:
     posteriors = rng.dirichlet(np.ones(4), size=300)
     priors = np.full(4, 0.25)
     reference = np.asarray([0.2, 0.25, 0.15, 0.4])
-    ratios = sq.ratios_from_posteriors(posteriors, priors)
-    last_scores = sq.mixture_scores_from_ratios(ratios, reference)
-    first_scores = sq.mixture_scores_from_ratios(ratios, reference, reference_component=0)
+    ratios = sq.ratios.ratios_from_posteriors(posteriors, priors)
+    last_scores = sq.ratios.MixtureParameterization(reference).scores(ratios)
+    first_scores = sq.ratios.MixtureParameterization(reference, reference_component=0).scores(
+        ratios
+    )
     config = sq.KMeansConfig(seed=7, solver_restarts=4)
 
     last_labels = np.asarray(fit_test_quantizer(last_scores, n_bins=6, config=config).labels)
@@ -130,24 +136,22 @@ def test_class_permutation_preserves_scores_up_to_column_order() -> None:
     reference = np.asarray([0.2, 0.3, 0.5])
     permutation = np.asarray([2, 0, 1])
 
-    expected = sq.mixture_scores_from_ratios(
-        sq.ratios_from_posteriors(posteriors, priors), reference
+    expected = sq.ratios.MixtureParameterization(reference).scores(
+        sq.ratios.ratios_from_posteriors(posteriors, priors)
     )
-    permuted = sq.mixture_scores_from_ratios(
-        sq.ratios_from_posteriors(posteriors[:, permutation], priors[permutation]),
-        reference[permutation],
-        reference_component=0,
-    )
+    permuted = sq.ratios.MixtureParameterization(
+        reference[permutation], reference_component=0
+    ).scores(sq.ratios.ratios_from_posteriors(posteriors[:, permutation], priors[permutation]))
 
     np.testing.assert_allclose(permuted, expected)
 
 
 def test_zero_posteriors_are_allowed_without_clipping() -> None:
-    ratios = sq.ratios_from_posteriors(
+    ratios = sq.ratios.ratios_from_posteriors(
         jnp.asarray([[1.0, 0.0, 0.0], [0.0, 0.25, 0.75]], dtype=jnp.float32),
         [0.4, 0.3, 0.3],
     )
-    scores = sq.mixture_scores_from_ratios(ratios, [0.2, 0.3, 0.5])
+    scores = sq.ratios.MixtureParameterization([0.2, 0.3, 0.5]).scores(ratios)
     assert scores.dtype == jnp.float32
     assert np.isfinite(np.asarray(scores)).all()
 
@@ -158,9 +162,9 @@ def test_ratio_closure_report_flags_a_misdeclared_prior() -> None:
     ratios /= np.mean(ratios, axis=0, keepdims=True)
     weights = np.ones(ratios.shape[0])
 
-    closed = sq.ratio_closure_report(ratios, weights)
+    closed = sq.ratios.ratio_closure_report(ratios, weights)
     skew = np.asarray([1.4, 0.8, 0.9])
-    biased = sq.ratio_closure_report(ratios * skew[None, :], weights)
+    biased = sq.ratios.ratio_closure_report(ratios * skew[None, :], weights)
 
     assert closed.max_residual < 1e-6
     assert biased.max_residual > 0.1
@@ -173,8 +177,8 @@ def test_ratio_closure_report_is_invariant_to_weight_scaling() -> None:
     ratios = np.exp(rng.normal(size=(100, 3)))
     weights = rng.uniform(0.1, 2.0, size=100)
 
-    base = sq.ratio_closure_report(ratios, weights)
-    scaled = sq.ratio_closure_report(ratios, 7.5 * weights)
+    base = sq.ratios.ratio_closure_report(ratios, weights)
+    scaled = sq.ratios.ratio_closure_report(ratios, 7.5 * weights)
 
     np.testing.assert_allclose(base.normalizers, scaled.normalizers, rtol=1e-6)
 
@@ -193,7 +197,7 @@ def test_invalid_posterior_inputs_fail(
     message: str,
 ) -> None:
     with pytest.raises(ValueError, match=message):
-        sq.ratios_from_posteriors(posteriors, priors)
+        sq.ratios.ratios_from_posteriors(posteriors, priors)
 
 
 @pytest.mark.parametrize(
@@ -212,22 +216,20 @@ def test_invalid_mixture_score_inputs_fail(
     message: str,
 ) -> None:
     with pytest.raises(ValueError, match=message):
-        sq.mixture_scores_from_ratios(
-            ratios,
-            reference,
-            reference_component=reference_component,
-        )
+        sq.ratios.MixtureParameterization(
+            reference, reference_component=reference_component
+        ).scores(ratios)
 
 
 def test_reference_component_rejects_non_integer() -> None:
     with pytest.raises(TypeError, match="integer"):
-        sq.mixture_scores_from_ratios([[1.0, 0.5]], [0.5, 0.5], reference_component=True)
+        sq.ratios.MixtureParameterization([0.5, 0.5], reference_component=True).scores([[1.0, 0.5]])
 
 
 # Signal N(1, 1) over background N(-1, 1), a classifier trained at priors 0.3/0.7,
 # and an intensity model with reference yields (background, signal) = (2, 0.5).
 _GAUGE_PRIORS = np.array([0.3, 0.7])
-_GAUGE_YIELDS = sq.IntensityParameterization([2.0, 0.5])
+_GAUGE_YIELDS = sq.ratios.IntensityParameterization([2.0, 0.5])
 
 
 def _gaussian(x: np.ndarray, mean: float) -> np.ndarray:
@@ -258,13 +260,15 @@ def _background_gauge_ratio(observations: np.ndarray) -> np.ndarray:
 def _ratio_provenance(gauges: tuple[str, ...]) -> sq.ScoreProvenance:
     return sq.ScoreProvenance(
         kind="estimated_ratio",
-        ratio=sq.RatioProvenance(estimator="calibrated_classifier", gauges=gauges),
+        ratio=sq.ratios.RatioProvenance(estimator="calibrated_classifier", gauges=gauges),
     )
 
 
 def test_classifier_provider_declares_the_training_mixture_gauge() -> None:
-    provider = sq.DensityRatioScore.from_classifier(
-        _signal_background_posteriors, _GAUGE_PRIORS, sq.IntensityParameterization([0.5, 2.0])
+    provider = sq.ratios.DensityRatioScore.from_classifier(
+        _signal_background_posteriors,
+        _GAUGE_PRIORS,
+        sq.ratios.IntensityParameterization([0.5, 2.0]),
     )
     assert provider.provenance.ratio is not None
     assert provider.provenance.ratio.gauges == ("training_mixture", "training_mixture")
@@ -278,23 +282,25 @@ def test_mixed_gauge_ratio_columns_are_refused_with_the_fix() -> None:
         return np.column_stack([_gaussian(x, -1.0), eta[:, 0] / _GAUGE_PRIORS[0]])
 
     observations = np.linspace(-3.0, 3.0, 50)[:, None]
-    unchecked = sq.DensityRatioScore(mixed, _GAUGE_YIELDS)
+    unchecked = sq.ratios.DensityRatioScore(mixed, _GAUGE_YIELDS)
     # Undeclared, the mixed construction runs and is silently wrong.
     assert not np.allclose(unchecked.score(observations), _exact_intensity_scores(observations))
     with pytest.raises(sq.ContractError, match="one gauge"):
-        sq.DensityRatioScore(
+        sq.ratios.DensityRatioScore(
             mixed, _GAUGE_YIELDS, provenance=_ratio_provenance(("absolute", "training_mixture"))
         )
     with pytest.raises(sq.ContractError, match="declares 3 columns"):
-        sq.DensityRatioScore(mixed, _GAUGE_YIELDS, provenance=_ratio_provenance(("absolute",) * 3))
+        sq.ratios.DensityRatioScore(
+            mixed, _GAUGE_YIELDS, provenance=_ratio_provenance(("absolute",) * 3)
+        )
 
 
 def test_no_record_can_carry_mixed_gauges() -> None:
     """External providers and ready score samples meet the same refusal."""
     with pytest.raises(sq.ContractError, match="different gauges"):
-        sq.RatioProvenance(gauges=("training_mixture", "absolute"))
+        sq.ratios.RatioProvenance(gauges=("training_mixture", "absolute"))
     with pytest.raises(TypeError, match="tuple of strings"):
-        sq.RatioProvenance(gauges=["absolute", "absolute"])  # type: ignore[arg-type]
+        sq.ratios.RatioProvenance(gauges=["absolute", "absolute"])  # type: ignore[arg-type]
     with pytest.raises(sq.ContractError, match="different gauges"):
         sq.ScoreSample(
             _exact_intensity_scores(np.linspace(-3.0, 3.0, 40)[:, None]),
@@ -305,14 +311,14 @@ def test_no_record_can_carry_mixed_gauges() -> None:
 def test_one_gauge_recipe_recovers_the_exact_scores() -> None:
     """Every column in the background gauge needs no Monte Carlo background density."""
     observations = np.linspace(-3.0, 3.0, 61)[:, None]
-    recipe = sq.DensityRatioScore(
+    recipe = sq.ratios.DensityRatioScore(
         _background_gauge_ratio,
         _GAUGE_YIELDS,
         provenance=_ratio_provenance(("background", "background")),
     )
     exact = _exact_intensity_scores(observations)
     np.testing.assert_allclose(recipe.score(observations), exact, rtol=1e-12, atol=1e-12)
-    classifier = sq.DensityRatioScore.from_classifier(
+    classifier = sq.ratios.DensityRatioScore.from_classifier(
         lambda rows: _signal_background_posteriors(rows)[:, ::-1],
         _GAUGE_PRIORS[::-1],
         _GAUGE_YIELDS,
@@ -321,7 +327,7 @@ def test_one_gauge_recipe_recovers_the_exact_scores() -> None:
 
 
 def test_declared_gauges_survive_a_saved_rule(tmp_path: Path) -> None:
-    provider = sq.DensityRatioScore(
+    provider = sq.ratios.DensityRatioScore(
         _background_gauge_ratio,
         _GAUGE_YIELDS,
         provenance=_ratio_provenance(("background", "background")),

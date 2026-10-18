@@ -56,7 +56,7 @@ class Quantizer:
 
     This is what a fit is *for*: the object that turns a future score vector
     into a bin. It holds no training labels, no reports and no history -- those
-    stay on :class:`~scorequant.QuantizerResult`, which exposes the rule as
+    stay on :class:`~scorequant.results.QuantizerResult`, which exposes the rule as
     ``result.quantizer``.
 
     Attributes

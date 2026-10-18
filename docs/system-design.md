@@ -104,7 +104,7 @@ public task API
 ```
 
 Import-boundary tests enforce that domain, execution, kernels, solvers, public API,
-visualization, and `website/` cannot reverse this direction; no direct JAX/Optax import exists
+plotting, and `website/` cannot reverse this direction; no direct JAX/Optax import exists
 outside `_execution.py`, and no backend tensor appears in a public result. One backend-parameterized
 conformance suite runs every declared solver family on both backends, compares partitions up to
 relabeling, checks the shared analytic soft gradient against autodiff and finite differences, and
@@ -112,6 +112,12 @@ imports the package in a subprocess that blocks JAX. Optimized backend kernels a
 behind an adapter and must match the shared reference implementation.
 
 ## Module ownership
+
+The package `__init__.py` exports only what a first fit needs. Five modules are public
+submodules with their own `__all__`: `ratios`, `information`, `certify`, `results` and
+`plotting`. Every supported object has one route, either the top level or one submodule, and
+`tests/test_public_surface.py` checks that against the inventory in `docs/api.md`. All other
+modules are private.
 
 - `information.py`: Fisher and retained-information algebra and the information reports.
   `uncertainty.py`: `retention_uncertainty`, the plug-in standard error of a frozen rule's
@@ -126,7 +132,8 @@ behind an adapter and must match the shared reference implementation.
   and the D and profiled geometry reports, evaluated in row chunks.
 - `certify.py`: explicit bounded branch-and-bound global certification of D partitions. Its tree
   search is sequential NumPy in float64: per-node JAX dispatch would dominate a search whose nodes
-  are one small log determinant each.
+  are one small log determinant each. As `scorequant.certify` it also exports
+  `exchange_stability_report`, which `diagnostics.py` defines.
 - `_execution.py`: the only backend resolver and the private JAX/NumPy primitive adapters.
 - `solvers/common.py`: shared distance and solver result contracts; `solvers/exchange.py`: the
   exact exchange engine (seeding, scans, guarded batches, stopping); `solvers/lloyd.py`: guarded
@@ -135,17 +142,18 @@ behind an adapter and must match the shared reference implementation.
   chunks through compiled per-chunk kernels.
 - `sources.py`: empirical and quadrature measures plus provenance (`ScoreProvenance` and the
   nested `RatioProvenance`).
-- `providers.py`: framework-neutral observation-to-score adapters, including the ratio-backed
-  `DensityRatioScore` and `CentralLogRatioScore`.
-- `ratios.py`: density-ratio algebra — posterior-to-ratio prior correction, ratio-to-score maps
-  for the mixture and intensity parameterizations, and the ratio-closure diagnostic.
-- `components.py`: linear models and the intensity score adapter.
+- `providers.py`: the `ScoreProvider` protocol and `ScoreFunction`.
+- `components.py`: `LinearComponentScore` and the intensity score map it shares with the ratio
+  parameterizations.
+- `ratios.py` (public as `scorequant.ratios`): the ratio providers `DensityRatioScore` and
+  `CentralLogRatioScore`, posterior-to-ratio prior correction, the mixture and intensity
+  parameterizations and the ratio-closure diagnostic.
 - `reports.py`: diagnostic and certificate dataclasses (`InformationReport`,
   `ProfiledInformationReport`, `GeometryReport`, `ProfiledGeometryReport`, `StabilityReport`,
   `PartitionCertificate`, `EfficientScoreBound`, `RetentionUncertainty`). It depends on nothing
-  that depends back on it, which is what lets `result.py` and `information.py` both build on it
+  that depends back on it, which is what lets `results.py` and `information.py` both build on it
   without importing each other.
-- `criteria.py`, `config.py`, `result.py`: backend-free public contracts. `api.py`: public
+- `criteria.py`, `config.py`, `results.py`: backend-free public contracts. `api.py`: public
   orchestration. `artifact.py`: the versioned `Quantizer` rule and its non-pickle archive.
   `_predict.py`: the leaf nearest-centre kernel, the one Euclidean or Mahalanobis assignment
   routine every module uses.
@@ -154,14 +162,15 @@ behind an adapter and must match the shared reference implementation.
   budget used by exchange scans, geometry reports, the soft solver and assignment, input validation
   including dtype promotion, labelings and the interest/nuisance split,
   `to_dict()` JSON conversion, and the shared `ArrayLike`/`JsonValue` type aliases).
-- `visualization.py`: optional Matplotlib views over `PartitionResult`/`QuantizerResult`, imported
-  lazily so the core package carries no hard visualization dependency.
+- `plotting.py`: optional Matplotlib views over `PartitionResult`/`QuantizerResult`, outside the
+  stable API; Matplotlib is imported lazily so the core package carries no hard plotting
+  dependency.
 - `examples/`, `tests/`, `benchmarks/`: datasets, tuning and application logic. Every
   relied-upon identity or counterexample is a deterministic regression test.
 
 JAX is the default execution backend and Optax supplies its soft-optimizer updates. NumPy is the
 portable CPU backend and supplies every declared solver, including an analytic-gradient soft
-optimizer with a private Adam state. Mathematical kernels are shared. Optional visualization and
+optimizer with a private Adam state. Mathematical kernels are shared. Optional plotting and
 both execution stacks remain lazy at their public boundaries.
 
 ## Learning and reference sites

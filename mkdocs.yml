@@ -45,15 +45,14 @@ nav:
   - API guide: api.md
   - Reference:
       - Overview: symbols/index.md
-      - Fitting: symbols/fitting.md
-      - Linear models: symbols/models.md
-      - Density ratios: symbols/ratios.md
+      - Tasks and providers: symbols/fitting.md
       - Configuration: symbols/configuration.md
-      - Results: symbols/results.md
-      - Certificates: symbols/certification.md
-      - Information: symbols/information.md
-      - Transforms: symbols/transforms.md
-      - Visualization: symbols/visualization.md
+      - Rule, reports, errors: symbols/core.md
+      - scorequant.ratios: symbols/ratios.md
+      - scorequant.information: symbols/information.md
+      - scorequant.certify: symbols/certification.md
+      - scorequant.results: symbols/results.md
+      - scorequant.plotting: symbols/plotting.md
   - Glossary: glossary.md
   - Learning portal: https://vitalyvorobyev.github.io/scorequant/
 

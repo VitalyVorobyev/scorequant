@@ -98,7 +98,7 @@ def test_every_task_accepts_exactly_the_declared_pairs() -> None:
         "MahalanobisLloydConfig": sq.MahalanobisLloydConfig(seed=0, initializer_restarts=2),
         "KMeansConfig": sq.KMeansConfig(seed=0, solver_restarts=2),
         "SoftVoronoiConfig": sq.SoftVoronoiConfig(
-            seed=0, initializer_restarts=2, max_steps=20, record_every=20
+            seed=0, initializer_restarts=2, max_iter=20, record_every=20
         ),
         "ScalarDPConfig": sq.ScalarDPConfig(),
     }

@@ -4,7 +4,9 @@ A finite D exchange returns a locally exchange-stable labeling. Deciding
 whether that labeling is globally optimal is a separate, exponential question,
 so it is never answered implicitly: ``certify_partition`` is the only entry
 point, it refuses inputs larger than its declared capacity, and it always
-reports whether the search finished or ran out of budget.
+reports whether the search finished or ran out of budget. The public submodule
+also carries ``exchange_stability_report``, the local certificate: one exact
+scan of a supplied labeling.
 
 The search is a depth-first branch and bound over restricted-growth labelings
 with the *singleton-completion* bound. Assigning atoms in a fixed order, any
@@ -44,6 +46,7 @@ from ._predict import assign_nearest
 from ._typing import ArrayLike, JsonValue
 from .config import DExchangeConfig, ExecutionConfig, _validate_finite, _validate_integer
 from .criteria import DOptimality, ProfiledDOptimality
+from .diagnostics import exchange_stability_report
 from .partition import (
     _collapsed_initial_labels,
     _optimize_labels,
@@ -52,6 +55,8 @@ from .partition import (
     _require_d_bin_budget,
 )
 from .reports import PartitionCertificate
+
+__all__ = ["CertificationConfig", "certify_partition", "exchange_stability_report"]
 
 # The search recursion is one frame per atom, so the capacity guard also keeps
 # the deepest supported instance far inside the interpreter recursion limit.

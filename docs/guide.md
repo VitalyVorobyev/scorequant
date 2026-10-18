@@ -104,8 +104,9 @@ What you already have decides it:
 - Scores already computed: `ScoreSample`, or pass the array straight to `optimize_partition`.
 - A component or analytic model: `LinearComponentScore` or `ScoreFunction`, paired with
   `ObservationSample` or `IntegrationSource`.
-- Density ratios — analytic, classifier-derived or from a ratio estimator: `DensityRatioScore` (or
-  `CentralLogRatioScore` for paired central classifiers), paired with `ObservationSample`.
+- Density ratios — analytic, classifier-derived or from a ratio estimator:
+  `scorequant.ratios.DensityRatioScore` (or `CentralLogRatioScore` for paired central
+  classifiers), paired with `ObservationSample`.
 
 A source is the measure; a provider maps observations to scores. Estimated scores give a
 supplied-score surrogate, never exact Fisher information.
@@ -150,13 +151,13 @@ diagnostics = {
 }
 ```
 
-`max_scans` bounds the work, `batch_moves=False` forces one relocation per scan, and
+`max_iter` bounds the number of scans, `batch_moves=False` forces one relocation per scan, and
 `solver_restarts` with `init` tries several seeded starts and keeps the best exact objective.
 
 To check labels from anywhere else — another tool, a hand edit — run one exact scan over them:
 
 ```python
-report = sq.exchange_stability_report(scores, partition.labels, weights=weights)
+report = sq.certify.exchange_stability_report(scores, partition.labels, weights=weights)
 stability = (bool(report.stable), float(report.best_gain), report.best_move)
 ```
 
@@ -184,7 +185,7 @@ quantizer = sq.fit_quantizer(
     validation=sq.ScoreSample(holdout),
     n_bins=5,
     criterion=sq.DOptimality(),
-    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_steps=120, record_every=20),
+    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_iter=120, record_every=20),
 )
 soft_fit = {
     "train": float(quantizer.train_report.geometric_mean_retention),
@@ -258,7 +259,7 @@ For a small table, global optimality can be decided:
 ```python
 small = rng.normal(size=(24, 2))
 incumbent = sq.optimize_partition(small, n_bins=3, config=sq.DExchangeConfig(seed=1))
-certificate = sq.certify_partition(small, n_bins=3, incumbent=incumbent.labels)
+certificate = sq.certify.certify_partition(small, n_bins=3, incumbent=incumbent.labels)
 verdict = (certificate.status, float(certificate.gap), bool(certificate.incumbent_was_optimal))
 ```
 
@@ -290,12 +291,12 @@ def background_gauge(x):
     return np.column_stack([signal, np.ones_like(signal)])
 
 
-provider = sq.DensityRatioScore(
+provider = sq.ratios.DensityRatioScore(
     background_gauge,
-    sq.IntensityParameterization([0.1, 1.0]),  # signal, background reference yields
+    sq.ratios.IntensityParameterization([0.1, 1.0]),  # signal, background reference yields
     provenance=sq.ScoreProvenance(
         kind="estimated_ratio",
-        ratio=sq.RatioProvenance(gauges=("background", "background")),
+        ratio=sq.ratios.RatioProvenance(gauges=("background", "background")),
     ),
 )
 events = sq.ObservationSample(np.random.default_rng(5).normal(size=(800, 1)))

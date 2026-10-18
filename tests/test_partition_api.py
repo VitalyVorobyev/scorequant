@@ -26,7 +26,9 @@ def test_exact_move_gain_matches_direct_recomputation() -> None:
     scores = _scores(n_rows=12)
     weights = np.full(12, 1 / 12)
     labels = np.repeat(np.arange(3), 4)
-    information = np.asarray(sq.binned_fisher_information(scores, labels, weights, n_bins=3))
+    information = np.asarray(
+        sq.information.binned_fisher_information(scores, labels, weights, n_bins=3)
+    )
     row, source, destination = 1, 0, 2
     source_mask = labels == source
     destination_mask = labels == destination
@@ -46,7 +48,7 @@ def test_exact_move_gain_matches_direct_recomputation() -> None:
     )
     moved = labels.copy()
     moved[row] = destination
-    updated = np.asarray(sq.binned_fisher_information(scores, moved, weights, n_bins=3))
+    updated = np.asarray(sq.information.binned_fisher_information(scores, moved, weights, n_bins=3))
     direct = np.linalg.slogdet(updated)[1] - np.linalg.slogdet(information)[1]
     assert predicted == pytest.approx(direct, abs=1e-10)
 
@@ -57,7 +59,7 @@ def test_chunked_scan_and_rank_two_state_update_match_full_recomputation() -> No
     labels = np.tile(np.arange(3), 16)
     state = _d_state(scores, weights, labels, 3)
     objective = DObjective()
-    config = sq.DExchangeConfig(max_scans=10)
+    config = sq.DExchangeConfig(max_iter=10)
     with patch("scorequant._chunking.WORKING_SET_BYTES", 256):
         chunked = scan(scores, weights, labels, state, objective, config, rows=True).best
     with patch("scorequant._chunking.WORKING_SET_BYTES", 1 << 40):
@@ -83,7 +85,7 @@ def test_repeated_rank_two_updates_do_not_accumulate_material_drift() -> None:
     labels = np.tile(np.arange(4), 24)
     state = _d_state(scores, weights, labels, 4)
     objective = DObjective()
-    config = sq.DExchangeConfig(max_scans=20)
+    config = sq.DExchangeConfig(max_iter=20)
     for _ in range(12):
         move = scan(scores, weights, labels, state, objective, config, rows=False).best
         assert move is not None and move.gain > 0
@@ -104,7 +106,7 @@ def test_partition_is_transductive_and_d_compilation_is_explicit() -> None:
     partition = sq.optimize_partition(
         scores,
         n_bins=3,
-        config=sq.DExchangeConfig(seed=4, initializer_restarts=3, max_scans=200),
+        config=sq.DExchangeConfig(seed=4, initializer_restarts=3, max_iter=200),
     )
     assert partition.exchange_stable
     assert partition.rank == 2
@@ -121,7 +123,7 @@ def test_partition_is_transductive_and_d_compilation_is_explicit() -> None:
 def test_zero_weight_rows_are_predictable_but_do_not_change_objective() -> None:
     scores = _scores(n_rows=40)
     extra = np.array([[100.0, -100.0], [-80.0, 120.0]])
-    config = sq.DExchangeConfig(seed=9, initializer_restarts=3, max_scans=200)
+    config = sq.DExchangeConfig(seed=9, initializer_restarts=3, max_iter=200)
     reference = sq.optimize_partition(scores, n_bins=3, config=config)
     extended = sq.optimize_partition(
         np.vstack([scores, extra]),
@@ -150,7 +152,7 @@ def test_solver_criterion_pairs_are_explicit() -> None:
 def test_exact_partition_preserves_core_invariances_without_centering() -> None:
     scores = _scores(seed=31, n_rows=36) + np.array([2.0, -0.7])
     weights = np.linspace(0.4, 1.8, len(scores))
-    config = sq.DExchangeConfig(seed=14, initializer_restarts=8, max_scans=300)
+    config = sq.DExchangeConfig(seed=14, initializer_restarts=8, max_iter=300)
     original = sq.optimize_partition(scores, weights=weights, n_bins=3, config=config)
     np.testing.assert_allclose(original.training_scores, scores)
 

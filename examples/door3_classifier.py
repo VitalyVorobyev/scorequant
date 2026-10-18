@@ -3,7 +3,7 @@
 A two-component Gaussian mixture (`signal_pdf`, `background_pdf`) is separated
 by a small `sklearn.linear_model.LogisticRegression` classifier whose
 calibrated posteriors become component density ratios and then scores through
-`scorequant.DensityRatioScore.from_classifier`. `exact_provider` builds the
+`scorequant.ratios.DensityRatioScore.from_classifier`. `exact_provider` builds the
 analytic Bayes-optimal score for the same mixture, which is what makes the
 retention ladder in `run_ladder` an honest comparison instead of a guess, and
 what lets `run_study` add an exact-provider *ceiling* row: the same fit at
@@ -95,9 +95,8 @@ def exact_provider() -> sq.ScoreFunction:
         data grows.
     """
     return sq.ScoreFunction(
-        lambda x: sq.mixture_scores_from_ratios(
-            sq.ratios_from_posteriors(exact_posteriors(x), [0.5, 0.5]),
-            list(REFERENCE_FRACTIONS),
+        lambda x: sq.ratios.MixtureParameterization(list(REFERENCE_FRACTIONS)).scores(
+            sq.ratios.ratios_from_posteriors(exact_posteriors(x), [0.5, 0.5])
         ),
         provenance=sq.ScoreProvenance(kind="exact", description="analytic Bayes posterior"),
     )
@@ -189,7 +188,9 @@ def train_classifier(seed: int, n_per_class: int) -> LogisticRegression:
     return LogisticRegression(max_iter=1000).fit(make_features(x), y)
 
 
-def classifier_provider(model: LogisticRegression, *, description: str) -> sq.DensityRatioScore:
+def classifier_provider(
+    model: LogisticRegression, *, description: str
+) -> sq.ratios.DensityRatioScore:
     """Wrap a fitted classifier as a classifier-derived ratio provider.
 
     Parameters
@@ -201,7 +202,7 @@ def classifier_provider(model: LogisticRegression, *, description: str) -> sq.De
 
     Returns
     -------
-    scorequant.DensityRatioScore
+    scorequant.ratios.DensityRatioScore
         Always carries `kind="estimated_ratio"` provenance with the training
         priors and mixture parameterization recorded.
     """
@@ -209,10 +210,10 @@ def classifier_provider(model: LogisticRegression, *, description: str) -> sq.De
     def predict(x: np.ndarray) -> np.ndarray:
         return model.predict_proba(make_features(np.asarray(x)[:, 0]))
 
-    return sq.DensityRatioScore.from_classifier(
+    return sq.ratios.DensityRatioScore.from_classifier(
         predict,
         [0.5, 0.5],
-        sq.MixtureParameterization(list(REFERENCE_FRACTIONS)),
+        sq.ratios.MixtureParameterization(list(REFERENCE_FRACTIONS)),
         description=description,
     )
 
@@ -433,7 +434,7 @@ def _run_rungs(
                 oracle_test_scores, labels, n_bins=result.n_bins
             ).geometric_mean_retention
         )
-        closure = sq.ratio_closure_report(
+        closure = sq.ratios.ratio_closure_report(
             provider.ratio(closure_observations), np.ones(closure_observations.shape[0])
         )
         step = LadderStep(n_per_class, surrogate, true_retention, closure.max_residual)
@@ -582,8 +583,10 @@ def run_exact_ceiling(
     # same way `exact_provider()` builds its score, so this is the same
     # closure check `run_ladder` runs on the classifier's ratios, on the same
     # training-measure sample.
-    exact_ratios = sq.ratios_from_posteriors(exact_posteriors(closure_observations), [0.5, 0.5])
-    closure = sq.ratio_closure_report(exact_ratios, np.ones(closure_observations.shape[0]))
+    exact_ratios = sq.ratios.ratios_from_posteriors(
+        exact_posteriors(closure_observations), [0.5, 0.5]
+    )
+    closure = sq.ratios.ratio_closure_report(exact_ratios, np.ones(closure_observations.shape[0]))
     naive = naive_binning_row(
         scores=oracle_test_scores,
         oracle_test_scores=oracle_test_scores,
@@ -663,7 +666,7 @@ def analytic_reference_measure_ratio_means(
     p_reference = REFERENCE_FRACTIONS[0] * signal_pdf(x) + REFERENCE_FRACTIONS[1] * background_pdf(
         x
     )
-    ratios = np.asarray(sq.ratios_from_posteriors(exact_posteriors(x[:, None]), [0.5, 0.5]))
+    ratios = np.asarray(sq.ratios.ratios_from_posteriors(exact_posteriors(x[:, None]), [0.5, 0.5]))
     return [float(np.sum(p_reference * ratios[:, k]) * step) for k in range(ratios.shape[1])]
 
 
@@ -682,8 +685,8 @@ def run_closure_measure_mismatch(train_observations: np.ndarray) -> ClosureMeasu
     ClosureMeasureMismatch
         The wrong-measure residual and its analytic explanation.
     """
-    ratios = sq.ratios_from_posteriors(exact_posteriors(train_observations), [0.5, 0.5])
-    closure = sq.ratio_closure_report(ratios, np.ones(train_observations.shape[0]))
+    ratios = sq.ratios.ratios_from_posteriors(exact_posteriors(train_observations), [0.5, 0.5])
+    closure = sq.ratios.ratio_closure_report(ratios, np.ones(train_observations.shape[0]))
     return ClosureMeasureMismatch(
         description=(
             "ratio_closure_report evaluated on train_observations (the 0.3/0.7 "

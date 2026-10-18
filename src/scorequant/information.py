@@ -1,4 +1,9 @@
-"""Fisher information calculations and invariant-rich diagnostics."""
+"""Fisher information algebra: full, binned and profiled information.
+
+The public submodule for the information quantities behind every report.
+``information_report``, ``efficient_score_bound`` and ``retention_uncertainty``
+are part of the core and are imported from :mod:`scorequant` itself.
+"""
 
 from __future__ import annotations
 
@@ -42,6 +47,14 @@ from .transforms import (
     is_numerically_singular,
     numerical_rank,
 )
+
+__all__ = [
+    "binned_fisher_information",
+    "efficient_scores",
+    "fisher_information",
+    "fractional_fisher_information",
+    "profiled_information_report",
+]
 
 
 @execution_scope

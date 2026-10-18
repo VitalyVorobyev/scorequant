@@ -81,7 +81,7 @@ def test_soft_voronoi_has_finite_trace_and_hard_result() -> None:
             seed=3,
             initializer_restarts=2,
             kmeans_max_iter=30,
-            max_steps=30,
+            max_iter=30,
             record_every=5,
         ),
     )
@@ -101,7 +101,7 @@ def test_soft_refuses_to_stall_on_a_singular_fisher_matrix() -> None:
         fit_test_quantizer(
             scores,
             n_bins=2,
-            config=scorequant.SoftVoronoiConfig(seed=0, max_steps=5, record_every=5),
+            config=scorequant.SoftVoronoiConfig(seed=0, max_iter=5, record_every=5),
         )
     assert refusal.value.counterexample == "CE-DS-MARGINS-RANK-VACUITY-001"
 
@@ -143,7 +143,7 @@ def test_soft_requires_enough_bins_for_rank() -> None:
         fit_test_quantizer(
             _scores(100),
             n_bins=1,
-            config=scorequant.SoftVoronoiConfig(max_steps=2),
+            config=scorequant.SoftVoronoiConfig(max_iter=2),
         )
 
 

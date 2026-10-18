@@ -77,10 +77,14 @@ def test_signal_background_shape_exposes_exact_component_densities() -> None:
     intensity = problem.intensity(x)
     np.testing.assert_allclose(intensity, components @ problem.coefficients)
 
-    # scores_from_components on the exact densities reproduces the stored scores.
-    rebuilt = np.asarray(sq.scores_from_components(components, problem.coefficients))
+    # The intensity map on the exact densities reproduces the stored scores.
+    rebuilt = np.asarray(
+        sq.ratios.IntensityParameterization(problem.coefficients).scores(components)
+    )
     direct = np.asarray(
-        sq.scores_from_components(problem.evaluate_components(x), problem.coefficients)
+        sq.ratios.IntensityParameterization(problem.coefficients).scores(
+            problem.evaluate_components(x)
+        )
     )
     np.testing.assert_allclose(rebuilt, direct)
 

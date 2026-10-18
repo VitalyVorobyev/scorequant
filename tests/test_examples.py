@@ -71,7 +71,7 @@ def test_soft_d_optimality_improves_a_targeted_nonlinear_fixture() -> None:
         weights=train_weights,
         n_bins=2,
         config=scorequant.SoftVoronoiConfig(
-            seed=0, initializer_restarts=8, max_steps=400, record_every=100
+            seed=0, initializer_restarts=8, max_iter=400, record_every=100
         ),
     )
     improvement = (

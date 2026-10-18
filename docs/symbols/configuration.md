@@ -15,3 +15,5 @@
 ::: scorequant.SoftVoronoiConfig
 
 ::: scorequant.ScalarDPConfig
+
+::: scorequant.ExecutionConfig

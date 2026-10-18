@@ -70,12 +70,16 @@ def test_frozen_counterexample_batch_step_is_rejected_not_recorded() -> None:
     )
     labels = np.array([1, 0, 0, 1, 2, 2, 2, 1])
     weights = np.full(len(scores), 1 / len(scores))
-    information = np.asarray(sq.binned_fisher_information(scores, labels, weights, n_bins=3))
+    information = np.asarray(
+        sq.information.binned_fisher_information(scores, labels, weights, n_bins=3)
+    )
     means = np.asarray([scores[labels == label].mean(axis=0) for label in range(3)])
     residuals = scores[:, None, :] - means[None, :, :]
     distances = np.einsum("nkp,pq,nkq->nk", residuals, np.linalg.inv(information), residuals)
     batch_labels = np.argmin(distances, axis=1)
-    batch = np.asarray(sq.binned_fisher_information(scores, batch_labels, weights, n_bins=3))
+    batch = np.asarray(
+        sq.information.binned_fisher_information(scores, batch_labels, weights, n_bins=3)
+    )
     raw_step = np.linalg.slogdet(batch)[1] - np.linalg.slogdet(information)[1]
     assert raw_step == pytest.approx(-0.136521, abs=2e-6)
 

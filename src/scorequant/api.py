@@ -45,7 +45,7 @@ from .information import (
 )
 from .partition import optimize_d_partition, optimize_profiled_d_partition
 from .providers import ScoreProvider, validate_provider
-from .result import InformationReport, OptimizationTrace, PartitionResult, QuantizerResult
+from .results import InformationReport, OptimizationTrace, PartitionResult, QuantizerResult
 from .solvers.common import QuantizerRun
 from .solvers.kmeans import weighted_kmeans
 from .solvers.scalar import scalar_weighted_kmeans_dp

@@ -1,16 +1,23 @@
-"""Information-preserving hard quantization for statistical inference."""
+"""Information-preserving hard quantization for statistical inference.
+
+The top level holds what a first fit needs. Public submodules hold the rest:
+:mod:`scorequant.ratios` (density-ratio providers), :mod:`scorequant.information`
+(the information algebra), :mod:`scorequant.certify` (certificates),
+:mod:`scorequant.results` (result and report types) and
+:mod:`scorequant.plotting` (optional figures, outside the stable API).
+"""
 
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _distribution_version
 
+from . import certify as certify
+from . import information as information
+from . import ratios as ratios
+from . import results as results
 from ._errors import ContractError, RefusalError, ScoreQuantError
 from .api import fit_quantizer, optimize_partition
 from .artifact import Quantizer
-from .certify import CertificationConfig, certify_partition
-from .components import (
-    LinearComponents,
-    scores_from_components,
-)
+from .components import LinearComponentScore
 from .config import (
     DExchangeConfig,
     ExecutionConfig,
@@ -20,55 +27,17 @@ from .config import (
     SoftVoronoiConfig,
 )
 from .criteria import DOptimality, NormalizedTrace, ProfiledDOptimality
-from .diagnostics import exchange_stability_report
-from .information import (
-    binned_fisher_information,
-    efficient_score_bound,
-    efficient_scores,
-    fisher_information,
-    fractional_fisher_information,
-    information_report,
-    profiled_information_report,
-)
-from .providers import (
-    CentralLogRatioScore,
-    DensityRatioScore,
-    LinearComponentScore,
-    ScoreFunction,
-    ScoreProvider,
-)
-from .ratios import (
-    IntensityParameterization,
-    MixtureParameterization,
-    mixture_scores_from_ratios,
-    ratio_closure_report,
-    ratios_from_posteriors,
-)
-from .reports import RatioClosureReport, RetentionUncertainty
-from .result import (
-    EfficientScoreBound,
-    GeometryReport,
-    InformationReport,
-    OptimizationTrace,
-    PartitionCertificate,
-    PartitionResult,
-    ProfiledGeometryReport,
-    ProfiledInformationReport,
-    QuantizerResult,
-    StabilityReport,
-)
+from .information import efficient_score_bound, information_report
+from .providers import ScoreFunction, ScoreProvider
 from .sources import (
     GaussLegendreConfig,
     IntegrationSource,
     ObservationSample,
-    RatioProvenance,
     ScoreProvenance,
     ScoreSample,
     ScoreSchema,
 )
-from .transforms import FisherTransform
 from .uncertainty import retention_uncertainty
-from .visualization import plot_information, plot_optimization, plot_partition, plot_summary
 
 #: Installed distribution version. Resolved from package metadata so
 #: ``pyproject.toml`` stays the single source of truth; a source tree that was
@@ -79,39 +48,20 @@ except PackageNotFoundError:  # pragma: no cover - only hit in an uninstalled tr
     __version__ = "0.0.0.dev0"
 
 __all__ = [
-    "CentralLogRatioScore",
-    "CertificationConfig",
     "ContractError",
     "DExchangeConfig",
-    "ExecutionConfig",
     "DOptimality",
-    "DensityRatioScore",
-    "EfficientScoreBound",
-    "FisherTransform",
+    "ExecutionConfig",
     "GaussLegendreConfig",
-    "GeometryReport",
-    "InformationReport",
     "IntegrationSource",
-    "IntensityParameterization",
     "KMeansConfig",
     "LinearComponentScore",
-    "LinearComponents",
     "MahalanobisLloydConfig",
-    "MixtureParameterization",
     "NormalizedTrace",
     "ObservationSample",
-    "OptimizationTrace",
-    "PartitionCertificate",
-    "PartitionResult",
     "ProfiledDOptimality",
-    "ProfiledGeometryReport",
-    "ProfiledInformationReport",
     "Quantizer",
-    "QuantizerResult",
-    "RatioClosureReport",
-    "RatioProvenance",
     "RefusalError",
-    "RetentionUncertainty",
     "ScalarDPConfig",
     "ScoreFunction",
     "ScoreProvenance",
@@ -120,25 +70,9 @@ __all__ = [
     "ScoreSample",
     "ScoreSchema",
     "SoftVoronoiConfig",
-    "StabilityReport",
-    "binned_fisher_information",
-    "certify_partition",
     "efficient_score_bound",
-    "efficient_scores",
-    "exchange_stability_report",
-    "fisher_information",
     "fit_quantizer",
-    "fractional_fisher_information",
     "information_report",
-    "mixture_scores_from_ratios",
     "optimize_partition",
-    "plot_information",
-    "plot_optimization",
-    "plot_partition",
-    "plot_summary",
-    "profiled_information_report",
-    "ratio_closure_report",
-    "ratios_from_posteriors",
     "retention_uncertainty",
-    "scores_from_components",
 ]

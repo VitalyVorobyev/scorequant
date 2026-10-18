@@ -49,7 +49,7 @@ def _raw_geometry(
         ]
     )
     metric = np.linalg.inv(
-        np.asarray(sq.binned_fisher_information(scores, labels, weights, n_bins=n_bins))
+        np.asarray(sq.information.binned_fisher_information(scores, labels, weights, n_bins=n_bins))
     )
     separations = np.asarray(
         [
@@ -94,7 +94,7 @@ def test_stability_report_certifies_an_exchange_result() -> None:
     """A terminal exchange state must scan clean and report the same objective."""
     scores = _seeded_scores(3, 60)
     result = sq.optimize_partition(scores, n_bins=3)
-    report = sq.exchange_stability_report(scores, result.labels)
+    report = sq.certify.exchange_stability_report(scores, result.labels)
     assert report.stable is True
     assert report.best_move is None
     assert report.n_bins == 3
@@ -117,7 +117,7 @@ def test_stability_report_reproduces_the_engine_verdict_after_a_rejected_lloyd(s
         n_bins=5,
         config=sq.MahalanobisLloydConfig(seed=seed, guard="reject"),
     )
-    report = sq.exchange_stability_report(scores, result.labels, weights=weights)
+    report = sq.certify.exchange_stability_report(scores, result.labels, weights=weights)
     assert report.stable is result.exchange_stable
     assert report.best_gain == pytest.approx(result.best_remaining_gain, abs=1e-12)
     assert (report.best_move is None) is result.exchange_stable
@@ -128,7 +128,7 @@ def test_stability_report_names_a_move_whose_exact_gain_it_predicts() -> None:
     scores = _seeded_scores(3, 60)
     labels = np.asarray(sq.optimize_partition(scores, n_bins=3).labels).copy()
     labels[0] = (labels[0] + 1) % 3
-    report = sq.exchange_stability_report(scores, labels)
+    report = sq.certify.exchange_stability_report(scores, labels)
     assert report.stable is False
     assert report.best_gain > 0
     assert report.best_move is not None
@@ -136,11 +136,15 @@ def test_stability_report_names_a_move_whose_exact_gain_it_predicts() -> None:
     row, destination = report.best_move
     moved = labels.copy()
     moved[row] = destination
-    after = sq.exchange_stability_report(scores, moved)
+    after = sq.certify.exchange_stability_report(scores, moved)
     assert after.objective - report.objective == pytest.approx(report.best_gain, abs=1e-10)
 
-    before_information = np.asarray(sq.binned_fisher_information(scores, labels, n_bins=3))
-    after_information = np.asarray(sq.binned_fisher_information(scores, moved, n_bins=3))
+    before_information = np.asarray(
+        sq.information.binned_fisher_information(scores, labels, n_bins=3)
+    )
+    after_information = np.asarray(
+        sq.information.binned_fisher_information(scores, moved, n_bins=3)
+    )
     direct = np.linalg.slogdet(after_information)[1] - np.linalg.slogdet(before_information)[1]
     assert direct == pytest.approx(report.best_gain, abs=1e-10)
 
@@ -152,14 +156,14 @@ def test_stability_report_certifies_the_profiled_criterion() -> None:
     weights = rng.uniform(0.4, 2.0, size=len(scores))
     criterion = sq.ProfiledDOptimality((0,))
     result = sq.optimize_partition(scores, weights=weights, n_bins=4, criterion=criterion)
-    report = sq.exchange_stability_report(
+    report = sq.certify.exchange_stability_report(
         scores, result.labels, weights=weights, criterion=criterion
     )
     assert report.stable is True
     assert report.criterion == criterion
     assert report.objective == pytest.approx(result.objective, abs=1e-12)
 
-    mismatched = sq.exchange_stability_report(scores, result.labels, weights=weights)
+    mismatched = sq.certify.exchange_stability_report(scores, result.labels, weights=weights)
     assert mismatched.objective != pytest.approx(result.objective, abs=1e-6)
 
 
@@ -168,17 +172,17 @@ def test_stability_report_rejects_labelings_it_cannot_certify() -> None:
     scores = _seeded_scores(9, 30)
     labels = np.arange(len(scores)) % 3
     with pytest.raises(ValueError, match=r"labels must have shape \[30\]"):
-        sq.exchange_stability_report(scores, labels[:-1])
+        sq.certify.exchange_stability_report(scores, labels[:-1])
     with pytest.raises(TypeError, match="integer bin labels"):
-        sq.exchange_stability_report(scores, labels.astype(float))
+        sq.certify.exchange_stability_report(scores, labels.astype(float))
     with pytest.raises(ValueError, match="nonnegative bin indices"):
-        sq.exchange_stability_report(scores, labels - 1)
+        sq.certify.exchange_stability_report(scores, labels - 1)
     empty = labels.copy()
     empty[empty == 1] = 0
     with pytest.raises(ValueError, match="holds no positive-weight row"):
-        sq.exchange_stability_report(scores, empty)
+        sq.certify.exchange_stability_report(scores, empty)
     with pytest.raises(TypeError, match="DOptimality or ProfiledDOptimality"):
-        sq.exchange_stability_report(scores, labels, criterion=sq.NormalizedTrace())  # type: ignore[arg-type]
+        sq.certify.exchange_stability_report(scores, labels, criterion=sq.NormalizedTrace())  # type: ignore[arg-type]
 
 
 def test_geometry_report_matches_a_direct_raw_score_computation() -> None:
@@ -187,7 +191,7 @@ def test_geometry_report_matches_a_direct_raw_score_computation() -> None:
     scores = _seeded_scores(64, 40)
     weights = rng.uniform(0.3, 2.0, size=len(scores))
     result = sq.optimize_partition(
-        scores, weights=weights, n_bins=3, config=sq.DExchangeConfig(max_scans=1, init="random")
+        scores, weights=weights, n_bins=3, config=sq.DExchangeConfig(max_iter=1, init="random")
     )
     geometry = result.geometry
     assert geometry is not None
@@ -230,7 +234,7 @@ def test_geometry_report_bounds_the_remaining_gain_of_a_violating_partition(seed
         scores,
         weights=weights,
         n_bins=5,
-        config=sq.DExchangeConfig(seed=seed, init="random", max_scans=1, batch_moves=False),
+        config=sq.DExchangeConfig(seed=seed, init="random", max_iter=1, batch_moves=False),
     )
     geometry = result.geometry
     assert geometry is not None
@@ -290,13 +294,13 @@ def test_a_boundary_row_is_not_certifiable_at_tolerance_zero() -> None:
     engine issues.
     """
     scores, labels = _boundary_fixture()
-    exact = sq.exchange_stability_report(scores, labels, gain_tolerance=0.0)
+    exact = sq.certify.exchange_stability_report(scores, labels, gain_tolerance=0.0)
     assert exact.stable is False
     assert exact.gain_tolerance == 0.0
     assert exact.best_move == (80, 0)
     assert exact.best_gain == pytest.approx(0.002270181625500942, rel=1e-9)
 
-    tolerated = sq.exchange_stability_report(
+    tolerated = sq.certify.exchange_stability_report(
         scores, labels, gain_tolerance=_BOUNDARY_GAIN_TOLERANCE
     )
     assert tolerated.stable is True
@@ -383,14 +387,14 @@ def test_certificate_agrees_with_the_exhaustive_oracle(seed: int, n_rows: int) -
     scores = _seeded_scores(seed, n_rows)
     weights = rng.uniform(0.3, 2.0, size=n_rows) if seed % 2 else None
     _, optimum = _exhaustive_d_oracle(scores, weights, 3)
-    certificate = sq.certify_partition(scores, weights=weights, n_bins=3)
+    certificate = sq.certify.certify_partition(scores, weights=weights, n_bins=3)
     assert certificate.status == "optimal"
     assert certificate.gap == 0.0
     assert certificate.upper_bound == certificate.objective
     assert certificate.objective == pytest.approx(optimum, abs=1e-10)
     assert certificate.labels.shape == (n_rows,)
 
-    replayed = sq.exchange_stability_report(scores, certificate.labels, weights=weights)
+    replayed = sq.certify.exchange_stability_report(scores, certificate.labels, weights=weights)
     assert replayed.stable is True
     assert replayed.objective == pytest.approx(certificate.objective, abs=1e-10)
 
@@ -399,7 +403,7 @@ def test_certificate_confirms_or_improves_an_exchange_incumbent() -> None:
     """The two committed fixtures show both certificate outcomes on real incumbents."""
     confirmed_scores = _seeded_scores(1, 8)
     confirmed = sq.optimize_partition(confirmed_scores, n_bins=3)
-    confirmed_certificate = sq.certify_partition(
+    confirmed_certificate = sq.certify.certify_partition(
         confirmed_scores, n_bins=3, incumbent=confirmed.labels
     )
     assert confirmed_certificate.status == "optimal"
@@ -409,7 +413,7 @@ def test_certificate_confirms_or_improves_an_exchange_incumbent() -> None:
     improved_scores = _seeded_scores(15, 10)
     improved_weights = np.random.default_rng(115).uniform(0.3, 2.0, size=10)
     improved = sq.optimize_partition(improved_scores, weights=improved_weights, n_bins=3)
-    improved_certificate = sq.certify_partition(
+    improved_certificate = sq.certify.certify_partition(
         improved_scores, weights=improved_weights, n_bins=3, incumbent=improved.labels
     )
     assert improved_certificate.status == "optimal"
@@ -424,12 +428,12 @@ def test_certificate_reports_an_outstanding_bound_when_the_budget_runs_out() -> 
     scores = _seeded_scores(11, 40, 3)
     weights = rng.uniform(0.4, 2.0, size=len(scores))
     incumbent = sq.optimize_partition(scores, weights=weights, n_bins=4)
-    certificate = sq.certify_partition(
+    certificate = sq.certify.certify_partition(
         scores,
         weights=weights,
         n_bins=4,
         incumbent=incumbent.labels,
-        config=sq.CertificationConfig(max_nodes=200),
+        config=sq.certify.CertificationConfig(max_nodes=200),
     )
     assert certificate.status == "budget_exhausted"
     assert certificate.incumbent_was_optimal is False
@@ -445,18 +449,20 @@ def test_certification_refuses_what_it_cannot_certify() -> None:
     """Capacity, criterion, and configuration boundaries all fail by name."""
     scores = _seeded_scores(7, 30)
     with pytest.raises(ValueError, match="exceeding max_rows=10"):
-        sq.certify_partition(scores, n_bins=3, config=sq.CertificationConfig(max_rows=10))
+        sq.certify.certify_partition(
+            scores, n_bins=3, config=sq.certify.CertificationConfig(max_rows=10)
+        )
     with pytest.raises(ValueError, match="DOptimality only"):
-        sq.certify_partition(scores, n_bins=3, criterion=sq.ProfiledDOptimality((0,)))
+        sq.certify.certify_partition(scores, n_bins=3, criterion=sq.ProfiledDOptimality((0,)))
     with pytest.raises(TypeError, match="CertificationConfig"):
-        sq.certify_partition(scores, n_bins=3, config=sq.DExchangeConfig())  # type: ignore[arg-type]
+        sq.certify.certify_partition(scores, n_bins=3, config=sq.DExchangeConfig())  # type: ignore[arg-type]
     with pytest.raises(ValueError, match="max_nodes"):
-        sq.CertificationConfig(max_nodes=0)
+        sq.certify.CertificationConfig(max_nodes=0)
     with pytest.raises(ValueError, match="max_rows must be at most 512"):
-        sq.CertificationConfig(max_rows=1024)
+        sq.certify.CertificationConfig(max_rows=1024)
     with pytest.raises(TypeError, match="gain_tolerance"):
-        sq.CertificationConfig(gain_tolerance="tight")  # type: ignore[arg-type]
-    assert sq.CertificationConfig().to_dict()["method"] == "branch_and_bound"
+        sq.certify.CertificationConfig(gain_tolerance="tight")  # type: ignore[arg-type]
+    assert sq.certify.CertificationConfig().to_dict()["method"] == "branch_and_bound"
 
 
 def test_certification_is_deterministic_and_handles_zero_weight_rows() -> None:
@@ -465,8 +471,8 @@ def test_certification_is_deterministic_and_handles_zero_weight_rows() -> None:
     scores = _seeded_scores(23, 12)
     weights = rng.uniform(0.5, 1.5, size=len(scores))
     weights[3] = 0.0
-    first = sq.certify_partition(scores, weights=weights, n_bins=3)
-    second = sq.certify_partition(scores, weights=weights, n_bins=3)
+    first = sq.certify.certify_partition(scores, weights=weights, n_bins=3)
+    second = sq.certify.certify_partition(scores, weights=weights, n_bins=3)
     assert first.status == "optimal"
     assert np.array_equal(np.asarray(first.labels), np.asarray(second.labels))
     assert first.objective == pytest.approx(second.objective, abs=0)

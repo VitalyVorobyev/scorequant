@@ -43,8 +43,8 @@ def test_exact_profiled_move_gain_matches_direct_recomputation() -> None:
     )
     moved = labels.copy()
     moved[row] = destination
-    before = np.asarray(sq.binned_fisher_information(scores, labels, weights, n_bins=4))
-    after = np.asarray(sq.binned_fisher_information(scores, moved, weights, n_bins=4))
+    before = np.asarray(sq.information.binned_fisher_information(scores, labels, weights, n_bins=4))
+    after = np.asarray(sq.information.binned_fisher_information(scores, moved, weights, n_bins=4))
     direct = _schur_objective(after, (0,)) - _schur_objective(before, (0,))
     assert predicted == pytest.approx(direct, abs=1e-11)
 
@@ -59,7 +59,7 @@ def test_profiled_exchange_reaches_exact_counterexample_and_does_not_compile() -
         scores,
         n_bins=3,
         criterion=sq.ProfiledDOptimality((0,)),
-        config=sq.DExchangeConfig(seed=1, initializer_restarts=32, max_scans=200),
+        config=sq.DExchangeConfig(seed=1, initializer_restarts=32, max_iter=200),
     )
     assert result.exchange_stable
     assert np.exp(result.objective) == pytest.approx(8 * 20449 / 1920, abs=1e-10)
@@ -83,7 +83,7 @@ def test_soft_profiled_fit_is_an_explicit_reusable_rule() -> None:
         validation=sq.ScoreSample(validation),
         n_bins=5,
         criterion=criterion,
-        config=sq.SoftVoronoiConfig(seed=4, initializer_restarts=2, max_steps=20, record_every=10),
+        config=sq.SoftVoronoiConfig(seed=4, initializer_restarts=2, max_iter=20, record_every=10),
     )
     assert result.train_profiled_report is not None
     assert result.validation_profiled_report is not None
@@ -96,7 +96,9 @@ def test_efficient_score_upper_problem_is_explicit_and_block_invariant() -> None
     rng = np.random.default_rng(23)
     scores = rng.normal(size=(120, 4))
     weights = rng.uniform(0.5, 1.5, size=len(scores))
-    efficient = np.asarray(sq.efficient_scores(scores, interest=(0, 2), weights=weights))
+    efficient = np.asarray(
+        sq.information.efficient_scores(scores, interest=(0, 2), weights=weights)
+    )
     nuisance = scores[:, [1, 3]]
     weighted_cross = np.einsum("n,ni,nj->ij", weights, efficient, nuisance)
     np.testing.assert_allclose(weighted_cross, 0, atol=1e-10)
@@ -112,7 +114,7 @@ def test_efficient_score_upper_problem_is_explicit_and_block_invariant() -> None
         ]
     )
     transformed_efficient = np.asarray(
-        sq.efficient_scores(transformed, interest=(0, 2), weights=weights)
+        sq.information.efficient_scores(transformed, interest=(0, 2), weights=weights)
     )
     np.testing.assert_allclose(transformed_efficient, efficient @ interest_map, atol=1e-10)
 

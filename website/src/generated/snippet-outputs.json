@@ -12,7 +12,7 @@
       "order": 0
     },
     "fit": {
-      "code": "fit = sq.fit_quantizer(\n    sq.ScoreSample(scores, weights),\n    n_bins=5,\n    criterion=sq.DOptimality(),\n    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_steps=120, record_every=20),\n    execution=execution,\n)\n\nreport = fit.train_report\nprint(f\"D-efficiency    {report.geometric_mean_retention:.4f}\")\nprint(f\"effective rank  {report.effective_rank}\")",
+      "code": "fit = sq.fit_quantizer(\n    sq.ScoreSample(scores, weights),\n    n_bins=5,\n    criterion=sq.DOptimality(),\n    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_iter=120, record_every=20),\n    execution=execution,\n)\n\nreport = fit.train_report\nprint(f\"D-efficiency    {report.geometric_mean_retention:.4f}\")\nprint(f\"effective rank  {report.effective_rank}\")",
       "stdout": "D-efficiency    0.6987\neffective rank  2\n",
       "order": 1
     },

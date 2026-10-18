@@ -1,3 +1,0 @@
-# Fisher transforms
-
-::: scorequant.FisherTransform

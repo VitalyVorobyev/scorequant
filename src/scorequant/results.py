@@ -1,7 +1,9 @@
-"""Immutable public result objects.
+"""Result and report types: everything a fit, report or certificate returns.
 
-Diagnostic and certificate report types (``InformationReport`` and friends)
-now live in ``reports.py``, which does not import this module. That is what
+The public submodule to import a type from when annotating code; none of them is
+constructed by hand. Diagnostic and certificate report types
+(``InformationReport`` and friends) are defined in ``reports.py``, which does
+not import this module. That is what
 lets ``QuantizerResult.evaluate_scores`` import ``information_report`` at
 module scope below instead of inside the method: ``result -> information ->
 reports`` is a chain, not a cycle.
@@ -10,7 +12,6 @@ reports`` is a chain, not a cycle.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -29,16 +30,15 @@ from .reports import (
     PartitionCertificate,
     ProfiledGeometryReport,
     ProfiledInformationReport,
+    RetentionUncertainty,
     StabilityReport,
 )
 from .sources import InformationKind, ScoreProvenance, ScoreSchema, SourceKind
 from .transforms import FisherTransform
 
-if TYPE_CHECKING:
-    from matplotlib.figure import Figure
-
 __all__ = [
     "EfficientScoreBound",
+    "FisherTransform",
     "GeometryReport",
     "InformationReport",
     "OptimizationTrace",
@@ -47,6 +47,7 @@ __all__ = [
     "ProfiledGeometryReport",
     "ProfiledInformationReport",
     "QuantizerResult",
+    "RetentionUncertainty",
     "StabilityReport",
 ]
 
@@ -209,12 +210,6 @@ class QuantizerResult:
             }
         )
 
-    def plot_summary(self, scores: ArrayLike, weights: ArrayLike | None = None) -> Figure:
-        """Create the optional score-space summary figure."""
-        from .visualization import plot_summary
-
-        return plot_summary(self, scores, weights)
-
 
 @dataclass(frozen=True, slots=True)
 class PartitionResult:
@@ -350,7 +345,7 @@ class PartitionResult:
             remedy = (
                 "set guard='exchange'"
                 if isinstance(self.config, MahalanobisLloydConfig)
-                else "raise max_scans, or leave it unset to run until stability"
+                else "raise max_iter, or leave it unset to run until stability"
             )
             raise RefusalError(
                 "only an exchange-stable D partition can be compiled; inspect "

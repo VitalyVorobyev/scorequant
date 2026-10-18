@@ -159,7 +159,7 @@ def _nearest(points: np.ndarray, centers: np.ndarray) -> np.ndarray:
 
 
 def predict_score_bins(
-    result: sq.QuantizerResult,
+    result: sq.results.QuantizerResult,
     scores: np.ndarray,
     *,
     chunk_size: int = 50_000,
@@ -305,17 +305,16 @@ def _prepare_experiment(
     )
     theta0 = reference_composition(reference.labels, reference.patients)
     reference_scores = np.asarray(
-        sq.mixture_scores_from_ratios(
-            sq.ratios_from_posteriors(
+        sq.ratios.MixtureParameterization(theta0).scores(
+            sq.ratios.ratios_from_posteriors(
                 score_fit.out_of_fold_probabilities, score_fit.model.class_priors
-            ),
-            theta0,
+            )
         )
     )
     test_probabilities = score_fit.model.predict_proba(test.features)
     test_scores = np.asarray(
-        sq.mixture_scores_from_ratios(
-            sq.ratios_from_posteriors(test_probabilities, score_fit.model.class_priors), theta0
+        sq.ratios.MixtureParameterization(theta0).scores(
+            sq.ratios.ratios_from_posteriors(test_probabilities, score_fit.model.class_priors)
         )
     )
     patients, true_fractions = _true_patient_fractions(test)
@@ -394,7 +393,7 @@ def _evaluate_bin_count(
     score_provenance = sq.ScoreProvenance(
         kind="estimated_ratio",
         description="patient-cross-fitted calibrated FlowCyt mixture score",
-        ratio=sq.RatioProvenance(
+        ratio=sq.ratios.RatioProvenance(
             estimator="calibrated_classifier",
             parameterization="mixture",
             reference_fractions=tuple(float(value) for value in context.theta0),
@@ -432,7 +431,7 @@ def _evaluate_bin_count(
         config=sq.SoftVoronoiConfig(
             seed=seed,
             initializer_restarts=3 if quick else 4,
-            max_steps=50 if quick else 160,
+            max_iter=50 if quick else 160,
             record_every=10,
         ),
         **common,

@@ -1,13 +1,20 @@
-# Density ratios
+# Density ratios: scorequant.ratios
 
-::: scorequant.ratios_from_posteriors
+Model density ratios enter through one provider, `DensityRatioScore`, with a declared
+parameterization. A parameterization's `scores` method applies the same map to a ratio array.
 
-::: scorequant.mixture_scores_from_ratios
+::: scorequant.ratios.DensityRatioScore
 
-::: scorequant.IntensityParameterization
+::: scorequant.ratios.MixtureParameterization
 
-::: scorequant.MixtureParameterization
+::: scorequant.ratios.IntensityParameterization
 
-::: scorequant.ratio_closure_report
+::: scorequant.ratios.CentralLogRatioScore
 
-::: scorequant.RatioClosureReport
+::: scorequant.ratios.RatioProvenance
+
+::: scorequant.ratios.ratios_from_posteriors
+
+::: scorequant.ratios.ratio_closure_report
+
+::: scorequant.ratios.RatioClosureReport

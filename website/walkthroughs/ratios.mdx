@@ -95,10 +95,10 @@ def posteriors(observations):
     return model.predict_proba(make_features(np.asarray(observations)[:, 0]))
 
 
-estimated = sq.DensityRatioScore.from_classifier(
+estimated = sq.ratios.DensityRatioScore.from_classifier(
     posteriors,
     [0.5, 0.5],  # training proportions: balanced classes
-    sq.MixtureParameterization([0.3, 0.7]),  # reference fractions, background last
+    sq.ratios.MixtureParameterization([0.3, 0.7]),  # reference fractions, background last
 )
 
 quantizer = sq.fit_quantizer(
@@ -145,7 +145,7 @@ A real analysis has no exact score, but it can test one consequence of the const
 
 ```python
 closure_observations = draw_training_mixture(4242, 50_000)
-closure = sq.ratio_closure_report(
+closure = sq.ratios.ratio_closure_report(
     estimated.ratio(closure_observations), np.ones(len(closure_observations))
 )
 ```

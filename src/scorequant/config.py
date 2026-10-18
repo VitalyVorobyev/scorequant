@@ -127,13 +127,14 @@ def _validate_common_config(
     restarts: int,
     restarts_field: str,
     tolerance: float,
+    tolerance_field: str,
     record_every: int,
 ) -> None:
     _validate_bool("whiten", whiten)
     validate_rank_rtol(rank_rtol)
     _validate_integer("seed", seed, minimum=0)
     _validate_integer(restarts_field, restarts, minimum=1)
-    _validate_finite("tolerance", tolerance, positive=False)
+    _validate_finite(tolerance_field, tolerance, positive=False)
     _validate_integer("record_every", record_every, minimum=1)
 
 
@@ -181,6 +182,7 @@ class KMeansConfig:
             restarts=self.solver_restarts,
             restarts_field="solver_restarts",
             tolerance=self.tolerance,
+            tolerance_field="tolerance",
             record_every=self.record_every,
         )
         _validate_integer("max_iter", self.max_iter, minimum=1)
@@ -208,10 +210,12 @@ class SoftVoronoiConfig:
         Number of k-means restarts used to initialize the centers.
     kmeans_max_iter
         Maximum Lloyd iterations for each initialization restart.
-    tolerance
-        Relative convergence tolerance for initialization.
-    max_steps
-        Number of Adam updates.
+    kmeans_tolerance
+        Relative objective-change convergence tolerance of each initialization
+        restart.
+    max_iter
+        Number of Adam updates. The annealing schedule always runs all of
+        them: its temperature reaches ``temperature_end_ratio`` at the last.
     learning_rate
         Adam learning rate before scaling by initial center separation.
     gradient_clip
@@ -228,8 +232,8 @@ class SoftVoronoiConfig:
     seed: int = 0
     initializer_restarts: int = 8
     kmeans_max_iter: int = 100
-    tolerance: float = 1e-6
-    max_steps: int = 1000
+    kmeans_tolerance: float = 1e-6
+    max_iter: int = 1000
     learning_rate: float = 1e-2
     gradient_clip: float = 10.0
     temperature_end_ratio: float = 0.05
@@ -243,11 +247,12 @@ class SoftVoronoiConfig:
             seed=self.seed,
             restarts=self.initializer_restarts,
             restarts_field="initializer_restarts",
-            tolerance=self.tolerance,
+            tolerance=self.kmeans_tolerance,
+            tolerance_field="kmeans_tolerance",
             record_every=self.record_every,
         )
         _validate_integer("kmeans_max_iter", self.kmeans_max_iter, minimum=1)
-        _validate_integer("max_steps", self.max_steps, minimum=1)
+        _validate_integer("max_iter", self.max_iter, minimum=1)
         _validate_finite("learning_rate", self.learning_rate, positive=True)
         _validate_finite("gradient_clip", self.gradient_clip, positive=True)
         _validate_finite("temperature_end_ratio", self.temperature_end_ratio, positive=True)
@@ -280,8 +285,9 @@ class DExchangeConfig:
         Number of k-means seeding restarts inside one exchange restart. This
         nests inside ``solver_restarts``: the total seeding work is the
         product of the two.
-    max_scans
-        Maximum number of complete candidate scans. ``None`` runs until the
+    max_iter
+        Maximum number of scans, one complete candidate scan per iteration;
+        ``PartitionResult.scans`` counts them. ``None`` runs until the
         exchange is stable, which strict positive-gain acceptance guarantees;
         a generous internal safety bound still stops a numerically pathological
         run and records ``best_remaining_gain``.
@@ -323,7 +329,7 @@ class DExchangeConfig:
     rank_rtol: float | None = None
     seed: int = 0
     initializer_restarts: int = 8
-    max_scans: int | None = None
+    max_iter: int | None = None
     batch_moves: bool = True
     solver_restarts: int = 1
     init: Literal["kmeans++", "random"] = "kmeans++"
@@ -336,8 +342,8 @@ class DExchangeConfig:
         validate_rank_rtol(self.rank_rtol)
         _validate_integer("seed", self.seed, minimum=0)
         _validate_integer("initializer_restarts", self.initializer_restarts, minimum=1)
-        if self.max_scans is not None:
-            _validate_integer("max_scans", self.max_scans, minimum=1)
+        if self.max_iter is not None:
+            _validate_integer("max_iter", self.max_iter, minimum=1)
         _validate_bool("batch_moves", self.batch_moves)
         _validate_integer("solver_restarts", self.solver_restarts, minimum=1)
         if self.init not in ("kmeans++", "random"):
@@ -441,9 +447,6 @@ class ScalarDPConfig:
     rank_rtol
         Relative threshold for the informative score direction. ``None`` uses the
         working dtype's default, 1e-10 in float64 and about 1.2e-5 in float32.
-    seed
-        Nonnegative seed recorded for reproducibility. The dynamic program
-        consumes no randomness and resolves ties by the smallest split index.
     max_rows
         Maximum number of distinct positive-weight score atoms. The exact
         dynamic program uses quadratic work in this count and is evaluated in
@@ -453,14 +456,12 @@ class ScalarDPConfig:
     method: Literal["scalar_dp"] = field(default="scalar_dp", init=False)
     whiten: bool = True
     rank_rtol: float | None = None
-    seed: int = 0
     max_rows: int = 20_000
 
     def __post_init__(self) -> None:
         """Validate the exact-solver capacity contract."""
         _validate_bool("whiten", self.whiten)
         validate_rank_rtol(self.rank_rtol)
-        _validate_integer("seed", self.seed, minimum=0)
         _validate_integer("max_rows", self.max_rows, minimum=1)
 
     def to_dict(self) -> dict[str, JsonValue]:

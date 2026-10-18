@@ -1,13 +1,7 @@
-/* Charts, showcase, diagnostics, and the S8 walkthrough components.
-   Split from global.css. */
-
-/* ---------------------------------------------------------------------------
-   Showcase
-   Charts are hand-drawn SVG rather than a library: the LCP budget and the
-   type-aware lint configuration both make a dependency expensive, and every
-   chart here needs the same axis and legend furniture. Colours come from the
-   tokens above so a panel follows the theme without knowing what it is.
-   --------------------------------------------------------------------------- */
+/* Figures: hand-drawn SVG charts and their furniture, the walkthrough
+   diagrams, and the LiveFit demo panel. Charts are drawn by hand rather than
+   with a library, and every colour is a token, so a figure follows the theme
+   without knowing what it is. */
 
 .chart-figure { margin: 0; }
 .chart-figure svg { display: block; width: 100%; height: auto; overflow: visible; }
@@ -19,7 +13,6 @@
 .chart-tick { fill: var(--text-muted); font-family: var(--font-mono); font-size: 10px; }
 .chart-axis-label { fill: var(--text-muted); font-size: 11px; letter-spacing: .02em; }
 .chart-annotation { fill: var(--text-muted); font-size: 11px; }
-.chart-step { fill: none; stroke-width: 1.5; }
 .chart-line { fill: none; stroke-width: 2; }
 .chart-line--baseline { stroke-width: 1.5; stroke-dasharray: 4 3; }
 .chart-reference { stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 6 4; }
@@ -27,21 +20,6 @@
 .chart-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0 0; padding: 0; list-style: none; color: var(--text-muted); font-size: 12px; }
 .chart-legend li { display: flex; gap: 7px; align-items: center; }
 .chart-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
-
-.marker-grid { display: grid; gap: 20px 24px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); margin: 18px 0 20px; }
-
-.showcase-pipeline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 20px 0; }
-.showcase-pipeline span, .showcase-pipeline strong { padding: 7px 12px; border: 1px solid var(--border); border-radius: 3px; background: var(--surface); color: var(--ink-700); font-size: 12px; }
-.showcase-pipeline strong { border-color: var(--accent); background: var(--tint-accent); color: var(--accent-strong); }
-.showcase-pipeline span:not(:last-child)::after, .showcase-pipeline strong::after { content: ""; }
-
-.showcase-schema { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 12px 0 16px; padding: 0; list-style: none; }
-.showcase-schema li { display: flex; gap: 8px; align-items: center; color: var(--ink-700); font-size: 13px; }
-
-/* ---------------------------------------------------------------------------
-   Walkthrough components (S8): Figure, Diagnostics and BinningComparison.
-   Diagnostics and BinningComparison lean on the chart-figure/chart-* classes
-   above rather than inventing new furniture. --------------------------- */
 
 .chart-figure img { display: block; width: 100%; height: auto; }
 
@@ -61,34 +39,19 @@
 .score-space-runs__run { stroke-width: 2; stroke-linecap: round; }
 .score-space-runs__label { fill: var(--text); font-size: 12px; font-weight: 600; }
 
-.diagnostics { margin: 20px 0; }
-.diagnostics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 0; padding: 0; }
-.diagnostics-item { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 18px 20px; border: 1px solid var(--border); background: var(--surface-raised); }
-.diagnostics-item__label { margin: 0; color: var(--text-muted); font-family: var(--font-mono); font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
-.diagnostics-item__value { margin: 0; color: var(--text); font-family: var(--font-heading); font-size: 26px; font-weight: 590; line-height: 1.15; }
-.diagnostics-item__meaning { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.45; }
-.diagnostics figcaption { margin-top: 10px; color: var(--text-muted); font-size: 12px; }
-
 .binning-comparison__label { fill: var(--ink-700); font-family: var(--font-body); font-size: 12px; }
 .binning-comparison__value { fill: var(--text); font-family: var(--font-mono); font-size: 12px; font-weight: 600; }
 .binning-comparison__bar { fill: var(--border-strong); }
 .binning-comparison__bar--scorequant { fill: var(--accent); }
 
-/* ---------------------------------------------------------------------------
-   ApertureStrip (M13-B, Michelson walkthrough): stacked bands of coloured
-   runs against a shared fringe-phase axis. Runs get a stroke so two runs of
-   the same counter colour separated only by a boundary (not by a different
-   run in between) still read as distinct rectangles. -------------------- */
+/* ApertureStrip: stacked bands of coloured runs against a shared fringe-phase
+   axis. Runs get a stroke so two neighbouring runs of one colour still read as
+   distinct rectangles. */
 
 .aperture-strip__label { fill: var(--ink-700); font-family: var(--font-body); font-size: 12px; }
 .aperture-strip__run { stroke: var(--surface-raised); stroke-width: 1; }
 
-/* ---------------------------------------------------------------------------
-   MichelsonBudgetExplorer: the counter-budget radios and reset button. The
-   radios are styled like .filter-chip (components.css) and the reset button
-   like .live-fit__button--secondary (live-fit.css); kept as their own rules,
-   rather than reusing those class names directly, since this control isn't
-   a filter row or a LiveFit action. ------------------------------------- */
+/* MichelsonBudgetExplorer: the counter-budget radios and reset button. */
 
 .budget-explorer { margin: 20px 0; }
 .budget-explorer__controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 14px; padding: 0; border: 0; }
@@ -159,3 +122,31 @@
 .bin-composition__table tbody th { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; white-space: nowrap; }
 .bin-composition__cell { padding: 6px 8px; text-align: right; font-family: var(--font-mono); font-size: 12px; color: var(--text); background: color-mix(in srgb, var(--accent) calc(var(--cell-strength) * 50%), transparent); }
 .bin-composition__cell--dominant { font-weight: 600; }
+
+/* LiveFit: the committed result plus one button that reruns it in the browser
+   (`src/components/liveFit/`). */
+.live-fit { margin-top: 18px; padding: 18px 20px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-raised); }
+.live-fit__committed { display: flex; flex-direction: column; gap: 2px; }
+.live-fit__badge { display: inline-block; width: max-content; padding: 2px 9px; border-radius: 999px; color: var(--text-muted); background: var(--surface-sunken); font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; }
+.live-fit__value { color: var(--text); font-family: var(--font-mono); font-size: 22px; font-weight: 650; }
+.live-fit__caption { color: var(--text-muted); font-size: 13px; }
+.live-fit__description { margin: 10px 0 0; color: var(--text-muted); font-size: 13px; line-height: 1.55; }
+.live-fit__button { margin-top: 14px; padding: 9px 16px; border: 1px solid var(--accent); border-radius: 7px; color: var(--on-accent); background: var(--accent); font-size: 13px; font-weight: 620; cursor: pointer; }
+.live-fit__button:hover:not(:disabled) { border-color: var(--accent-strong); background: var(--accent-strong); }
+.live-fit__button:disabled { cursor: not-allowed; opacity: 0.55; }
+.live-fit__button--secondary { margin-top: 0; color: var(--text); background: var(--surface-sunken); border-color: var(--border-strong); }
+.live-fit__button--secondary:hover:not(:disabled) { background: var(--surface); border-color: var(--border-strong); }
+.live-fit__refusal, .live-fit__error { margin: 10px 0 0; color: var(--bad); font-size: 13px; line-height: 1.5; }
+.live-fit__status { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 13px; }
+.live-fit__state { padding: 2px 9px; border-radius: 999px; color: var(--accent-strong); background: var(--tint-accent); font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; }
+.live-fit__state--complete { color: var(--good); background: var(--tint-good); }
+.live-fit__state--error { color: var(--bad); background: var(--tint-bad); }
+.live-fit__stage { color: var(--text-muted); }
+.live-fit__progress { width: 130px; accent-color: var(--accent); }
+.live-fit__results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-bottom: 14px; }
+.live-fit__result { display: flex; flex-direction: column; gap: 2px; }
+.live-fit__result--live { padding-left: 14px; border-left: 2px solid var(--accent); }
+.live-fit__actions { display: flex; }
+@media (max-width: 640px) {
+  .live-fit__results { grid-template-columns: 1fr; }
+}

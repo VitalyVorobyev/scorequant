@@ -1,5 +1,5 @@
-/* Design tokens: three-tier palette, semantic aliases, dark-mode override,
-   and dark-only instrument touch-ups. Split from global.css. */
+/* Design tokens: a raw palette, semantic aliases of it, the dark-mode
+   override, and the few dark-only touch-ups that tokens cannot express. */
 
 @import "@fontsource-variable/space-grotesk";
 @import "@fontsource-variable/inter";
@@ -31,19 +31,9 @@
 
   /* ------------------------------------------------------------------
      Tier 2 -- semantic. Aliases of Tier 1, named by role rather than by
-     hue, for the page's light editorial surface. Dark mode (a later,
-     separate step) repoints these; today every alias resolves to exactly
-     the Tier 1 value the rule already rendered, so nothing here changes a
-     rendered colour.
-
-     Not every Tier 1 ink gets a role name: --text aliases --ink-950 (its
-     18 direct page uses are the dominant body/heading ink; the file's
-     draft note proposed --ink-900, which turned out to have only 2 direct
-     uses and not the "main text" role -- corrected here). --ink-900,
-     --ink-800 and --ink-700 keep their own narrower direct uses unaliased;
-     the page's text hierarchy is finer than three semantic steps.
-     --surface-sunken and --accent-quiet alias the same Tier 1 value
-     today; kept as two names because they diverge in dark mode. */
+     hue. Not every ink gets a role name: --ink-900 to --ink-700 keep their
+     own narrower uses, since the text hierarchy is finer than three steps.
+     ------------------------------------------------------------------ */
   --surface: var(--paper-warm);
   --surface-raised: var(--paper);
   --surface-sunken: var(--paper-blue);
@@ -59,12 +49,8 @@
   --warn: var(--amber);
   --bad: var(--red);
 
-  /* Four roles the first token pass did not name, each of which pairs a colour
-     with a *background* rather than with the page ground. Without them the pair
-     cannot flip together: a rule saying `color: white` on `background:
-     var(--accent)` keeps its white when the accent lightens for dark mode, and
-     a literal light tint keeps its tint under text that has flipped light. Both
-     were measured failing before these existed. */
+  /* Roles that pair a colour with a background other than the page ground,
+     so that the pair flips together in dark mode. */
   --on-accent: #ffffff;
   --tint-accent: #f1f6ff;
   --tint-good: #eef9f7;
@@ -77,35 +63,14 @@
      image it is matting. Deliberately absent from the dark block below. */
   --figure-paper: #ffffff;
 
-  /* ------------------------------------------------------------------
-     Tier 3 -- instrument. The dark palette already used, as literals, by
-     the "machine" surfaces embedded in the light page: code blocks.
-     Deliberately constant -- these do not move in dark mode; the page
-     ground moves toward them instead.
-
-     The free-form browser Lab console and the score-space fixture this
-     tier also served are gone; their now-unused tokens were removed with
-     them. `--inst-ground`, `--inst-deep`, `--inst-text` and `--inst-muted`
-     stay pinned by `tests/contrast.test.ts` even though nothing currently
-     renders them. */
-  --inst-ground: #091a37; /* pinned by tests/contrast.test.ts */
-  --inst-deep: #061329; /* pinned by tests/contrast.test.ts */
-  --inst-text: #e7eef8; /* pinned by tests/contrast.test.ts */
-  --inst-muted: #8ea2ba; /* pinned by tests/contrast.test.ts */
-
-  --shadow-soft: 0 18px 54px rgb(7 20 45 / 9%);
   --font-heading: "Space Grotesk Variable", "Space Grotesk", sans-serif;
   --font-body: "Inter Variable", Inter, sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
-  /* Research headings only: a system serif so the atlas reads as a paper, no font download. */
-  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
   --page: min(100% - 48px, 1376px);
   --reading: 72ch;
-  /* The sticky header's height, and therefore the offset every fixed or
-     scrolled-to element under it has to clear. A token rather than a literal
-     because `responsive.css` shortens the header at 820px, and the reading
-     progress bar, the mobile nav drawer and the headings' `scroll-margin-top`
-     all have to follow it to the pixel. */
+  /* The sticky header's height: a token because it shortens at 820px
+     (shell.css), and the reading progress bar, the mobile nav and the
+     headings' `scroll-margin-top` all have to follow it. */
   --header-height: 72px;
   /* The widest published code line, plus a little air. Code sets its own
      measure; see `.doc-article__body`. */
@@ -116,18 +81,8 @@
   color-scheme: light;
 }
 
-/* ------------------------------------------------------------------
-   Dark mode does not recolour the site -- it promotes the Tier 3
-   instrument ground (already the palette of the "machine" surfaces:
-   code blocks) to be the *page* ground. Overriding
-   Tier 1 here, and nothing else, is what does that: Tier 2 is aliases of
-   Tier 1, so the whole semantic layer repoints automatically, and so do
-   the handful of rules elsewhere that still name a Tier 1 token
-   directly -- that is what makes the flip complete. Tier 3 is
-   deliberately absent from this block: the instrument surfaces keep
-   their current colours in both themes, and the page ground moves to
-   meet them instead of the other way around.
-   ------------------------------------------------------------------ */
+/* Dark mode overrides Tier 1 and nothing else: Tier 2 aliases it, so the whole
+   semantic layer, and every rule naming a Tier 1 token directly, follows. */
 :root[data-theme="dark"] {
   --ink-950: #edf3fb;
   --ink-900: #dbe6f4;
@@ -145,10 +100,7 @@
   --cyan: #68dace;
   --amber: #e0a341;
   --red: #ff9ea8;
-  /* Dark counterparts of the four pairing roles. Measured against their own
-     grounds: button ink on the accent fill 8.70:1, chip text on the accent tint
-     8.28:1, the provenance note's body text 6.24:1 and its link 8.94:1, and the
-     error hint 8.08:1 -- each above its light-mode equivalent. */
+  /* Dark counterparts of the four pairing roles, each measured on its own ground. */
   --on-accent: #04101f;
   --tint-accent: #152c50;
   --tint-good: #0e2b29;
@@ -156,31 +108,11 @@
   color-scheme: dark;
 }
 
-/* Once the page ground promotes to dark, a few surfaces that were always
-   rendered dark stop separating from it by contrast alone, or -- for the
-   two rules whose dark ground is Tier 1 rather than Tier 3 -- lose their
-   ground entirely, since Tier 1 flips. Fixed here, dark mode only, with
-   the smallest touch that restores a visible panel; light mode is
-   untouched and none of these are restyled. */
-/* `.code-block` renders a dark code panel on the light page by painting a
-   Tier 1 ink token as its background rather than a Tier 3 instrument token
-   -- exactly the "still name a Tier 1 token directly" case the block above
-   calls out, except here the token is standing in for a ground, not a text
-   colour, so the flip empties it out instead of completing it. Pinned back
-   to the value it already rendered, so the panel is unchanged in both
-   themes. */
+/* Dark-only touch-ups for the few rules whose colours tokens cannot carry. The
+   code panel paints a Tier 1 ink as its ground, and the snippet label puts
+   --text on a light pill; both would flip, so both are pinned to the value they
+   render in light mode. The header's translucent ground is an rgb() snapshot
+   with alpha, so it needs its own dark snapshot. */
 [data-theme="dark"] .code-block { background: #07142d; }
-/* The snippet output label is a light mint pill with dark text (`--text`)
-   sitting on top of the dark output block; `--text` flips light along
-   with the rest of Tier 1, which would put near-white text on the same
-   light mint. Pinned to its original dark ink so the label keeps reading
-   the same way it does today. */
 [data-theme="dark"] .snippet__output-label { color: #07142d; }
-/* The header's translucent background is a literal rgb() snapshot of
-   --paper-warm/--line-strong with alpha baked in for the blur underneath --
-   custom properties cannot carry a separate alpha channel here, so it was
-   never going to follow the Tier 1 override the way `background:
-   var(--surface)` would. This is the same snapshot taken of the dark
-   palette above instead of the light one. Without it, the header stays
-   light over a dark page. */
 [data-theme="dark"] .site-header { border-bottom-color: rgb(49 73 107 / 70%); background: rgb(6 19 41 / 92%); }

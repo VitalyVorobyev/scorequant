@@ -1,13 +1,21 @@
-/* Docs reading frames: .docs-frame, .doc-article*, tables, the reading
-   measure. Split from global.css. */
+/* Reading surfaces: the dark code and snippet panels, the docs frame, prose,
+   tables, table of contents, reading progress and displayed maths. */
+
+.code-block { overflow-x: auto; padding: 22px; border: 1px solid #263d5c; border-radius: 7px; color: #dbe8f8; background: var(--ink-950); font-family: var(--font-mono); font-size: 12px; line-height: 1.8; white-space: pre; }
+/* Snippet: one program cell's code, then its captured output. The output is
+   told apart from the code without relying on colour alone: an explicit
+   "Output" label and a left accent border, on a darker, greener ground. */
+.snippet { margin: 26px 0; }
+.snippet__title { margin: 0 0 10px; color: var(--text-muted); font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+.snippet__output { margin-top: 10px; }
+.snippet__output-label { display: inline-block; margin-bottom: 6px; padding: 2px 9px; border-radius: 3px; color: var(--text); background: #cdf1ea; font-family: var(--font-mono); font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
+.code-block.snippet__output-block { border-left: 3px solid var(--cyan); color: #bfe9e2; background: #05141f; }
 
 .docs-frame { width: var(--page); margin: 0 auto; padding: 76px 0 96px; }
 .doc-article__body { max-width: var(--code); min-width: 0; }
-/* Prose keeps the 72ch measure; code, tables and figures keep their own. A
-   sentence that runs past 72ch is tiring to read, but an f-string naming two
-   attributes and a format spec is one token-stream that cannot be re-wrapped,
-   so forcing both into one measure clipped the code instead. Capping the
-   children rather than the body is what lets the two coexist in one column. */
+/* Prose keeps the 72ch measure; code, tables and figures keep their own, since
+   a long code line cannot be re-wrapped. Capping the children rather than the
+   body lets the two share one column. */
 .doc-article__body .markdown > p,
 .doc-article__body .markdown > ul,
 .doc-article__body .markdown > ol,
@@ -28,52 +36,31 @@
   .doc-article__toc { display: none; }
 }
 
-/* Reading progress, pinned to the underside of the sticky header. It is fixed,
-   so it is not a grid item of `.doc-article--with-toc` despite being written
-   inside it; `z-index` sits one below the header's 50 so the open mobile nav
-   drawer covers it. The fill is scaled rather than resized because a transform
-   is composited: a `width` animated on every scroll frame relayouts the page it
-   is reporting on. Reduced motion is already handled globally in
-   `responsive.css`, which flattens every transition duration. */
+/* Reading progress, pinned to the underside of the sticky header, one z-index
+   below it so the open mobile nav covers it. The fill is scaled rather than
+   resized: a transform is composited, a `width` relayouts on every frame. */
 .reading-progress { position: fixed; z-index: 49; top: var(--header-height); right: 0; left: 0; height: 2px; }
 .reading-progress__fill { height: 100%; background: var(--accent); transform-origin: left center; transition: transform 90ms linear; }
-/* The reader's section, in the contents list. `--accent` on `--surface` is
-   already pinned at 4.5:1 by tests/contrast.test.ts, so this adds no colour and
-   no new contrast pair; the marker restates the same thing without colour, for
-   a reader who cannot separate the two blues. The offset lands it on the
-   panel's own left rule (22px of padding plus its 1px border). */
+/* The reader's section, in the contents list. The marker restates the colour
+   change without colour, on the panel's own left rule (22px padding + 1px). */
 .doc-article__toc li { position: relative; }
 .doc-article__toc a[aria-current] { color: var(--accent); font-weight: 550; }
 .doc-article__toc li:has(a[aria-current])::before { position: absolute; top: 0; bottom: 0; left: -23px; width: 2px; background: var(--accent); content: ""; }
-/* An anchor click lands a heading at the very top of the viewport, which the
-   sticky header covers. Clearing it is also what keeps the browser's landing
-   position and the scroll-spy's idea of the current section in step. */
+/* An anchor click lands a heading under the sticky header; clearing it also
+   keeps the landing position and the scroll-spy in step. */
 .doc-article .markdown :is(h1, h2, h3, h4) { scroll-margin-top: calc(var(--header-height) + 24px); }
 
-/* The reading measure belongs to the prose, not to the prose *plus* its table
-   of contents. Capping this wrapper at --reading made `.doc-article--with-toc`
-   share 72ch between the body and the 232px table of contents, so every docs
-   route -- walkthroughs and research included -- rendered its prose at 351px of
-   a 1376px frame, about 45 characters a line, with wide code clipped mid-token.
-   `.doc-article__body` already caps itself at --reading, so this wrapper only
-   has to leave room for the contents column beside it: 232px plus the 58px
-   grid gap. */
+/* The body caps itself; this wrapper only leaves room for the contents column
+   beside it: 232px plus the 58px grid gap. */
 .docs-frame__content { max-width: min(100%, calc(var(--code) + 290px)); min-width: 0; }
-/*
- * Without an explicit rule, a `.doc-article` prose link fell back to Infima's
- * default `.markdown a` styling: `--accent`, no underline. axe's
- * link-in-text-block check (color alone must distinguish a link from its
- * surrounding running text, or the link needs a non-colour cue) passed that in
- * light mode -- --blue against --ink-950 measures 3.80:1 -- but failed it in
- * dark mode, where --blue's dark counterpart sits close in lightness to the
- * near-white body text (1.97:1, against the 3:1 the rule requires). The
- * underline removes the reliance on colour in both themes and matches the
- * site's existing convention (`.home-aside a`).
- */
+/* Prose links are underlined: in dark mode the link blue is too close in
+   lightness to the body text for colour alone to mark a link. */
 .doc-article .markdown a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .doc-article .markdown a:hover { color: var(--accent-strong); }
 
-/* Docs-plugin article content (/walkthroughs, /get-started). */
+/* Wide tables scroll on their own (and get a tab stop, see MDXComponents.tsx).
+   A visually hidden table is a chart's text alternative and must not become a
+   scroll region no keyboard can reach. */
 .doc-article .markdown table:not(.visually-hidden) { display: block; overflow-x: auto; width: 100%; font-size: 15px; }
 .doc-article .markdown th, .doc-article .markdown td { border: 1px solid var(--border); }
 .doc-article .markdown blockquote {
@@ -84,36 +71,12 @@
   font-size: 18px;
 }
 
-/*
- * Infima stripes every even table row with `rgba(0, 0, 0, .03)`, which over the
- * portal's page background resolves to #f1f2f3. The portal's link blue (--blue,
- * #276be8) measures 4.3:1 against that, below the WCAG AA threshold of 4.5:1 that
- * the axe scan enforces — so a link in an even row failed the scan on every page
- * with a table. Portal tables are plain paper with the portal's own rules, which
- * is both the accessible answer and the consistent one.
- *
- * The variable is `--ifm-table-stripe-background`. Infima also defines
- * `--ifm-table-stripe-background-color`, which is NOT what the stripe rule reads;
- * setting that one changes nothing.
- */
+/* No Infima row stripes: the link blue fails AA on the stripe. The stripe rule
+   reads `--ifm-table-stripe-background`, not `...-background-color`. */
 .doc-article .markdown { --ifm-table-stripe-background: transparent; }
 
-/*
- * The horizontal-scroll rule above deliberately skips `.visually-hidden`
- * tables. `BinningComparison` renders one as the text alternative to its bar
- * chart; making a one-pixel clipped table a scroll container produces a
- * scrollable region no keyboard can reach, which the accessibility scan reports
- * as a serious violation at phone width. It is the chart's caption, not a
- * table anyone scrolls.
- */
-
-/*
- * Inline `code` inside a link sits on the code tint rather than on paper, and
- * the link blue measures 4.49:1 against it -- one hundredth below the WCAG AA
- * threshold, which the accessibility scan reports as a serious violation. The
- * darker blue is already a link colour in this palette and measures 7.43:1 on
- * the same tint, so the link still reads as a link.
- */
+/* Inline code in a link sits on the code tint, where the link blue misses AA
+   by a hair; the darker link blue clears it. */
 .doc-article .markdown a code { color: var(--accent-strong); }
 
 /* Displayed equations (KaTeX, walkthroughs only). A scroll container would
@@ -124,11 +87,3 @@
 @media (max-width: 640px) {
   .doc-article .katex-display > .katex { white-space: normal; font-size: 1.05em; }
 }
-
-/* A wide table a page wraps by hand: the wrapper is the scroll container and
-   is focusable, so the region is reachable from the keyboard; the table
-   itself must then lay out as a table rather than as Infima's own block
-   scroller. */
-.doc-article .table-scroll { overflow-x: auto; margin: 20px 0; }
-.doc-article .table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.doc-article .table-scroll table:not(.visually-hidden) { display: table; overflow: visible; width: 100%; }

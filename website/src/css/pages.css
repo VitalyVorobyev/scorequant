@@ -1,0 +1,99 @@
+/* Page furniture shared across routes, the home and research article, and the
+   walkthroughs index. */
+
+.provenance-note { display: flex; gap: 10px; align-items: start; padding: 14px 16px; border-left: 2px solid var(--good); color: var(--text-muted); background: var(--tint-good); font-size: 13px; }
+
+/* The provenance note sits on a mint ground, where the standard link blue
+   measures just under the AA threshold for body text. The darker blue clears
+   it, and the underline gives the link a cue that does not depend on colour. */
+.provenance-note a { color: var(--accent-strong); text-decoration: underline; text-underline-offset: 2px; }
+.provenance-note a:hover { text-decoration-thickness: 2px; }
+
+/* A link out of the portal into the MkDocs reference opens in a new tab and
+   says so: the arrow is the visual cue, a `.visually-hidden` suffix the spoken
+   one. The glyph is nudged to sit with the x-height of the words before it. */
+.reference-link__icon { margin-left: .25em; vertical-align: -.08em; opacity: .75; }
+a:hover > .reference-link__icon { opacity: 1; }
+
+/* Visually hidden but reachable: headings that only structure the page for
+   assistive technology, and the text alternatives charts render beside their
+   SVG. */
+.visually-hidden {
+  position: absolute;
+  overflow: hidden;
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  white-space: nowrap;
+}
+
+/* Home and research pages: an article at the reading measure. */
+.home-article { width: var(--page); max-width: var(--reading); margin: 0 auto; padding: 56px 0 88px; color: var(--ink-700); font-size: 16px; line-height: 1.7; }
+.home-article h1 { margin: 0 0 14px; font-family: var(--font-heading); font-size: 30px; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; color: var(--text); }
+.home-article h2 { margin: 40px 0 12px; font-family: var(--font-heading); font-size: 21px; font-weight: 600; letter-spacing: -.015em; line-height: 1.25; color: var(--text); }
+.home-article p { margin: 0 0 14px; }
+.home-article__lead { color: var(--text); font-size: 18px; line-height: 1.55; }
+.home-article__install { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; margin-bottom: 22px; }
+.home-article__install code { display: inline-block; padding: 6px 10px; border: 1px solid var(--border); background: var(--surface-raised); color: var(--ink-900); font-family: var(--font-mono); font-size: 14px; }
+.home-article p code, .home-article li code { padding: .1em .35em; border-radius: 4px; background: var(--surface-sunken); color: var(--ink-900); font-family: var(--font-mono); font-size: .92em; }
+.home-article a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.home-article a:hover { color: var(--accent-strong); }
+.home-article strong { color: var(--text); font-weight: 640; }
+.home-article h3 { margin: 26px 0 8px; font-family: var(--font-heading); font-size: 17px; font-weight: 600; letter-spacing: -.01em; line-height: 1.3; color: var(--text); }
+.home-article .chart-figure { margin: 0 0 8px; }
+.home-article .chart-figure figcaption { font-size: 13px; line-height: 1.5; }
+/* The four walkthroughs, one result line each. The whole card is the link
+   target, through the title's `::after`, as on the walkthroughs index. */
+.home-cards { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.home-card { position: relative; padding: 12px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-raised); transition: border-color .15s ease; }
+.home-card:hover, .home-card:focus-within { border-color: var(--border-strong); }
+.home-article .home-card__title { color: var(--text); font-family: var(--font-heading); font-size: 16px; font-weight: 600; text-decoration: none; }
+.home-card__title::after { position: absolute; inset: 0; border-radius: 6px; content: ""; }
+.home-card:hover .home-card__title { color: var(--accent-strong); }
+.home-card p { margin: 2px 0 0; font-size: 15px; line-height: 1.5; }
+.tex-display { margin: 6px 0 16px; }
+.tex-display .katex-display { margin: 0; }
+@media (max-width: 640px) {
+  .home-article { padding: 36px 0 64px; }
+  .home-article h1 { font-size: 26px; }
+  .tex-display .katex-display > .katex { white-space: normal; font-size: 1.02em; }
+}
+
+/* The walkthroughs index: one card per applied problem, four on one desktop
+   screen. The docs column is 800px wide for prose; the card grid alone
+   breaks out of it (`:has`), the heading and intro keep the reading measure. */
+.docs-frame:has(.walkthrough-index) { padding-top: 48px; }
+.docs-frame__content:has(.walkthrough-index), .doc-article__body:has(.walkthrough-index) { max-width: none; }
+.doc-article__body:has(.walkthrough-index) .markdown > h1 { margin-bottom: 10px; }
+.walkthrough-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 22px 0 0; }
+.walkthrough-card { position: relative; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 24px; padding: 22px 24px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-raised); transition: border-color .15s ease; }
+.walkthrough-card:hover, .walkthrough-card:focus-within { border-color: var(--border-strong); }
+.walkthrough-card__vignette { display: block; width: 100%; height: auto; align-self: start; }
+.walkthrough-card__body { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.walkthrough-card__badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.walkthrough-card__badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 3px; background: var(--tint-accent); color: var(--accent-strong); font-size: 12px; font-weight: 600; letter-spacing: .01em; }
+.walkthrough-card h2 { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 600; letter-spacing: -.015em; line-height: 1.25; }
+.walkthrough-card h2 a { color: var(--text); text-decoration: none; }
+/* The title link covers the whole card, so the card is the click target while the
+   link stays the one focusable, named control. */
+.walkthrough-card h2 a::after { position: absolute; inset: 0; border-radius: 8px; content: ""; }
+.walkthrough-card h2 a:focus-visible { outline: none; }
+.walkthrough-card h2 a:focus-visible::after { outline: 3px solid #59a9ff; outline-offset: 2px; }
+.walkthrough-card:hover h2 a { color: var(--accent-strong); }
+.walkthrough-card p { margin: 0; }
+.walkthrough-card__lead { color: var(--text); font-size: 15px; line-height: 1.5; }
+.walkthrough-card__problem { display: -webkit-box; overflow: hidden; color: var(--text-muted); font-size: 14px; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.walkthrough-card__data { color: var(--ink-700); font-size: 13px; line-height: 1.5; }
+.walkthrough-card__data span { margin-right: 6px; color: var(--text-faint); font-family: var(--font-mono); font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
+.walkthrough-card__tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 0; padding-top: 10px; border-top: 1px solid var(--border); }
+.walkthrough-card__tags > div { display: contents; }
+.walkthrough-card__tags dd { margin: 0; }
+.walkthrough-card__tags dd code { display: inline-block; padding: 2px 7px; border-radius: 4px; background: var(--surface-sunken); color: var(--ink-900); font-family: var(--font-mono); font-size: 12px; line-height: 1.5; }
+@media (max-width: 980px) {
+  .walkthrough-cards { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+@media (max-width: 640px) {
+  .walkthrough-card { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 20px 18px; }
+  .walkthrough-card__vignette { max-width: 120px; }
+  .walkthrough-card__problem { -webkit-line-clamp: 3; }
+}

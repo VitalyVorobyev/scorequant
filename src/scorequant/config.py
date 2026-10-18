@@ -93,8 +93,9 @@ def dtype_tolerance(float64_value: float, dtype: DTypeLike) -> float:
     Float64 returns ``float64_value`` unchanged. Any other float dtype keeps
     the same share of its decimal precision: a tolerance ``eps64 ** k`` becomes
     ``eps ** k``, so the float64 default of 1e-10 becomes about 4e-5 in
-    float32. A fixed 1e-10 would sit below float32 rounding noise, where a
-    stability or geometry verdict at that tolerance certifies nothing.
+    float32. A fixed 1e-10 sits far below float32 resolution, so a stability
+    or geometry verdict stated at it would claim a precision the arithmetic
+    does not have.
     """
     resolved = np.dtype(dtype)
     if resolved == np.float64:

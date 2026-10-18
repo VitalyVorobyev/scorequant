@@ -36,11 +36,11 @@ OUTPUT = ROOT / "website/src/generated/walkthrough-data.json"
 #: rejected, so a walkthrough cannot quietly start sourcing numbers from a file
 #: that nothing pins.
 EVIDENCE = (
-    "docs/examples/assets/hep-classifier.json",
-    "docs/examples/assets/michelson-phase.json",
-    "docs/examples/assets/door3-classifier.json",
-    "docs/usecases/assets/cell_population.json",
-    "docs/usecases/assets/flowcyt_profiled_ds.json",
+    "examples/outputs/hep-classifier.json",
+    "examples/outputs/michelson-phase.json",
+    "examples/outputs/door3-classifier.json",
+    "examples/outputs/cell_population.json",
+    "examples/outputs/flowcyt_profiled_ds.json",
     "examples/data/flowcyt_fixture.json",
     "examples/data/flowcyt_walkthrough.json",
     "examples/data/hep_higgsml_fixture.json",
@@ -100,11 +100,11 @@ def _text(value: object) -> str:
     return str(value)
 
 
-HEP = "docs/examples/assets/hep-classifier.json"
-MICHELSON = "docs/examples/assets/michelson-phase.json"
-DOOR3 = "docs/examples/assets/door3-classifier.json"
-FLOWCYT_STUDY = "docs/usecases/assets/cell_population.json"
-FLOWCYT_PROFILED = "docs/usecases/assets/flowcyt_profiled_ds.json"
+HEP = "examples/outputs/hep-classifier.json"
+MICHELSON = "examples/outputs/michelson-phase.json"
+DOOR3 = "examples/outputs/door3-classifier.json"
+FLOWCYT_STUDY = "examples/outputs/cell_population.json"
+FLOWCYT_PROFILED = "examples/outputs/flowcyt_profiled_ds.json"
 FLOWCYT_FIXTURE = "examples/data/flowcyt_fixture.json"
 FLOWCYT_WALKTHROUGH = "examples/data/flowcyt_walkthrough.json"
 HEP_FIXTURE = "examples/data/hep_higgsml_fixture.json"
@@ -990,7 +990,7 @@ def build_michelson_sweep() -> dict[str, object]:
     """Assemble the Michelson sweep's aperture runs for every swept bin budget.
 
     Read straight from the committed evidence file
-    ``docs/examples/assets/michelson-phase.json`` -- the study's own sweep
+    ``examples/outputs/michelson-phase.json`` -- the study's own sweep
     rows, not a re-run -- so a walkthrough can draw the aperture (equal-width
     contiguous segments versus the fitted rule's comb) for every bin budget
     the study compares, and a browser refit can redraw it against the same
@@ -1219,11 +1219,11 @@ def write_walkthrough_score_tables() -> dict[str, int]:
 #: static tree rather than committed twice. ``pnpm build`` and ``pnpm validate``
 #: both run this generator, so the copies exist wherever the site is built.
 FIGURES = {
-    "hep-cells.png": "docs/examples/assets/hep-cells.png",
-    "hep-budget.png": "docs/examples/assets/hep-budget.png",
-    "michelson-d-geometry.png": "docs/examples/assets/michelson-d-geometry.png",
-    "michelson-profiled-ds.png": "docs/examples/assets/michelson-profiled-ds.png",
-    "door3-classifier.png": "docs/examples/assets/door3-classifier.png",
+    "hep-cells.png": "examples/outputs/hep-cells.png",
+    "hep-budget.png": "examples/outputs/hep-budget.png",
+    "michelson-d-geometry.png": "examples/outputs/michelson-d-geometry.png",
+    "michelson-profiled-ds.png": "examples/outputs/michelson-profiled-ds.png",
+    "door3-classifier.png": "examples/outputs/door3-classifier.png",
 }
 
 

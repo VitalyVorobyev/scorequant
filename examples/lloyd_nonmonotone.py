@@ -1,23 +1,22 @@
 """The unguarded batch Mahalanobis-Lloyd step, and what the guard does instead.
 
-This script is the single deterministic generator behind the
-`docs/examples/lloyd-nonmonotone.md` page. It runs
+This script is the deterministic generator behind the Lloyd counterexample
+used in the paper and the explainers. It runs
 
 * the committed eight-row counterexample: one frozen-metric batch relabeling
   that lowers `log det` of the binned information while improving the
   frozen-metric distortion it actually minimizes, together with the unguarded
   iteration continued to its own fixed point;
 * the same eight rows under `scorequant.MahalanobisLloydConfig` with
-  `guard="reject"` and with `guard="exchange"`, which is the acceptance trace
-  the page publishes;
+  `guard="reject"` and with `guard="exchange"`, which is the acceptance trace;
 * a failure-mode ledger: many unguarded runs from random starting labels across
   three synthetic problems, three sample sizes, and two bin budgets, counting
   how many of them ever step downhill and how many vacate a cell entirely;
 * one large guarded run from random starting labels, so the batch phase has
   real work to do and the handoff to the exact exchange is visible;
 
-and writes `docs/examples/assets/lloyd-nonmonotone.json` plus
-`docs/examples/assets/lloyd-nonmonotone.png`.
+and writes `examples/outputs/lloyd-nonmonotone.json` plus
+`examples/outputs/lloyd-nonmonotone.png`.
 
 Run it with::
 
@@ -44,8 +43,8 @@ from examples.synthetic_problems import (
     spectral_templates,
 )
 
-FIGURE_PATH = Path("docs/examples/assets/lloyd-nonmonotone.png")
-METRICS_PATH = Path("docs/examples/assets/lloyd-nonmonotone.json")
+FIGURE_PATH = Path("examples/outputs/lloyd-nonmonotone.png")
+METRICS_PATH = Path("examples/outputs/lloyd-nonmonotone.json")
 
 #: The committed eight-row score table of the counterexample. Two parameters,
 #: three cells, equal weights: the smallest configuration on which one frozen
@@ -624,7 +623,7 @@ def run_study(
     -------
     Study
         The exact structure written to
-        ``docs/examples/assets/lloyd-nonmonotone.json``, plus the objects the
+        ``examples/outputs/lloyd-nonmonotone.json``, plus the objects the
         figure draws.
     """
     resolved_sizes = example_scale(LEDGER_SIZES, (60, 250)) if sizes is None else sizes

@@ -323,7 +323,7 @@ def test_showcase_chart_data_is_current() -> None:
 # the shape a run-length encoding must hold: the runs tile `[0, uMax]`
 # exactly and every label is a valid bin index the labeling actually uses.
 MICHELSON_SWEEP_DATA = ROOT / "website" / "src" / "generated" / "michelson-sweep.json"
-MICHELSON_EVIDENCE = ROOT / "docs" / "examples" / "assets" / "michelson-phase.json"
+MICHELSON_EVIDENCE = ROOT / "examples" / "outputs" / "michelson-phase.json"
 
 
 @pytest.fixture(scope="module")

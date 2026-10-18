@@ -18,7 +18,7 @@ website/static/runtime/pyodide/
 website/static/runtime/wheels/
 flowcyt-results/
 
-# Copied from docs/examples/assets/ by website/scripts/generate_walkthroughs.py;
+# Copied from examples/outputs/ by website/scripts/generate_walkthroughs.py;
 # generated on every build, so not committed a second time.
 website/static/walkthrough-figures/
 setenv.sh

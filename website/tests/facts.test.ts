@@ -9,7 +9,7 @@ vi.mock("../src/generated/walkthrough-data.json", () => ({
     pages: {
       hep: {
         headlineGap: {
-          source: "docs/examples/assets/hep-classifier.json#/scorequant_vs_classifier_binning/profiled_retention_gap",
+          source: "examples/outputs/hep-classifier.json#/scorequant_vs_classifier_binning/profiled_retention_gap",
           text: "0.5008",
           value: 0.5007568385278702
         }

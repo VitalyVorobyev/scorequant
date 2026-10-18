@@ -6,7 +6,7 @@ Hand-added images the portal serves at `/figures/...`, referenced from MDX as
 Files here are **committed**. Its neighbour `../walkthrough-figures/` is not: that
 directory is gitignored and regenerated on every build by
 `website/scripts/generate_walkthroughs.py`, which copies each entry of its `FIGURES`
-map out of `docs/examples/assets/`. A file dropped into `walkthrough-figures/` exists
+map out of `examples/outputs/`. A file dropped into `walkthrough-figures/` exists
 only on the machine that put it there and 404s everywhere else, so put hand-added
 images here instead.
 

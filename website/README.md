@@ -38,7 +38,7 @@ Two directories under `static/`, with opposite rules:
   `<Figure src={siteUrl("figures/name.svg")} ... />`. The Michelson score panels are written here
   by `examples/michelson_phase.py`, so they are regenerable *and* committed.
 - **`static/walkthrough-figures/` is generated and gitignored.** `scripts/generate_walkthroughs.py`
-  refills it on every build by copying each entry of its `FIGURES` map out of `docs/examples/assets/`.
+  refills it on every build by copying each entry of its `FIGURES` map out of `examples/outputs/`.
   A file merely placed there exists only on the machine that placed it and 404s everywhere else.
 
 `tests/figures.test.ts` resolves every `siteUrl("...")` in the MDX against the lane that owns it, so

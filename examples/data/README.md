@@ -26,8 +26,8 @@ ScoreQuant's MIT licence.
 The complete research workflow does not commit its 600,000-cell bounded sample.
 It recreates `flowcyt-results/flowcyt_sample_20000.npz` with deterministic HTTP
 range reads from all 180 upstream FCS files. The complete command, sample digest,
-protocol, and resulting metrics are documented in the
-[FlowCyt use case](../../docs/usecases/flowcyt/index.md).
+protocol, and resulting metrics are in `examples/outputs/cell_population.json`; the narrative is
+the portal's FlowCyt walkthrough.
 
 ## `hep_higgsml_fixture.npz`
 
@@ -41,8 +41,8 @@ licence file of its own; the dataset is licensed under
 record, DOI [`10.5281/zenodo.15131565`](https://doi.org/10.5281/zenodo.15131565). See
 `hep_higgsml_fixture.json` for the complete provenance record -- the upstream commit,
 the fetched-sample SHA-256, the `dopostprocess=False` modelling choice, and the
-measured composition and weight facts -- and the
-[HEP classifier study](../../docs/usecases/hep/index.md) for the full example.
+measured composition and weight facts. The study is `examples/hep_classifier/`; the narrative is
+the portal's HEP walkthrough.
 
 `examples/hep_classifier/fixture.py` is the recorded build procedure; it needs the
 network and packages the project does not depend on, so it is never run by the

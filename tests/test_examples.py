@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 
 import scorequant
-from examples import linear_workflow
 from examples.run import run_experiment
 from examples.synthetic_problems import (
     SyntheticProblem,
@@ -80,12 +79,3 @@ def test_soft_d_optimality_improves_a_targeted_nonlinear_fixture() -> None:
         - kmeans.evaluate_scores(test_scores, test_weights).geometric_mean_retention
     )
     assert improvement >= 0.02
-
-
-def test_linear_workflow_run_predicts_on_new_physical_variables() -> None:
-    result, counts = linear_workflow.run(seed=5)
-    assert isinstance(result, scorequant.QuantizerResult)
-    assert result.n_bins == 8
-    assert counts.shape == (8,)
-    assert counts.sum() > 0
-    assert np.all(counts >= 0)

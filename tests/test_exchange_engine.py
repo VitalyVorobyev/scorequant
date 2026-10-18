@@ -174,3 +174,14 @@ def test_configuration_rejects_invalid_engine_settings() -> None:
     with pytest.raises(TypeError, match="batch_moves"):
         sq.DExchangeConfig(batch_moves=1)  # type: ignore[arg-type]
     assert sq.DExchangeConfig().to_dict()["max_scans"] is None
+
+
+def test_reported_objective_is_rebuilt_from_the_final_labels() -> None:
+    """Single moves update the state incrementally; the result is the exact rebuild."""
+    scores, weights = _seeded_scores(41, 300, 3, weighted=True)
+    config = sq.DExchangeConfig(batch_moves=False, init="random", collapse_duplicates=False)
+    result = sq.optimize_partition(scores, weights=weights, n_bins=5, config=config)
+    assert result.accepted_moves > 100
+    report = sq.exchange_stability_report(scores, result.labels, weights=weights)
+    assert result.objective == report.objective
+    assert result.objective_history[-1] == result.objective

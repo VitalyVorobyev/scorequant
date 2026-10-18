@@ -18,6 +18,36 @@ def _default_rank_rtol(dtype: jnp.dtype) -> float:
     return 1e-10 if jnp.dtype(dtype) == jnp.float64 else 1e-5
 
 
+def numerical_rank(matrix: jnp.ndarray, rank_rtol: float | None = None) -> int:
+    """Return the rank of a symmetric matrix at the library's relative threshold.
+
+    This is the one rank rule: an eigenvalue counts only above ``rank_rtol``
+    times the largest one, exactly as :func:`fisher_transform` selects
+    informative directions. NumPy's ``matrix_rank`` default scales with
+    ``max(M, N) * eps`` instead, and a ``slogdet`` sign on an exactly deficient
+    matrix is decided by rounding noise, so neither may disagree with this rule
+    about the same matrix.
+    """
+    eigenvalues = jnp.linalg.eigvalsh(matrix)
+    maximum = float(np.asarray(jnp.max(eigenvalues)))
+    if maximum <= 0:
+        return 0
+    resolved_rtol = _default_rank_rtol(matrix.dtype) if rank_rtol is None else rank_rtol
+    return int(np.asarray(jnp.sum(eigenvalues > resolved_rtol * maximum)))
+
+
+def is_numerically_singular(matrix: jnp.ndarray, rank_rtol: float | None = None) -> bool:
+    """Return whether a symmetric matrix is rank deficient at the library threshold.
+
+    Shared by every singularity guard so that one state cannot be called
+    singular on one platform and regular on another: on an exactly deficient
+    matrix the smallest eigenvalue is rounding noise, and its sign is a property
+    of the host LAPACK rather than of the data. The relative threshold is scale
+    free, so it agrees everywhere.
+    """
+    return numerical_rank(matrix, rank_rtol) < int(matrix.shape[0])
+
+
 @dataclass(frozen=True, slots=True)
 class FisherTransform:
     """Projection onto informative Fisher directions, optionally whitened.

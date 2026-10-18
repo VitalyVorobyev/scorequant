@@ -1199,6 +1199,9 @@ def _run_exchange(
     batched = config.batch_moves and not config.first_improvement
     batch_size = label_array.shape[0]
     limit = _SAFETY_SCAN_LIMIT if config.max_scans is None else config.max_scans
+    # True once a single move has updated the state by rank-two algebra; a
+    # guarded batch is accepted on an exactly rebuilt state and resets it.
+    incremental = False
 
     while scans < limit:
         scans += 1
@@ -1227,10 +1230,12 @@ def _run_exchange(
             state = objective.apply_move(state, relocation)
             label_array[outcome.best.row] = outcome.best.destination
             accepted_moves += 1
+            incremental = True
         else:
             state, label_array, moved = accepted
             accepted_moves += moved
             batch_size = min(2 * moved, label_array.shape[0])
+            incremental = False
         history.append(state.objective)
 
     if not exchange_stable:
@@ -1238,6 +1243,16 @@ def _run_exchange(
         outcome = _scan(points, weights, label_array, state, objective, config, rows=False)
         best_remaining_gain = float("-inf") if outcome.best is None else outcome.best.gain
         exchange_stable = outcome.best is None or outcome.best.gain <= config.gain_tolerance
+
+    if incremental:
+        # Chained rank-two updates accumulate rounding in the cell means, the
+        # inverse and the log determinant. The reported objective, centres and
+        # metric must be those of the returned labels, so they are rebuilt
+        # exactly from them; the last history entry then states the same value.
+        state = objective.init_state(
+            _cell_statistics(points, weights, jnp.asarray(label_array), n_bins)
+        )
+        history[-1] = state.objective
 
     return _ExchangeRun(
         labels=jnp.asarray(label_array),

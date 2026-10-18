@@ -9,6 +9,15 @@ An `[Unreleased]` section is created by the first change that lands after a rele
 deliberately carries no empty one: a standing `unreleased` heading was dated by a later commit
 once already, which retroactively asserted that unshipped work had shipped.
 
+## [Unreleased]
+
+### Changed
+
+- One singularity rule: `information_report`, `profiled_information_report`, `efficient_scores`
+  and the soft solver judge rank by the library's relative eigenvalue threshold instead of a
+  log-determinant sign or NumPy's default `matrix_rank`, and an exchange result reports the
+  objective rebuilt from its final labels rather than the incrementally updated one.
+
 ## [0.3.0] — 2026-10-18
 
 Older entries cite design records as "ADR NNNN"; those records are in the repository history at

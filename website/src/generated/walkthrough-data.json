@@ -198,185 +198,35 @@
       }
     },
     "hep": {
-      "backgroundEvents": {
-        "source": "examples/outputs/hep-classifier.json#/fixture/background_events",
-        "text": "664",
-        "value": 664
-      },
       "bins": {
         "source": "examples/outputs/hep-classifier.json#/n_bins",
         "text": "6",
         "value": 6
-      },
-      "bootstrapReplicates": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/bootstrap_replicates",
-        "text": "200",
-        "value": 200
-      },
-      "ceilingBudgetEight": {
-        "source": "examples/outputs/hep-classifier.json#/in_sample/ceiling_sweep/3/ceiling_retention",
-        "text": "0.9753",
-        "value": 0.9753002731306275
-      },
-      "ceilingRetention": {
-        "source": "examples/outputs/hep-classifier.json#/in_sample/ceiling/ceiling_retention",
-        "text": "0.9553",
-        "value": 0.9552772335234024
-      },
-      "dPartitionFull": {
-        "source": "examples/outputs/hep-classifier.json#/in_sample/by_key/d_partition/full_retention",
-        "text": "0.8746",
-        "value": 0.8745590644517677
-      },
-      "dPartitionProfiled": {
-        "source": "examples/outputs/hep-classifier.json#/in_sample/by_key/d_partition/profiled_retention",
-        "text": "0.8238",
-        "value": 0.8238099690756355
       },
       "dRuleHeldOut": {
         "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/d_rule/evaluation_profiled_retention",
         "text": "0.8025",
         "value": 0.8024888163477144
       },
-      "dRuleHeldOutHigh": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/d_rule/evaluation_p95_max",
-        "text": "0.8639",
-        "value": 0.8639293454097712
-      },
-      "dRuleHeldOutLow": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/d_rule/evaluation_p05_min",
-        "text": "0.7311",
-        "value": 0.7310771253319913
-      },
       "datasetName": {
         "source": "examples/data/hep_higgsml_fixture.json#/dataset",
         "text": "FAIR Universe - HiggsML Uncertainty Challenge Public Dataset",
         "value": "FAIR Universe - HiggsML Uncertainty Challenge Public Dataset"
-      },
-      "delta": {
-        "source": "examples/outputs/hep-classifier.json#/delta",
-        "text": "0.050",
-        "value": 0.05
-      },
-      "dsPartitionFull": {
-        "source": "examples/outputs/hep-classifier.json#/in_sample/by_key/ds_partition/full_retention",
-        "text": "0.4784",
-        "value": 0.4783739966225967
-      },
-      "dsPartitionProfiled": {
-        "source": "examples/outputs/hep-classifier.json#/in_sample/by_key/ds_partition/profiled_retention",
-        "text": "0.9550",
-        "value": 0.9550321935360592
-      },
-      "dsPartitionReferenceAB": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/0/ds_partition_reference_profiled_retention",
-        "text": "0.9673",
-        "value": 0.9673088679006104
-      },
-      "dsPartitionReferenceBA": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/1/ds_partition_reference_profiled_retention",
-        "text": "0.9638",
-        "value": 0.9638096293584555
       },
       "dsRuleHeldOut": {
         "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_profiled_retention",
         "text": "0.8576",
         "value": 0.8576000760739684
       },
-      "dsRuleHeldOutAB": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/0/rules/ds_rule/evaluation_profiled_retention",
-        "text": "0.8591",
-        "value": 0.859066279111288
-      },
-      "dsRuleHeldOutBA": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/1/rules/ds_rule/evaluation_profiled_retention",
-        "text": "0.8561",
-        "value": 0.8561338730366487
-      },
-      "dsRuleHeldOutHigh": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_p95_max",
-        "text": "0.9146",
-        "value": 0.9146025172964825
-      },
-      "dsRuleHeldOutLow": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_p05_min",
-        "text": "0.8051",
-        "value": 0.8051127114077529
-      },
-      "dsRuleInSampleProfiled": {
-        "source": "examples/outputs/hep-classifier.json#/in_sample/by_key/ds_rule/profiled_retention",
-        "text": "0.9145",
-        "value": 0.9145460370335429
-      },
-      "dsRuleMinBinEvents": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_min_bin_events",
-        "text": "2",
-        "value": 2
-      },
-      "dsRuleReference": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/reference_profiled_retention",
-        "text": "0.9282",
-        "value": 0.9282251011105871
-      },
-      "effectiveEvents": {
-        "source": "examples/outputs/hep-classifier.json#/fixture/effective_events",
-        "text": "665",
-        "value": 665.2979770496346
-      },
       "evaluationCeilingAB": {
         "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/0/evaluation_ceiling_retention",
         "text": "0.9642",
         "value": 0.9641742886714496
       },
-      "evaluationCeilingBA": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/1/evaluation_ceiling_retention",
-        "text": "0.9699",
-        "value": 0.9698818941070824
-      },
-      "evaluationEvents": {
-        "source": "examples/outputs/hep-classifier.json#/split/halves/0/evaluation_events",
-        "text": "500",
-        "value": 500
-      },
-      "fullRetentionGivenUp": {
-        "source": "examples/outputs/hep-classifier.json#/in_sample/criterion_trade/full_retention_given_up",
-        "text": "0.3962",
-        "value": 0.39618506782917096
-      },
-      "gapToCeiling": {
-        "source": "examples/outputs/hep-classifier.json#/in_sample/ceiling/gap_to_ds_partition_retention",
-        "text": "0.0002",
-        "value": 0.00024503998734326515
-      },
-      "heldOutBudgetEight": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/held_out_budget_sweep/3/ds_rule_evaluation_profiled_retention",
-        "text": "0.8893",
-        "value": 0.8893402629357366
-      },
-      "heldOutBudgetThree": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/held_out_budget_sweep/0/ds_rule_evaluation_profiled_retention",
-        "text": "0.6455",
-        "value": 0.645462731302716
-      },
-      "inSampleBudgetEight": {
-        "source": "examples/outputs/hep-classifier.json#/in_sample/ceiling_sweep/3/ds_profiled_retention",
-        "text": "0.9753",
-        "value": 0.9752633987612815
-      },
       "intervalsHeldOut": {
         "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_significance_intervals/evaluation_profiled_retention",
         "text": "0.3244",
         "value": 0.32439730137385586
-      },
-      "intervalsHeldOutHigh": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_significance_intervals/evaluation_p95_max",
-        "text": "0.8063",
-        "value": 0.8063394577622326
-      },
-      "intervalsHeldOutLow": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_significance_intervals/evaluation_p05_min",
-        "text": "0.1042",
-        "value": 0.10420170995633914
       },
       "license": {
         "source": "examples/data/hep_higgsml_fixture.json#/source_license",
@@ -398,50 +248,15 @@
         "text": "0.2712",
         "value": 0.27115065206413
       },
-      "logitHeldOutHigh": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_p95_max",
-        "text": "0.8656",
-        "value": 0.865602545631397
-      },
-      "logitHeldOutLow": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_p05_min",
-        "text": "0.1088",
-        "value": 0.10882994985721857
-      },
       "nEvents": {
         "source": "examples/outputs/hep-classifier.json#/fixture/n_events",
         "text": "1,000",
         "value": 1000
       },
-      "nParameters": {
-        "source": "examples/outputs/hep-classifier.json#/n_parameters",
-        "text": "3",
-        "value": 3
-      },
-      "profiledRetentionGained": {
-        "source": "examples/outputs/hep-classifier.json#/in_sample/criterion_trade/profiled_retention_gained",
-        "text": "0.1312",
-        "value": 0.13122222446042364
-      },
       "quantileHeldOut": {
         "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_quantile/evaluation_profiled_retention",
         "text": "0.3682",
         "value": 0.3681631203472413
-      },
-      "quantileHeldOutHigh": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_quantile/evaluation_p95_max",
-        "text": "0.8330",
-        "value": 0.8330349129350083
-      },
-      "quantileHeldOutLow": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_quantile/evaluation_p05_min",
-        "text": "0.1206",
-        "value": 0.12058439831687588
-      },
-      "referenceEvents": {
-        "source": "examples/outputs/hep-classifier.json#/split/halves/0/reference_events",
-        "text": "500",
-        "value": 500
       },
       "sigmaDRule": {
         "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/d_rule/sigma_mu",
@@ -453,45 +268,15 @@
         "text": "0.735",
         "value": 0.7349662958635401
       },
-      "sigmaDRuleHeldOutAB": {
-        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/0/rules/d_rule/sigma_mu",
-        "text": "1.03",
-        "value": 1.025890466545272
-      },
-      "sigmaDRuleHeldOutBA": {
-        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/1/rules/d_rule/sigma_mu",
-        "text": "0.97",
-        "value": 0.9713622628678475
-      },
       "sigmaDsRule": {
         "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu",
         "text": "0.720",
         "value": 0.7198361143506828
       },
-      "sigmaDsRuleConstrained": {
-        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu_tes_constrained",
-        "text": "0.720",
-        "value": 0.7197287541774746
-      },
       "sigmaDsRuleFixed": {
         "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu_tes_fixed",
         "text": "0.700",
         "value": 0.7003032629637141
-      },
-      "sigmaDsRuleHeldOutAB": {
-        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/0/rules/ds_rule/sigma_mu",
-        "text": "1.15",
-        "value": 1.1453516898773712
-      },
-      "sigmaDsRuleHeldOutBA": {
-        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/1/rules/ds_rule/sigma_mu",
-        "text": "0.90",
-        "value": 0.8973220859903247
-      },
-      "sigmaDsRuleInflated": {
-        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu_mc_inflated",
-        "text": "28.6",
-        "value": 28.592394757442285
       },
       "sigmaIntervals": {
         "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/classifier_significance_intervals/sigma_mu",
@@ -513,21 +298,6 @@
         "text": "0.636",
         "value": 0.6360253003054837
       },
-      "sigmaLogitHeldOutAB": {
-        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/0/rules/classifier_logit_equal_width/sigma_mu",
-        "text": "1.45",
-        "value": 1.4467254987041684
-      },
-      "sigmaLogitHeldOutBA": {
-        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/1/rules/classifier_logit_equal_width/sigma_mu",
-        "text": "1.25",
-        "value": 1.2543505730705733
-      },
-      "sigmaLogitInflated": {
-        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/classifier_logit_equal_width/sigma_mu_mc_inflated",
-        "text": "58.0",
-        "value": 57.98156284240298
-      },
       "sigmaQuantile": {
         "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/classifier_quantile/sigma_mu",
         "text": "1.190",
@@ -538,31 +308,6 @@
         "text": "0.669",
         "value": 0.6688983798041772
       },
-      "sigmaThresholdFixed": {
-        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/threshold_cut/sigma_mu_tes_fixed",
-        "text": "0.672",
-        "value": 0.6723649974448257
-      },
-      "signalAuc": {
-        "source": "examples/outputs/hep-classifier.json#/classifiers/signal_weighted_auc",
-        "text": "0.8345",
-        "value": 0.8344737120691251
-      },
-      "signalEvents": {
-        "source": "examples/outputs/hep-classifier.json#/fixture/signal_events",
-        "text": "336",
-        "value": 336
-      },
-      "signalFraction": {
-        "source": "examples/outputs/hep-classifier.json#/classifiers/signal_fraction",
-        "text": "0.00099",
-        "value": 0.00098781975979457
-      },
-      "tesAuc": {
-        "source": "examples/outputs/hep-classifier.json#/classifiers/tes_minus_plus_auc",
-        "text": "0.5753",
-        "value": 0.575284565048716
-      },
       "tesConstraintWidth": {
         "source": "examples/outputs/hep-classifier.json#/downstream/tes_constraint_width",
         "text": "0.01",
@@ -572,11 +317,6 @@
         "source": "examples/outputs/hep-classifier.json#/classifiers/tes_reliability/weighted_correlation",
         "text": "0.50",
         "value": 0.49819665199074037
-      },
-      "thresholdBins": {
-        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/threshold_cut/n_bins",
-        "text": "2",
-        "value": 2
       }
     },
     "michelson": {

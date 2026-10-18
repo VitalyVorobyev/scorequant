@@ -23,7 +23,7 @@ A search for the Higgs boson decaying to two tau leptons counts collision events
 
 This page is a simulation study on a committed fixture: {f("nEvents")} simulated events from the {f("datasetName")}, {f("signalEvents")} of them signal and {f("backgroundEvents")} background, each carrying a Monte Carlo weight. The weights are far from uniform (a background event stands for roughly five hundred times more collisions than a signal event), so the sample is worth about {f("effectiveEvents")} equally weighted events. The fixture holds row-aligned copies of every event with the energy scale shifted to seven values, which is what makes the effect of $\alpha$ measurable. The energy scale is treated as a **free nuisance**: nothing on this page constrains it, neither in the choice of categories nor in the numbers reported, and the closing section says what a physical constraint would change.
 
-Nothing here describes how a published measurement is performed. The background processes are merged into one component, the event selection is held fixed under the shift, and the classifiers are ordinary gradient-boosted trees. The choices are recorded on the <ReferenceLink to="usecases/hep/">reference page</ReferenceLink>.
+Nothing here describes how a published measurement is performed. The background processes are merged into one component, the event selection is held fixed under the shift, and the classifiers are ordinary gradient-boosted trees. The choices are recorded in the study code, `examples/hep_classifier`.
 
 ## 2. Why bin the events
 
@@ -226,4 +226,4 @@ Every number on this page is read from the committed evidence file the study wri
 JAX_ENABLE_X64=1 MPLBACKEND=Agg uv run python -m examples.hep_classifier
 ```
 
-The classifier construction, the leakage story, the finite-difference convergence check, the per-cell occupancy tables and the held-out downstream directions are on the <ReferenceLink to="usecases/hep/">HEP classifier study</ReferenceLink> page. The theory of the profiled criterion, the efficient score and the certified ceiling is in <ReferenceLink to="book/ch10-profiled-ds/">Nuisance parameters and profiled Ds</ReferenceLink>; the two tasks, labelling a fixed table and fitting a rule, are in <ReferenceLink to="book/ch06-two-tasks/">Two tasks and three optimization levels</ReferenceLink>.
+The classifier construction and the checks behind it are in the study code, `examples/hep_classifier`. The profiled criterion and its certified ceiling are explained in the <ReferenceLink to="guide/">user guide</ReferenceLink>.

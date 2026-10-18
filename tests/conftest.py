@@ -33,7 +33,7 @@ if os.environ.get("PYTEST_XDIST_WORKER"):
 import pytest  # noqa: E402  -- must follow the pre-import environment setup above
 
 #: Modules that execute published prose -- documentation snippets, README
-#: fences, and the notebooks -- rather than calling the library directly. They
+#: fences and portal snippets -- rather than calling the library directly. They
 #: re-run the same `examples/` generators that `test_evidence_suite.py` already
 #: asserts against, so what they detect is presentation drift, not a numerical
 #: regression. Splitting them out keeps them off CI's critical path and makes a
@@ -41,7 +41,6 @@ import pytest  # noqa: E402  -- must follow the pre-import environment setup abo
 _DOC_EXECUTION_MODULES = frozenset(
     {
         "test_docs_snippets.py",
-        "test_notebooks.py",
         "test_portal_snippets.py",
         "test_readme.py",
     }

@@ -31,11 +31,7 @@ _FORBIDDEN_PROSE = (
 # no work-in-progress markers.
 _FRONT_DOOR = (
     "index.md",
-    "motivation.md",
-    "method.md",
-    "three-doors.md",
-    "user-workflow.md",
-    "related-work.md",
+    "guide.md",
 )
 
 # Pages that mkdocs.yml keeps out of the published site.

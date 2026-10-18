@@ -80,5 +80,5 @@ for solver limits, tolerances and refusals.
 
 - [Get started](https://vitalyvorobyev.github.io/scorequant/get-started/): one complete runnable workflow.
 - [Four walkthroughs](https://vitalyvorobyev.github.io/scorequant/walkthroughs/): interferometry, density ratios, cytometry and HEP.
-- [Theory](https://vitalyvorobyev.github.io/scorequant/docs/book/) and [related work](https://vitalyvorobyev.github.io/scorequant/docs/related-work/).
+- [User guide](https://vitalyvorobyev.github.io/scorequant/docs/guide/): how it works and which task, criterion and solver to choose.
 - [Contributor guidance](AGENTS.md) and [MIT license](LICENSE).

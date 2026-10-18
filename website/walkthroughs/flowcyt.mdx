@@ -14,7 +14,6 @@ import {MarkerHistogram} from "@site/src/components/charts/MarkerHistogram";
 import {MethodComparison} from "@site/src/components/charts/MethodComparison";
 import {populationColor} from "@site/src/components/charts/scale";
 import {showcaseData} from "@site/src/data/showcase";
-import {ReferenceLink} from "@site/src/components/ReferenceLink";
 import {factValue, factsFor} from "@site/src/lib/facts";
 
 export const f = factsFor("flowcyt");
@@ -75,7 +74,7 @@ ScoreQuant works with the **score** of a cell: the derivative of the log likelih
   ))}
 </ul>
 
-Two of the boxes in that chain are deliberately not ScoreQuant: the classifier is not, and the mixture likelihood that finally turns counts into fractions is not. What the library receives is a table of score rows with their weights, declared as an estimated ratio rather than an exact score, so nothing downstream can describe the result in exact-Fisher language. The classifier, its calibration and its cross-fitting protocol are on the <ReferenceLink to="usecases/flowcyt/scores/">score-model page</ReferenceLink> of the reference study.
+Two of the boxes in that chain are deliberately not ScoreQuant: the classifier is not, and the mixture likelihood that finally turns counts into fractions is not. What the library receives is a table of score rows with their weights, declared as an estimated ratio rather than an exact score, so nothing downstream can describe the result in exact-Fisher language. The classifier, its calibration and its cross-fitting are in the study code, `examples/cell_population`.
 
 ## 4. The reference patients and the call
 
@@ -205,7 +204,7 @@ unbinned_rmse = macro_rmse(unbinned)
 
 Every held-out patient and every target population sits on the diagonal at every abundance, from the mast cells near one part in ten thousand to the T cells near one in ten, and the filled marks from the {f("bins")} counts sit where the hollow unbinned marks sit. Compression costs, as it must: the information carried by a label is never more than the information carried by the thing it replaced, and the binned error is above the unbinned one. The finding is the size of the cost. The two errors are of the same order, and both are far below the spread between patients in the first chart, so replacing a patient's cells with {f("bins")} integers does not change what the report says.
 
-The exact finite-D solver, run on the same reference rows and compiled into its Voronoi rule, reaches {f("dExchangeRmse")} on the same patients with a D-efficiency of {f("dExchangeEfficiency")}: slightly worse on the error, slightly better on the information. The two disagree in opposite directions because the downstream fit is a fixed-total multinomial likelihood on the counts, not the local Fisher quadratic the criterion optimises, so any sentence about this study has to say which method produced the number in it. Both are on the <ReferenceLink to="usecases/flowcyt/solvers/">solver-comparison page</ReferenceLink>.
+The exact finite-D solver, run on the same reference rows and compiled into its Voronoi rule, reaches {f("dExchangeRmse")} on the same patients with a D-efficiency of {f("dExchangeEfficiency")}: slightly worse on the error, slightly better on the information. The two disagree in opposite directions because the downstream fit is a fixed-total multinomial likelihood on the counts, not the local Fisher quadratic the criterion optimises, so any sentence about this study has to say which method produced the number in it.
 
 ## 8. Why it works: the retained information
 
@@ -267,11 +266,11 @@ Five bins fail, as the second section said they must: the held-out D-efficiency 
 
 **The score is a surrogate.** The classifier's ratios are estimated, so the result is recorded as <code>{f("informationKind")}</code>, never as exact Fisher information.
 
-**Aiming at one fraction does not help here.** The study also asked for the categories that best resolve the progenitor fraction alone, with the rest of the composition profiled out. On the committed fixture the plain D partition already retains {f("profiledDPartitionRetention")} of that profiled information against a certified ceiling of {f("profiledCeilingRetention")}, so there was almost nothing left for a profiled criterion to win. That negative result is on the <ReferenceLink to="usecases/flowcyt/profiled/">profiled-criterion page</ReferenceLink>.
+**Aiming at one fraction does not help here.** The study also asked for the categories that best resolve the progenitor fraction alone, with the rest of the composition profiled out. On the committed fixture the plain D partition already retains {f("profiledDPartitionRetention")} of that profiled information against a certified ceiling of {f("profiledCeilingRetention")}, so there was almost nothing left for a profiled criterion to win.
 
 **The data.** The benchmark is &copy; {dataset.citation}, licensed{" "}
 <a href={dataset.licenseUrl} rel="noreferrer noopener" target="_blank">{f("license")}</a>, and lives in its{" "}
-<a href={f("sourceRepository")} rel="noreferrer noopener" target="_blank">source repository</a>; this repository does not redistribute it. What is committed is a small deterministic fixture, the fixture-scale walkthrough table this page runs on, and the evidence file of the full study. The acquisition protocol, the per-patient estimates, the solver comparison and the uncertainty audit are in the <ReferenceLink to="usecases/flowcyt/">FlowCyt case study</ReferenceLink>.
+<a href={f("sourceRepository")} rel="noreferrer noopener" target="_blank">source repository</a>; this repository does not redistribute it. What is committed is a small deterministic fixture, the fixture-scale walkthrough table this page runs on, and the evidence file of the full study.
 
 ```text
 JAX_ENABLE_X64=1 MPLBACKEND=Agg uv run python -m examples.cell_population --full

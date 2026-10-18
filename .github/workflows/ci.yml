@@ -55,7 +55,7 @@ jobs:
       # that the workers oversubscribe the runner and parallelism costs time.
       - run: uv run pytest -n auto -m "not docs_execution"
 
-  # The published prose -- documentation snippets, README fences, notebooks --
+  # The published prose -- documentation snippets, README fences, portal snippets --
   # re-runs the same `examples/` generators the library tier already asserts
   # against, so it detects presentation drift rather than numerical regressions.
   # Splitting it off keeps it beside the critical path instead of on it, and

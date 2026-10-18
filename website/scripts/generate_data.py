@@ -110,7 +110,7 @@ def _solver_matrix() -> list[dict[str, object]]:
     """Read the criterion/solver compatibility matrix from ``scorequant.api._SOLVER_TABLE``.
 
     This is the single generated source for the table that is otherwise hand-copied in
-    ``docs/method.md``, ``README.md`` and ``docs/book/ch06-two-tasks.md``: one row per
+    ``docs/guide.md``, ``docs/api.md`` and ``README.md``: one row per
     configuration type, in the registry's own declaration order, naming which criteria each
     of the two public tasks accepts for it.
     """
@@ -170,9 +170,8 @@ def _rewrite_solver_matrix_docs(rows: list[dict[str, object]]) -> None:
     """Rewrite the generated solver-matrix region in every consuming Markdown file."""
     plain_table = _render_solver_matrix(rows, with_contract=False)
     contract_table = _render_solver_matrix(rows, with_contract=True)
-    _rewrite_generated_region(ROOT / "docs" / "method.md", plain_table)
+    _rewrite_generated_region(ROOT / "docs" / "guide.md", plain_table)
     _rewrite_generated_region(ROOT / "README.md", contract_table)
-    _rewrite_generated_region(ROOT / "docs" / "book" / "ch06-two-tasks.md", plain_table)
     _rewrite_generated_region(ROOT / "docs" / "api.md", contract_table)
 
 

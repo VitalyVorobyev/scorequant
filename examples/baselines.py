@@ -2,7 +2,7 @@
 
 Every example that compares ScoreQuant's information-aware solvers to a
 naive alternative uses one of these three functions, so results are
-comparable across pages and notebooks:
+comparable across walkthroughs:
 
 1. `rectangular_observation_bins` -- an equal-width grid in observation
    space, ignoring the score law entirely.

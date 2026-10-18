@@ -20,7 +20,8 @@ comments. A walkthrough executes in its own **fresh** namespace with no
 pre-seeded fixture, cumulatively across that page's fences: a walkthrough must
 run as shown, because a reader is meant to be able to reproduce it from what is
 on the page. The result assertion is per page rather than per fence, since the
-arc reaches a fit once.
+arc reaches a fit once. The Ideas posts under ``website/ideas/`` that carry code
+are held to the same rule.
 
 These fences execute published prose, so this module carries the
 ``docs_execution`` marker that ``tests/conftest.py`` assigns to that tier.
@@ -51,10 +52,12 @@ GET_STARTED_PAGE = ROOT / "website/get-started/index.mdx"
 GET_STARTED_PROGRAM = ROOT / "website/scripts/get_started_program.py"
 CAPTURED_OUTPUTS = ROOT / "website/src/generated/snippet-outputs.json"
 
-#: The four walkthroughs S8 published. Named rather than globbed so that a page
-#: silently failing to be discovered is a test failure instead of a quietly
-#: smaller run.
+#: The four walkthroughs, and the Ideas posts that carry code. Named rather than
+#: globbed so that a page silently failing to be discovered is a test failure
+#: instead of a quietly smaller run.
 EXPECTED_WALKTHROUGHS = ("flowcyt", "hep", "michelson", "ratios")
+IDEAS = ROOT / "website/ideas"
+EXPECTED_IDEAS = ("ideas/retention", "ideas/score-space")
 
 
 def _load_generator() -> ModuleType:
@@ -174,6 +177,11 @@ def test_captured_outputs_are_current() -> None:
     )
 
 
+def _page_path(slug: str) -> str:
+    """Return a page's path under ``website/``, from a walkthrough or ``ideas/`` slug."""
+    return f"{slug}.mdx" if slug.startswith("ideas/") else f"walkthroughs/{slug}.mdx"
+
+
 def _walkthrough_pages() -> list[tuple[str, list[Snippet]]]:
     """Return ``(slug, blocks)`` for every walkthrough page carrying a fence."""
     pages = []
@@ -186,12 +194,26 @@ def _walkthrough_pages() -> list[tuple[str, list[Snippet]]]:
     return pages
 
 
-_WALKTHROUGHS = _walkthrough_pages()
+def _idea_pages() -> list[tuple[str, list[Snippet]]]:
+    """Return ``("ideas/<slug>", blocks)`` for every Ideas post carrying a fence."""
+    pages = []
+    for path in sorted(IDEAS.glob("*.mdx")):
+        blocks = _extract_blocks(path.read_text(encoding="utf-8"))
+        if blocks:
+            pages.append((f"ideas/{path.stem}", blocks))
+    return pages
+
+
+_IDEAS = _idea_pages()
+_WALKTHROUGHS = _walkthrough_pages() + _IDEAS
 
 
 def test_every_walkthrough_was_discovered() -> None:
-    """All four walkthroughs exist and carry executable fences."""
-    assert [slug for slug, _ in _WALKTHROUGHS] == sorted(EXPECTED_WALKTHROUGHS)
+    """All four walkthroughs and the Ideas posts with code exist and carry executable fences."""
+    assert [slug for slug, _ in _WALKTHROUGHS if slug not in dict(_IDEAS)] == sorted(
+        EXPECTED_WALKTHROUGHS
+    )
+    assert [slug for slug, _ in _IDEAS] == sorted(EXPECTED_IDEAS)
 
 
 @pytest.mark.parametrize("slug, blocks", _WALKTHROUGHS, ids=[slug for slug, _ in _WALKTHROUGHS])
@@ -203,7 +225,7 @@ def test_walkthrough_fences_execute_and_produce_a_result(slug: str, blocks: list
             namespace = {}
         if block.skip:
             continue
-        filename = f"website/walkthroughs/{slug}.mdx:block{block.index}"
+        filename = f"website/{_page_path(slug)}:block{block.index}"
         exec(compile(block.code, filename, "exec"), namespace)  # noqa: S102
 
     produced = [
@@ -222,7 +244,7 @@ def test_walkthrough_fences_use_public_symbols(slug: str, blocks: list[Snippet])
     """Every ``sq.<name>`` a walkthrough shows is in the public API."""
     public = set(sq.__all__)
     for block in blocks:
-        tree = ast.parse(block.code, filename=f"website/walkthroughs/{slug}.mdx:{block.index}")
+        tree = ast.parse(block.code, filename=f"website/{_page_path(slug)}:{block.index}")
         referenced = {
             node.attr
             for node in ast.walk(tree)

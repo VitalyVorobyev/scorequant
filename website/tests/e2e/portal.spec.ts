@@ -42,6 +42,12 @@ const ROUTES = [
   "./walkthroughs/michelson/",
   "./walkthroughs/ratios/",
   "./research/",
+  "./ideas/",
+  "./ideas/score-space/",
+  "./ideas/kmeans/",
+  "./ideas/lloyd/",
+  "./ideas/nuisance/",
+  "./ideas/retention/",
 ];
 
 /**
@@ -59,6 +65,12 @@ const SCANNED = [
   "./walkthroughs/michelson/",
   "./walkthroughs/ratios/",
   "./research/",
+  "./ideas/",
+  "./ideas/score-space/",
+  "./ideas/kmeans/",
+  "./ideas/lloyd/",
+  "./ideas/nuisance/",
+  "./ideas/retention/",
 ];
 
 test("home states the task and runs nothing", async ({page}) => {

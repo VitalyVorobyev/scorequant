@@ -14,7 +14,7 @@ import {describe, expect, it} from "vitest";
 // else. This resolves each reference against the lane that actually owns it.
 const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // `src/pages` holds the front and research pages, which show figures too.
-const contentDirs = ["walkthroughs", "get-started", "src/pages"];
+const contentDirs = ["walkthroughs", "get-started", "ideas", "src/pages"];
 const staticRoot = join(websiteRoot, "static");
 const generatorPath = join(websiteRoot, "scripts/generate_walkthroughs.py");
 

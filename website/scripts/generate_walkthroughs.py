@@ -43,6 +43,8 @@ EVIDENCE = (
     "examples/data/flowcyt_fixture.json",
     "examples/data/flowcyt_walkthrough.json",
     "examples/data/hep_higgsml_fixture.json",
+    "examples/outputs/ideas-toys.json",
+    "examples/outputs/lloyd-nonmonotone.json",
 )
 
 
@@ -91,6 +93,8 @@ FLOWCYT_STUDY = "examples/outputs/cell_population.json"
 FLOWCYT_FIXTURE = "examples/data/flowcyt_fixture.json"
 FLOWCYT_WALKTHROUGH = "examples/data/flowcyt_walkthrough.json"
 HEP_FIXTURE = "examples/data/hep_higgsml_fixture.json"
+IDEAS = "examples/outputs/ideas-toys.json"
+LLOYD = "examples/outputs/lloyd-nonmonotone.json"
 
 FACTS: tuple[Fact, ...] = (
     # ---------------------------------------------------------------- flowcyt
@@ -356,6 +360,49 @@ FACTS: tuple[Fact, ...] = (
         f"{MICHELSON}#/rules/1/profiled_retention",
         _fixed(4),
     ),
+    # ------------------------------------------------------------------ ideas
+    # The Ideas posts share one page key. Their two toys come from
+    # `examples/ideas_toys.py`; the Lloyd post quotes the committed
+    # counterexample study. The retention post reuses the Michelson facts.
+    Fact("ideas", "fringes", f"{IDEAS}#/fringe/fringes", _count),
+    Fact("ideas", "fringeBins", f"{IDEAS}#/fringe/headline_bins", _count),
+    Fact("ideas", "fringeEqual", f"{IDEAS}#/fringe/headline_equal", _fixed(2)),
+    Fact("ideas", "fringeScore", f"{IDEAS}#/fringe/headline_score", _fixed(2)),
+    Fact("ideas", "clusterBins", f"{IDEAS}#/clusters/bins", _count),
+    Fact("ideas", "kmeansLow", f"{IDEAS}#/clusters/kmeans/retained_eigenvalues/0", _fixed(2)),
+    Fact("ideas", "kmeansHigh", f"{IDEAS}#/clusters/kmeans/retained_eigenvalues/1", _fixed(2)),
+    Fact("ideas", "dLow", f"{IDEAS}#/clusters/d_optimal/retained_eigenvalues/0", _fixed(2)),
+    Fact("ideas", "dHigh", f"{IDEAS}#/clusters/d_optimal/retained_eigenvalues/1", _fixed(2)),
+    Fact(
+        "ideas",
+        "kmeansArithmetic",
+        f"{IDEAS}#/clusters/kmeans/arithmetic_mean_retention",
+        _fixed(2),
+    ),
+    Fact(
+        "ideas",
+        "dArithmetic",
+        f"{IDEAS}#/clusters/d_optimal/arithmetic_mean_retention",
+        _fixed(2),
+    ),
+    Fact(
+        "ideas",
+        "kmeansGeometric",
+        f"{IDEAS}#/clusters/kmeans/geometric_mean_retention",
+        _fixed(2),
+    ),
+    Fact(
+        "ideas",
+        "dGeometric",
+        f"{IDEAS}#/clusters/d_optimal/geometric_mean_retention",
+        _fixed(2),
+    ),
+    Fact("ideas", "lloydMoved", f"{LLOYD}#/counterexample/moved", _count),
+    Fact("ideas", "lloydTangent", f"{LLOYD}#/counterexample/tangent_change", _fixed(1)),
+    Fact("ideas", "lloydStep", f"{LLOYD}#/counterexample/step", _fixed(2)),
+    Fact("ideas", "ledgerRuns", f"{LLOYD}#/ledger_totals/runs", _count),
+    Fact("ideas", "ledgerDownhill", f"{LLOYD}#/ledger_totals/downhill_runs", _count),
+    Fact("ideas", "ledgerEmptied", f"{LLOYD}#/ledger_totals/emptied_runs", _count),
 )
 
 
@@ -603,6 +650,9 @@ FIGURES = {
     "michelson-d-geometry.png": "examples/outputs/michelson-d-geometry.png",
     "michelson-profiled-ds.png": "examples/outputs/michelson-profiled-ds.png",
     "door3-classifier.png": "examples/outputs/door3-classifier.png",
+    "ideas-score-bins.png": "examples/outputs/ideas-score-bins.png",
+    "ideas-kmeans-d.png": "examples/outputs/ideas-kmeans-d.png",
+    "lloyd-nonmonotone.png": "examples/outputs/lloyd-nonmonotone.png",
 }
 
 

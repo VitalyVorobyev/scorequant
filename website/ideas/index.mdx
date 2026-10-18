@@ -1,0 +1,26 @@
+---
+title: Ideas
+sidebar_label: Overview
+sidebar_position: 1
+hide_table_of_contents: true
+description: Short essays on binning events without losing what they say about a parameter.
+---
+
+# Ideas
+
+Short essays on one question: how to sort events into a few bins without throwing away what they
+say about the parameters being measured. Each takes one idea and one picture, and assumes basic
+statistics but nothing about ScoreQuant. They are best read in order.
+
+1. **[Bin by score, not by feature](./score-space.mdx).** Binning loses exactly the scatter of the
+   score inside each bin, so the bins belong in score space.
+2. **[Why k-means is the wrong clustering for D](./kmeans.mdx).** k-means adds up what each
+   direction keeps; D-optimality multiplies it.
+3. **[When Lloyd goes backwards](./lloyd.mdx).** The k-means recipe, borrowed for D-optimality,
+   can make the bins worse. Moving one event at a time cannot.
+4. **[Nuisance parameters break the rule](./nuisance.mdx).** With a nuisance parameter fitted
+   alongside, the best bins no longer contain a rule for new events.
+5. **[How much did my binning keep?](./retention.mdx)** One ratio, and the three questions that
+   decide how far to trust it.
+
+The [walkthroughs](/walkthroughs/) carry the same ideas through four complete problems.

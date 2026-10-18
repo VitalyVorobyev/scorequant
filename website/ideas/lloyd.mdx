@@ -1,0 +1,65 @@
+---
+title: When Lloyd goes backwards
+sidebar_label: When Lloyd goes backwards
+sidebar_position: 4
+description: Lloyd's algorithm, borrowed from k-means for D-optimal bins, can make the bins worse; moving one event at a time cannot.
+---
+
+import {Figure} from "@site/src/components/Figure";
+import {ReferenceLink} from "@site/src/components/ReferenceLink";
+import {factsFor} from "@site/src/lib/facts";
+import {siteUrl} from "@site/src/lib/site";
+
+export const f = factsFor("ideas");
+
+# When Lloyd goes backwards
+
+*Lloyd's algorithm alternates two steps that each improve k-means. Borrowed for D-optimal bins, the same alternation can make them worse. Moving one event at a time cannot.*
+
+## Why Lloyd works for k-means
+
+Lloyd's algorithm is how k-means is usually run. Assign every point to its nearest cell mean; move each mean to the centre of its points; repeat. Neither step can raise the summed squared distance from points to their means. The first picks, for every point, the cell where that distance is smallest given the means; the second picks, for every cell, the mean that makes it smallest given the points. So the objective falls at every step, and the algorithm stops where nothing changes.
+
+The reason it works is simple: both steps minimize the same quantity, in a metric that never changes.
+
+## The borrowed version
+
+[The previous post](./kmeans.mdx) showed that D-optimal bins, which maximize $\log\det I_{\rm bin}$, are also nearest-mean partitions, but in the metric of $I_{\rm bin}^{-1}$, which depends on the bins themselves. The obvious batch algorithm is Lloyd in that metric: freeze the metric of the current bins, move every event to its nearest mean, recompute, repeat.
+
+Each such step still lowers the distortion in the frozen metric. But D-optimality is not a distortion in a fixed metric, and lowering the frozen distortion only raises a linear approximation of $\log\det I_{\rm bin}$, its tangent at the current bins. Because $\log\det$ is concave, that tangent lies above the curve:
+
+$$
+\log\det I_{\rm new}
+\;\le\;
+\log\det I_{\rm old}+\operatorname{tr}\!\bigl(I_{\rm old}^{-1}(I_{\rm new}-I_{\rm old})\bigr).
+$$
+
+A gain on the tangent promises nothing about the curve. It can hide a loss.
+
+## Eight events
+
+ScoreQuant keeps a counterexample: eight equally weighted scores in two dimensions, three cells, and a starting labelling. One batch step in the frozen metric moves {f("lloydMoved")} of the eight events. The tangent promises a gain of {f("lloydTangent")} nats in $\log\det I_{\rm bin}$; the actual change is {f("lloydStep")} nats. The bins got worse.
+
+<Figure
+  src={siteUrl("walkthrough-figures/lloyd-nonmonotone.png")}
+  alt="Three panels. Left: log determinant of the binned information against step for the eight-event example; the unguarded batch iteration drops at its first step, marked as rejected, then climbs, while the guarded solver rises at every step to the same end. Middle: a guarded run on a larger sample from random labels, its shortfall from the final objective falling steadily on a log scale through batch steps and then exact exchange moves. Right: the fraction of unguarded runs that emptied a cell, for three synthetic problems, two bin budgets and three sample sizes."
+  caption="Left: the eight-event counterexample, unguarded batch iteration against the guarded solver; the first unguarded step goes downhill. Middle: a guarded run on a larger sample, batch steps handing over to exact exchange. Right: how often unguarded runs from random starting labels empty a cell."
+  paper
+  wide
+/>
+
+How often does this happen? In a sweep of {f("ledgerRuns")} unguarded runs from random starting labels on three synthetic problems, {f("ledgerDownhill")} stepped downhill. A different failure was common: {f("ledgerEmptied")} of them emptied a cell, because a batch step can move every event out of a cell at once. So the downhill step is rare; in this sweep it never occurred. But it exists, and an algorithm that can lose ground cannot promise to end anywhere in particular.
+
+## One event at a time
+
+Exact exchange takes the other route. It considers moving a single event to another cell. Such a move changes the scatter of just two cells, each by a rank-one term, so the new determinant follows exactly from a two-by-two determinant, cheaply. The move is made only if that exact change is positive. The objective therefore rises with every accepted move, there are finitely many partitions, and the algorithm stops at one that no single move improves, which is what exchange-stable means.
+
+Exchange cannot go backwards because it never trusts an approximation of the objective: it checks every move against the objective itself.
+
+Exchange-stable is a local property, not a global one. Restarts help, and a small instance can be proved optimal by exhaustive search (<ReferenceLink to="guide/#proving-a-small-instance-optimal">user guide</ReferenceLink>).
+
+## What ScoreQuant does
+
+Exact exchange is the default solver for D-optimal bins. Batch steps are still useful early on, when many events are far from their best cell and moving them together saves time, so ScoreQuant keeps them, guarded. `MahalanobisLloydConfig` recomputes the exact objective after each batch proposal and rejects any proposal that does not improve it. With `guard="exchange"`, it then hands the labels to exact exchange, which finishes the job. The middle panel above is such a run: batch steps do most of the work, and exchange makes the last small gains (<ReferenceLink to="guide/#how-it-works">user guide</ReferenceLink>).
+
+The same lesson returns in [the next post](./nuisance.mdx), where a nuisance parameter takes away even the nearest-mean geometry.

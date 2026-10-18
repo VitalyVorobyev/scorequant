@@ -190,7 +190,7 @@ def _walkthrough_prose(text: str) -> str:
 
 #: MDX content roots whose prose is held to the fact contract. A page under one
 #: of these may not type a measurement.
-_GUARDED_CONTENT_ROOTS = ("walkthroughs", "get-started")
+_GUARDED_CONTENT_ROOTS = ("walkthroughs", "get-started", "ideas")
 
 #: Content roots deliberately outside the guard, each with the reason. The meta
 #: test below fails if a new docs instance appears in neither collection, so a

@@ -17,6 +17,11 @@ describe("primary navigation highlighting", () => {
     expect(isActiveNavEntry(`${base}/get-started/`, "/walkthroughs")).toBe(false);
   });
 
+  it("marks /ideas active on its posts and not on the walkthroughs", () => {
+    expect(isActiveNavEntry(`${base}/ideas/lloyd/`, "/ideas")).toBe(true);
+    expect(isActiveNavEntry(`${base}/walkthroughs/`, "/ideas")).toBe(false);
+  });
+
   it("does not mark /get-started active on the home route", () => {
     expect(isActiveNavEntry(`${base}/`, "/get-started")).toBe(false);
   });

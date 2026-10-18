@@ -121,8 +121,9 @@ the gate, checks the tag against the packaged version, runs `twine check` and pu
 PyPI Trusted Publishing (project `scorequant`, workflow `release.yml`, environment `pypi`).
 
 A version bump edits `pyproject.toml` (the package reads its version from metadata), adds a
-`CHANGELOG.md` entry, and re-runs `corepack pnpm prepare:runtime`, because
-`website/static/runtime/manifest.json` pins the wheel by filename. Rehearse locally, away from the
+`CHANGELOG.md` entry, edits the wheel filename in `website/static/runtime/manifest.json` (it pins
+the wheel by name, and `prepare:runtime` reads the name from it), and re-runs
+`corepack pnpm prepare:runtime`. Rehearse locally, away from the
 source tree:
 
 ```bash

@@ -17,6 +17,7 @@ import scorequant as sq
 from examples.benchmark_baselines import michelson_baselines, ratio_baselines
 from examples.door3_classifier import run_study as run_door3_study
 from examples.hep_classifier.experiment import run_study as run_hep_study
+from examples.hep_classifier.pyhf_fit import run_demo as run_hep_pyhf_demo
 from examples.ideas_toys import run_study as run_ideas_study
 from examples.lloyd_nonmonotone import (
     COUNTEREXAMPLE_BINS,
@@ -42,6 +43,7 @@ from tests._fit import fit_test_quantizer
 OUTPUTS = Path(__file__).resolve().parents[1] / "examples" / "outputs"
 MICHELSON_METRICS = OUTPUTS / "michelson-phase.json"
 HEP_METRICS = OUTPUTS / "hep-classifier.json"
+HEP_PYHF_METRICS = OUTPUTS / "hep-pyhf.json"
 DOOR3_METRICS = OUTPUTS / "door3-classifier.json"
 IDEAS_METRICS = OUTPUTS / "ideas-toys.json"
 BENCHMARK_METRICS = OUTPUTS / "benchmark-baselines.json"
@@ -333,7 +335,7 @@ def test_fast_rerun_reproduces_the_michelson_aliasing_and_criterion_gap() -> Non
 PAGE_HEP_PARTITIONS: dict[str, tuple[int, float | None, float | None]] = {
     "ds_partition": (6, 0.47837, 0.95503),
     "d_partition": (6, 0.87456, 0.82381),
-    "ds_rule": (6, 0.56195, 0.91455),
+    "ds_rule": (6, 0.55909, 0.91482),
     "d_rule": (6, 0.87456, 0.82381),
     "classifier_significance_intervals": (6, 0.23073, 0.33154),
     "classifier_logit_equal_width": (6, 0.24364, 0.33328),
@@ -349,7 +351,7 @@ PAGE_HEP_SWEEP = [
 ]
 
 PAGE_HEP_HELD_OUT: dict[str, float | None] = {
-    "ds_rule": 0.8576,
+    "ds_rule": 0.8583,
     "d_rule": 0.8025,
     "classifier_significance_intervals": 0.3244,
     "classifier_logit_equal_width": 0.2712,
@@ -358,7 +360,7 @@ PAGE_HEP_HELD_OUT: dict[str, float | None] = {
 }
 
 PAGE_HEP_SIGMA: dict[str, tuple[float, float | None]] = {
-    "ds_rule": (0.700, 0.720),
+    "ds_rule": (0.706, 0.717),
     "d_rule": (0.735, 0.765),
     "classifier_significance_intervals": (0.596, 1.909),
     "classifier_logit_equal_width": (0.636, 1.460),
@@ -575,6 +577,36 @@ def test_hep_json_matches_the_published_downstream_uncertainties() -> None:
             assert float(_mapping(_mapping(direction, "rules"), "ds_rule")["sigma_mu"]) < float(  # type: ignore[arg-type]
                 baseline["sigma_mu"]  # type: ignore[arg-type]
             )
+
+
+def test_pyhf_fit_of_the_hep_categories_matches_the_study() -> None:
+    """A standard HistFactory fit of the same categories reproduces the committed numbers.
+
+    With the energy scale fixed it is the study's own likelihood. Floating, the
+    histosys reads the response from the two shifted templates, so it is held
+    to the study's central-difference variant and to the ordering the page states.
+    """
+    rerun = _mapping(run_hep_pyhf_demo(), "rules")
+    committed = _mapping(_load(HEP_PYHF_METRICS), "rules")
+    assert set(rerun) == set(committed) == {"ds_rule", "classifier_logit_equal_width"}
+    for key, row in rerun.items():
+        stored = _mapping(committed, key)
+        assert isinstance(row, dict)
+        for name in ("pyhf_sigma_mu_tes_fixed", "pyhf_sigma_mu"):
+            assert float(row[name]) == pytest.approx(float(stored[name]), rel=1e-6)  # type: ignore[arg-type]
+        assert float(row["pyhf_sigma_mu_tes_fixed"]) == pytest.approx(  # type: ignore[arg-type]
+            float(row["study_sigma_mu_tes_fixed"]),  # type: ignore[arg-type]
+            rel=1e-3,
+        )
+        assert float(row["pyhf_sigma_mu"]) == pytest.approx(  # type: ignore[arg-type]
+            float(row["study_sigma_mu_central_difference"]),  # type: ignore[arg-type]
+            rel=1e-2,
+        )
+    ds = _mapping(committed, "ds_rule")
+    logit = _mapping(committed, "classifier_logit_equal_width")
+    assert float(ds["pyhf_sigma_mu"]) < float(logit["pyhf_sigma_mu"])  # type: ignore[arg-type]
+    assert float(ds["pyhf_sigma_mu"]) / float(ds["pyhf_sigma_mu_tes_fixed"]) < 1.1  # type: ignore[arg-type]
+    assert float(logit["pyhf_sigma_mu"]) / float(logit["pyhf_sigma_mu_tes_fixed"]) > 1.7  # type: ignore[arg-type]
 
 
 def test_fast_rerun_reproduces_the_hep_classifier_gap() -> None:

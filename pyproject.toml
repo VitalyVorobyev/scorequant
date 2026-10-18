@@ -36,6 +36,7 @@ viz = ["matplotlib>=3.10"]
 examples = [
     "matplotlib>=3.10",
     "pandas>=2.3,<4",
+    "pyhf>=0.7.6",
     "scikit-learn>=1.9,<2",
 ]
 

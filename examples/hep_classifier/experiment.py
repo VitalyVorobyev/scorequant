@@ -26,6 +26,7 @@ produces, including a small, zero, or reversed gap.
 from __future__ import annotations
 
 import json
+import re
 import time
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
@@ -904,10 +905,15 @@ def downstream_uncertainty(
         row["kind"] = rule.kind
         row["n_bins"] = rule.n_bins
         row["sigma_mu_proxy_score"] = proxy
+        # The templates themselves, so a standard fit (`pyhf_fit.py`) can be
+        # built from the same counts without refitting the classifiers.
+        row["signal_templates"] = signal.tolist()
+        row["background_templates"] = background.tolist()
         rows[key] = row
     return {
         "events": nominal.n_events,
         "weighted_yield": float(np.sum(nominal.weights)),
+        "tes_points": list(shifted.points),
         "unbinned_proxy": unbinned_proxy_uncertainty(nominal, signal_fraction),
         "rules": rows,
     }
@@ -1421,6 +1427,21 @@ def run_study(
     )
 
 
+def dump_metrics(metrics: dict[str, object]) -> str:
+    """Indented JSON with each innermost list of numbers kept on one line."""
+    text = json.dumps(metrics, indent=2)
+    flat = re.sub(
+        r"\[([^\[\]{}\"]*)\]",
+        lambda match: (
+            "[" + ", ".join(item.strip() for item in match.group(1).split(",")) + "]"
+            if match.group(1).strip()
+            else "[]"
+        ),
+        text,
+    )
+    return flat + "\n"
+
+
 def main() -> None:
     """Run the study and write the committed JSON and figures."""
     import jax
@@ -1433,8 +1454,7 @@ def main() -> None:
     study = run_study()
     METRICS_PATH.parent.mkdir(parents=True, exist_ok=True)
     with METRICS_PATH.open("w", encoding="utf-8") as stream:
-        json.dump(study.metrics, stream, indent=2)
-        stream.write("\n")
+        stream.write(dump_metrics(study.metrics))
     for path, figure in (
         (CELLS_FIGURE_PATH, make_cells_figure(study)),
         (BUDGET_FIGURE_PATH, make_budget_figure(study)),

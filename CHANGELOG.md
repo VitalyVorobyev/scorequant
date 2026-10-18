@@ -40,6 +40,11 @@ once already, which retroactively asserted that unshipped work had shipped.
   assignment is one routine; `retention_uncertainty` moved to its own module. The split leaves
   the public API alone, and a missing nuisance block reports one shared message.
 
+### Examples
+
+- `examples/hep_classifier/pyhf_fit.py` fits the HEP walkthrough's categories as a standard pyhf
+  HistFactory model, and the `examples` extra now includes `pyhf`.
+
 ### Changed (breaking)
 
 The public surface is cut from 62 top-level names to 27, plus five public submodules, ahead of

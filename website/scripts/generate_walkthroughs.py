@@ -45,6 +45,7 @@ EVIDENCE = (
     "examples/data/hep_higgsml_fixture.json",
     "examples/outputs/ideas-toys.json",
     "examples/outputs/lloyd-nonmonotone.json",
+    "examples/outputs/benchmark-baselines.json",
 )
 
 
@@ -95,6 +96,7 @@ FLOWCYT_WALKTHROUGH = "examples/data/flowcyt_walkthrough.json"
 HEP_FIXTURE = "examples/data/hep_higgsml_fixture.json"
 IDEAS = "examples/outputs/ideas-toys.json"
 LLOYD = "examples/outputs/lloyd-nonmonotone.json"
+BENCHMARK = "examples/outputs/benchmark-baselines.json"
 
 FACTS: tuple[Fact, ...] = (
     # ---------------------------------------------------------------- flowcyt
@@ -403,6 +405,119 @@ FACTS: tuple[Fact, ...] = (
     Fact("ideas", "ledgerRuns", f"{LLOYD}#/ledger_totals/runs", _count),
     Fact("ideas", "ledgerDownhill", f"{LLOYD}#/ledger_totals/downhill_runs", _count),
     Fact("ideas", "ledgerEmptied", f"{LLOYD}#/ledger_totals/emptied_runs", _count),
+    # -------------------------------------------------------------- benchmark
+    # Each walkthrough's result beside equal-width, quantile and k-means bins,
+    # in that walkthrough's own metric and budget. The studies' own evidence
+    # first; `examples/benchmark_baselines.py` only for what they lack.
+    Fact("benchmark", "michelsonBins", f"{MICHELSON}#/headline_bins", _count),
+    Fact(
+        "benchmark",
+        "michelsonScoreQuant",
+        f"{MICHELSON}#/sweep/1/profiled_retention",
+        _fixed(3),
+    ),
+    Fact(
+        "benchmark",
+        "michelsonEqualWidth",
+        f"{MICHELSON}#/sweep/1/equal_width_retention",
+        _fixed(3),
+    ),
+    Fact(
+        "benchmark",
+        "michelsonQuantile",
+        f"{BENCHMARK}#/michelson/quantile_retention",
+        _fixed(3),
+    ),
+    Fact("benchmark", "michelsonKmeans", f"{BENCHMARK}#/michelson/kmeans_retention", _fixed(3)),
+    Fact(
+        "benchmark",
+        "michelsonCeiling",
+        f"{MICHELSON}#/sweep/1/ceiling_retention",
+        _fixed(3),
+    ),
+    # The best-trained classifier's rung, where the score is closest to exact
+    # and the comparison is about the bins rather than the classifier.
+    Fact("benchmark", "ratiosBins", f"{DOOR3}#/n_bins", _count),
+    Fact("benchmark", "ratiosTrainSize", f"{DOOR3}#/ladder/2/n_per_class", _count),
+    Fact("benchmark", "ratiosScoreQuant", f"{DOOR3}#/ladder/2/true_retention", _fixed(3)),
+    Fact(
+        "benchmark",
+        "ratiosEqualWidth",
+        f"{DOOR3}#/naive_binning/rows/2/equal_width_retention",
+        _fixed(3),
+    ),
+    Fact(
+        "benchmark",
+        "ratiosQuantile",
+        f"{DOOR3}#/naive_binning/rows/2/equal_frequency_retention",
+        _fixed(3),
+    ),
+    Fact("benchmark", "ratiosKmeans", f"{BENCHMARK}#/ratios/kmeans_retention", _fixed(3)),
+    Fact("benchmark", "hepBins", f"{HEP}#/n_bins", _count),
+    Fact(
+        "benchmark",
+        "hepScoreQuant",
+        f"{HEP}#/cross_evaluation/mean/ds_rule/evaluation_profiled_retention",
+        _fixed(3),
+    ),
+    Fact(
+        "benchmark",
+        "hepEqualWidth",
+        f"{HEP}#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_profiled_retention",
+        _fixed(3),
+    ),
+    Fact(
+        "benchmark",
+        "hepQuantile",
+        f"{HEP}#/cross_evaluation/mean/classifier_quantile/evaluation_profiled_retention",
+        _fixed(3),
+    ),
+    Fact("benchmark", "hepKmeans", f"{BENCHMARK}#/hep/kmeans_retention", _fixed(3)),
+    Fact(
+        "benchmark",
+        "hepCeiling",
+        f"{HEP}#/cross_evaluation/directions/0/evaluation_ceiling_retention",
+        _fixed(3),
+    ),
+    # FlowCyt has no equal-width rule; its marker grid, cut at quantiles of the
+    # two leading principal components, stands in for one and is named so.
+    Fact("benchmark", "flowcytBins", f"{FLOWCYT_STUDY}#/operating_partition/n_bins", _count),
+    Fact(
+        "benchmark",
+        "flowcytScoreQuant",
+        f"{FLOWCYT_STUDY}#/soft_voronoi:8/held_out_d_efficiency",
+        _fixed(3),
+    ),
+    Fact(
+        "benchmark",
+        "flowcytGrid",
+        f"{FLOWCYT_STUDY}#/two_dimensional_grid:8/held_out_d_efficiency",
+        _fixed(3),
+    ),
+    Fact(
+        "benchmark",
+        "flowcytQuantile",
+        f"{FLOWCYT_STUDY}#/one_dimensional_score:8/held_out_d_efficiency",
+        _fixed(3),
+    ),
+    Fact(
+        "benchmark",
+        "flowcytKmeans",
+        f"{FLOWCYT_STUDY}#/marker_kmeans:8/held_out_d_efficiency",
+        _fixed(3),
+    ),
+    Fact(
+        "benchmark",
+        "flowcytScoreQuantRmse",
+        f"{FLOWCYT_STUDY}#/soft_voronoi:8/target_macro_rmse",
+        _fixed(4),
+    ),
+    Fact(
+        "benchmark",
+        "flowcytQuantileRmse",
+        f"{FLOWCYT_STUDY}#/one_dimensional_score:8/target_macro_rmse",
+        _fixed(4),
+    ),
 )
 
 

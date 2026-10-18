@@ -14,6 +14,7 @@ import numpy as np
 import pytest
 
 import scorequant as sq
+from examples.benchmark_baselines import michelson_baselines, ratio_baselines
 from examples.door3_classifier import run_study as run_door3_study
 from examples.hep_classifier.experiment import run_study as run_hep_study
 from examples.ideas_toys import run_study as run_ideas_study
@@ -43,6 +44,7 @@ MICHELSON_METRICS = OUTPUTS / "michelson-phase.json"
 HEP_METRICS = OUTPUTS / "hep-classifier.json"
 DOOR3_METRICS = OUTPUTS / "door3-classifier.json"
 IDEAS_METRICS = OUTPUTS / "ideas-toys.json"
+BENCHMARK_METRICS = OUTPUTS / "benchmark-baselines.json"
 
 
 def test_rank_deficient_fixture_projects_duplicate_direction() -> None:
@@ -853,3 +855,25 @@ def test_ideas_rerun_reproduces_the_committed_toys_and_their_claims() -> None:
     kmeans, d_optimal = clusters["kmeans"], clusters["d_optimal"]
     assert kmeans["arithmetic_mean_retention"] > d_optimal["arithmetic_mean_retention"]
     assert d_optimal["geometric_mean_retention"] > kmeans["geometric_mean_retention"]
+
+
+def test_benchmark_baselines_rerun_to_the_committed_evidence() -> None:
+    """The benchmark page's Michelson and ratio baselines rerun to their committed values.
+
+    The HEP baseline needs the cross-fitted classifiers, too slow for this tier;
+    the script checks that table against the study's own quantile row before
+    it writes anything.
+    """
+    committed = _load(BENCHMARK_METRICS)
+    michelson = michelson_baselines()
+    stored = _mapping(committed, "michelson")
+    for key in ("quantile_retention", "kmeans_retention"):
+        assert michelson[key] == pytest.approx(stored[key], rel=1e-9), key
+    ratios = ratio_baselines()
+    stored = _mapping(committed, "ratios")
+    assert ratios["kmeans_retention"] == pytest.approx(stored["kmeans_retention"], rel=1e-6)
+    # The page's honest case: with one score coordinate, k-means is not behind
+    # the fitted rule.
+    door3 = _door3_metrics()
+    best_rung = _listing(door3, "ladder")[-1]
+    assert float(stored["kmeans_retention"]) >= float(best_rung["true_retention"])  # type: ignore[arg-type]

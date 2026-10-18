@@ -69,6 +69,10 @@ export default function Home(): React.JSX.Element {
               </li>
             ))}
           </ul>
+          <p>
+            The <Link to="/benchmark">benchmark</Link> sets each result beside equal-width, quantile
+            and k-means bins.
+          </p>
         </section>
 
         <section aria-labelledby="start">

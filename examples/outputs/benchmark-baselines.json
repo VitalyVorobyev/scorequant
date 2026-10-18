@@ -1,0 +1,25 @@
+{
+  "problem": "benchmark_baselines",
+  "kmeans_restarts": 10,
+  "michelson": {
+    "n_bins": 6,
+    "metric": "profiled phase retention on the quadrature table",
+    "quantile_retention": 0.07536943814115069,
+    "kmeans_retention": 0.354978904750005
+  },
+  "ratios": {
+    "n_bins": 4,
+    "n_per_class": 300,
+    "metric": "achieved retention against the exact score, held-out events",
+    "kmeans_retention": 0.972624331179771
+  },
+  "hep": {
+    "n_bins": 6,
+    "metric": "held-out profiled signal-strength retention, mean of both directions",
+    "kmeans_retention": 0.05056833618465156,
+    "kmeans_directions": [
+      0.024715317713864926,
+      0.0764213546554382
+    ]
+  }
+}

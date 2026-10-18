@@ -1,0 +1,97 @@
+---
+title: Benchmark
+sidebar_label: Benchmark
+description: Each walkthrough's ScoreQuant result beside equal-width, quantile and k-means bins at the same budget.
+---
+
+import {BinningComparison} from "@site/src/components/BinningComparison";
+import {factValue, factsFor} from "@site/src/lib/facts";
+
+export const f = factsFor("benchmark");
+export const row = (label, key, kind) => ({
+  isCeiling: kind === "ceiling",
+  isScoreQuant: kind === "scorequant",
+  label,
+  text: f(key),
+  value: factValue("benchmark", key),
+});
+
+# Benchmark
+
+Each walkthrough compares ScoreQuant with the binnings a practitioner reaches for first. This page puts those comparisons side by side. Every problem gets three baselines at its own bin budget: equal-width bins, quantile bins of the natural one-dimensional statistic, and k-means. Each is scored by the measure its walkthrough reports. The measures differ, so compare bars within a section, not across sections. Higher is better throughout.
+
+Most numbers come from the walkthrough studies themselves. Where a study had no such baseline, `examples/benchmark_baselines.py` computes it on the study's own score table. The k-means baselines use plain Euclidean distance on raw coordinates, with each event's weight.
+
+## Interferometer phase
+
+The measure is the share of the profiled phase information kept with {f("michelsonBins")} bins, while the fringe frequency is fitted alongside.
+
+<BinningComparison
+  axisLabel="Profiled phase information kept"
+  caption="Every labelling is scored on the same quadrature table of the detector. The dashed line is the certified ceiling for any partition of this size."
+  rows={[
+    row("Equal-width segments", "michelsonEqualWidth"),
+    row("Equal-photon segments", "michelsonQuantile"),
+    row("K-means on the scores", "michelsonKmeans"),
+    row("Profiled partition", "michelsonScoreQuant", "scorequant"),
+    row("Certified ceiling", "michelsonCeiling", "ceiling"),
+  ]}
+/>
+
+Equal segments, and segments holding an equal share of the photons, both span rising and falling slopes of the fringes, where the phase score has opposite signs, so most of what they collect cancels. K-means on the scores does group positions with similar scores, but its distances are dominated by the frequency score, which spans a far wider range than the phase score. The profiled partition cuts the part of the phase score that the frequency cannot imitate, and reaches the ceiling. The [Michelson walkthrough](/walkthroughs/michelson/) shows the cells.
+
+## Density ratios
+
+The measure is the retention the bins achieve against the exact score on held-out events, with {f("ratiosBins")} bins and a classifier trained on {f("ratiosTrainSize")} events per component.
+
+<BinningComparison
+  axisLabel="Retention achieved against the exact score"
+  caption="Every binning cuts the same estimated score and is scored against the exact one."
+  rows={[
+    row("Equal-width bins", "ratiosEqualWidth"),
+    row("Quantile bins", "ratiosQuantile"),
+    row("K-means on the score", "ratiosKmeans"),
+    row("D-optimal rule", "ratiosScoreQuant", "scorequant"),
+  ]}
+/>
+
+Here ScoreQuant has no edge, and equal-width bins and k-means come out slightly ahead of it. The score has one coordinate, and any sensible cut of one coordinate keeps nearly all of its information; the baselines are also cut on the held-out events themselves, which favours them a little. What limits this problem is the classifier behind the score, which the [density-ratio walkthrough](/walkthroughs/ratios/) measures.
+
+## Higgs boson measurement
+
+The measure is the profiled information about the signal strength kept on held-out events, with the background rate and the tau energy scale floating, in {f("hepBins")} categories. The equal-width and quantile baselines cut the classifier output, as an analysis usually does.
+
+<BinningComparison
+  axisLabel="Profiled signal-strength information, held out"
+  caption="Each rule is fitted on one half of the events and scored on the other, averaged over both directions. The dashed line is the certified ceiling for the first evaluation half."
+  rows={[
+    row("Classifier logit, equal width", "hepEqualWidth"),
+    row("Classifier quantile bins", "hepQuantile"),
+    row("K-means on the scores", "hepKmeans"),
+    row("Profiled rule", "hepScoreQuant", "scorequant"),
+    row("Certified ceiling", "hepCeiling", "ceiling"),
+  ]}
+/>
+
+The classifier output orders events by how signal-like they look, and a shift of the energy scale moves background along that same order, so slices of it cannot tell the two apart. K-means on the three score columns does worse still: it weighs each column by its raw spread, not by what it says about the signal strength, so its cells need not separate what the nuisances can imitate from what they cannot. The profiled rule keeps the part of each event's response that the nuisances cannot imitate. The [Higgs walkthrough](/walkthroughs/hep/) turns the categories into an uncertainty on the signal strength.
+
+## Cell populations
+
+The measure is the share of information about all the population fractions kept on held-out patients, with {f("flowcytBins")} categories. The study has no equal-width rule; the nearest is a grid on the two leading principal components of the markers, cut at quantiles. The quantile baseline cuts the leading direction of the score, and k-means runs on the markers.
+
+<BinningComparison
+  axisLabel="Information about the fractions, held-out patients"
+  caption="Categories fitted on reference patients and scored on held-out ones."
+  rows={[
+    row("Marker grid", "flowcytGrid"),
+    row("Quantile cut of the score", "flowcytQuantile"),
+    row("K-means on the markers", "flowcytKmeans"),
+    row("D-optimal rule", "flowcytScoreQuant", "scorequant"),
+  ]}
+/>
+
+Gates and clusters on the markers group cells by how they look, and cells that look alike can say very different things about the composition. One score direction cannot separate several fractions at once. The ScoreQuant rule keeps nearly all the information, and in the walkthrough's own measure, the error of the fitted fractions, it reaches {f("flowcytScoreQuantRmse")} against {f("flowcytQuantileRmse")} for the best baseline. The [cell-population walkthrough](/walkthroughs/flowcyt/) shows what the categories hold.
+
+## What the comparison shows
+
+The gain comes from drawing bins in score space when several score coordinates must share a few bins: a nuisance parameter beside the parameter of interest, or several fractions at once. With one score coordinate there is little to choose, and simple cuts do as well. Within score space the criterion matters too. K-means on raw scores weighs each direction by its spread, and even on whitened scores it adds up what each direction keeps where D-optimality multiplies, as the [essay on k-means](/ideas/kmeans/) explains.

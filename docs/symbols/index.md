@@ -10,4 +10,4 @@ The generated reference mirrors the task-explicit public surface.
 - [Density ratios](ratios.md)
 - [Information](information.md)
 - [Transforms](transforms.md)
-- [Visualization](visualization.md)
+- [Plotting](plotting.md) (not part of the stable API)

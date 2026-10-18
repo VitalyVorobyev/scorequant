@@ -52,7 +52,6 @@ from .sources import (
 )
 from .transforms import FisherTransform
 from .uncertainty import retention_uncertainty
-from .visualization import plot_information, plot_optimization, plot_partition, plot_summary
 
 #: Installed distribution version. Resolved from package metadata so
 #: ``pyproject.toml`` stays the single source of truth; a source tree that was
@@ -108,10 +107,6 @@ __all__ = [
     "fractional_fisher_information",
     "information_report",
     "optimize_partition",
-    "plot_information",
-    "plot_optimization",
-    "plot_partition",
-    "plot_summary",
     "profiled_information_report",
     "retention_uncertainty",
 ]

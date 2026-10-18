@@ -53,7 +53,7 @@ nav:
       - Certificates: symbols/certification.md
       - Information: symbols/information.md
       - Transforms: symbols/transforms.md
-      - Visualization: symbols/visualization.md
+      - Plotting (not stable): symbols/plotting.md
   - Glossary: glossary.md
   - Learning portal: https://vitalyvorobyev.github.io/scorequant/
 

@@ -62,7 +62,7 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `ProfiledGeometryReport` | Diagnostic | `metric`, `maximum_positive_violation`, `maximum_theoretical_bound`, `maximum_bound_residual`, `violating_moves`, `evaluated_moves`, `bound_certified` | `to_dict` |
 | `ProfiledInformationReport` | Diagnostic | `interest`, `nuisance`, `schur_unbinned`, `schur_binned`, `nuisance_unbinned`, `nuisance_binned`, `objective`, `logdet_retention`, `geometric_mean_retention`, `interest_rank`, `nuisance_rank`, `schema` | `interest_names`, `nuisance_names`, `describe`, `to_dict` |
 | `Quantizer` | Stable | `transform`, `centers`, `metric`, `schema`, `provenance`, `criterion`, `execution` | `n_bins`, `rank`, `input_dim`, `information_kind`, `predict_scores`, `evaluate_scores`, `to_dict`, `save`, `load` |
-| `QuantizerResult` | Diagnostic | `quantizer`, `criterion`, `config`, `execution`, `trace`, `labels`, `train_report`, `validation_report`, `provenance`, `hardening_gap`, `source_kind`, `train_profiled_report`, `validation_profiled_report` | `centers`, `metric`, `transform`, `schema`, `n_bins`, `rank`, `information_kind`, `predict_scores`, `evaluate_scores`, `report`, `to_dict`, `plot_summary` |
+| `QuantizerResult` | Diagnostic | `quantizer`, `criterion`, `config`, `execution`, `trace`, `labels`, `train_report`, `validation_report`, `provenance`, `hardening_gap`, `source_kind`, `train_profiled_report`, `validation_profiled_report` | `centers`, `metric`, `transform`, `schema`, `n_bins`, `rank`, `information_kind`, `predict_scores`, `evaluate_scores`, `report`, `to_dict` |
 | `ratios.RatioClosureReport` | Diagnostic | `normalizers`, `max_residual` | `to_dict` |
 | `ratios.RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas`, `gauges` | `to_dict` |
 | `RefusalError` | Stable | `counterexample` | — |
@@ -86,10 +86,10 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `fractional_fisher_information` | Stable | — | — |
 | `information_report` | Stable | — | — |
 | `optimize_partition` | Stable | — | — |
-| `plot_information` | Stable | — | — |
-| `plot_optimization` | Stable | — | — |
-| `plot_partition` | Stable | — | — |
-| `plot_summary` | Stable | — | — |
+| `plotting.plot_information` | Unstable | — | — |
+| `plotting.plot_optimization` | Unstable | — | — |
+| `plotting.plot_partition` | Unstable | — | — |
+| `plotting.plot_summary` | Unstable | — | — |
 | `profiled_information_report` | Stable | — | — |
 | `ratios.ratio_closure_report` | Stable | — | — |
 | `ratios.ratios_from_posteriors` | Stable | — | — |

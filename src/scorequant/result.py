@@ -10,7 +10,6 @@ reports`` is a chain, not a cycle.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -33,9 +32,6 @@ from .reports import (
 )
 from .sources import InformationKind, ScoreProvenance, ScoreSchema, SourceKind
 from .transforms import FisherTransform
-
-if TYPE_CHECKING:
-    from matplotlib.figure import Figure
 
 __all__ = [
     "EfficientScoreBound",
@@ -208,12 +204,6 @@ class QuantizerResult:
                 ),
             }
         )
-
-    def plot_summary(self, scores: ArrayLike, weights: ArrayLike | None = None) -> Figure:
-        """Create the optional score-space summary figure."""
-        from .visualization import plot_summary
-
-        return plot_summary(self, scores, weights)
 
 
 @dataclass(frozen=True, slots=True)

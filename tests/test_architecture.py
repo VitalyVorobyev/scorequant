@@ -80,7 +80,7 @@ def test_domain_contracts_do_not_import_solver_or_api_layers() -> None:
         "certify",
         "diagnostics",
         "_exchange",
-        "visualization",
+        "plotting",
     }
     offenders: dict[str, list[str]] = {}
     for name in domain_modules:
@@ -129,7 +129,7 @@ def test_artifact_never_imports_fit_layers() -> None:
         "certify",
         "diagnostics",
         "_exchange",
-        "visualization",
+        "plotting",
     }
     assert sorted(_imports(PACKAGE / "artifact.py") & forbidden) == []
 

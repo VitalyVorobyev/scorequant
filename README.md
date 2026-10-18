@@ -81,4 +81,9 @@ for solver limits, tolerances and refusals.
 - [Get started](https://vitalyvorobyev.github.io/scorequant/get-started/): one complete runnable workflow.
 - [Four walkthroughs](https://vitalyvorobyev.github.io/scorequant/walkthroughs/): interferometry, density ratios, cytometry and HEP.
 - [User guide](https://vitalyvorobyev.github.io/scorequant/docs/guide/): how it works and which task, criterion and solver to choose.
-- [Contributor guidance](AGENTS.md) and [MIT license](LICENSE).
+- [Contributing](CONTRIBUTING.md), [contributor guidance](AGENTS.md) and [MIT license](LICENSE).
+
+## Citing
+
+If ScoreQuant helps your work, please cite it. [`CITATION.cff`](CITATION.cff) holds the
+citation metadata, and GitHub's "Cite this repository" button formats it.

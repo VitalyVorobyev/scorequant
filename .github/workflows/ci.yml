@@ -126,6 +126,21 @@ jobs:
           name: paper
           path: research/paper/main.pdf
 
+  # The JOSS draft, built with the journal's own action so the PDF matches what
+  # the editors' bot renders. Cheap, and kept as an artifact like the paper.
+  joss:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: openjournals/openjournals-draft-action@master
+        with:
+          journal: joss
+          paper-path: research/joss/paper.md
+      - uses: actions/upload-artifact@v6
+        with:
+          name: joss-paper
+          path: research/joss/paper.pdf
+
   build:
     runs-on: ubuntu-latest
     env:

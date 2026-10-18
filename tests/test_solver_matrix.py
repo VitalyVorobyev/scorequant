@@ -1,16 +1,14 @@
 """Guard the generated criterion/solver compatibility matrix against drift.
 
 ``website/scripts/generate_data.py`` derives the criterion/solver table from
-``scorequant.api._SOLVER_TABLE`` and writes it into ``website/src/generated/portal-data.json``
-and into a marked region of ``docs/guide.md``, ``docs/api.md`` and ``README.md``. These tests
-check those copies against the registry, and check that the library accepts exactly the
-declared pairs.
+``scorequant.api._SOLVER_TABLE`` and writes it into a marked region of ``docs/guide.md``,
+``docs/api.md`` and ``README.md``. These tests check those copies against the registry, and
+check that the library accepts exactly the declared pairs.
 """
 
 from __future__ import annotations
 
 import importlib.util
-import json
 import re
 from pathlib import Path
 from types import ModuleType
@@ -21,7 +19,6 @@ from scorequant.api import _SOLVER_TABLE
 
 ROOT = Path(__file__).resolve().parents[1]
 GENERATE_DATA_MODULE = ROOT / "website" / "scripts" / "generate_data.py"
-PORTAL_DATA = ROOT / "website" / "src" / "generated" / "portal-data.json"
 
 # The Markdown files whose ``<!-- generated: solver-matrix -->`` region must equal
 # the table rendered from the current registry. README and the API guide carry the extra
@@ -69,12 +66,6 @@ def test_solver_matrix_matches_registry(generate_data: ModuleType) -> None:
         assert row["quantizerCriteria"] == [
             criterion.__name__ for criterion in spec.quantizer_criteria
         ]
-
-
-def test_portal_data_solver_matrix_matches_registry(generate_data: ModuleType) -> None:
-    """The committed ``portal-data.json`` matrix equals what ``_SOLVER_TABLE`` declares now."""
-    payload = json.loads(PORTAL_DATA.read_text(encoding="utf-8"))
-    assert payload["solverMatrix"] == generate_data._solver_matrix()
 
 
 @pytest.mark.parametrize(("path", "with_contract"), _CONSUMERS, ids=lambda value: str(value))

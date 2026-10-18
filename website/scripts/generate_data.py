@@ -1,12 +1,9 @@
-"""Generate the portal's API and solver-matrix data."""
+"""Write the criterion/solver matrix into the Markdown files that show it."""
 
 from __future__ import annotations
 
-import ast
-import json
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 # ``_SOLVER_TABLE`` is a private module-level constant, not part of ``scorequant``'s public
 # surface. The generator is deliberately coupled to it anyway: it is the single source of
@@ -15,12 +12,7 @@ from typing import TYPE_CHECKING
 # is the entire point of generating the matrix instead of maintaining it by hand.
 from scorequant.api import _SOLVER_TABLE
 
-if TYPE_CHECKING:  # pragma: no cover - annotations only
-    import griffe
-
 ROOT = Path(__file__).resolve().parents[2]
-WEBSITE = ROOT / "website"
-OUTPUT = WEBSITE / "src" / "generated" / "portal-data.json"
 
 # The generated criterion/solver matrix marks its home in three Markdown files with these
 # markers; content between them is rewritten on every run and must never be hand-edited.
@@ -47,63 +39,6 @@ _SOLVER_CONTRACTS: dict[str, str] = {
     "KMeansConfig": "Weighted $k$-means in whitened score space",
     "ScalarDPConfig": "The exact global interval solution for rank-one score space",
 }
-
-
-def _public_names() -> list[str]:
-    tree = ast.parse((ROOT / "src" / "scorequant" / "__init__.py").read_text())
-    for node in tree.body:
-        if isinstance(node, ast.Assign) and any(
-            isinstance(target, ast.Name) and target.id == "__all__" for target in node.targets
-        ):
-            return [
-                element.value
-                for element in node.value.elts
-                if isinstance(element, ast.Constant) and isinstance(element.value, str)
-            ]
-    raise RuntimeError("scorequant.__all__ was not found")
-
-
-def _target(value: griffe.Object | griffe.Alias) -> griffe.Object | griffe.Alias:
-    while getattr(value, "is_alias", False) and getattr(value, "resolved", False):
-        next_value = value.target
-        if next_value is value:
-            break
-        value = next_value
-    return value
-
-
-def _api_data() -> list[dict[str, object]]:
-    # Griffe lives in the ``portal`` dependency group, which CI's library test tier does
-    # not install. Importing it here rather than at module scope keeps the solver-matrix
-    # helpers below importable from ``tests/test_solver_matrix.py`` under a bare
-    # ``uv sync --all-extras --dev``; only this function actually needs Griffe.
-    import griffe
-
-    module = griffe.load("scorequant", search_paths=[ROOT / "src"], resolve_aliases=True)
-    entries: list[dict[str, object]] = []
-    for name in sorted(_public_names()):
-        value = _target(module.members[name])
-        docstring = "" if value.docstring is None else value.docstring.value
-        summary = docstring.split("\n\n", 1)[0].replace("\n", " ")
-        signature = ""
-        if getattr(value, "is_function", False) or getattr(value, "is_class", False):
-            signature = str(value.signature())
-        path = Path(value.filepath).resolve().relative_to(ROOT)
-        kind = "class" if getattr(value, "is_class", False) else "function"
-        reference_section = "configuration" if name.endswith("Config") else "index"
-        entries.append(
-            {
-                "name": name,
-                "kind": kind,
-                "signature": signature,
-                "summary": summary,
-                "source": (
-                    f"https://github.com/VitalyVorobyev/scorequant/blob/main/{path}#L{value.lineno}"
-                ),
-                "reference": f"/reference/symbols/{reference_section}/",
-            }
-        )
-    return entries
 
 
 def _solver_matrix() -> list[dict[str, object]]:
@@ -176,16 +111,8 @@ def _rewrite_solver_matrix_docs(rows: list[dict[str, object]]) -> None:
 
 
 def main() -> None:
-    """Generate every committed portal data projection."""
-    solver_matrix = _solver_matrix()
-    payload = {
-        "schemaVersion": 3,
-        "api": _api_data(),
-        "solverMatrix": solver_matrix,
-    }
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
-    _rewrite_solver_matrix_docs(solver_matrix)
+    """Rewrite every generated solver-matrix region from the registry."""
+    _rewrite_solver_matrix_docs(_solver_matrix())
 
 
 if __name__ == "__main__":

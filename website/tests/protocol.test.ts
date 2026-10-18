@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {createRunRequest, LAB_LIMITS, PROTOCOL_VERSION, criterionLabel, validateProblem} from "../src/lab/protocol";
+import {createRunRequest, LAB_LIMITS, PROTOCOL_VERSION, validateProblem} from "../src/lab/protocol";
 import type {LabProblem, ScoreRow} from "../src/lab/protocol";
 
 const validProblem: LabProblem = {
@@ -93,11 +93,6 @@ describe("criterion selection", () => {
     const base: LabProblem = {...validProblem, scores, weights: scores.map(() => 1), solver: "d_exchange"};
     expect(validateProblem({...base, nBins: 4})).toContain("at least as many bins");
     expect(validateProblem({...base, nBins: 5})).toBeNull();
-  });
-
-  it("labels the objective the retention is measured against", () => {
-    expect(criterionLabel(undefined)).toBe("D-optimality");
-    expect(criterionLabel({name: "profiled_d_optimality", interest: ["HSPC"]})).toContain("HSPC");
   });
 });
 

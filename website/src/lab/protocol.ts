@@ -190,10 +190,3 @@ export function isLabEvent(value: unknown): value is LabEvent {
 export function createRunRequest(problem: LabProblem): LabRunRequest {
   return {protocolVersion: PROTOCOL_VERSION, type: "run", runId: crypto.randomUUID(), problem};
 }
-
-/** Human-readable objective label, used in the diagnostics panel and the result. */
-export function criterionLabel(criterion: LabCriterion | undefined): string {
-  if (criterion === undefined || criterion.name === "d_optimality") return "D-optimality";
-  if (criterion.name === "normalized_trace") return "Normalized trace";
-  return `Profiled Dₛ (${(criterion.interest ?? []).join(", ")})`;
-}

@@ -132,9 +132,9 @@ def test_a_rule_fitted_under_jax_predicts_where_jax_is_absent(tmp_path: Path) ->
 import sys
 
 class _NoJax:
-    def find_module(self, name, path=None):
-        if name == "jax" or name.startswith("jax."):
-            raise ImportError(name)
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == "jax" or fullname.startswith("jax."):
+            raise ImportError(fullname)
         return None
 
 sys.meta_path.insert(0, _NoJax())
@@ -218,3 +218,57 @@ assert "jax" not in sys.modules
 """
     completed = subprocess.run([sys.executable, "-c", program], capture_output=True, text=True)
     assert completed.returncode == 0, completed.stderr
+
+
+def test_the_artifact_does_not_carry_the_fitting_execution(tmp_path: Path) -> None:
+    """A rule fitted on one runtime loads under the loading environment's default."""
+    scores = np.asarray(np.random.default_rng(SEED).normal(size=(300, 2)))
+    result = sq.fit_quantizer(
+        sq.ScoreSample(scores),
+        n_bins=4,
+        config=sq.DExchangeConfig(seed=SEED),
+        execution=sq.ExecutionConfig(backend="numpy", precision="float64"),
+    )
+    path = result.quantizer.save(tmp_path / "rule.sqz")
+    with zipfile.ZipFile(path) as archive:
+        manifest = json.loads(archive.read("manifest.json"))
+
+    assert manifest["execution"] == sq.ExecutionConfig().to_dict()
+    restored = sq.Quantizer.load(path)
+    assert restored.execution == sq.ExecutionConfig(backend="jax")
+    assert np.array_equal(restored.predict_scores(scores), result.predict_scores(scores))
+
+
+def test_a_loaded_rule_predicts_without_jax_and_without_an_override(tmp_path: Path) -> None:
+    result = _fit()
+    scores = np.asarray(np.random.default_rng(SEED + 5).normal(size=(200, 3)))
+    expected = np.asarray(result.predict_scores(scores))
+    rule_path = result.quantizer.save(tmp_path / "rule.sqz")
+    scores_path = tmp_path / "scores.npy"
+    np.save(scores_path, scores)
+
+    program = f"""
+import sys
+
+class _NoJax:
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == "jax" or fullname.startswith("jax."):
+            raise ImportError(fullname)
+        return None
+
+sys.meta_path.insert(0, _NoJax())
+
+import numpy as np
+from scorequant.artifact import Quantizer
+
+rule = Quantizer.load({str(rule_path)!r})
+assert rule.execution.backend == "numpy"
+labels = rule.predict_scores(np.load({str(scores_path)!r}))
+np.save({str(tmp_path / "labels.npy")!r}, np.asarray(labels))
+assert "jax" not in sys.modules
+"""
+    completed = subprocess.run(
+        [sys.executable, "-c", program], capture_output=True, text=True, check=False
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert np.array_equal(np.load(tmp_path / "labels.npy"), expected)

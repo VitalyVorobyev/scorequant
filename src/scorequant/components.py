@@ -8,7 +8,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from ._errors import ContractError
-from ._execution import canonical_array, execution_scope
+from ._execution import canonical_array, execution_scope, input_array
 from ._execution import xp as jnp
 from ._json import json_ready
 from ._typing import ArrayLike, JsonValue
@@ -77,7 +77,7 @@ def scores_from_components(
     identical scores; absolute normalization is never required.
     """
     del execution
-    component_array = jnp.asarray(components)
+    component_array = input_array(components)
     if component_array.ndim != 2 or min(component_array.shape) == 0:
         raise ContractError("components must have non-empty shape [N, M]")
     component_array = promote_low_precision(component_array)

@@ -27,7 +27,9 @@ class ExecutionConfig:
         is the portable CPU implementation used by Pyodide.
     precision
         Input precision policy. ``"preserve"`` retains float32/float64 inputs
-        while promoting integer and lower-precision inputs to float32.
+        while promoting integer and lower-precision inputs to float32. JAX
+        retains float64 only when X64 is enabled; otherwise it computes in
+        float32 and warns once per process.
     device
         Requested device family. NumPy accepts only ``"default"`` and
         ``"cpu"``. JAX resolves the first available device of the requested

@@ -8,6 +8,7 @@ conditionals stay in this module.
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
@@ -111,6 +112,38 @@ if TYPE_CHECKING:
     import numpy as xp
 else:
     xp = _NamespaceProxy()
+
+
+@cache
+def _warn_float64_truncation() -> None:
+    # Once per process: the fallback is a property of the JAX configuration,
+    # not of one call, and repeating it on every array would bury it.
+    warnings.warn(
+        "float64 scores were converted to float32 because JAX_ENABLE_X64 is disabled; "
+        "default tolerances such as gain_tolerance assume float64 resolution. Enable X64 "
+        "before importing JAX, pass float32 scores, or select ExecutionConfig(backend='numpy')",
+        UserWarning,
+        stacklevel=3,
+    )
+
+
+def input_array(array: ArrayLike) -> np.ndarray:
+    """Convert a public numerical input to the active backend's array type.
+
+    JAX without X64 truncates float64 at this conversion, so this is the last
+    point where the caller's dtype is still visible and the fallback can warn.
+    """
+    runtime = _current_runtime()
+    if runtime.config.backend == "jax" and runtime.config.precision == "preserve":
+        import jax
+
+        if not bool(jax.config.x64_enabled):
+            source = getattr(array, "dtype", None)
+            if source is None:
+                source = np.asarray(array).dtype
+            if source == np.float64:
+                _warn_float64_truncation()
+    return cast(np.ndarray, runtime.namespace.asarray(array))
 
 
 def apply_precision(array: ArrayLike) -> np.ndarray:

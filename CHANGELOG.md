@@ -18,6 +18,12 @@ once already, which retroactively asserted that unshipped work had shipped.
 
 ### Fixed
 
+- A loaded `Quantizer` no longer restores the execution it was fitted under, so a rule fitted on a
+  GPU, or with float64 on JAX, loads and predicts on a CPU-only or JAX-less machine. It defaults to
+  JAX when importable and NumPy otherwise. `save` writes a default `execution` object only so 0.2
+  readers can still open the file; the format version is unchanged.
+- `precision="preserve"` on JAX without X64 now warns once when it computes float64 inputs in
+  float32, instead of truncating silently under tolerances tuned for float64.
 - Separate mathematical proof prerequisites from audit/evidence references in the research
   registry and Atlas; validate the proof DAG.
 - Explain D-only global certification as an implementation boundary, not a failure of Schur

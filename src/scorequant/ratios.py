@@ -19,7 +19,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from ._errors import ContractError
-from ._execution import canonical_array, canonicalize_public, execution_scope
+from ._execution import canonical_array, canonicalize_public, execution_scope, input_array
 from ._execution import xp as jnp
 from ._typing import ArrayLike
 from ._validation import promote_low_precision, validate_weights
@@ -45,7 +45,7 @@ def _validate_simplex_vector(vector: jnp.ndarray, name: str, size: int) -> None:
 
 
 def _validate_ratio_matrix(ratios: ArrayLike, name: str = "ratios") -> jnp.ndarray:
-    values = jnp.asarray(ratios)
+    values = input_array(ratios)
     if values.ndim != 2 or values.shape[0] == 0 or values.shape[1] < 2:
         raise ContractError(f"{name} must have non-empty shape [N, K] with K >= 2")
     values = promote_low_precision(values)
@@ -100,7 +100,7 @@ def ratios_from_posteriors(
     upstream ratio-estimation workflow.
     """
     del execution
-    values = jnp.asarray(posteriors)
+    values = input_array(posteriors)
     if values.ndim != 2 or values.shape[0] == 0 or values.shape[1] < 2:
         raise ContractError("posteriors must have non-empty shape [N, K] with K >= 2")
     values = promote_low_precision(values)

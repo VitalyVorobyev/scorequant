@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os
+import subprocess
+import sys
 from dataclasses import fields, is_dataclass
 
 import jax
@@ -263,6 +266,30 @@ def test_execution_validation_precedes_computation() -> None:
                 [[1.0]],
                 execution=sq.ExecutionConfig(backend="jax", precision="float64"),
             )
+
+
+def test_jax_float32_fallback_warns_once() -> None:
+    # X64 is process-global and fixed at JAX import, so the X64-off case runs
+    # in a fresh interpreter rather than toggling the suite's configuration.
+    program = """
+import warnings
+import numpy as np
+import scorequant as sq
+
+with warnings.catch_warnings(record=True) as caught:
+    warnings.simplefilter("always")
+    sq.fisher_information(np.ones((4, 2), dtype=np.float32))
+    assert not caught, [str(item.message) for item in caught]
+    sq.fisher_information(np.ones((4, 2)))
+    sq.fisher_information([[1.0, 2.0]])
+fallback = [item for item in caught if "JAX_ENABLE_X64" in str(item.message)]
+assert len(fallback) == 1, [str(item.message) for item in caught]
+"""
+    environment = {**os.environ, "JAX_ENABLE_X64": "0"}
+    completed = subprocess.run(
+        [sys.executable, "-c", program], capture_output=True, text=True, env=environment
+    )
+    assert completed.returncode == 0, completed.stderr
 
 
 def _cells(labels: np.ndarray) -> frozenset[frozenset[int]]:

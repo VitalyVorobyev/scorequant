@@ -17,6 +17,10 @@ once already, which retroactively asserted that unshipped work had shipped.
   and the soft solver judge rank by the library's relative eigenvalue threshold instead of a
   log-determinant sign or NumPy's default `matrix_rank`, and an exchange result reports the
   objective rebuilt from its final labels rather than the incrementally updated one.
+- Default tolerances follow the working dtype: `gain_tolerance` (now `None` by default in
+  `DExchangeConfig`, `MahalanobisLloydConfig` and `exchange_stability_report`), the rank threshold
+  and the separation slack keep their float64 values and become about `4e-5` in float32, so
+  float32 certificates sit above rounding noise; results record the resolved value.
 
 ## [0.3.0] — 2026-10-18
 

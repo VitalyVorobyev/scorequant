@@ -11,11 +11,14 @@ from ._execution import canonical_array, canonicalize_public, execution_scope
 from ._execution import xp as jnp
 from ._json import json_ready
 from ._typing import ArrayLike, JsonValue
-from .config import ExecutionConfig, validate_rank_rtol
+from .config import ExecutionConfig, dtype_tolerance, validate_rank_rtol
+
+_FLOAT64_RANK_RTOL = 1e-10
 
 
 def _default_rank_rtol(dtype: jnp.dtype) -> float:
-    return 1e-10 if jnp.dtype(dtype) == jnp.float64 else 1e-5
+    """Return the relative rank threshold of the working dtype (1e-10 in float64)."""
+    return dtype_tolerance(_FLOAT64_RANK_RTOL, dtype)
 
 
 def numerical_rank(matrix: jnp.ndarray, rank_rtol: float | None = None) -> int:

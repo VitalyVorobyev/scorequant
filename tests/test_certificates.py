@@ -101,7 +101,7 @@ def test_stability_report_certifies_an_exchange_result() -> None:
     assert report.criterion == sq.DOptimality()
     assert report.objective == pytest.approx(result.objective, abs=1e-12)
     assert report.best_gain == pytest.approx(result.best_remaining_gain, abs=1e-12)
-    assert report.gain_tolerance == sq.DExchangeConfig().gain_tolerance
+    assert report.gain_tolerance == result.config.gain_tolerance == 1e-10
     json.dumps(report.to_dict(), allow_nan=False)
 
 

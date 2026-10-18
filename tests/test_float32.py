@@ -6,6 +6,8 @@ import numpy as np
 import pytest
 
 import scorequant
+from scorequant.config import dtype_tolerance
+from scorequant.transforms import fisher_transform
 from tests._fit import fit_test_quantizer
 
 
@@ -126,3 +128,49 @@ def test_float32_solvers_are_individually_valid_on_each_backend() -> None:
         assert result.exchange_stable
         assert np.unique(result.labels).size == 3
         assert np.isfinite(result.objective)
+
+
+def test_default_tolerances_follow_the_working_dtype() -> None:
+    """Float64 keeps its constants bit for bit; float32 derives them from its epsilon."""
+    assert dtype_tolerance(1e-10, np.float64) == 1e-10
+    share = np.log(1e-10) / np.log(np.finfo(np.float64).eps)
+    float32_default = float(np.finfo(np.float32).eps) ** share
+    assert dtype_tolerance(1e-10, np.float32) == pytest.approx(float32_default, rel=1e-12)
+    assert 100 * np.finfo(np.float32).eps < float32_default < 1e-3
+
+    fisher = np.diag([2.0, 1.0])
+    numpy64 = scorequant.ExecutionConfig(backend="numpy", precision="float64")
+    assert fisher_transform(fisher, execution=numpy64).rank_rtol == 1e-10
+    transform32 = fisher_transform(fisher.astype(np.float32))
+    assert transform32.rank_rtol == pytest.approx(float32_default, rel=1e-12)
+
+
+def test_float32_certificates_hold_at_the_float32_default() -> None:
+    rng = np.random.default_rng(29)
+    scores = (rng.normal(size=(300, 2)) + 0.4).astype(np.float32)
+    float32_default = dtype_tolerance(1e-10, np.float32)
+    result = scorequant.optimize_partition(
+        scores, n_bins=4, config=scorequant.DExchangeConfig(initializer_restarts=2)
+    )
+    assert result.config.gain_tolerance == pytest.approx(float32_default, rel=1e-12)
+    assert result.exchange_stable
+    assert result.geometry is not None
+    assert result.geometry.gain_tolerance == result.config.gain_tolerance
+    assert result.geometry.voronoi_consistent
+    assert result.geometry.separation_certified
+    rule = result.compile_quantizer()
+    assert rule.predict_scores(scores).shape == (300,)
+
+    report = scorequant.exchange_stability_report(scores, result.labels)
+    assert report.gain_tolerance == result.config.gain_tolerance
+    assert report.stable
+
+
+def test_float32_explicit_gain_tolerance_is_used_unchanged() -> None:
+    rng = np.random.default_rng(29)
+    scores = (rng.normal(size=(120, 2)) + 0.4).astype(np.float32)
+    config = scorequant.DExchangeConfig(initializer_restarts=1, gain_tolerance=1e-10)
+    result = scorequant.optimize_partition(scores, n_bins=3, config=config)
+    assert result.config.gain_tolerance == 1e-10
+    report = scorequant.exchange_stability_report(scores, result.labels, gain_tolerance=1e-10)
+    assert report.gain_tolerance == 1e-10

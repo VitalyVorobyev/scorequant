@@ -9,7 +9,7 @@ import numpy as np
 
 from ._errors import ContractError
 from ._json import json_ready
-from ._typing import JsonValue
+from ._typing import DTypeLike, JsonValue
 
 type BackendName = Literal["jax", "numpy"]
 type PrecisionPolicy = Literal["preserve", "float32", "float64"]
@@ -29,7 +29,9 @@ class ExecutionConfig:
         Input precision policy. ``"preserve"`` retains float32/float64 inputs
         while promoting integer and lower-precision inputs to float32. JAX
         retains float64 only when X64 is enabled; otherwise it computes in
-        float32 and warns once per process.
+        float32 and warns once per process. Default rank thresholds and
+        ``gain_tolerance`` follow the working dtype: 1e-10 in float64 and
+        about 4e-5 in float32.
     device
         Requested device family. NumPy accepts only ``"default"`` and
         ``"cpu"``. JAX resolves the first available device of the requested
@@ -79,6 +81,35 @@ def _validate_finite(name: str, value: object, *, positive: bool) -> None:
         raise ContractError(f"{name} must be nonnegative")
 
 
+_FLOAT64_EPS = float(np.finfo(np.float64).eps)
+
+FLOAT64_GAIN_TOLERANCE = 1e-10
+"""Default ``gain_tolerance`` of a float64 run; other dtypes scale it."""
+
+
+def dtype_tolerance(float64_value: float, dtype: DTypeLike) -> float:
+    """Scale a float64 default tolerance to the working dtype.
+
+    Float64 returns ``float64_value`` unchanged. Any other float dtype keeps
+    the same share of its decimal precision: a tolerance ``eps64 ** k`` becomes
+    ``eps ** k``, so the float64 default of 1e-10 becomes about 4e-5 in
+    float32. A fixed 1e-10 would sit below float32 rounding noise, where a
+    stability or geometry verdict at that tolerance certifies nothing.
+    """
+    resolved = np.dtype(dtype)
+    if resolved == np.float64:
+        return float64_value
+    eps = float(np.finfo(resolved).eps)
+    return float(eps ** float(np.log(float64_value) / np.log(_FLOAT64_EPS)))
+
+
+def resolve_gain_tolerance(gain_tolerance: float | None, dtype: DTypeLike) -> float:
+    """Return an explicit ``gain_tolerance`` unchanged, or the working dtype's default."""
+    if gain_tolerance is None:
+        return dtype_tolerance(FLOAT64_GAIN_TOLERANCE, dtype)
+    return gain_tolerance
+
+
 def validate_rank_rtol(rank_rtol: float | None) -> float | None:
     """Validate a relative rank threshold: ``None`` (dtype default) or a finite value in [0, 1)."""
     if rank_rtol is not None:
@@ -115,8 +146,9 @@ class KMeansConfig:
     whiten
         Whiten retained Fisher directions before computing distances.
     rank_rtol
-        Relative eigenvalue threshold for informative-rank selection. The
-        dtype-aware default is used when omitted.
+        Relative eigenvalue threshold for informative-rank selection. ``None``
+        uses the working dtype's default, 1e-10 in float64 and about 4e-5 in
+        float32.
     seed
         Nonnegative JAX random seed.
     solver_restarts
@@ -167,8 +199,9 @@ class SoftVoronoiConfig:
     whiten
         Whiten retained Fisher directions before computing distances.
     rank_rtol
-        Relative eigenvalue threshold for informative-rank selection. The
-        dtype-aware default is used when omitted.
+        Relative eigenvalue threshold for informative-rank selection. ``None``
+        uses the working dtype's default, 1e-10 in float64 and about 4e-5 in
+        float32.
     seed
         Nonnegative JAX random seed.
     initializer_restarts
@@ -238,7 +271,8 @@ class DExchangeConfig:
     Parameters
     ----------
     rank_rtol
-        Relative threshold for the informative Fisher subspace.
+        Relative threshold for the informative Fisher subspace. ``None`` uses the
+        working dtype's default, 1e-10 in float64 and about 4e-5 in float32.
     seed
         Base seed of deterministic initialization. Exchange restart ``r`` uses
         ``seed + r``.
@@ -267,7 +301,11 @@ class DExchangeConfig:
         Initial labeling of each restart: weighted k-means++ seeding or a
         balanced random labeling.
     gain_tolerance
-        Strict minimum accepted log-determinant gain.
+        Strict minimum accepted log-determinant gain. ``None`` (default) uses
+        the working dtype's default, 1e-10 in float64 and about 4e-5 in
+        float32, so exchange stability and the geometry certificate sit above
+        rounding noise; the result's ``config`` records the resolved value. An
+        explicit value is used unchanged.
     first_improvement
         Accept the first improving move in deterministic row/bin order instead
         of the best move in a scan. This stops each scan early, so it forces
@@ -289,7 +327,7 @@ class DExchangeConfig:
     batch_moves: bool = True
     solver_restarts: int = 1
     init: Literal["kmeans++", "random"] = "kmeans++"
-    gain_tolerance: float = 1e-10
+    gain_tolerance: float | None = None
     first_improvement: bool = False
     collapse_duplicates: bool | None = None
 
@@ -304,7 +342,8 @@ class DExchangeConfig:
         _validate_integer("solver_restarts", self.solver_restarts, minimum=1)
         if self.init not in ("kmeans++", "random"):
             raise ContractError("init must be 'kmeans++' or 'random'")
-        _validate_finite("gain_tolerance", self.gain_tolerance, positive=False)
+        if self.gain_tolerance is not None:
+            _validate_finite("gain_tolerance", self.gain_tolerance, positive=False)
         _validate_bool("first_improvement", self.first_improvement)
         if self.collapse_duplicates is not None:
             _validate_bool("collapse_duplicates", self.collapse_duplicates)
@@ -329,7 +368,8 @@ class MahalanobisLloydConfig:
     Parameters
     ----------
     rank_rtol
-        Relative threshold for the informative Fisher subspace.
+        Relative threshold for the informative Fisher subspace. ``None`` uses the
+        working dtype's default, 1e-10 in float64 and about 4e-5 in float32.
     seed
         Nonnegative seed of the deterministic k-means seeding.
     initializer_restarts
@@ -344,7 +384,9 @@ class MahalanobisLloydConfig:
         exchange stability with one final scan, which may report ``False``.
     gain_tolerance
         Strict minimum accepted objective gain, shared by the guarded batch and
-        the exchange phase.
+        the exchange phase. ``None`` (default) uses the working dtype's
+        default, as ``DExchangeConfig`` does; an explicit value is used
+        unchanged.
     collapse_duplicates
         Merge identical score rows into one weighted atom before solving.
         ``None`` (default) collapses automatically below 100,000 effective
@@ -360,7 +402,7 @@ class MahalanobisLloydConfig:
     initializer_restarts: int = 8
     max_iter: int = 100
     guard: Literal["exchange", "reject"] = "exchange"
-    gain_tolerance: float = 1e-10
+    gain_tolerance: float | None = None
     collapse_duplicates: bool | None = None
 
     def __post_init__(self) -> None:
@@ -371,7 +413,8 @@ class MahalanobisLloydConfig:
         _validate_integer("max_iter", self.max_iter, minimum=1)
         if self.guard not in ("exchange", "reject"):
             raise ContractError("guard must be 'exchange' or 'reject'")
-        _validate_finite("gain_tolerance", self.gain_tolerance, positive=False)
+        if self.gain_tolerance is not None:
+            _validate_finite("gain_tolerance", self.gain_tolerance, positive=False)
         if self.collapse_duplicates is not None:
             _validate_bool("collapse_duplicates", self.collapse_duplicates)
 
@@ -396,7 +439,8 @@ class ScalarDPConfig:
         optimal interval labels; it fixes the units of the reported
         within-segment objective and matches the other score-space solvers.
     rank_rtol
-        Relative threshold for the informative score direction.
+        Relative threshold for the informative score direction. ``None`` uses the
+        working dtype's default, 1e-10 in float64 and about 4e-5 in float32.
     seed
         Nonnegative seed recorded for reproducibility. The dynamic program
         consumes no randomness and resolves ties by the smallest split index.

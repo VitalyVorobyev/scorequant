@@ -365,7 +365,9 @@ def _fit_compiled_quantizer(
         QuantizerResult(
             quantizer=rule,
             criterion=partition.criterion,
-            config=config,
+            # The partition's config carries the gain tolerance resolved for
+            # the working dtype, which is the one the rule was verified at.
+            config=partition.config,
             execution=execution,
             trace=_compiled_trace(partition),
             labels=partition.labels,

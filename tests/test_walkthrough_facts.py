@@ -250,8 +250,8 @@ def test_walkthrough_prose_contains_no_hand_typed_numbers(path: Path) -> None:
 
 #: The home page is TSX, so it gets its own allowlist rather than widening the
 #: shared one: a digit that is defensible inside a display equation is not
-#: defensible in a walkthrough's prose. Empty since ADR 0035 replaced the home
-#: page's displayed loss identity with prose -- the two entries this held were
+#: defensible in a walkthrough's prose. Empty since the home page's displayed
+#: loss identity became prose -- the two entries this held were
 #: the indicator function and the zero matrix of that identity. Anything added
 #: back here needs the same kind of reason: a structural constant of an
 #: equation, never a number a run produced.

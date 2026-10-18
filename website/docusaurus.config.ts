@@ -66,7 +66,7 @@ const config: Config = {
   // both `walkthroughs.html` and a `walkthroughs/` directory with no index.html, and which
   // one a static host serves for `/walkthroughs` is host-dependent — `docusaurus serve`
   // resolves the directory and renders the 404 shell. Directory URLs also match the
-  // MkDocs reference mounted at /docs/ beneath this site (ADR 0035), so the whole
+  // MkDocs reference mounted at /docs/ beneath this site, so the whole
   // domain reads one way.
   trailingSlash: true,
   // Matches the separator AppShell already uses for the pages it titles itself,
@@ -87,7 +87,7 @@ const config: Config = {
         // source to edit against.
         sidebarPath: false,
         // A lesson writes its model and score down as equations, with the
-        // reference point visible (ADR 0028). Only the walkthrough instance
+        // reference point visible. Only the walkthrough instance
         // renders TeX; KaTeX's stylesheet is listed with the site CSS below.
         remarkPlugins: [remarkMath],
         rehypePlugins: [rehypeKatex]

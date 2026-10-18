@@ -13,11 +13,9 @@ import {describe, expect, it} from "vitest";
  * not a URL at all -- `onBrokenLinks` never sees it, because it resolves route
  * links rather than raw hrefs. A markdown `[x](pathname://...)` link *is*
  * rewritten, but drops the site's `baseUrl`, which is the other half of the
- * same hole. Both shipped on the research pages until September 2026 (the
- * research section is generated from the registry since ADR 0033 and has no
- * MDX of its own).
+ * same hole.
  *
- * The second half of the rule is a product decision (ADR 0027): the reference
+ * The second half of the rule is a product decision: the reference
  * is a separate site with its own shell, so following a link into it in place
  * strands the reader in an unfamiliar UI with no way back.
  */

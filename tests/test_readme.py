@@ -42,7 +42,6 @@ _FRONT_DOOR = (
 _UNPUBLISHED = {
     Path("docs/development.md"),
     Path("docs/system-design.md"),
-    Path("docs/decisions.md"),
 }
 
 
@@ -89,7 +88,6 @@ def test_published_markdown_has_no_internal_or_malformed_content() -> None:
     excluded_paths = (
         "development.md",
         "system-design.md",
-        "decisions.md",
     )
     for excluded in excluded_paths:
         assert excluded in mkdocs

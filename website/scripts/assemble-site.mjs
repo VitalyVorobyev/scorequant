@@ -9,17 +9,16 @@ const referenceSite = resolve(project, "site");
 const assembled = resolve(project, ".pages-preview");
 const referenceMount = "docs";
 
-// Two surfaces, one tree (ADR 0035): the Docusaurus portal owns the site root
+// Two surfaces, one tree: the Docusaurus portal owns the site root
 // and the MkDocs documentation is mounted beneath it at /docs/. Both are build
 // outputs -- `docusaurus build` (whose `baseUrl` must match the site root) and
-// `mkdocs build --strict`. The hand-written landing page ADR 0027 put at the
-// root is gone; the portal's own home page is the front door.
+// `mkdocs build --strict`. The portal's own home page is the front door.
 await rm(assembled, {recursive: true, force: true});
 await mkdir(assembled, {recursive: true});
 await cp(portalBuild, assembled, {recursive: true});
 
 /**
- * The portal must not itself emit a `docs/` route (ADR 0035).
+ * The portal must not itself emit a `docs/` route.
  *
  * The MkDocs tree is copied *into* the portal's tree now rather than beside
  * it, so a portal route named `docs` would be silently overwritten by the
@@ -30,7 +29,7 @@ await cp(portalBuild, assembled, {recursive: true});
 if (await directoryExists(resolve(portalBuild, referenceMount))) {
   process.stderr.write(
     `assemble:site: the portal build emits a "${referenceMount}/" route, which is where the\n` +
-      `  MkDocs documentation is mounted (ADR 0035). Rename that route, or move the\n` +
+      `  MkDocs documentation is mounted. Rename that route, or move the\n` +
       `  reference mount, before the copy silently replaces one with the other.\n`,
   );
   process.exit(1);
@@ -41,7 +40,7 @@ await cp(referenceSite, resolve(assembled, referenceMount), {recursive: true});
 const failures = [];
 
 /**
- * Every portal link into the reference must resolve (ADR 0035).
+ * Every portal link into the reference must resolve.
  *
  * This is the one class of link nothing else can check. Docusaurus's
  * `onBrokenLinks: "throw"` follows route links inside the portal, and
@@ -49,9 +48,7 @@ const failures = [];
  * to go through the `ReferenceLink` component -- but neither knows whether the
  * MkDocs page on the other end exists, because neither has ever seen the
  * assembled tree. Here it exists, so every `/scorequant/docs/...` href the
- * built portal carries is resolved against it. It replaces the landing-link
- * check ADR 0027 introduced, which had the same purpose and lost its subject
- * when the landing page did.
+ * built portal carries is resolved against it.
  */
 const referencePrefix = `/scorequant/${referenceMount}/`;
 const portalPages = await portalHtmlFiles(assembled);

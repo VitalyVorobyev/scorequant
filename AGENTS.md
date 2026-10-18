@@ -1,83 +1,66 @@
 # ScoreQuant contributor guidance
 
-## Project contract
-
-ScoreQuant compresses continuous or high-dimensional events into hard bins while preserving Fisher information. Keep task and representation semantics explicit:
+ScoreQuant bins continuous or high-dimensional events into a few hard categories while
+preserving Fisher information about model parameters. The library is the product; the portal
+explains and demonstrates it; `research/` holds the paper and the Lean proofs behind it.
 
 ```text
 Source + (densities | density ratios | scores) -> ScoreProvider -> score law -> partition or quantizer
 ```
 
-- `optimize_partition(scores, ...)` owns fixed-sample assignment and returns no predictor.
-- `fit_quantizer(source, provider=...)` owns reusable score-space rules.
-- `scores_from_components(Phi, coefficients)` and the ratio algebra in `ratios.py` are explicit
-  adapters, not fitting tasks.
-- Prediction is always `predict_scores`; observation-to-score conversion remains visible.
-- Model density ratios enter through providers; importance ratios are source weights. The two
-  never share an argument, and estimated ratios never claim exact Fisher semantics.
+- `optimize_partition(scores, ...)` labels a fixed sample and returns no predictor;
+  `fit_quantizer(source, provider=...)` returns a reusable rule. Prediction is always
+  `predict_scores`, so observation-to-score conversion stays visible.
+- Model density ratios enter through providers; importance ratios are source weights. Estimated
+  ratios never claim exact Fisher semantics.
 
-JAX remains the default runtime and Optax owns its gradient updates. NumPy is the approved portable
-runtime (ADR 0018) and must implement the same shared mathematics, never a copied solver tree.
-Do not add PyTorch or mutate global JAX configuration. Backend primitives stay private; there is no
-public registry or provisional backend class.
+Read `docs/system-design.md` for the design principles and module map, `docs/development.md`
+for every command and the handoff gate, and `ROADMAP.md` for the plan. There are no other
+planning files.
 
 ## Numerical invariants
 
 - Scores and weights are finite; weights are nonnegative and at least one is positive.
 - Zero-weight rows remain predictable but contribute no information or optimization measure.
-- Never center scores: the score-space origin has statistical meaning.
-- Project numerically singular Fisher directions out; do not add information with a ridge.
-- Validation samples are diagnostic only and never influence gradients, stopping, or checkpoint selection.
-- Use deterministic seeds and judge optimizers by the final hardened partition, not only a soft objective.
-- Preserve parameter-reparameterization, bin-relabeling, event-ordering, uniform-weight-scaling, and split-weight-duplication invariants.
+- Never center scores. Project numerically singular Fisher directions out; never add a ridge.
+- Validation samples are diagnostic only: they never influence gradients, stopping or selection.
+- Use deterministic seeds; judge optimizers by the final hard partition, not a soft objective.
+- Preserve reparameterization, bin-relabeling, event-ordering, uniform-weight-scaling and
+  split-weight-duplication invariants.
+- Avoid `O(N^2)` work; the exact scalar interval DP is the one capped exception
+  (`ScalarDPConfig.max_rows`). Histories store aggregates, never per-row responsibilities.
 
-## Code placement and API discipline
+## Code and API discipline
 
-- Keep backend-free domain contracts separate from private execution adapters, shared mathematical
-  kernels, solver orchestration, and the public task API. Fisher statistics remain in
-  `information.py`, transforms in `transforms.py`, linear-model adapters in `components.py`, and
-  density-ratio algebra in `ratios.py`; split oversized solver modules by stable responsibility.
-- Keep backend-name branches inside execution resolution and adapters. Maintain one capability
-  table and one conformance suite instead of per-backend task logic or duplicated tests.
-- Keep dataset generators, comparisons, tuning, custom figure layouts, and exploratory logic in `examples/`, tests, or benchmarks.
-- Add public concepts only when they are reusable, stable, documented, and non-duplicative. Prefer private helpers over provisional public APIs.
-- Avoid aliases and overlapping entry points. Document intentional compatibility breaks and update the API guide, examples, and an ADR when the decision is durable.
-- Keep optional visualization dependencies lazy and outside numerical hot paths.
-- Avoid `O(N^2)` work in general-purpose solvers. The exact rank-one interval DP is an
-  intentional capacity-limited exception guarded by `ScalarDPConfig.max_rows`. Optimization
-  histories store aggregate metrics and center snapshots, never per-observation responsibilities.
+- Keep backend-free contracts, the private execution adapters (`_execution.py`), shared kernels,
+  solver orchestration and the public task API separate. Backend-name branches live only in the
+  adapters; one conformance suite covers both backends. JAX is the default, NumPy the portable
+  runtime. No PyTorch, no global JAX configuration.
+- Add a public name only when it is reusable, stable, documented and not a second route to
+  something that exists. No aliases. Prefer private helpers.
+- Code that relies on a theorem names it. A refusal raises `RefusalError` with the id of the exact
+  counterexample kept in `tests/fixtures/counterexamples/`.
+- Dataset generators, comparisons, tuning and figures belong in `examples/`, never in `src/`.
+- Type annotations everywhere; `typing.Any` is banned in `src/`. NumPy-style docstrings on every
+  public object. Comments explain why, especially for numerical choices.
+- A public API change updates its docstring, `docs/api.md`, any affected example and
+  `CHANGELOG.md` in the same change.
 
-## Research
+## Writing
 
-- Research is finished; new research needs an explicit owner decision. `research/` holds the paper
-  and the Lean proofs (`research/formal`), which certify the stated theorems, not the Python code.
-- Code in `src/` that relies on a theorem names it; a refusal names the exact counterexample that
-  forces it, kept as `tests/fixtures/counterexamples/<id>.json` and pinned by a test.
+- Plain sentences; say the reason simply. One idea per paragraph, few inline numbers.
+- State a caveat once, where it matters, and link to the reference rather than retelling it.
+- No process vocabulary in published text: no milestones, session names or internal ids.
 
-## Tooling: use uv
+## Working rules
 
-- `uv` is the only supported Python environment, dependency, build, and command runner: no pip, Conda, or Poetry, and never hand-edit `uv.lock` — use `uv add`, `uv remove`, and `uv lock` instead.
-- The isolated `website/` workspace uses its own pinned Node and pnpm versions.
-- Every command and test tier lives in [`docs/development.md`](docs/development.md); run commands through `uv run` so local and CI environments stay aligned.
-
-## Engineering and documentation practices
-
-- Make small, cohesive changes and reuse existing abstractions before adding new ones.
-- Preserve unrelated work. Avoid destructive Git commands and hidden behavior changes.
-- Use type annotations, meaningful names, and NumPy-style docstrings for every public object. Comments should explain why, especially for numerical choices, rather than narrate code.
-- Use explicit array-like and recursive JSON contracts at conversion boundaries. `typing.Any` is prohibited in `src/`; Ruff `ANN401`, a banned-import rule, and `ty` enforce this.
-- Add deterministic tests for changed behavior and numerical edge cases. Use fixed seeds and measurable assertions; avoid brittle pixel snapshots.
-- Validate in proportion to risk: targeted tests while iterating, then the handoff gate in `docs/development.md` before handoff.
-- Update user guides when workflows change. Run MkDocs in strict mode so broken navigation, links, or reference collection fail CI.
-- Keep durable decisions in `docs/decisions.md` (one short entry each, never a narrative record) and executable phase gates in `docs/roadmap.md`; do not create parallel planning files.
-- Completed programmes, session packets and dated reviews are deleted when they close; git history is their record. Standing planning text is the current milestone in `docs/roadmap.md` and `docs/decisions.md`.
-- Do not commit caches, local environments, build output, or `site/`. Commit gallery images only when intentionally regenerated and visually inspected.
-- Do not push, merge, tag, publish, or deploy unless the user authorizes that action.
-
-Persistence, services, remote execution, PyTorch, signed weights, and advanced statistical
-objectives remain deferred to the roadmap. The static React portal and NumPy backend are approved
-by ADRs 0031 and 0018.
-
-## Completion checklist
-
-Before finishing, run the handoff gate in `docs/development.md` (or the targeted subset the change warrants) and report exactly which checks ran and any that could not.
+- `uv` is the only Python runner; never hand-edit `uv.lock`. The portal uses its pinned Node and
+  pnpm through `corepack pnpm`.
+- Small, cohesive changes. Preserve unrelated work; no destructive Git commands.
+- Deterministic tests with fixed seeds and measurable assertions for every behaviour change.
+- Do not keep dated reviews, session notes or decision journals in the repository; git history
+  is the record.
+- Do not commit caches, environments, build output or `site/`.
+- Do not push, merge, tag, publish or deploy without the owner's authorization.
+- Before handoff, run the handoff gate in `docs/development.md` (or the subset the change
+  warrants) and report exactly which checks ran.

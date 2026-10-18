@@ -53,7 +53,7 @@ METRICS_PATH = ASSET_DIR / "michelson-phase.json"
 D_GEOMETRY_FIGURE_PATH = ASSET_DIR / "michelson-d-geometry.png"
 PROFILED_FIGURE_PATH = ASSET_DIR / "michelson-profiled-ds.png"
 
-#: Where the portal's committed figure files live (ADR 0032). Unlike
+#: Where the portal's committed figure files live. Unlike
 #: `website/static/walkthrough-figures/`, which `generate_walkthroughs.py`
 #: refills from `docs/examples/assets/` and `.gitignore` excludes, this
 #: directory is committed: the walkthrough reads the closed-form score panels
@@ -1362,7 +1362,7 @@ def main() -> None:
         figure.savefig(path, dpi=160)
         plt.close(figure)
 
-    # The SVGs are committed (ADR 0032), so they have to regenerate byte for
+    # The SVGs are committed, so they have to regenerate byte for
     # byte or every rerun shows up as a diff of nothing. Matplotlib stamps a
     # wall-clock `dc:date` and derives every `<defs>` element id from a random
     # salt; a fixed salt and a suppressed date make the file a pure function

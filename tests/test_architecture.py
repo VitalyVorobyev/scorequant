@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -161,10 +162,8 @@ def _refusal_error_call_name(func: ast.expr) -> str | None:
 
 
 def test_every_refusal_cites_a_registered_counterexample() -> None:
-    # AGENTS.md: "code that refuses a capability names the counterexample
-    # forcing the refusal. Keep both in sync with the registry." Every
-    # RefusalError call site must cite a counterexample id that actually
-    # exists in the registry, and there must be more than zero of them.
+    # AGENTS.md: a refusal names the exact counterexample that forces it.
+    # Every RefusalError call site must cite an id whose fixture exists.
     counterexamples = ROOT / "tests" / "fixtures" / "counterexamples"
     sites: list[tuple[Path, int, str]] = []
     for path in _package_sources():
@@ -197,3 +196,24 @@ def test_every_refusal_cites_a_registered_counterexample() -> None:
             )
             sites.append((path, node.lineno, counterexample_id))
     assert len(sites) >= 6, f"expected at least six RefusalError sites, found {len(sites)}: {sites}"
+
+
+def test_no_retired_process_references() -> None:
+    # The research workspace and the decision journal were retired; their
+    # history is the research-archive-2026-10 tag. Mentioning them in tracked
+    # text would point readers at files that no longer exist.
+    tracked = subprocess.run(
+        ["git", "ls-files"], cwd=ROOT, capture_output=True, text=True, check=True
+    ).stdout.split()
+    pattern = re.compile(r"agenticresearch|\bADR ?\d{4}|docs/decisions\.md")
+    exempt = ("CHANGELOG.md", "tests/fixtures/", "tests/test_architecture.py")
+    offenders = []
+    for name in tracked:
+        if name.startswith(exempt) or not name.endswith(
+            (".md", ".mdx", ".py", ".ts", ".tsx", ".mjs", ".yml", ".yaml", ".toml", ".css", ".lean")
+        ):
+            continue
+        path = ROOT / name
+        if path.is_file() and pattern.search(path.read_text(encoding="utf-8")):
+            offenders.append(name)
+    assert offenders == []

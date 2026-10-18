@@ -61,17 +61,14 @@ const SCANNED = [
 
 test("home states the task and runs nothing", async ({page}) => {
   await page.goto("./");
-  // The site root, since ADR 0035. Ordinary type, no slogan, no demo, no
-  // measured comparison. The equations render through KaTeX at build time.
+  // The site root. The equations render through KaTeX at build time.
   await expect(page.getByRole("heading", {name: "ScoreQuant", level: 1})).toBeVisible();
   const sections = ["The problem", "Why score space?", "Two ways to use it", "Where do the scores come from?", "What is being optimized?", "Where next?"];
   const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
   expect(headings).toEqual(sections);
   expect(await page.locator(".katex-display").count()).toBeGreaterThan(1);
-  // ADR 0035 moved the list of derivations off this page, so the home page has
-  // no link of its own into the reference. What keeps the documentation one
-  // click from the root is the shell, and that is the ADR's actual claim, so it
-  // is what is pinned here: the primary navigation's Reference entry -- asserted
+  // The documentation stays one click from the root through the shell: the
+  // primary navigation's Reference entry -- asserted
   // in the DOM rather than by role, because at mobile widths it sits behind the
   // menu button -- and the footer's Documentation link, which is visible at
   // every width.

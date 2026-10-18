@@ -1,17 +1,11 @@
 name: Site
 
 # The one workflow that builds and publishes the site: the Docusaurus portal at
-# the root, the strict MkDocs documentation beneath it at `docs/`, and the
-# pre-cut redirect stubs, assembled by `pnpm assemble:site` into `.pages-preview`
-# and uploaded as a single Pages artifact (ADR 0035; the hand-written landing
-# page ADR 0027 put at the root is gone).
+# the root and the strict MkDocs documentation beneath it at `docs/`, assembled by
+# `pnpm assemble:site` into `.pages-preview` and uploaded as a single Pages artifact.
 #
 # A pull request builds the whole tree and uploads it for inspection but never
-# deploys; only a push to `main` deploys. This replaces the frozen deployment
-# that used to live in `docs.yml`, which would have uploaded `site/` — the
-# MkDocs build alone, not the assembled tree — and which was deleted rather
-# than un-frozen, because the deployment moved rather than resuming
-# (consolidation S11; ADR 0019 and ADR 0025).
+# deploys; only a push to `main` deploys.
 
 on:
   push:

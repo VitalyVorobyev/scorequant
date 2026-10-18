@@ -5,8 +5,7 @@ deliberately isolated from Python packaging: Node and pnpm are pinned here, `uv`
 Python.
 
 The portal owns the site root, `/scorequant/`, with the MkDocs documentation mounted beneath it
-at `/scorequant/docs/` (ADR 0035, which retired the hand-written landing page ADR 0027 had put at
-the root). `website/src/lib/site.ts` is the one place those bases are written down, and `baseUrl`
+at `/scorequant/docs/`. `website/src/lib/site.ts` is the one place those bases are written down, and `baseUrl`
 in `docusaurus.config.ts` must match `SITE_BASE` there.
 
 ```bash
@@ -33,7 +32,7 @@ wheel, so it needs network access.
 
 ## Where a figure file goes
 
-Two directories under `static/`, with opposite rules (ADR 0032):
+Two directories under `static/`, with opposite rules:
 
 - **`static/figures/` is committed.** Hand-added images live here and are referenced as
   `<Figure src={siteUrl("figures/name.svg")} ... />`. The Michelson score panels are written here
@@ -46,9 +45,8 @@ Two directories under `static/`, with opposite rules (ADR 0032):
 putting a file in the wrong one fails the suite instead of shipping a broken image.
 
 Full instructions, including the generated files you must not hand-edit and the checks CI runs, are
-in [`docs/development.md`](../docs/development.md). The surface contract is
-[ADR 0031](../docs/decisions.md); the backend contract is
-[ADR 0018](../docs/decisions.md).
+in [`docs/development.md`](../docs/development.md); the design principles are in
+[`docs/system-design.md`](../docs/system-design.md).
 
 ### Research editorial layer
 

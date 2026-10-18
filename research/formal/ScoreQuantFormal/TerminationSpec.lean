@@ -14,10 +14,8 @@ instantiated at the D objective.
 `DS-EXCHANGE-TERMINATES` (§DS3) and `A-EXCHANGE-TERMINATES` (§A1) are the same argument at
 `F_s` and `F_A`. This file does **not** cover them and they must not be marked from it: neither
 objective exists as a Lean object anywhere in the tree — there is no Schur complement and no
-trace of an inverse — and there is no frozen `Prop` for either. ADR 0037 admits the finite
-profiled `D_s` core to the track, so the obstacle is the missing objects and conclusions, not
-the scope. Their coverage is recorded in `KNOWN_RESULTS/` prose per protocol step E, naming the
-generic declarations and saying what is missing.
+trace of an inverse — and there is no frozen `Prop` for either. The obstacle is the missing
+objects and conclusions, not the scope.
 
 `DLogTerminationConclusion` is **auxiliary**: no claim node states it, and no
 `formal_proof.declaration` may name `d_log_exchange_terminates`. It exists so that the

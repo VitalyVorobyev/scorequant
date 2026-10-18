@@ -11,8 +11,14 @@ once already, which retroactively asserted that unshipped work had shipped.
 
 ## [Unreleased]
 
+Older entries cite design records as "ADR NNNN"; those records are in git at the
+`research-archive-2026-10` tag (`docs/decisions.md`).
+
 ### Removed
 
+- The research workspace, the Research Atlas and the decision journal. The library's design
+  principles are now in `docs/system-design.md`, the Lean proofs in `research/formal`, and the
+  counterexample fixtures behind refusals in `tests/fixtures/counterexamples`.
 - The private `scorequant.quantizers` façade; internal imports now use their owning
   `scorequant.solvers` modules. These modules remain private.
 

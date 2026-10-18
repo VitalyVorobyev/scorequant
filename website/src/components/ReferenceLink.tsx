@@ -12,7 +12,7 @@ export interface ReferenceLinkProps {
  * A link from a portal page into the MkDocs reference.
  *
  * The reference is a separately built site mounted beside the portal
- * (`REFERENCE_BASE`, ADR 0027), so this is a plain full-page anchor rather
+ * (`REFERENCE_BASE`), so this is a plain full-page anchor rather
  * than a router `Link` — and, because it is a different site with a different
  * shell, it opens in a new tab. Following it in place drops the reader into an
  * unrelated UI with no way back to the article they were reading; a new tab

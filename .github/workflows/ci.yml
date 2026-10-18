@@ -92,7 +92,7 @@ jobs:
       - run: uv run pytest tests/test_float32.py
 
   # The Lean gate. It certifies statements, not the Python/JAX implementation
-  # of them: see ADR 0030. `lake build --wfail` rejects `sorry` and warnings,
+  # of them. `lake build --wfail` rejects `sorry` and warnings,
   # `leanchecker` re-checks the built environment, and the axiom audit fails on
   # anything outside the allowlist. Independent of the Python legs.
   formal:

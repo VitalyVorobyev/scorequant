@@ -16,7 +16,7 @@ scalar and Voronoi geometry is Euclidean.
 
 These are statements about explicit finite configurations; they carry no
 `formal_proof` marker, because a counterexample claim's `statement` is the
-proposition being refuted (ADR 0030).
+proposition being refuted.
 -/
 
 namespace ScoreQuantFormal

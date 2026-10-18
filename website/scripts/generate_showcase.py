@@ -1,7 +1,7 @@
 """Generate the FlowCyt showcase data the portal renders.
 
 Two tiers, because they cost very different amounts. The narrative data --
-marker histograms, patient compositions, the published method comparison, the
+patient compositions, the published method comparison, the
 composition of the learned bins, the per-patient estimates -- is derived from
 committed artifacts in seconds and is regenerated on every build. The
 fixture-scale *walkthrough table* -- reference partition rows, template rows and
@@ -32,10 +32,6 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from examples.cell_population.data import (  # noqa: E402
     CLASS_NAMES,
-    FEATURE_NAMES,
-    REFERENCE_PATIENTS,
-    TEST_PATIENTS,
-    RobustArcsinhTransform,
     load_fixture,
 )
 
@@ -45,11 +41,6 @@ STUDY_METRICS = REPO_ROOT / "examples" / "outputs" / "cell_population.json"
 NARRATIVE_OUT = REPO_ROOT / "website" / "src" / "generated" / "showcase-data.json"
 WALKTHROUGH_OUT = REPO_ROOT / "examples" / "data" / "flowcyt_walkthrough.npz"
 WALKTHROUGH_FACTS_OUT = REPO_ROOT / "examples" / "data" / "flowcyt_walkthrough.json"
-
-#: Marker histogram resolution. Thirty-two bins over the robust range keeps the
-#: whole exploration payload under ~40 KB while still showing the bimodality
-#: that separates the populations.
-HISTOGRAM_BINS = 32
 
 #: Bin budget the study reports as its operating point.
 OPERATING_BINS = 8
@@ -75,44 +66,6 @@ def _round(values: object, digits: int = 6) -> object:
     if isinstance(values, (int, np.integer)):
         return int(values)
     return values
-
-
-def _marker_histograms(features: np.ndarray, labels: np.ndarray) -> list[dict[str, object]]:
-    """Bin every marker per population over one shared robust range.
-
-    Cytometry intensities are heavily skewed -- on a linear axis every panel is
-    one spike against the origin and shows nothing. These are binned on the same
-    robust arcsinh scale the study's classifier is trained on, which is what
-    makes the population structure visible at all. The range is the 0.5-99.5
-    percentile so a handful of saturated events do not flatten it back.
-    """
-    transform = RobustArcsinhTransform.fit(features)
-    scaled = transform.apply(features)
-    panels: list[dict[str, object]] = []
-    for column, name in enumerate(FEATURE_NAMES):
-        values = scaled[:, column]
-        low, high = np.percentile(values, [0.5, 99.5])
-        if not np.isfinite(low) or not np.isfinite(high) or high <= low:
-            low, high = float(values.min()), float(values.max()) + 1e-9
-        edges = np.linspace(low, high, HISTOGRAM_BINS + 1)
-        series = []
-        for index, population in enumerate(CLASS_NAMES):
-            counts, _ = np.histogram(values[labels == index], bins=edges)
-            total = int(counts.sum())
-            series.append(
-                {
-                    "population": population,
-                    "density": _round(counts / total if total else counts.astype(float), 5),
-                }
-            )
-        panels.append(
-            {
-                "marker": name,
-                "edges": _round(edges, 4),
-                "series": series,
-            }
-        )
-    return panels
 
 
 def _patient_compositions(metrics: dict[str, object]) -> list[dict[str, object]]:
@@ -242,48 +195,16 @@ def _patient_estimates(metrics: dict[str, object]) -> list[dict[str, object]]:
     return sorted(rows, key=lambda row: int(row["patient"]))  # type: ignore[arg-type]
 
 
-def _headline(metrics: dict[str, object]) -> dict[str, object]:
-    """Read the three numbers the showcase leads with from the study's own record."""
-    operating = metrics[f"soft_voronoi:{OPERATING_BINS}"]
-    baseline = metrics["unbinned_classifier_ratio"]
-    assert isinstance(operating, dict) and isinstance(baseline, dict)
-    return {
-        "bins": OPERATING_BINS,
-        "heldOutEfficiency": _round(operating["held_out_d_efficiency"]),
-        "macroRmse": _round(operating["target_macro_rmse"]),
-        "unbinnedMacroRmse": _round(baseline["target_macro_rmse"]),
-    }
-
-
 def build_narrative() -> dict[str, object]:
     """Assemble everything the showcase renders without running a solver."""
-    data = load_fixture(FIXTURE)
-    facts = json.loads(FIXTURE_FACTS.read_text())
     metrics = json.loads(STUDY_METRICS.read_text())
-    upstream = facts.get("upstream_file_totals", {})
     return {
         "dataset": {
-            "name": "FlowCyt",
             "citation": "Bini, Nassajian Mojarrad, Liarou, Matthes, Marchand-Maillet (CHIL 2024)",
-            "repository": facts["source_repository"],
-            "license": facts["source_license"],
-            "licenseUrl": facts["license_url"],
-            "patients": len(set(REFERENCE_PATIENTS) | set(TEST_PATIENTS)),
-            "referencePatients": list(REFERENCE_PATIENTS),
-            "heldOutPatients": list(TEST_PATIENTS),
-            "markers": list(FEATURE_NAMES),
+            "licenseUrl": json.loads(FIXTURE_FACTS.read_text())["license_url"],
             "populations": list(CLASS_NAMES),
-            "fixtureCells": int(data.features.shape[0]),
-            "upstreamEvents": int(sum(int(value) for value in upstream.values())),
-            "studyCells": 600_000,
         },
-        "scoreSchema": {"parameters": list(SCORE_PARAMETERS)},
-        "headline": _headline(metrics),
-        "exploration": {
-            "markerScale": "robust arcsinh (cofactor 150), the study's own transform",
-            "markers": _marker_histograms(data.features, data.labels),
-            "patients": _patient_compositions(metrics),
-        },
+        "exploration": {"patients": _patient_compositions(metrics)},
         "comparison": _method_comparison(metrics),
         "binComposition": _bin_composition(metrics),
         "patientEstimates": _patient_estimates(metrics),

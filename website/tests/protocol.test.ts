@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {createRunRequest, LAB_LIMITS, PROTOCOL_VERSION, criterionLabel, validateProblem} from "../src/lab/protocol";
+import {createRunRequest, LAB_LIMITS, PROTOCOL_VERSION, validateProblem} from "../src/lab/protocol";
 import type {LabProblem, ScoreRow} from "../src/lab/protocol";
 
 const validProblem: LabProblem = {
@@ -15,8 +15,8 @@ const validProblem: LabProblem = {
 describe("lab protocol", () => {
   it("accepts a bounded finite problem", () => {
     expect(validateProblem(validProblem)).toBeNull();
-    const request = createRunRequest(validProblem, "pyodide-numpy");
-    expect(request).toMatchObject({protocolVersion: PROTOCOL_VERSION, runner: "pyodide-numpy", type: "run"});
+    const request = createRunRequest(validProblem);
+    expect(request).toMatchObject({protocolVersion: PROTOCOL_VERSION, type: "run"});
   });
 
   it("rejects mismatched weights and scalar-only misuse", () => {
@@ -25,7 +25,7 @@ describe("lab protocol", () => {
   });
 
   it("enforces the browser capacity envelope", () => {
-    const scores = Array.from({length: LAB_LIMITS.maxRows + 1}, () => [0] as [number]);
+    const scores = Array.from({length: LAB_LIMITS.maxRows + 1}, () => [0]);
     expect(validateProblem({...validProblem, scores, weights: scores.map(() => 1)})).toContain("8,000");
     expect(validateProblem({...validProblem, nBins: LAB_LIMITS.maxBins + 1})).toContain("16");
   });
@@ -36,9 +36,7 @@ describe("lab protocol", () => {
     const scores: ScoreRow[] = Array.from({length: 8}, () => [0.1, 0.2, 0.3, 0.4, 0.5]);
     // Five bins for five directions: a determinant objective needs at least that.
     expect(validateProblem({...validProblem, scores, nBins: 5, weights: scores.map(() => 1)})).toBeNull();
-    // Seven columns is outside the type as well as the envelope; the cast is
-    // the point, since a hand-edited request or a parsed file arrives untyped.
-    const tooWide = scores.map(() => [1, 2, 3, 4, 5, 6, 7] as unknown as ScoreRow);
+    const tooWide = scores.map(() => [1, 2, 3, 4, 5, 6, 7]);
     expect(validateProblem({...validProblem, scores: tooWide, nBins: 7, weights: scores.map(() => 1)})).toContain("one to 6");
   });
 });
@@ -95,11 +93,6 @@ describe("criterion selection", () => {
     const base: LabProblem = {...validProblem, scores, weights: scores.map(() => 1), solver: "d_exchange"};
     expect(validateProblem({...base, nBins: 4})).toContain("at least as many bins");
     expect(validateProblem({...base, nBins: 5})).toBeNull();
-  });
-
-  it("labels the objective the retention is measured against", () => {
-    expect(criterionLabel(undefined)).toBe("D-optimality");
-    expect(criterionLabel({name: "profiled_d_optimality", interest: ["HSPC"]})).toContain("HSPC");
   });
 });
 

@@ -121,11 +121,6 @@ const config: Config = {
     () => ({
       name: "runtime-boundary-warnings",
       configureWebpack: (_config, isServer) => ({
-        // This import intentionally resolves only in the assembled static
-        // artifact; keeping it dynamic is what prevents an eager runtime load.
-        ignoreWarnings: [
-          {module: /SearchDialog\.tsx$/, message: /request of a dependency is an expression/}
-        ],
         // Docusaurus's own ChunkAssetPlugin taps additionalTreeRuntimeRequirements
         // and appends `__webpack_require__.gca = ...` to every chunk that has a
         // runtime. A web worker built through `new Worker(new URL(...))` is its
@@ -154,28 +149,18 @@ const config: Config = {
         blog: false,
         pages: {},
         sitemap: {changefreq: "weekly", priority: 0.6},
-        // Order matters for the cascade: tokens.css declares every semantic
-        // token (--surface, --border, --accent, ...) that live-fit.css's
-        // rules read, so it must load first; the rest follow in the order
-        // their sections appear in the pre-split global.css, and
-        // responsive.css must stay after every file whose rules its media
-        // queries override at equal specificity. live-fit.css stays last.
+        // Order matters for the cascade: tokens first, since every other
+        // file reads them; the rest from general to specific.
         theme: {
           customCss: [
             // KaTeX first: its rules are scoped to `.katex` and the portal's
             // own files may size or colour the rendered math after it.
             "./node_modules/katex/dist/katex.min.css",
             "./src/css/tokens.css",
-            "./src/css/base.css",
             "./src/css/shell.css",
-            "./src/css/components.css",
-            "./src/css/home.css",
-            "./src/css/walkthroughs.css",
-            "./src/css/instruments.css",
-            "./src/css/responsive.css",
+            "./src/css/pages.css",
             "./src/css/prose.css",
-            "./src/css/charts.css",
-            "./src/css/live-fit.css"
+            "./src/css/figures.css"
           ]
         }
       } satisfies ClassicOptions

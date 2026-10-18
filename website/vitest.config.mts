@@ -6,12 +6,9 @@ import {defineConfig} from "vitest/config";
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    // Docusaurus resolves these at build time; page tests get plain stubs.
+    // Docusaurus resolves this at build time; component tests get a plain stub.
     alias: {
-      "@docusaurus/Link": fileURLToPath(new URL("./tests/stubs/Link.tsx", import.meta.url)),
-      "@theme/Layout": fileURLToPath(new URL("./tests/stubs/Layout.tsx", import.meta.url)),
-      "@docusaurus/router": fileURLToPath(new URL("./tests/stubs/router.ts", import.meta.url)),
-      "@docusaurus/useBrokenLinks": fileURLToPath(new URL("./tests/stubs/useBrokenLinks.ts", import.meta.url))
+      "@docusaurus/Link": fileURLToPath(new URL("./tests/stubs/Link.tsx", import.meta.url))
     }
   },
   test: {

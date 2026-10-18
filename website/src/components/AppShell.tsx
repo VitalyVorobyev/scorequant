@@ -2,13 +2,12 @@ import Link from "@docusaurus/Link";
 import {useLocation} from "@docusaurus/router";
 import {useColorMode} from "@docusaurus/theme-common";
 import clsx from "clsx";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 
 import {isActiveNavEntry} from "../lib/navigation";
 import {REFERENCE_BASE} from "../lib/site";
 import {LiveFitProvider} from "./liveFit/LiveFitProvider";
 import {Logo} from "./Logo";
-import {SearchDialog} from "./SearchDialog";
 
 const navigation = [
   ["Get started", "/get-started"],
@@ -50,18 +49,6 @@ interface AppShellProps {
 export function AppShell({children}: AppShellProps): React.JSX.Element {
   const {pathname} = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-
-  useEffect(() => {
-    const shortcut = (event: KeyboardEvent): void => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setSearchOpen(true);
-      }
-    };
-    window.addEventListener("keydown", shortcut);
-    return () => window.removeEventListener("keydown", shortcut);
-  }, []);
 
   return (
     <LiveFitProvider>
@@ -89,9 +76,6 @@ export function AppShell({children}: AppShellProps): React.JSX.Element {
               )}
             </nav>
             <div className="site-actions">
-              <button className="search-trigger" onClick={() => setSearchOpen(true)} aria-label="Search">
-                <span aria-hidden="true">⌕</span><span>Search</span><kbd>⌘ K</kbd>
-              </button>
               <ThemeToggle />
               <button
                 className="menu-trigger"
@@ -104,7 +88,7 @@ export function AppShell({children}: AppShellProps): React.JSX.Element {
             </div>
           </div>
         </header>
-        <main id="main-content" data-pagefind-body>{children}</main>
+        <main id="main-content">{children}</main>
         <footer className="site-footer">
           <div>
             <Logo />
@@ -118,7 +102,6 @@ export function AppShell({children}: AppShellProps): React.JSX.Element {
           </div>
           <small>Open source · no browser data leaves your device</small>
         </footer>
-        <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
       </div>
     </LiveFitProvider>
   );

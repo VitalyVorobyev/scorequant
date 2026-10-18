@@ -5,8 +5,7 @@ import {PROTOCOL_VERSION} from "../src/lab/protocol";
 import {
   acquireRuntimeReference,
   cancelRun,
-  runOnRuntime,
-  terminateRuntime
+  runOnRuntime
 } from "../src/lab/runtimeClient";
 import type {RuntimeCallbacks} from "../src/lab/runtimeClient";
 
@@ -49,7 +48,6 @@ function requestFor(runId: string): LabRunRequest {
     protocolVersion: PROTOCOL_VERSION,
     type: "run",
     runId,
-    runner: "pyodide-numpy",
     problem: {
       scores: [[0], [1]],
       weights: [1, 1],
@@ -99,7 +97,7 @@ beforeEach(() => {
 afterEach(() => {
   // Every test starts from zero references and no worker: releasing whatever
   // this test acquired keeps the module-level singleton clean for the next.
-  terminateRuntime();
+  cancelRun();
   vi.unstubAllGlobals();
 });
 

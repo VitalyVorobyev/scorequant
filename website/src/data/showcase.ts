@@ -2,29 +2,8 @@ import rawShowcase from "../generated/showcase-data.json";
 
 export interface ShowcaseDataset {
   citation: string;
-  fixtureCells: number;
-  heldOutPatients: number[];
-  license: string;
   licenseUrl: string;
-  markers: string[];
-  name: string;
-  patients: number;
   populations: string[];
-  referencePatients: number[];
-  repository: string;
-  studyCells: number;
-  upstreamEvents: number;
-}
-
-export interface MarkerSeries {
-  density: number[];
-  population: string;
-}
-
-export interface MarkerPanel {
-  edges: number[];
-  marker: string;
-  series: MarkerSeries[];
 }
 
 export interface PatientComposition {
@@ -74,15 +53,8 @@ export interface ShowcaseData {
     unbinnedBaseline: {label: string; macroRmse: number; perClassRmse: number[]};
   };
   dataset: ShowcaseDataset;
-  exploration: {markerScale: string; markers: MarkerPanel[]; patients: PatientComposition[]};
-  headline: {
-    bins: number;
-    heldOutEfficiency: number;
-    macroRmse: number;
-    unbinnedMacroRmse: number;
-  };
+  exploration: {patients: PatientComposition[]};
   patientEstimates: PatientEstimate[];
-  scoreSchema: {parameters: string[]};
 }
 
 /**

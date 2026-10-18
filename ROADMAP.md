@@ -65,7 +65,7 @@ Lines of code per area (Python, TypeScript, CSS, Markdown, Lean), excluding comm
 | `tests/` | 9.8k | 8k | library behaviour, counterexample tests, walkthrough evidence, one prose tier |
 | `examples/` | 11.5k | 8k | the four walkthrough studies and the Lloyd counterexample |
 | `docs/` | 1.6k | 2k | user guide, API guide, symbol reference, glossary, development, system design |
-| `website/` | 12.6k | 10k | landing, get-started, walkthroughs, Ideas, research page |
+| `website/` | 10.8k in M3 | 10k | landing, get-started, walkthroughs, Ideas, research page |
 | `research/` | 2.9k | 5k | Lean proofs now; the paper and the JOSS paper in M4 |
 | `benchmarks/` | 1.1k | 1.1k | timing and quality harness, profiler |
 

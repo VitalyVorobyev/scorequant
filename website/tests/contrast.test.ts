@@ -135,12 +135,7 @@ const PAIRS: ContrastPair[] = [
   {fg: "on-accent", bg: "accent", threshold: 4.5},
   {fg: "on-accent", bg: "accent-strong", threshold: 4.5},
   // The error hint.
-  {fg: "bad", bg: "tint-bad", threshold: 4.5},
-  // Instrument surfaces: constant in both themes (Tier 3 is never
-  // overridden by the dark block), asserted in both anyway so a future
-  // change that *does* start overriding them is still covered.
-  {fg: "inst-muted", bg: "inst-deep", threshold: 4.5},
-  {fg: "inst-text", bg: "inst-ground", threshold: 4.5}
+  {fg: "bad", bg: "tint-bad", threshold: 4.5}
 ];
 
 const cases = (["light", "dark"] as const).flatMap((theme) => PAIRS.map((pair) => ({theme, ...pair})));

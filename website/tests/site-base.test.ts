@@ -4,21 +4,12 @@ import {fileURLToPath} from "node:url";
 
 import {describe, expect, it} from "vitest";
 
-// Spec T7: SITE_BASE in ../src/lib/site is the one place the portal's base
-// path is allowed to live. This walks the whole `src` tree (never
-// `node_modules` or `build`) and fails the moment the deployed prefix is
-// written anywhere else.
-//
-// The prefix used to be `scorequant/portal`, which was distinctive enough to
-// search for as a bare substring. Now the portal owns the site root
-// and the prefix is just `/scorequant/`, which also occurs inside the GitHub
-// source URLs in `src/generated/portal-data.json`
-// (`.../blob/main/src/scorequant/config.py`). So the search is for a *quoted
-// literal* beginning with the prefix — how a base path is actually written in
-// source — rather than for the prefix anywhere. That is stricter than the old
-// rule as well as narrower: it now also catches a hand-written
-// `"/scorequant/docs/"`, the reference mount, which the substring search for
-// `scorequant/portal` never saw.
+// SITE_BASE in ../src/lib/site is the one place the portal's base path is
+// allowed to live. This walks the whole `src` tree (never `node_modules` or
+// `build`) and fails the moment the deployed prefix is written anywhere else.
+// The prefix `/scorequant/` also occurs inside GitHub source URLs
+// (`.../blob/main/src/scorequant/config.py`), so the search is for a *quoted
+// literal* beginning with it, which is how a base path is actually written.
 const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const srcRoot = join(websiteRoot, "src");
 const generatedRoot = join(srcRoot, "generated");

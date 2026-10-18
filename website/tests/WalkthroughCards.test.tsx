@@ -1,11 +1,20 @@
 import {render, screen, within} from "@testing-library/react";
+import {readFileSync} from "node:fs";
+import {dirname, resolve} from "node:path";
+import {fileURLToPath} from "node:url";
 import {describe, expect, it} from "vitest";
 
 import {WalkthroughCards} from "../src/components/WalkthroughCards";
-import {portalData} from "../src/data/portal";
 import {WALKTHROUGHS} from "../src/data/walkthroughs";
 
 const TASKS = new Set(["optimize_partition", "fit_quantizer"]);
+
+/** The library's public names, read from `__all__` in its `__init__.py`. */
+function publicNames(): Set<string> {
+  const source = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), "../../src/scorequant/__init__.py"), "utf8");
+  const block = /__all__\s*=\s*\[([\s\S]*?)\]/.exec(source)?.[1] ?? "";
+  return new Set(Array.from(block.matchAll(/"(\w+)"/g), (match) => match[1] ?? ""));
+}
 
 describe("WalkthroughCards", () => {
   it("renders one card per walkthrough, each linking to its page", () => {
@@ -44,7 +53,8 @@ describe("WalkthroughCards", () => {
   });
 
   it("names its task on every card, and only real public symbols or a task in its tags", () => {
-    const symbols = new Set(portalData.api.map((symbol) => symbol.name));
+    const symbols = publicNames();
+    expect(symbols.has("fit_quantizer")).toBe(true);
     for (const card of WALKTHROUGHS) {
       expect(card.tags.some((tag) => tag.kind === "task"), card.slug).toBe(true);
       for (const tag of card.tags) {

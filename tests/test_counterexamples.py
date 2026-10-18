@@ -7,11 +7,13 @@ a guarantee fails, and agrees with exhaustive or exact oracles where it holds.
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import math
 from fractions import Fraction
 from itertools import product
 from pathlib import Path
+from types import ModuleType
 
 import numpy as np
 import pytest
@@ -240,6 +242,71 @@ def test_global_profiled_ds_partition_can_violate_its_own_metric_rule() -> None:
     assert best - ranked[1][0] == Fraction(2929, 21120)
     assert nearest == 2
     assert distances[labels[row]] - distances[nearest] == Fraction(8, 195)
+
+
+def _paper_checks() -> ModuleType:
+    path = Path(__file__).parents[1] / "research" / "paper" / "check_numbers.py"
+    spec = importlib.util.spec_from_file_location("paper_check_numbers", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_paper_numbers_match_the_committed_fixtures() -> None:
+    """Every fixture number the paper quotes, recomputed exactly from the committed files."""
+    checks = _paper_checks()
+    fixture = {
+        name: json.loads((FIXTURES / "counterexamples" / f"{name}.json").read_text())
+        for name in ("CE-D-LLOYD-001", "CE-D-VORONOI-CONVERSE-001", "CE-DS-GLOBAL-GEOMETRY-001")
+    }
+
+    lloyd = checks.lloyd()
+    recorded = fixture["CE-D-LLOYD-001"]
+    assert lloyd["labels_after"] == recorded["labels_after_or_optimum"]
+    assert lloyd["det_before"] == Fraction(recorded["exact"]["det_before"])
+    assert lloyd["det_after"] == Fraction(recorded["exact"]["det_after"])
+    assert lloyd["logdet_before"] == pytest.approx(-3.8106, abs=5e-5)
+    assert lloyd["logdet_after"] == pytest.approx(-3.9472, abs=5e-5)
+    drop = lloyd["logdet_before"] - lloyd["logdet_after"]
+    assert drop == pytest.approx(recorded["exact"]["logdet_decrease_float"], abs=1e-12)
+    assert lloyd["changed"] == 4
+    assert [round(float(value), 3) for value in lloyd["distortion"]] == [13.545, 5.318]
+    assert round(float(lloyd["tangent"]), 3) == 8.227
+
+    converse = checks.voronoi_converse()
+    recorded = fixture["CE-D-VORONOI-CONVERSE-001"]
+    assert converse["strict_voronoi"]
+    assert converse["centroids"] == [Fraction(-5, 12), Fraction(5, 4)]
+    assert converse["info_before"] == Fraction(recorded["exact"]["information_before"])
+    assert converse["info_after"] == Fraction(recorded["exact"]["information_after"])
+    assert (converse["info_before"], converse["info_after"]) == (Fraction(25, 48), Fraction(9, 16))
+
+    profiled = checks.profiled_optimum()
+    recorded = fixture["CE-DS-GLOBAL-GEOMETRY-001"]
+    exact = recorded["exact_quantities"]
+    assert profiled["partitions"] == profiled["regular"] == 966
+    assert profiled["labels"] == recorded["global_optimum_labels_up_to_permutation"]
+    assert (
+        profiled["best"]
+        == Fraction(exact["best_profiled_scalar_information"])
+        == Fraction(6241, 984)
+    )
+    assert profiled["runner_up"] == Fraction(exact["second_best_profiled_scalar_information"])
+    assert profiled["best"] - profiled["runner_up"] == Fraction(
+        exact["exact_best_minus_second_gap"]
+    )
+    assert profiled["info"] == [
+        [Fraction(51, 8), Fraction(-1, 4)],
+        [Fraction(-1, 4), Fraction(123, 64)],
+    ]
+    assert profiled["projection"] == Fraction(16, 123)
+    assert profiled["violations"] == {4: Fraction(2862, 3239), 5: Fraction(618, 3239)}
+    assert sorted(profiled["violations"].values(), reverse=True) == [
+        Fraction(value) for value in exact["positive_nearest_cell_violation_margins"]
+    ]
+
+    assert checks.retention() == [Fraction(9, 10), Fraction(100, 101), Fraction(5105, 10006)]
 
 
 def test_ds15_rank_vacuity_diagnosis_does_not_depend_on_the_labeling() -> None:

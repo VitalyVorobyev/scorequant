@@ -434,9 +434,12 @@ can.
 \begin{proposition}[non-monotone Lloyd step]\label{prop:lloyd}
 For the eight rows of Table~\ref{tab:lloyd} in $\R^2$, with equal weights and $K=3$, one
 reassignment to the nearest centroid in $\Ib^{-1}$ changes four labels and lowers $\log\det\Ib$
-from $-3.8106$ to $-3.9472$, a loss of $0.1365$ nats. Both determinants are exact rationals,
-$254982965894784407/11520000000000000000$ before and $37074006279699397/1920000000000000000$
-after, and both matrices are positive definite.
+from $-3.8106$ to $-3.9472$, a loss of $0.1365$ nats. Both matrices are positive definite, and
+the determinants are the exact rationals
+\[
+\det\Ib=\frac{254982965894784407}{11520000000000000000},\qquad
+\det I(z')=\frac{37074006279699397}{1920000000000000000}.
+\]
 \end{proposition}
 
 \begin{table}[t]
@@ -681,6 +684,7 @@ expect the D characterization to survive profiling.
 
 \section{Software and reproducibility}\label{sec:software}
 
+\sloppy
 The results are implemented in ScoreQuant, an MIT-licensed Python library
 (\url{https://github.com/VitalyVorobyev/scorequant}). \texttt{optimize\_partition} labels a fixed
 weighted sample by exact positive-gain exchange (Section~\ref{sec:alg}), merging identical score

@@ -91,8 +91,7 @@ behind an adapter and must match the shared reference implementation.
 - `_execution.py`: the only backend resolver and the private JAX/NumPy primitive adapters.
 - `solvers/common.py`: shared assignment, distance, trace, and solver result contracts;
   `solvers/kmeans.py`, `solvers/scalar.py`, and `solvers/soft.py`: responsibility-specific shared
-  solver orchestration. `quantizers.py` is a private re-export façade kept for established test
-  seams; it is scheduled for removal at the v1.0 API audit (roadmap phase H).
+  solver orchestration.
 - `sources.py`: empirical and quadrature measures plus provenance (`ScoreProvenance` and the
   nested `RatioProvenance`).
 - `providers.py`: framework-neutral observation-to-score adapters, including the ratio-backed

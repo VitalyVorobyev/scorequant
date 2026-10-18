@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from ._errors import ContractError
-from ._execution import apply_precision, use_execution
+from ._execution import apply_precision, input_array, use_execution
 from ._execution import xp as jnp
 from ._typing import ArrayLike, DTypeLike
 from .config import ExecutionConfig
@@ -95,7 +95,7 @@ def validate_sample(
     expected_features: int | None = None,
 ) -> _ValidatedSample:
     """Validate scores and weights without normalizing their measure scale."""
-    score_array = jnp.asarray(scores)
+    score_array = input_array(scores)
     if score_array.ndim != 2:
         raise ContractError(f"scores must have shape [N, P], got {score_array.shape}")
     if score_array.shape[0] == 0 or score_array.shape[1] == 0:

@@ -14,6 +14,7 @@ has neither the fitting code path nor JAX installed.
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import zipfile
 from dataclasses import dataclass
@@ -75,8 +76,9 @@ class Quantizer:
         The objective the rule was optimized for, recorded so a loaded artifact
         can still say what it was built to preserve.
     execution
-        The backend the rule was fitted under, reused for prediction unless
-        overridden.
+        The backend prediction runs on unless overridden. A fitted rule keeps
+        the execution it was fitted under; a loaded rule takes the loading
+        environment's default, because the artifact does not record one.
     """
 
     transform: FisherTransform
@@ -188,6 +190,11 @@ class Quantizer:
         from the file, and reading it back needs neither JAX nor the solver that
         produced it.
 
+        The fitting execution is not saved: a rule fitted on a GPU must still
+        load on a CPU-only or JAX-less machine. The manifest carries a default
+        ``execution`` object only so 0.2 readers, which require the field, can
+        read the file; :meth:`load` ignores it.
+
         Parameters
         ----------
         path
@@ -223,7 +230,7 @@ class Quantizer:
                 "schema": None if self.schema is None else self.schema.to_dict(),
                 "provenance": self.provenance.to_dict(),
                 "criterion": self.criterion.to_dict(),
-                "execution": self.execution.to_dict(),
+                "execution": ExecutionConfig().to_dict(),
             }
         )
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -287,7 +294,7 @@ class Quantizer:
                 schema=schema,
                 provenance=_provenance_from(_mapping(manifest["provenance"], "provenance")),
                 criterion=_criterion_from(_mapping(manifest["criterion"], "criterion")),
-                execution=_execution_from(_mapping(manifest["execution"], "execution")),
+                execution=_loading_execution(),
             )
 
 
@@ -435,19 +442,14 @@ def _index(value: JsonValue) -> int:
     return int(value)
 
 
-def _execution_from(facts: dict[str, JsonValue]) -> ExecutionConfig:
-    """Rebuild the recorded execution configuration.
+def _loading_execution() -> ExecutionConfig:
+    """Choose the loaded rule's default runtime from the loading environment.
 
-    ``ExecutionConfig`` validates its own literals, so an artifact naming a
-    backend this build does not have fails there rather than here.
+    JAX is preferred when it is importable and NumPy is used otherwise. The
+    check locates the package without importing it, so loading stays JAX-free.
     """
-    backend = _text(facts["backend"], "execution.backend")
-    precision = _text(facts["precision"], "execution.precision")
-    device = _text(facts["device"], "execution.device")
-    if backend not in ("jax", "numpy"):
-        raise ContractError(f"unknown execution backend {backend!r} in quantizer artifact")
-    if precision not in ("preserve", "float32", "float64"):
-        raise ContractError(f"unknown execution precision {precision!r} in quantizer artifact")
-    if device not in ("default", "cpu", "gpu", "tpu"):
-        raise ContractError(f"unknown execution device {device!r} in quantizer artifact")
-    return ExecutionConfig(backend=backend, precision=precision, device=device)
+    try:
+        available = importlib.util.find_spec("jax") is not None
+    except (ImportError, ValueError):
+        available = False
+    return ExecutionConfig(backend="jax" if available else "numpy")

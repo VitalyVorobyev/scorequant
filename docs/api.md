@@ -360,8 +360,9 @@ sq.ExecutionConfig(backend="jax", precision="preserve", device="default")
   tree, so the two backends agree to floating-point tolerance on the same inputs and seeds, and
   the conformance suite holds them to that.
 - **`precision`** is `"preserve"` (default: float32 and float64 inputs keep their dtype, integer
-  and lower-precision inputs are promoted to float32), `"float32"`, or `"float64"`. A float64
-  request on JAX still needs 64-bit mode enabled in the application.
+  and lower-precision inputs are promoted to float32), `"float32"`, or `"float64"`. JAX keeps
+  float64 only with 64-bit mode enabled in the application: without it, `"preserve"` computes in
+  float32 and warns once, and `"float64"` is refused.
 - **`device`** is `"default"`, `"cpu"`, `"gpu"`, or `"tpu"`. NumPy accepts only the default CPU
   device; JAX resolves the first available device of the requested family.
 
@@ -376,8 +377,9 @@ fit.predict_scores(scores)  # runs on the recorded JAX execution
 fit.predict_scores(scores, execution=sq.ExecutionConfig(backend="numpy"))  # override per call
 ```
 
-A saved `Quantizer` is backend-free: the artifact stores arrays, not an execution, so `load`
-followed by `predict_scores(..., execution=...)` chooses the runtime at prediction time. Public
+A saved `Quantizer` is backend-free: the artifact stores arrays, not an execution. A loaded rule
+defaults to JAX when it is importable and to NumPy otherwise, whatever device it was fitted on, and
+`predict_scores(..., execution=...)` still overrides per call. Public
 arrays are always `numpy.ndarray` whichever backend produced them.
 
 ## Errors

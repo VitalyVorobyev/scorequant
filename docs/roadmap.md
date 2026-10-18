@@ -1,59 +1,31 @@
 # ScoreQuant development roadmap
 
-The sole executable development plan. Research work selection is in
-`agenticresearch/OPEN_PROBLEMS.md`; proof packets do not create library commitments. Dated
+The sole executable development plan. Research is frozen (ADR 0043);
+`agenticresearch/OPEN_PROBLEMS.md` holds the backlog and selects nothing. Dated
 reviews are not kept as files; git history holds them, and a phase cites the pull request that
 acted on one.
 
-## M13 — Focused research and teaching, then the road to 1.0
+## M14 — Software, demonstrations, documentation
 
-**Current (11 September 2026):** phase F's graph migration and phase H's local engineering
-are implemented; all automated gate results are recorded below. Manuscript v10 merged in PR #68, but
-publication assurance, owner freeze and the human reader gates remain open. Engineering preparation
-may precede 0.3 (ADR 0042). The next research session is the separate, non-blocking HEP
-template-likelihood assessment (P5); no new solver or public capability was added.
+**Current (18 October 2026):** research is frozen and releases are decoupled from publication
+(ADR 0043). The library's engineering gate is green; the next action is the owner's 0.3.0 tag.
+Items come from the October 2026 code review; each is one bounded change with tests.
 
-| Phase | Status and next action | Gate / stop |
+| Item | Scope | Gate |
 | --- | --- | --- |
-| A — Geometry and interpretation | Done: the false boundary overlay retired and the optical, periodicity, compilation and information claims corrected (PRs #52, #56). | Equations, chart labels and prose agree; facts/snippets and frontend checks pass. |
-| B — Michelson exemplar | Revised 6 September 2026 (PR #56) as a two-act article: instrument → model and analytic score → D-optimal quantization and its compiled rule → nuisance profiling and the profiled \(D_s\) partition → the reusable profiled rule → one experiment. **Human reader gate open.** | A fresh reader explains the physical quantity, nuisance, allowed labels and finite-table certificate. |
-| C — Remaining articles | Ratios rewritten 7 September 2026 (PR #62); FlowCyt and HEP rebuilt as held-out-evidence walkthroughs 7 September 2026 (PR #63, ADR 0038). **Human reader gate open.** | Each starts with subject, source and an explanatory figure; one result comparison; one experiment unless the page's argument does not admit one (ratios, by ADR 0035). Facts/snippets, desktop/mobile e2e and links pass. |
-| D — Frozen-rule uncertainty | Done: scalar O6 (PR #53), vector O7 (PR #59), score-error budget O8 (PR #65), all independently audited; `retention_uncertainty` shipped 8 September 2026 (PR #66, ADR 0039). The manuscript harvest is closure step 5. | Public estimator under the full contributor gate with seeded coverage and heavy-tail tests. Weighted, refitted, profiled and truth-free uncertainty stay backlog. |
-| E — Formal verification | Parked as partial (PR #64): D2–D8 and the compiled predictor are machine-checked under ADR 0037; the residue (positive tolerance, zero weights, D5 duplicate branch, D7 equal-optimum half, D12, one frozen-file import) is listed in `agenticresearch/OPEN_PROBLEMS.md`. | Build, statement correspondence, allowed axioms and checker pass. Reopened only by owner decision. |
-| F — Claim graph | Implemented: mathematical `dependencies` are separate from `verified_by` and `references`; cycles are rejected, lookup is proof-only, and Atlas evidence remains navigable (ADR 0041). | Registry, index freshness, fixture, Atlas and portal gates pass; IDs/statuses/formal markers preserved. |
-| G — Research Atlas | Editorial redesign delivered (PR #57, ADR 0036). **Human acceptance open.** | A fresh researcher identifies the contribution, boundary and open question, then finds theorem and prior art. |
-| H — The 1.0 gate | Local review and engineering implemented before 0.3 (ADR 0042): API inventory, façade removal, historical artifact fixture and audited compilation wording. Release remains pending: manuscript assurance and owner freeze, authorized 0.3 tag with Beta classifier, human gates B/C/G, public manuscript, then 1.0 with Production/Stable classifier. | Findings below; do not mark H complete until owner/publication/human gates close. No version bump, tag, push or publication performed. |
+| 0.3.0 release | Bump to 0.3.0, Beta classifier, `CHANGELOG.md`, `prepare:runtime`; tag by the owner. | Handoff gate; local wheel rehearsal in `docs/development.md`. |
+| Precision | Make `gain_tolerance` and rank thresholds scale with dtype so float32 runs are meaningful (the fallback now only warns). | float32 leg covers exchange stability and refusals at larger N. |
+| One singularity rule | Replace `slogdet`-sign and NumPy-default rank tests in `information.py` and `solvers/soft.py` with the shared rank threshold; rebuild exact cell statistics before reporting `objective`. | Backend conformance unchanged; degenerate labellings report rather than raise. |
+| Memory at scale | Chunk the `[N, B, P]` profiled geometry (`partition.py`) and soft-solver tensors; compile the soft gradient; raise when the soft solver stalls on a singular Fisher matrix. | A 10⁶-row profiled fit runs in bounded memory. |
+| `partition.py` split | Move exchange and Lloyd into `solvers/`, the exchange algebra into a private module and the geometry reports into diagnostics; merge the three nearest-centre assignment routines and the repeated nuisance validation. | `test_architecture` layering; no behaviour change. |
+| API before 1.0 | Trim the 62 exported names: one route each for linear models and ratios, ratio/provider stack to a submodule, `plot_*` non-stable, one naming for iteration caps and tolerances, remove `ScalarDPConfig.seed`. | `docs/api.md` inventory and ADR 0040 updated in the same change. |
+| Mixed-gauge ratios | The HEP pattern (classifier signal ratio plus an MC or analytic background density) works only if every ratio column shares one gauge; nothing checks it. Add a worked example and a gauge-consistency guard at the provider boundary. | A test fails on a stacked mixed-gauge ratio matrix. |
+| Demonstrations and docs | One home per walkthrough (portal); fold `three-doors.md` into the book; a HEP template-fit demonstration if P5 is reopened as an application. | Facts/snippets and e2e pass. |
+| Test tiers and CI | Move portal/Atlas/research consistency tests out of the library tier; path-filter the site workflow. | CI time per PR falls; nothing stops being run on `main`. |
 
-### H — v1.0 review disposition (11 September 2026)
-
-| Issue | Verdict and evidence | Next action / acceptance criterion |
-| --- | --- | --- |
-| Compilation at positive tolerance | Required correction, applied. Independent `AUDIT-D-COMPILE-TOLERANCE-001.md` and two exact fixtures pin admissible individual gains, singleton refusal and the absence of a batch-change bound. Source/docs/D6/claim and manuscript (4.6) agree. | Keep the new boundary regressions green; no stronger aggregate or population guarantee is claimed. |
-| Profiled certification rationale | Required correction, applied. Runtime refusal and API guide now describe missing implementation/singular-block policy, not failure of Schur monotonicity. | D-only behaviour remains unchanged. |
-| API and artifact compatibility | Required correction, applied. Complete supported-name/member and diagnostic-key inventories in `docs/api.md`; private façade removed; v0.2.0-written format-1 fixture loads without JAX. | Preserve the inventory and historical-reader checks through 1.x under ADRs 0040/0042. |
-| Manuscript dispute provenance | Release/publication blocker. Historical packet at `6a4c7b3` records two disputed rows only as a count, without identities/dispositions. It also identifies unresolved source-read/attribution debt. | Recover the row-level verdicts or independently re-audit the affected ledger scope; resolve or explicitly qualify attribution before publication sign-off. Current disposition is in `manuscripts/README.md`. |
-| Manuscript editorial fidelity | Required correction: v10 rewritten for clarity; stronger A partition-level inference lacks support in the cited move fixture, and endpoint-rate prose incorrectly includes `d = 2` in the slower-than-square-root case. Manuscript wording narrowed; registry unchanged. | Independently audit the A claim and reconcile its registry/proof scope; correct endpoint explanatory wording through the research workflow. Details in `agenticresearch/manuscripts/README.md`. Publication assurance remains open. |
-| Formal completeness | Deferred opportunity. Existing Lean build, fresh kernel replay and guarded axiom audit pass; formal markers and frozen statements unchanged. Positive tolerance, zero weights, D5 duplicate alternative, D7 equal-optimum half, D12 and the editable-import residue remain outside completion. | Reopen only by owner selection; no Python correctness claim follows from Lean. |
-| Human acceptance and release | Release blocker. B/C/G reader gates, owner research freeze, manuscript publication and release authorization remain outstanding. | Actual human acceptance and explicit release actions; green automation cannot close these gates. |
-| HEP template-likelihood programme | Deferred from v1.0. The separately scheduled P5 assessment follows this review. | One go/no-go assessment and finite proposal; no automatic implementation commitment. |
-
-Validation passed: registry validation and nine registry tests (including proof DAG and index
-freshness); 96 targeted research/Atlas/compilation/API/artifact tests; full Python suite **641 passed**;
-float32 **5 passed**; Ruff, format, type checking, package build and strict MkDocs. One existing
-NumPy empty-bin division warning remains in the uncertainty tests. Portal validation passed
-**263 tests**, typecheck/lint and build; final browser suite **49 passed, 3 intentional mobile
-skips**; assembled site verified **61 redirects and 54 reference links**. All 137 claim IDs,
-statuses, proof locations and formal markers were compared with HEAD and preserved; only the
-independently audited tolerance statement was narrowed. No numerical solver behaviour changed.
-
-The initial full Python run had 640 passes and one public-prose failure (an internal ADR reference);
-that reference was removed and the full rerun passed. Lean `lake build --wfail`,
-`lake env leanchecker --fresh ScoreQuantFormal` and `lake env lean ScoreQuantFormal/AxiomAudit.lean`
-passed. The guarded axiom allowlist is `propext`, `Classical.choice`, `Quot.sound`; formal statement
-markers remain restricted to their frozen scope. The exploratory `leanchecker --help` invocation
-was stopped after inspection showed the tool has no help mode; the explicit fresh replay above
-is the completed trust check. No formal files changed. Human gates were not run by an agent and
-remain open; no release action was taken.
+**Publication and 1.0** stay gated as before: manuscript assurance (`agenticresearch/manuscripts/README.md`),
+the B/C/G reader gates, an owner freeze of the manuscript and an authorized 1.0 tag with the
+Production/Stable classifier.
 
 Not needed for 1.0, by decision: samplers, streaming aggregation, moment-oracle evaluation, a
 multivariate efficient-score certificate, generic profiled compilation, more solvers or criteria,
@@ -85,8 +57,7 @@ and no manuscript update after every result.
 
 Parked: exact \(D_s\) bit complexity, broader calibration/refitting theory, new criteria or
 backends, samplers, streaming, signed weights, universal bin-budget selection, generic profiled
-compilation, the formal residue. The current API and shared numerical core remain intact until
-phase H's audit.
+compilation, the formal residue.
 
 ## Delivered milestones
 
@@ -107,6 +78,7 @@ entries named in the last column.
 | M10 React portal and browser runtime | The Docusaurus shell, generated data contracts, the Pyodide runtime. | ADR 0031, 0035 |
 | M11 First public releases | 0.1.0 on 30 August 2026 and 0.2.0 on 4 September 2026 through PyPI Trusted Publishing, gated on the full handoff gate. | `CHANGELOG.md`, `.github/workflows/release.yml` |
 | M12 Consolidation programme | Novelty ledger and manuscript v9; the error hierarchy and one fit pipeline; the HEP classifier showcase; the four walkthroughs; the portal launch. Closed 4 September 2026. | ADR 0024–0027, `CHANGELOG.md` |
+| M13 Focused research and teaching | Michelson, ratio, FlowCyt and HEP walkthroughs rebuilt; frozen-rule uncertainty O6–O8 audited and `retention_uncertainty` shipped; D2–D8 machine-checked; claim graph with separate proof and evidence relations; Research Atlas; manuscript v10; the 1.0 engineering contract (API inventory, v0.2.0 artifact fixture). Closed 18 October 2026 with the research freeze. | ADR 0036–0043, `agenticresearch/manuscripts/README.md` |
 
 ## Standing checks
 

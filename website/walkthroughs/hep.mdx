@@ -12,7 +12,7 @@ import {siteUrl} from "@site/src/lib/site";
 
 export const f = factsFor("hep");
 
-# A Higgs search with a floating energy scale
+# A Higgs boson measurement
 
 *Simulated collision events are reported as {f("bins")} category counts, and the signal strength is fitted from them. How much does the choice of categories change its uncertainty, against slices of a classifier output, when the tau energy scale is fixed and when it floats?*
 
@@ -42,7 +42,7 @@ Finer slices come close to that. They order events by how signal-like they look,
 
 ## 3. Scores from two classifiers
 
-ScoreQuant bins events by their scores, the derivatives of each event's log likelihood with respect to $\mu$, $\nu$ and $\alpha$. A signal-versus-background classifier supplies the two rate columns through the density ratio it estimates, and a second classifier, trained to tell an event's energy-scale-shifted-up copy from its shifted-down copy, supplies the energy-scale column as a central difference; the [density-ratio walkthrough](/walkthroughs/ratios/) explains the step.
+ScoreQuant bins events by their scores, the derivatives of each event's log likelihood with respect to $\mu$, $\nu$ and $\alpha$. A signal-versus-background classifier supplies the two rate columns through the density ratio it estimates, and a second classifier, trained to tell an event's energy-scale-shifted-up copy from its shifted-down copy, supplies the energy-scale column as a central difference; the [density-ratio walkthrough](/walkthroughs/ratios/#classifier-to-score) explains the step.
 
 `cross_fitted_table` builds the table under the Monte Carlo weights, and scores every event with classifiers that never saw it or its shifted copies:
 

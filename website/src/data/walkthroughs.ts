@@ -96,7 +96,7 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
       "then reports describes the classifier's estimate, not the data.",
     tags: [
       {kind: "task", label: "fit_quantizer"},
-      {kind: "input", label: "DensityRatioScore"},
+      {kind: "input", label: "ratios.DensityRatioScore"},
       {kind: "criterion", label: "DOptimality"},
       {kind: "solver", label: "DExchangeConfig"}
     ]

@@ -9,11 +9,23 @@ import {WALKTHROUGHS} from "../src/data/walkthroughs";
 
 const TASKS = new Set(["optimize_partition", "fit_quantizer"]);
 
-/** The library's public names, read from `__all__` in its `__init__.py`. */
-function publicNames(): Set<string> {
-  const source = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), "../../src/scorequant/__init__.py"), "utf8");
+const PACKAGE = resolve(dirname(fileURLToPath(import.meta.url)), "../../src/scorequant");
+const SUBMODULES = ["ratios", "information", "certify", "results", "plotting"];
+
+/** The names one module exports, read from its `__all__`. */
+function exported(file: string): string[] {
+  const source = readFileSync(resolve(PACKAGE, file), "utf8");
   const block = /__all__\s*=\s*\[([\s\S]*?)\]/.exec(source)?.[1] ?? "";
-  return new Set(Array.from(block.matchAll(/"(\w+)"/g), (match) => match[1] ?? ""));
+  return Array.from(block.matchAll(/"(\w+)"/g), (match) => match[1] ?? "");
+}
+
+/** The library's public names: the top level's `__all__`, then `module.Name` per submodule. */
+function publicNames(): Set<string> {
+  const names = exported("__init__.py");
+  for (const module of SUBMODULES) {
+    names.push(...exported(`${module}.py`).map((name) => `${module}.${name}`));
+  }
+  return new Set(names);
 }
 
 describe("WalkthroughCards", () => {

@@ -49,7 +49,7 @@
 .provenance-note a { color: var(--accent-strong); text-decoration: underline; text-underline-offset: 2px; }
 .provenance-note a:hover { text-decoration-thickness: 2px; }
 
-/* A link out of the portal and into the MkDocs reference (ADR 0027). It leaves
+/* A link out of the portal and into the MkDocs reference. It leaves
    the site, so it opens in a new tab and says so: the arrow is the visual cue,
    the `.visually-hidden` suffix inside the anchor is the spoken one. The glyph
    is baseline-nudged rather than vertically centred so it sits with the

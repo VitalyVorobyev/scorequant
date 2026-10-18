@@ -50,9 +50,9 @@ from .scores import (
     tes_score_reliability,
 )
 
-CELLS_FIGURE_PATH = Path("docs/examples/assets/hep-cells.png")
-BUDGET_FIGURE_PATH = Path("docs/examples/assets/hep-budget.png")
-METRICS_PATH = Path("docs/examples/assets/hep-classifier.json")
+CELLS_FIGURE_PATH = Path("examples/outputs/hep-cells.png")
+BUDGET_FIGURE_PATH = Path("examples/outputs/hep-budget.png")
+METRICS_PATH = Path("examples/outputs/hep-classifier.json")
 
 #: Bin budget of the headline comparison.
 HEADLINE_BINS = 6
@@ -1214,7 +1214,7 @@ def run_study(
     -------
     Study
         The exact structure written to
-        ``docs/examples/assets/hep-classifier.json``, together with the
+        ``examples/outputs/hep-classifier.json``, together with the
         arrays the figures draw.
     """
     max_iter = example_scale(300, 60) if max_iter is None else max_iter

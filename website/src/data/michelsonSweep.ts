@@ -48,7 +48,7 @@ export interface MichelsonSweepRow {
  *
  * Written by `generate_walkthroughs.py`'s `write_michelson_sweep` to
  * `website/src/generated/michelson-sweep.json`, straight from
- * `docs/examples/assets/michelson-phase.json`; never edited by hand.
+ * `examples/outputs/michelson-phase.json`; never edited by hand.
  */
 export interface MichelsonSweep {
   schemaVersion: number;

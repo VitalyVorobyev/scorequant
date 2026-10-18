@@ -196,9 +196,6 @@ _GUARDED_CONTENT_ROOTS = ("walkthroughs", "get-started")
 #: test below fails if a new docs instance appears in neither collection, so a
 #: route cannot be added without someone deciding which side it is on.
 _UNGUARDED_CONTENT_ROOTS: dict[str, str] = {}
-# The research section is no longer an MDX docs instance: the Research Atlas
-# (website/plugins/research-atlas) generates its routes from the registry export,
-# and tests/test_atlas_data.py is its own guard (ADR 0033).
 
 
 def _guarded_prose_pages() -> list[Path]:
@@ -253,8 +250,8 @@ def test_walkthrough_prose_contains_no_hand_typed_numbers(path: Path) -> None:
 
 #: The home page is TSX, so it gets its own allowlist rather than widening the
 #: shared one: a digit that is defensible inside a display equation is not
-#: defensible in a walkthrough's prose. Empty since ADR 0035 replaced the home
-#: page's displayed loss identity with prose -- the two entries this held were
+#: defensible in a walkthrough's prose. Empty since the home page's displayed
+#: loss identity became prose -- the two entries this held were
 #: the indicator function and the zero matrix of that identity. Anything added
 #: back here needs the same kind of reason: a structural constant of an
 #: equation, never a number a run produced.
@@ -326,7 +323,7 @@ def test_showcase_chart_data_is_current() -> None:
 # the shape a run-length encoding must hold: the runs tile `[0, uMax]`
 # exactly and every label is a valid bin index the labeling actually uses.
 MICHELSON_SWEEP_DATA = ROOT / "website" / "src" / "generated" / "michelson-sweep.json"
-MICHELSON_EVIDENCE = ROOT / "docs" / "examples" / "assets" / "michelson-phase.json"
+MICHELSON_EVIDENCE = ROOT / "examples" / "outputs" / "michelson-phase.json"
 
 
 @pytest.fixture(scope="module")

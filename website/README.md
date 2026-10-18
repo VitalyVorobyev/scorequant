@@ -5,8 +5,7 @@ deliberately isolated from Python packaging: Node and pnpm are pinned here, `uv`
 Python.
 
 The portal owns the site root, `/scorequant/`, with the MkDocs documentation mounted beneath it
-at `/scorequant/docs/` (ADR 0035, which retired the hand-written landing page ADR 0027 had put at
-the root). `website/src/lib/site.ts` is the one place those bases are written down, and `baseUrl`
+at `/scorequant/docs/`. `website/src/lib/site.ts` is the one place those bases are written down, and `baseUrl`
 in `docusaurus.config.ts` must match `SITE_BASE` there.
 
 ```bash
@@ -24,60 +23,27 @@ Two things that are not obvious and will stop a first run:
   Node, install it once with `npm install -g corepack@latest`, or the commands fail with
   `command not found: corepack`.
 - **`start` shells back into `uv`.** It runs `generate` first, which executes
-  `uv run python website/scripts/generate_data.py`, `generate_atlas.py`, `generate_showcase.py`,
+  `uv run python website/scripts/generate_data.py`, `generate_showcase.py`,
   `generate_walkthroughs.py` and `generate_snippets.py` from the repository root, and needs the
   `portal` dependency group. Run `uv sync --all-extras --all-groups --locked` at the root first.
 
 `corepack pnpm build` additionally downloads the pinned Pyodide release and builds the ScoreQuant
 wheel, so it needs network access.
 
-## The Research Atlas
-
-`/research/` is not a docs instance. `plugins/research-atlas/index.mjs` reads
-`src/generated/atlas.json` and registers one static route per view and per research entity
-(claims, counterexample fixtures, papers, authors), rendering the registry's Markdown and TeX to
-HTML at build time. The document is produced by `corepack pnpm generate:atlas`
-(`scripts/generate_atlas.py`), which projects `agenticresearch/py/registry.py export` through the
-website-side content under `content/atlas/`: `config.json` (public vocabulary, headline and
-frontier choices, theme and chapter names), `implementation.json` (library objects and refusals
-to claims), and `notes/<ID>.md` (one short editorial note per entity). `content/research-public.json`
-lists withheld claim ids; everything else is published. `tests/test_atlas_data.py` at the repository
-root keeps the committed JSON equal to a fresh run and rejects internal vocabulary in public strings
-(ADR 0033). Page components live in `src/atlas/`; `tests/atlasFixtures.ts` gives component tests
-the real graph.
-
 ## Where a figure file goes
 
-Two directories under `static/`, with opposite rules (ADR 0032):
+Two directories under `static/`, with opposite rules:
 
 - **`static/figures/` is committed.** Hand-added images live here and are referenced as
   `<Figure src={siteUrl("figures/name.svg")} ... />`. The Michelson score panels are written here
   by `examples/michelson_phase.py`, so they are regenerable *and* committed.
 - **`static/walkthrough-figures/` is generated and gitignored.** `scripts/generate_walkthroughs.py`
-  refills it on every build by copying each entry of its `FIGURES` map out of `docs/examples/assets/`.
+  refills it on every build by copying each entry of its `FIGURES` map out of `examples/outputs/`.
   A file merely placed there exists only on the machine that placed it and 404s everywhere else.
 
 `tests/figures.test.ts` resolves every `siteUrl("...")` in the MDX against the lane that owns it, so
 putting a file in the wrong one fails the suite instead of shipping a broken image.
 
 Full instructions, including the generated files you must not hand-edit and the checks CI runs, are
-in [`docs/development.md`](../docs/development.md). The surface contract is
-[ADR 0031](../docs/decisions.md); the backend contract is
-[ADR 0018](../docs/decisions.md).
-
-### Research editorial layer
-
-Research uses three levels: **Home tells. Atlas explores. Registry proves provenance.**
-The generator reads `content/atlas/home.json` for the bounded home story and
-`content/atlas/summaries.json` for concise non-audit listing titles and summaries. Both reference
-registry claims; neither changes statements, statuses, edges, or evidence. Missing summaries,
-invalid featured kinds/statuses, duplicate IDs, and incorrect selection counts fail generation.
-Keep essential qualifications in home copy, and put full statements and provenance on claim pages.
-The line under each featured result ("Proved here · machine-checked in Lean · independently
-audited") is built from the registry at render time; editorial files never carry proof status.
-
-Explore defaults to themes; its matrix is an advanced view. Graph defaults to a neighbourhood,
-with the full graph on demand. Literature coverage never depends on home selections. Existing
-entity and fragment links remain valid, including content inside disclosures. After editing,
-regenerate the atlas and run the website checks. A human research reader must separately assess
-whether the introduction communicates the problem, contribution, boundary, and frontier.
+in [`docs/development.md`](../docs/development.md); the design principles are in
+[`docs/system-design.md`](../docs/system-design.md).

@@ -153,7 +153,7 @@ def test_the_browser_adapter_runs_optimize_partition_shape() -> None:
 
 
 def _michelson_sweep_rows() -> list[dict[str, object]]:
-    fixture = json.loads((ROOT / "docs/examples/assets/michelson-phase.json").read_text())
+    fixture = json.loads((ROOT / "examples/outputs/michelson-phase.json").read_text())
     return cast(list[dict[str, object]], fixture["sweep"])
 
 

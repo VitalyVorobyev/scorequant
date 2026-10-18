@@ -166,13 +166,6 @@ export default function Home(): React.JSX.Element {
             categories.
           </p>
 
-          <h3>
-            <Link to="/research">Research →</Link>
-          </h3>
-          <p>
-            Explore an atlas of the mathematics, guarantees, limitations, exact results, and open
-            questions behind the method, one page per result.
-          </p>
         </section>
       </article>
     </Layout>

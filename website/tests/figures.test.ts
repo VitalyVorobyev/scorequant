@@ -9,11 +9,11 @@ import {describe, expect, it} from "vitest";
 // only follows route links, not `<img src>`, and the MDX directories sit
 // outside the tsconfig `include`, so a wrong path builds green and 404s in
 // production. Worse, `static/walkthrough-figures/` is gitignored and refilled
-// from `docs/examples/assets/` by `scripts/generate_walkthroughs.py`, so a file
+// from `examples/outputs/` by `scripts/generate_walkthroughs.py`, so a file
 // merely *placed* there resolves on the machine that placed it and nowhere
 // else. This resolves each reference against the lane that actually owns it.
 const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const contentDirs = ["walkthroughs", "get-started", "research"];
+const contentDirs = ["walkthroughs", "get-started"];
 const staticRoot = join(websiteRoot, "static");
 const generatorPath = join(websiteRoot, "scripts/generate_walkthroughs.py");
 

@@ -2,7 +2,7 @@
 site_name: ScoreQuant
 site_description: Information-preserving binning for statistical inference
 # The learning portal serves the site root; this documentation is mounted beneath it
-# at /docs/ (ADR 0035).
+# at /docs/.
 site_url: https://vitalyvorobyev.github.io/scorequant/docs/
 repo_url: https://github.com/VitalyVorobyev/scorequant
 repo_name: VitalyVorobyev/scorequant
@@ -11,9 +11,7 @@ copyright: Copyright &copy; 2026 Vitaly Vorobyev
 
 exclude_docs: |
   development.md
-  roadmap.md
   system-design.md
-  decisions.md
 
 theme:
   name: material
@@ -43,65 +41,20 @@ theme:
 
 nav:
   - Home: index.md
-  - Why ScoreQuant: motivation.md
-  - Method overview: method.md
-  - Three doors: three-doors.md
-  - Choosing your workflow: user-workflow.md
-  - Book:
-      - Overview: book/index.md
-      - Why bin at all: book/ch01-why-bin.md
-      - One dimension by hand: book/ch02-one-dimension.md
-      - Exact 1D binning by dynamic programming: book/ch03-exact-1d.md
-      - Scores, score laws, and the three doors: book/ch04-scores-and-doors.md
-      - Information after hard labels: book/ch05-information-after-binning.md
-      - Two tasks and three optimization levels: book/ch06-two-tasks.md
-      - The trace criterion and whitened k-means: book/ch07-trace-kmeans.md
-      - D-optimality and exact exchange: book/ch08-d-optimality.md
-      - Mahalanobis geometry and guarded Lloyd: book/ch09-mahalanobis-lloyd.md
-      - Nuisance parameters and profiled Ds: book/ch10-profiled-ds.md
-      - "E-optimality: why not": book/ch11-e-optimality.md
-      - Soft rules, purification, and consistency: book/ch12-soft-rules.md
-      - "Estimated density ratios and scores": book/ch13-estimated-scores.md
-      - Diagnostics and choosing a method: book/ch14-choosing-a-method.md
-  - Examples:
-      - Overview: examples/index.md
-      - Door 1, precomputed score events: examples/door1-score-events.md
-      - Door 2, mixture densities: examples/door2-mixture-densities.md
-      - Door 3, classifier-estimated ratios: examples/door3-classifier.md
-      - Michelson interferometer phase: examples/michelson-phase.md
-      - Solver shootout: examples/solver-shootout.md
-      - "Nuisance parameters: profiled Ds": examples/nuisance-profiled-ds.md
-      - Soft rules and purification: examples/soft-purification.md
-      - A batch step that loses information: examples/lloyd-nonmonotone.md
-      - A profiled optimum outside its geometry: examples/ds-geometry-counterexample.md
-      - Certificates and restarts: examples/global-certification.md
-      - FlowCyt, a real-data teaser: examples/flowcyt-teaser.md
-  - Evidence:
-      - Synthetic gallery: gallery/index.md
-      - FlowCyt study:
-          - usecases/flowcyt/index.md
-          - Problem and data: usecases/flowcyt/data.md
-          - Score model and calibration: usecases/flowcyt/scores.md
-          - Quantization at scale: usecases/flowcyt/quantization.md
-          - "One fraction of interest: profiled Ds": usecases/flowcyt/profiled.md
-          - Solver comparison: usecases/flowcyt/solvers.md
-      - HEP classifier study: usecases/hep/index.md
-  - API:
-      - API guide: api.md
-      - Reference:
-          - Overview: symbols/index.md
-          - Fitting: symbols/fitting.md
-          - Linear models: symbols/models.md
-          - Density ratios: symbols/ratios.md
-          - Configuration: symbols/configuration.md
-          - Results: symbols/results.md
-          - Certificates: symbols/certification.md
-          - Information: symbols/information.md
-          - Transforms: symbols/transforms.md
-          - Visualization: symbols/visualization.md
-  - Related work: related-work.md
+  - User guide: guide.md
+  - API guide: api.md
+  - Reference:
+      - Overview: symbols/index.md
+      - Fitting: symbols/fitting.md
+      - Linear models: symbols/models.md
+      - Density ratios: symbols/ratios.md
+      - Configuration: symbols/configuration.md
+      - Results: symbols/results.md
+      - Certificates: symbols/certification.md
+      - Information: symbols/information.md
+      - Transforms: symbols/transforms.md
+      - Visualization: symbols/visualization.md
   - Glossary: glossary.md
-  - Bibliography: bibliography.md
   - Learning portal: https://vitalyvorobyev.github.io/scorequant/
 
 plugins:
@@ -142,7 +95,7 @@ markdown_extensions:
 
 extra:
   # The header title links to the portal at the site root, not to this
-  # documentation's own index (ADR 0035).
+  # documentation's own index.
   homepage: https://vitalyvorobyev.github.io/scorequant/
 
 extra_javascript:

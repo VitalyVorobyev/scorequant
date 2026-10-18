@@ -1,5 +1,0 @@
-{
-  "schemaVersion": 2,
-  "policy": "Every claim in agenticresearch/claims/ is published in the Research Atlas unless its id is listed under withheld. A withheld claim may not be the target of any edge from a published claim; the generator fails the build otherwise, so the public graph never dangles.",
-  "withheld": []
-}

@@ -109,7 +109,7 @@ function useReadingPosition(
 }
 
 /**
- * The article frame for the docs-plugin routes: `/walkthroughs`, `/research`
+ * The article frame for the docs-plugin routes: `/walkthroughs`, `/get-started`
  * and `/get-started`.
  *
  * The stock `DocItem/Layout` cannot run inside the ScoreQuant shell. Its table

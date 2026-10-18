@@ -1,16 +1,10 @@
 """Guard the generated criterion/solver compatibility matrix against drift.
 
-``website/scripts/generate_data.py`` derives the single criterion/solver compatibility
-table from ``scorequant.api._SOLVER_TABLE`` and writes it into
-``website/src/generated/portal-data.json`` and into a marked region of ``docs/method.md``,
-``README.md``, ``docs/book/ch06-two-tasks.md`` and ``docs/api.md``. This module checks those
-derived artifacts against the registry and against each other -- a hand edit inside a
-generated region, or a registry change without regeneration, fails here.
-
-Behaviour-versus-registry (does the library actually accept or refuse each pairing) is
-already covered by the executed fence in ``docs/book/ch14-choosing-a-method.md``, which
-enumerates all thirty (task, config, criterion) combinations and pins
-``(accepted, refused) == (10, 20)``. This module does not duplicate that check.
+``website/scripts/generate_data.py`` derives the criterion/solver table from
+``scorequant.api._SOLVER_TABLE`` and writes it into ``website/src/generated/portal-data.json``
+and into a marked region of ``docs/guide.md``, ``docs/api.md`` and ``README.md``. These tests
+check those copies against the registry, and check that the library accepts exactly the
+declared pairs.
 """
 
 from __future__ import annotations
@@ -29,13 +23,12 @@ ROOT = Path(__file__).resolve().parents[1]
 GENERATE_DATA_MODULE = ROOT / "website" / "scripts" / "generate_data.py"
 PORTAL_DATA = ROOT / "website" / "src" / "generated" / "portal-data.json"
 
-# The four Markdown files whose ``<!-- generated: solver-matrix -->`` region must equal
+# The Markdown files whose ``<!-- generated: solver-matrix -->`` region must equal
 # the table rendered from the current registry. README and the API guide carry the extra
 # "Contract" column.
 _CONSUMERS = (
-    (ROOT / "docs" / "method.md", False),
+    (ROOT / "docs" / "guide.md", False),
     (ROOT / "README.md", True),
-    (ROOT / "docs" / "book" / "ch06-two-tasks.md", False),
     (ROOT / "docs" / "api.md", True),
 )
 
@@ -97,3 +90,58 @@ def test_generated_region_matches_rendered_matrix(
         generate_data._SOLVER_MATRIX_END,
     )
     assert actual == expected
+
+
+def test_every_task_accepts_exactly_the_declared_pairs() -> None:
+    """All thirty (task, config, criterion) combinations: ten run, twenty refuse up front."""
+    import numpy as np
+
+    import scorequant as sq
+
+    rng = np.random.default_rng(140)
+    mixing = np.array([[1.0, 0.5, -0.2], [0.0, 1.1, 0.3], [0.0, 0.0, 0.9]])
+    table = rng.normal(size=(160, 3)) @ mixing
+    scalar = rng.normal(size=(160, 1))
+    configs = {
+        "DExchangeConfig": sq.DExchangeConfig(seed=0, initializer_restarts=2),
+        "MahalanobisLloydConfig": sq.MahalanobisLloydConfig(seed=0, initializer_restarts=2),
+        "KMeansConfig": sq.KMeansConfig(seed=0, solver_restarts=2),
+        "SoftVoronoiConfig": sq.SoftVoronoiConfig(
+            seed=0, initializer_restarts=2, max_steps=20, record_every=20
+        ),
+        "ScalarDPConfig": sq.ScalarDPConfig(),
+    }
+    criteria = {
+        "DOptimality": sq.DOptimality(),
+        "ProfiledDOptimality": sq.ProfiledDOptimality((0,)),
+        "NormalizedTrace": sq.NormalizedTrace(),
+    }
+    supported = {
+        ("optimize_partition", "DExchangeConfig"): {"DOptimality", "ProfiledDOptimality"},
+        ("optimize_partition", "MahalanobisLloydConfig"): {"DOptimality", "ProfiledDOptimality"},
+        ("fit_quantizer", "DExchangeConfig"): {"DOptimality"},
+        ("fit_quantizer", "MahalanobisLloydConfig"): {"DOptimality"},
+        ("fit_quantizer", "KMeansConfig"): {"NormalizedTrace"},
+        ("fit_quantizer", "SoftVoronoiConfig"): {"DOptimality", "ProfiledDOptimality"},
+        ("fit_quantizer", "ScalarDPConfig"): {"DOptimality"},
+    }
+    accepted = refused = 0
+    for task in ("optimize_partition", "fit_quantizer"):
+        for config_name, config in configs.items():
+            for criterion_name, criterion in criteria.items():
+                data = scalar if config_name == "ScalarDPConfig" else table
+                expected = criterion_name in supported.get((task, config_name), set())
+                try:
+                    if task == "optimize_partition":
+                        sq.optimize_partition(data, n_bins=4, criterion=criterion, config=config)
+                    else:
+                        sq.fit_quantizer(
+                            sq.ScoreSample(data), n_bins=4, criterion=criterion, config=config
+                        )
+                except (TypeError, ValueError) as error:
+                    assert not expected, f"{task}/{config_name}/{criterion_name}: {error}"
+                    refused += 1
+                else:
+                    assert expected, f"{task}/{config_name}/{criterion_name} should be refused"
+                    accepted += 1
+    assert (accepted, refused) == (10, 20)

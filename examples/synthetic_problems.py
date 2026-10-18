@@ -1,4 +1,4 @@
-"""Deterministic synthetic problems used by scripts, notebooks, and tests."""
+"""Deterministic synthetic problems used by scripts and tests."""
 
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
-"""Shared fast-mode switch for example scripts and notebooks.
+"""Shared fast-mode switch for example scripts.
 
-Every example script and notebook honors one environment variable so a
+Every example script honors one environment variable so a
 single switch shrinks every dataset and optimizer budget for CI and quick
 local checks, while local, unset runs keep the full research-scale sizes.
 """

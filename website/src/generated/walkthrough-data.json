@@ -2,47 +2,47 @@
   "pages": {
     "flowcyt": {
       "bins": {
-        "source": "docs/usecases/assets/cell_population.json#/operating_partition/n_bins",
+        "source": "examples/outputs/cell_population.json#/operating_partition/n_bins",
         "text": "8",
         "value": 8
       },
       "dExchangeEfficiency": {
-        "source": "docs/usecases/assets/cell_population.json#/finite_d_exchange:8/held_out_d_efficiency",
+        "source": "examples/outputs/cell_population.json#/finite_d_exchange:8/held_out_d_efficiency",
         "text": "0.9853",
         "value": 0.9852758215441055
       },
       "dExchangeRmse": {
-        "source": "docs/usecases/assets/cell_population.json#/finite_d_exchange:8/target_macro_rmse",
+        "source": "examples/outputs/cell_population.json#/finite_d_exchange:8/target_macro_rmse",
         "text": "0.002094",
         "value": 0.002093732126606461
       },
       "fiveBinEfficiency": {
-        "source": "docs/usecases/assets/cell_population.json#/soft_voronoi:5/held_out_d_efficiency",
+        "source": "examples/outputs/cell_population.json#/soft_voronoi:5/held_out_d_efficiency",
         "text": "0.3911",
         "value": 0.391104746259858
       },
       "fiveBinRankBound": {
-        "source": "docs/usecases/assets/cell_population.json#/scientific_closure/template_identifiability/soft_voronoi:5/rank_bound",
+        "source": "examples/outputs/cell_population.json#/scientific_closure/template_identifiability/soft_voronoi:5/rank_bound",
         "text": "4",
         "value": 4
       },
       "fiveBinRmse": {
-        "source": "docs/usecases/assets/cell_population.json#/soft_voronoi:5/target_macro_rmse",
+        "source": "examples/outputs/cell_population.json#/soft_voronoi:5/target_macro_rmse",
         "text": "0.030002",
         "value": 0.030002014132350867
       },
       "freeFractions": {
-        "source": "docs/usecases/assets/cell_population.json#/scientific_closure/template_identifiability/soft_voronoi:5/required_rank",
+        "source": "examples/outputs/cell_population.json#/scientific_closure/template_identifiability/soft_voronoi:5/required_rank",
         "text": "5",
         "value": 5
       },
       "heldOutPatients": {
-        "source": "docs/usecases/assets/cell_population.json#/unbinned_classifier_ratio/likelihood_convergence/total_patients",
+        "source": "examples/outputs/cell_population.json#/unbinned_classifier_ratio/likelihood_convergence/total_patients",
         "text": "10",
         "value": 10
       },
       "informationKind": {
-        "source": "docs/usecases/assets/cell_population.json#/finite_d_exchange:8/information_kind",
+        "source": "examples/outputs/cell_population.json#/finite_d_exchange:8/information_kind",
         "text": "supplied_score_surrogate",
         "value": "supplied_score_surrogate"
       },
@@ -52,37 +52,37 @@
         "value": "CC-BY-NC-SA-4.0"
       },
       "markerKmeansEfficiency": {
-        "source": "docs/usecases/assets/cell_population.json#/marker_kmeans:8/held_out_d_efficiency",
+        "source": "examples/outputs/cell_population.json#/marker_kmeans:8/held_out_d_efficiency",
         "text": "0.0704",
         "value": 0.07035593206242213
       },
       "markerKmeansRmse": {
-        "source": "docs/usecases/assets/cell_population.json#/marker_kmeans:8/target_macro_rmse",
+        "source": "examples/outputs/cell_population.json#/marker_kmeans:8/target_macro_rmse",
         "text": "0.028892",
         "value": 0.028891852157931913
       },
       "oneDimensionalEfficiency": {
-        "source": "docs/usecases/assets/cell_population.json#/one_dimensional_score:8/held_out_d_efficiency",
+        "source": "examples/outputs/cell_population.json#/one_dimensional_score:8/held_out_d_efficiency",
         "text": "0.0378",
         "value": 0.03780138996527281
       },
       "oneDimensionalRmse": {
-        "source": "docs/usecases/assets/cell_population.json#/one_dimensional_score:8/target_macro_rmse",
+        "source": "examples/outputs/cell_population.json#/one_dimensional_score:8/target_macro_rmse",
         "text": "0.018088",
         "value": 0.018087934767159634
       },
       "populations": {
-        "source": "docs/usecases/assets/cell_population.json#/scientific_closure/template_identifiability/soft_voronoi:5/n_classes",
+        "source": "examples/outputs/cell_population.json#/scientific_closure/template_identifiability/soft_voronoi:5/n_classes",
         "text": "6",
         "value": 6
       },
       "profiledCeilingRetention": {
-        "source": "docs/usecases/assets/flowcyt_profiled_ds.json#/fixture_scale/bound/ceiling_retention",
+        "source": "examples/outputs/flowcyt_profiled_ds.json#/fixture_scale/bound/ceiling_retention",
         "text": "0.9997",
         "value": 0.9996713041049554
       },
       "profiledDPartitionRetention": {
-        "source": "docs/usecases/assets/flowcyt_profiled_ds.json#/fixture_scale/partitions/0/profiled_retention",
+        "source": "examples/outputs/flowcyt_profiled_ds.json#/fixture_scale/partitions/0/profiled_retention",
         "text": "0.9954",
         "value": 0.995386074153505
       },
@@ -92,12 +92,12 @@
         "value": 128
       },
       "softVoronoiEfficiency": {
-        "source": "docs/usecases/assets/cell_population.json#/soft_voronoi:8/held_out_d_efficiency",
+        "source": "examples/outputs/cell_population.json#/soft_voronoi:8/held_out_d_efficiency",
         "text": "0.9846",
         "value": 0.9846216879860943
       },
       "softVoronoiRmse": {
-        "source": "docs/usecases/assets/cell_population.json#/soft_voronoi:8/target_macro_rmse",
+        "source": "examples/outputs/cell_population.json#/soft_voronoi:8/target_macro_rmse",
         "text": "0.001929",
         "value": 0.0019285302742885712
       },
@@ -107,7 +107,7 @@
         "value": "https://github.com/VIPER-GENEVA/FlowCyt-Classification-Benchmark"
       },
       "studyCells": {
-        "source": "docs/usecases/assets/cell_population.json#/source/sample_rows",
+        "source": "examples/outputs/cell_population.json#/source/sample_rows",
         "text": "600,000",
         "value": 600000
       },
@@ -152,12 +152,12 @@
         "value": 0.0016300505164664407
       },
       "tenBinEfficiency": {
-        "source": "docs/usecases/assets/cell_population.json#/soft_voronoi:10/held_out_d_efficiency",
+        "source": "examples/outputs/cell_population.json#/soft_voronoi:10/held_out_d_efficiency",
         "text": "0.9903",
         "value": 0.9903122386755577
       },
       "tenBinRmse": {
-        "source": "docs/usecases/assets/cell_population.json#/soft_voronoi:10/target_macro_rmse",
+        "source": "examples/outputs/cell_population.json#/soft_voronoi:10/target_macro_rmse",
         "text": "0.002023",
         "value": 0.002023223825027861
       },
@@ -167,84 +167,84 @@
         "value": 2048
       },
       "thirtyBinEfficiency": {
-        "source": "docs/usecases/assets/cell_population.json#/soft_voronoi:30/held_out_d_efficiency",
+        "source": "examples/outputs/cell_population.json#/soft_voronoi:30/held_out_d_efficiency",
         "text": "0.9984",
         "value": 0.9984033208847412
       },
       "thirtyBinRmse": {
-        "source": "docs/usecases/assets/cell_population.json#/soft_voronoi:30/target_macro_rmse",
+        "source": "examples/outputs/cell_population.json#/soft_voronoi:30/target_macro_rmse",
         "text": "0.002600",
         "value": 0.002600358348403994
       },
       "twoDimensionalGridEfficiency": {
-        "source": "docs/usecases/assets/cell_population.json#/two_dimensional_grid:8/held_out_d_efficiency",
+        "source": "examples/outputs/cell_population.json#/two_dimensional_grid:8/held_out_d_efficiency",
         "text": "0.0223",
         "value": 0.022311477389082943
       },
       "twoDimensionalGridRmse": {
-        "source": "docs/usecases/assets/cell_population.json#/two_dimensional_grid:8/target_macro_rmse",
+        "source": "examples/outputs/cell_population.json#/two_dimensional_grid:8/target_macro_rmse",
         "text": "0.083325",
         "value": 0.08332510970683164
       },
       "twoDimensionalGridRmseThirty": {
-        "source": "docs/usecases/assets/cell_population.json#/two_dimensional_grid:30/target_macro_rmse",
+        "source": "examples/outputs/cell_population.json#/two_dimensional_grid:30/target_macro_rmse",
         "text": "0.062011",
         "value": 0.062011452341553266
       },
       "unbinnedMacroRmse": {
-        "source": "docs/usecases/assets/cell_population.json#/unbinned_classifier_ratio/target_macro_rmse",
+        "source": "examples/outputs/cell_population.json#/unbinned_classifier_ratio/target_macro_rmse",
         "text": "0.001728",
         "value": 0.001727561297740151
       }
     },
     "hep": {
       "backgroundEvents": {
-        "source": "docs/examples/assets/hep-classifier.json#/fixture/background_events",
+        "source": "examples/outputs/hep-classifier.json#/fixture/background_events",
         "text": "664",
         "value": 664
       },
       "bins": {
-        "source": "docs/examples/assets/hep-classifier.json#/n_bins",
+        "source": "examples/outputs/hep-classifier.json#/n_bins",
         "text": "6",
         "value": 6
       },
       "bootstrapReplicates": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/bootstrap_replicates",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/bootstrap_replicates",
         "text": "200",
         "value": 200
       },
       "ceilingBudgetEight": {
-        "source": "docs/examples/assets/hep-classifier.json#/in_sample/ceiling_sweep/3/ceiling_retention",
+        "source": "examples/outputs/hep-classifier.json#/in_sample/ceiling_sweep/3/ceiling_retention",
         "text": "0.9753",
         "value": 0.9753002731306275
       },
       "ceilingRetention": {
-        "source": "docs/examples/assets/hep-classifier.json#/in_sample/ceiling/ceiling_retention",
+        "source": "examples/outputs/hep-classifier.json#/in_sample/ceiling/ceiling_retention",
         "text": "0.9553",
         "value": 0.9552772335234024
       },
       "dPartitionFull": {
-        "source": "docs/examples/assets/hep-classifier.json#/in_sample/by_key/d_partition/full_retention",
+        "source": "examples/outputs/hep-classifier.json#/in_sample/by_key/d_partition/full_retention",
         "text": "0.8746",
         "value": 0.8745590644517677
       },
       "dPartitionProfiled": {
-        "source": "docs/examples/assets/hep-classifier.json#/in_sample/by_key/d_partition/profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/in_sample/by_key/d_partition/profiled_retention",
         "text": "0.8238",
         "value": 0.8238099690756355
       },
       "dRuleHeldOut": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/d_rule/evaluation_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/d_rule/evaluation_profiled_retention",
         "text": "0.8025",
         "value": 0.8024888163477144
       },
       "dRuleHeldOutHigh": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/d_rule/evaluation_p95_max",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/d_rule/evaluation_p95_max",
         "text": "0.8639",
         "value": 0.8639293454097712
       },
       "dRuleHeldOutLow": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/d_rule/evaluation_p05_min",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/d_rule/evaluation_p05_min",
         "text": "0.7311",
         "value": 0.7310771253319913
       },
@@ -254,127 +254,127 @@
         "value": "FAIR Universe - HiggsML Uncertainty Challenge Public Dataset"
       },
       "delta": {
-        "source": "docs/examples/assets/hep-classifier.json#/delta",
+        "source": "examples/outputs/hep-classifier.json#/delta",
         "text": "0.050",
         "value": 0.05
       },
       "dsPartitionFull": {
-        "source": "docs/examples/assets/hep-classifier.json#/in_sample/by_key/ds_partition/full_retention",
+        "source": "examples/outputs/hep-classifier.json#/in_sample/by_key/ds_partition/full_retention",
         "text": "0.4784",
         "value": 0.4783739966225967
       },
       "dsPartitionProfiled": {
-        "source": "docs/examples/assets/hep-classifier.json#/in_sample/by_key/ds_partition/profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/in_sample/by_key/ds_partition/profiled_retention",
         "text": "0.9550",
         "value": 0.9550321935360592
       },
       "dsPartitionReferenceAB": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/directions/0/ds_partition_reference_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/0/ds_partition_reference_profiled_retention",
         "text": "0.9673",
         "value": 0.9673088679006104
       },
       "dsPartitionReferenceBA": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/directions/1/ds_partition_reference_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/1/ds_partition_reference_profiled_retention",
         "text": "0.9638",
         "value": 0.9638096293584555
       },
       "dsRuleHeldOut": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_profiled_retention",
         "text": "0.8576",
         "value": 0.8576000760739684
       },
       "dsRuleHeldOutAB": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/directions/0/rules/ds_rule/evaluation_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/0/rules/ds_rule/evaluation_profiled_retention",
         "text": "0.8591",
         "value": 0.859066279111288
       },
       "dsRuleHeldOutBA": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/directions/1/rules/ds_rule/evaluation_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/1/rules/ds_rule/evaluation_profiled_retention",
         "text": "0.8561",
         "value": 0.8561338730366487
       },
       "dsRuleHeldOutHigh": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_p95_max",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_p95_max",
         "text": "0.9146",
         "value": 0.9146025172964825
       },
       "dsRuleHeldOutLow": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_p05_min",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_p05_min",
         "text": "0.8051",
         "value": 0.8051127114077529
       },
       "dsRuleInSampleProfiled": {
-        "source": "docs/examples/assets/hep-classifier.json#/in_sample/by_key/ds_rule/profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/in_sample/by_key/ds_rule/profiled_retention",
         "text": "0.9145",
         "value": 0.9145460370335429
       },
       "dsRuleMinBinEvents": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_min_bin_events",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_min_bin_events",
         "text": "2",
         "value": 2
       },
       "dsRuleReference": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/ds_rule/reference_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/reference_profiled_retention",
         "text": "0.9282",
         "value": 0.9282251011105871
       },
       "effectiveEvents": {
-        "source": "docs/examples/assets/hep-classifier.json#/fixture/effective_events",
+        "source": "examples/outputs/hep-classifier.json#/fixture/effective_events",
         "text": "665",
         "value": 665.2979770496346
       },
       "evaluationCeilingAB": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/directions/0/evaluation_ceiling_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/0/evaluation_ceiling_retention",
         "text": "0.9642",
         "value": 0.9641742886714496
       },
       "evaluationCeilingBA": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/directions/1/evaluation_ceiling_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/1/evaluation_ceiling_retention",
         "text": "0.9699",
         "value": 0.9698818941070824
       },
       "evaluationEvents": {
-        "source": "docs/examples/assets/hep-classifier.json#/split/halves/0/evaluation_events",
+        "source": "examples/outputs/hep-classifier.json#/split/halves/0/evaluation_events",
         "text": "500",
         "value": 500
       },
       "fullRetentionGivenUp": {
-        "source": "docs/examples/assets/hep-classifier.json#/in_sample/criterion_trade/full_retention_given_up",
+        "source": "examples/outputs/hep-classifier.json#/in_sample/criterion_trade/full_retention_given_up",
         "text": "0.3962",
         "value": 0.39618506782917096
       },
       "gapToCeiling": {
-        "source": "docs/examples/assets/hep-classifier.json#/in_sample/ceiling/gap_to_ds_partition_retention",
+        "source": "examples/outputs/hep-classifier.json#/in_sample/ceiling/gap_to_ds_partition_retention",
         "text": "0.0002",
         "value": 0.00024503998734326515
       },
       "heldOutBudgetEight": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/held_out_budget_sweep/3/ds_rule_evaluation_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/held_out_budget_sweep/3/ds_rule_evaluation_profiled_retention",
         "text": "0.8893",
         "value": 0.8893402629357366
       },
       "heldOutBudgetThree": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/held_out_budget_sweep/0/ds_rule_evaluation_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/held_out_budget_sweep/0/ds_rule_evaluation_profiled_retention",
         "text": "0.6455",
         "value": 0.645462731302716
       },
       "inSampleBudgetEight": {
-        "source": "docs/examples/assets/hep-classifier.json#/in_sample/ceiling_sweep/3/ds_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/in_sample/ceiling_sweep/3/ds_profiled_retention",
         "text": "0.9753",
         "value": 0.9752633987612815
       },
       "intervalsHeldOut": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/classifier_significance_intervals/evaluation_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_significance_intervals/evaluation_profiled_retention",
         "text": "0.3244",
         "value": 0.32439730137385586
       },
       "intervalsHeldOutHigh": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/classifier_significance_intervals/evaluation_p95_max",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_significance_intervals/evaluation_p95_max",
         "text": "0.8063",
         "value": 0.8063394577622326
       },
       "intervalsHeldOutLow": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/classifier_significance_intervals/evaluation_p05_min",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_significance_intervals/evaluation_p05_min",
         "text": "0.1042",
         "value": 0.10420170995633914
       },
@@ -394,756 +394,756 @@
         "value": "https://doi.org/10.5281/zenodo.15131565"
       },
       "logitHeldOut": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_profiled_retention",
         "text": "0.2712",
         "value": 0.27115065206413
       },
       "logitHeldOutHigh": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_p95_max",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_p95_max",
         "text": "0.8656",
         "value": 0.865602545631397
       },
       "logitHeldOutLow": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_p05_min",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_logit_equal_width/evaluation_p05_min",
         "text": "0.1088",
         "value": 0.10882994985721857
       },
       "nEvents": {
-        "source": "docs/examples/assets/hep-classifier.json#/fixture/n_events",
+        "source": "examples/outputs/hep-classifier.json#/fixture/n_events",
         "text": "1,000",
         "value": 1000
       },
       "nParameters": {
-        "source": "docs/examples/assets/hep-classifier.json#/n_parameters",
+        "source": "examples/outputs/hep-classifier.json#/n_parameters",
         "text": "3",
         "value": 3
       },
       "profiledRetentionGained": {
-        "source": "docs/examples/assets/hep-classifier.json#/in_sample/criterion_trade/profiled_retention_gained",
+        "source": "examples/outputs/hep-classifier.json#/in_sample/criterion_trade/profiled_retention_gained",
         "text": "0.1312",
         "value": 0.13122222446042364
       },
       "quantileHeldOut": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/classifier_quantile/evaluation_profiled_retention",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_quantile/evaluation_profiled_retention",
         "text": "0.3682",
         "value": 0.3681631203472413
       },
       "quantileHeldOutHigh": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/classifier_quantile/evaluation_p95_max",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_quantile/evaluation_p95_max",
         "text": "0.8330",
         "value": 0.8330349129350083
       },
       "quantileHeldOutLow": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/classifier_quantile/evaluation_p05_min",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_quantile/evaluation_p05_min",
         "text": "0.1206",
         "value": 0.12058439831687588
       },
       "referenceEvents": {
-        "source": "docs/examples/assets/hep-classifier.json#/split/halves/0/reference_events",
+        "source": "examples/outputs/hep-classifier.json#/split/halves/0/reference_events",
         "text": "500",
         "value": 500
       },
       "sigmaDRule": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/d_rule/sigma_mu",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/d_rule/sigma_mu",
         "text": "0.765",
         "value": 0.7647334317974998
       },
       "sigmaDRuleFixed": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/d_rule/sigma_mu_tes_fixed",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/d_rule/sigma_mu_tes_fixed",
         "text": "0.735",
         "value": 0.7349662958635401
       },
       "sigmaDRuleHeldOutAB": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/held_out/0/rules/d_rule/sigma_mu",
+        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/0/rules/d_rule/sigma_mu",
         "text": "1.03",
         "value": 1.025890466545272
       },
       "sigmaDRuleHeldOutBA": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/held_out/1/rules/d_rule/sigma_mu",
+        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/1/rules/d_rule/sigma_mu",
         "text": "0.97",
         "value": 0.9713622628678475
       },
       "sigmaDsRule": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu",
         "text": "0.720",
         "value": 0.7198361143506828
       },
       "sigmaDsRuleConstrained": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu_tes_constrained",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu_tes_constrained",
         "text": "0.720",
         "value": 0.7197287541774746
       },
       "sigmaDsRuleFixed": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu_tes_fixed",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu_tes_fixed",
         "text": "0.700",
         "value": 0.7003032629637141
       },
       "sigmaDsRuleHeldOutAB": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/held_out/0/rules/ds_rule/sigma_mu",
+        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/0/rules/ds_rule/sigma_mu",
         "text": "1.15",
         "value": 1.1453516898773712
       },
       "sigmaDsRuleHeldOutBA": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/held_out/1/rules/ds_rule/sigma_mu",
+        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/1/rules/ds_rule/sigma_mu",
         "text": "0.90",
         "value": 0.8973220859903247
       },
       "sigmaDsRuleInflated": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu_mc_inflated",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu_mc_inflated",
         "text": "28.6",
         "value": 28.592394757442285
       },
       "sigmaIntervals": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/classifier_significance_intervals/sigma_mu",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/classifier_significance_intervals/sigma_mu",
         "text": "1.909",
         "value": 1.909383932681784
       },
       "sigmaIntervalsFixed": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/classifier_significance_intervals/sigma_mu_tes_fixed",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/classifier_significance_intervals/sigma_mu_tes_fixed",
         "text": "0.596",
         "value": 0.5963359210113813
       },
       "sigmaLogit": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/classifier_logit_equal_width/sigma_mu",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/classifier_logit_equal_width/sigma_mu",
         "text": "1.460",
         "value": 1.4595680269191333
       },
       "sigmaLogitFixed": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/classifier_logit_equal_width/sigma_mu_tes_fixed",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/classifier_logit_equal_width/sigma_mu_tes_fixed",
         "text": "0.636",
         "value": 0.6360253003054837
       },
       "sigmaLogitHeldOutAB": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/held_out/0/rules/classifier_logit_equal_width/sigma_mu",
+        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/0/rules/classifier_logit_equal_width/sigma_mu",
         "text": "1.45",
         "value": 1.4467254987041684
       },
       "sigmaLogitHeldOutBA": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/held_out/1/rules/classifier_logit_equal_width/sigma_mu",
+        "source": "examples/outputs/hep-classifier.json#/downstream/held_out/1/rules/classifier_logit_equal_width/sigma_mu",
         "text": "1.25",
         "value": 1.2543505730705733
       },
       "sigmaLogitInflated": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/classifier_logit_equal_width/sigma_mu_mc_inflated",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/classifier_logit_equal_width/sigma_mu_mc_inflated",
         "text": "58.0",
         "value": 57.98156284240298
       },
       "sigmaQuantile": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/classifier_quantile/sigma_mu",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/classifier_quantile/sigma_mu",
         "text": "1.190",
         "value": 1.1900594304957608
       },
       "sigmaQuantileFixed": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/classifier_quantile/sigma_mu_tes_fixed",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/classifier_quantile/sigma_mu_tes_fixed",
         "text": "0.669",
         "value": 0.6688983798041772
       },
       "sigmaThresholdFixed": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/all_events/rules/threshold_cut/sigma_mu_tes_fixed",
+        "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/threshold_cut/sigma_mu_tes_fixed",
         "text": "0.672",
         "value": 0.6723649974448257
       },
       "signalAuc": {
-        "source": "docs/examples/assets/hep-classifier.json#/classifiers/signal_weighted_auc",
+        "source": "examples/outputs/hep-classifier.json#/classifiers/signal_weighted_auc",
         "text": "0.8345",
         "value": 0.8344737120691251
       },
       "signalEvents": {
-        "source": "docs/examples/assets/hep-classifier.json#/fixture/signal_events",
+        "source": "examples/outputs/hep-classifier.json#/fixture/signal_events",
         "text": "336",
         "value": 336
       },
       "signalFraction": {
-        "source": "docs/examples/assets/hep-classifier.json#/classifiers/signal_fraction",
+        "source": "examples/outputs/hep-classifier.json#/classifiers/signal_fraction",
         "text": "0.00099",
         "value": 0.00098781975979457
       },
       "tesAuc": {
-        "source": "docs/examples/assets/hep-classifier.json#/classifiers/tes_minus_plus_auc",
+        "source": "examples/outputs/hep-classifier.json#/classifiers/tes_minus_plus_auc",
         "text": "0.5753",
         "value": 0.575284565048716
       },
       "tesConstraintWidth": {
-        "source": "docs/examples/assets/hep-classifier.json#/downstream/tes_constraint_width",
+        "source": "examples/outputs/hep-classifier.json#/downstream/tes_constraint_width",
         "text": "0.01",
         "value": 0.01
       },
       "tesScoreCorrelation": {
-        "source": "docs/examples/assets/hep-classifier.json#/classifiers/tes_reliability/weighted_correlation",
+        "source": "examples/outputs/hep-classifier.json#/classifiers/tes_reliability/weighted_correlation",
         "text": "0.50",
         "value": 0.49819665199074037
       },
       "thresholdBins": {
-        "source": "docs/examples/assets/hep-classifier.json#/cross_evaluation/mean/threshold_cut/n_bins",
+        "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/threshold_cut/n_bins",
         "text": "2",
         "value": 2
       }
     },
     "michelson": {
       "bins": {
-        "source": "docs/examples/assets/michelson-phase.json#/headline_bins",
+        "source": "examples/outputs/michelson-phase.json#/headline_bins",
         "text": "6",
         "value": 6
       },
       "boundGapAtFour": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/0/bound_gap",
+        "source": "examples/outputs/michelson-phase.json#/sweep/0/bound_gap",
         "text": "0.004966",
         "value": 0.004966330769635263
       },
       "boundGapAtSix": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/1/bound_gap",
+        "source": "examples/outputs/michelson-phase.json#/sweep/1/bound_gap",
         "text": "2.5e-05",
         "value": 2.5285988623835465e-05
       },
       "ceilingRetentionAtFour": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/0/ceiling_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/0/ceiling_retention",
         "text": "0.8672",
         "value": 0.8672261564340735
       },
       "ceilingRetentionAtSix": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/1/ceiling_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/1/ceiling_retention",
         "text": "0.9483",
         "value": 0.9482831713778096
       },
       "ceilingRetentionAtSixFine": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/1/ceiling_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/1/ceiling_retention",
         "text": "0.948283",
         "value": 0.9482831713778096
       },
       "compiledTestRetention": {
-        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/compiled_test_retention",
+        "source": "examples/outputs/michelson-phase.json#/compile_bridge/compiled_test_retention",
         "text": "0.8346",
         "value": 0.8346211523168009
       },
       "correlation": {
-        "source": "docs/examples/assets/michelson-phase.json#/closed_form/correlation",
+        "source": "examples/outputs/michelson-phase.json#/closed_form/correlation",
         "text": "0.8720",
         "value": 0.8719582770810335
       },
       "costOfProfiling": {
-        "source": "docs/examples/assets/michelson-phase.json#/cost_of_profiling",
+        "source": "examples/outputs/michelson-phase.json#/cost_of_profiling",
         "text": "0.7603",
         "value": 0.7603112369701244
       },
       "dMinRunWidth": {
-        "source": "docs/examples/assets/michelson-phase.json#/d_geometry/min_run_width",
+        "source": "examples/outputs/michelson-phase.json#/d_geometry/min_run_width",
         "text": "0.16",
         "value": 0.16022122533307837
       },
       "dNarrowRuns": {
-        "source": "docs/examples/assets/michelson-phase.json#/d_geometry/narrow_runs",
+        "source": "examples/outputs/michelson-phase.json#/d_geometry/narrow_runs",
         "text": "4",
         "value": 4
       },
       "dOptimalRetentionAtFour": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/0/d_optimal_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/0/d_optimal_retention",
         "text": "0.7227",
         "value": 0.7227396781750588
       },
       "dOptimalRetentionAtSix": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/1/d_optimal_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/1/d_optimal_retention",
         "text": "0.7995",
         "value": 0.7994648908881136
       },
       "dPredictionOne": {
-        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/0/bin",
+        "source": "examples/outputs/michelson-phase.json#/compile_bridge/predictions/0/bin",
         "text": "0",
         "value": 0
       },
       "dPredictionThree": {
-        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/2/bin",
+        "source": "examples/outputs/michelson-phase.json#/compile_bridge/predictions/2/bin",
         "text": "4",
         "value": 4
       },
       "dPredictionTwo": {
-        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/1/bin",
+        "source": "examples/outputs/michelson-phase.json#/compile_bridge/predictions/1/bin",
         "text": "1",
         "value": 1
       },
       "dRuleOwnCriterion": {
-        "source": "docs/examples/assets/michelson-phase.json#/rules/0/criterion_efficiency",
+        "source": "examples/outputs/michelson-phase.json#/rules/0/criterion_efficiency",
         "text": "0.8345",
         "value": 0.8344795665479535
       },
       "dRuleProfiledRetention": {
-        "source": "docs/examples/assets/michelson-phase.json#/rules/0/profiled_retention",
+        "source": "examples/outputs/michelson-phase.json#/rules/0/profiled_retention",
         "text": "0.7987",
         "value": 0.7986662738412926
       },
       "dRunsAtSix": {
-        "source": "docs/examples/assets/michelson-phase.json#/d_geometry/n_runs",
+        "source": "examples/outputs/michelson-phase.json#/d_geometry/n_runs",
         "text": "24",
         "value": 24
       },
       "dsAcceptedMoves": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/accepted_moves",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/accepted_moves",
         "text": "36",
         "value": 36
       },
       "dsInitialNarrowRuns": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/initial/narrow_runs",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/initial/narrow_runs",
         "text": "6",
         "value": 6
       },
       "dsInitialRetention": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/initial_retention",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/initial_retention",
         "text": "0.9481",
         "value": 0.9480740872637142
       },
       "dsInitialRuns": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/initial/n_runs",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/initial/n_runs",
         "text": "24",
         "value": 24
       },
       "dsMinRunMass": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/final/min_run_mass",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/final/min_run_mass",
         "text": "1.9e-03",
         "value": 0.0019021969129542483
       },
       "dsMinRunWidth": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/final/min_run_width",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/final/min_run_width",
         "text": "0.119",
         "value": 0.11938052083641182
       },
       "dsNarrowRuns": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/final/narrow_runs",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/final/narrow_runs",
         "text": "6",
         "value": 6
       },
       "dsRelabelledFraction": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/relabelled_fraction",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/relabelled_fraction",
         "text": "0.4%",
         "value": 0.00375
       },
       "dsRetentionGain": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/retention_gain",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/retention_gain",
         "text": "1.9e-04",
         "value": 0.0001851061397664111
       },
       "dsRuleHardeningGap": {
-        "source": "docs/examples/assets/michelson-phase.json#/rules/1/hardening_gap",
+        "source": "examples/outputs/michelson-phase.json#/rules/1/hardening_gap",
         "text": "-1.2e-06",
         "value": -1.2164391132163388e-06
       },
       "dsRuleOwnCriterion": {
-        "source": "docs/examples/assets/michelson-phase.json#/rules/1/criterion_efficiency",
+        "source": "examples/outputs/michelson-phase.json#/rules/1/criterion_efficiency",
         "text": "0.8805",
         "value": 0.8804877699454614
       },
       "dsRulePredictionOne": {
-        "source": "docs/examples/assets/michelson-phase.json#/rules/1/predictions/0/bin",
+        "source": "examples/outputs/michelson-phase.json#/rules/1/predictions/0/bin",
         "text": "0",
         "value": 0
       },
       "dsRulePredictionThree": {
-        "source": "docs/examples/assets/michelson-phase.json#/rules/1/predictions/2/bin",
+        "source": "examples/outputs/michelson-phase.json#/rules/1/predictions/2/bin",
         "text": "5",
         "value": 5
       },
       "dsRulePredictionTwo": {
-        "source": "docs/examples/assets/michelson-phase.json#/rules/1/predictions/1/bin",
+        "source": "examples/outputs/michelson-phase.json#/rules/1/predictions/1/bin",
         "text": "5",
         "value": 5
       },
       "dsRuleProfiledRetention": {
-        "source": "docs/examples/assets/michelson-phase.json#/rules/1/profiled_retention",
+        "source": "examples/outputs/michelson-phase.json#/rules/1/profiled_retention",
         "text": "0.8794",
         "value": 0.8794067452623978
       },
       "dsRuleRuns": {
-        "source": "docs/examples/assets/michelson-phase.json#/rules/1/n_runs",
+        "source": "examples/outputs/michelson-phase.json#/rules/1/n_runs",
         "text": "16",
         "value": 16
       },
       "dsRunsAtSix": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/final/n_runs",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/final/n_runs",
         "text": "24",
         "value": 24
       },
       "dsScans": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/scans",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/scans",
         "text": "12",
         "value": 12
       },
       "equalWidthRetentionAtEight": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/2/equal_width_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/2/equal_width_retention",
         "text": "0.7247",
         "value": 0.7246630936475936
       },
       "equalWidthRetentionAtFour": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/0/equal_width_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/0/equal_width_retention",
         "text": "4.6e-32",
         "value": 4.605264156593518e-32
       },
       "equalWidthRetentionAtSix": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/1/equal_width_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/1/equal_width_retention",
         "text": "0.2054",
         "value": 0.20540197184571238
       },
       "equalWidthRetentionAtTen": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/3/equal_width_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/3/equal_width_retention",
         "text": "0.5653",
         "value": 0.5652822231572834
       },
       "fringes": {
-        "source": "docs/examples/assets/michelson-phase.json#/fringes",
+        "source": "examples/outputs/michelson-phase.json#/fringes",
         "text": "4",
         "value": 4
       },
       "iPhiEps": {
-        "source": "docs/examples/assets/michelson-phase.json#/closed_form/i_phieps",
+        "source": "examples/outputs/michelson-phase.json#/closed_form/i_phieps",
         "text": "2.5133",
         "value": 2.5132741228718345
       },
       "iPhiPhi": {
-        "source": "docs/examples/assets/michelson-phase.json#/closed_form/i_phiphi",
+        "source": "examples/outputs/michelson-phase.json#/closed_form/i_phiphi",
         "text": "0.2000",
         "value": 0.1999999999999985
       },
       "nNodes": {
-        "source": "docs/examples/assets/michelson-phase.json#/n_nodes",
+        "source": "examples/outputs/michelson-phase.json#/n_nodes",
         "text": "8,000",
         "value": 8000
       },
       "narrowRunWidth": {
-        "source": "docs/examples/assets/michelson-phase.json#/narrow_run_width",
+        "source": "examples/outputs/michelson-phase.json#/narrow_run_width",
         "text": "0.25",
         "value": 0.25
       },
       "predictionUOne": {
-        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/0/u",
+        "source": "examples/outputs/michelson-phase.json#/compile_bridge/predictions/0/u",
         "text": "1.0",
         "value": 1.0
       },
       "predictionUThree": {
-        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/2/u",
+        "source": "examples/outputs/michelson-phase.json#/compile_bridge/predictions/2/u",
         "text": "15.0",
         "value": 15.0
       },
       "predictionUTwo": {
-        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/predictions/1/u",
+        "source": "examples/outputs/michelson-phase.json#/compile_bridge/predictions/1/u",
         "text": "7.0",
         "value": 7.0
       },
       "profiledRetentionAtFour": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/0/profiled_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/0/profiled_retention",
         "text": "0.8629",
         "value": 0.862929901630743
       },
       "profiledRetentionAtSix": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/1/profiled_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/1/profiled_retention",
         "text": "0.9483",
         "value": 0.9482591934034806
       },
       "profiledRetentionAtSixFine": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/1/profiled_retention",
+        "source": "examples/outputs/michelson-phase.json#/sweep/1/profiled_retention",
         "text": "0.948259",
         "value": 0.9482591934034806
       },
       "refusalMessage": {
-        "source": "docs/examples/assets/michelson-phase.json#/compile_bridge/refusal_message",
+        "source": "examples/outputs/michelson-phase.json#/compile_bridge/refusal_message",
         "text": "finite profiled-D labels have no canonical inductive compilation; fit an explicit quantizer instead [CE-DS-GLOBAL-GEOMETRY-001]",
         "value": "finite profiled-D labels have no canonical inductive compilation; fit an explicit quantizer instead [CE-DS-GLOBAL-GEOMETRY-001]"
       },
       "smoothingFourBinsUsed": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/3/bins_used",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/3/bins_used",
         "text": "6",
         "value": 6
       },
       "smoothingFourMinWidth": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/3/min_width",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/3/min_width",
         "text": "1.00",
         "value": 1.0
       },
       "smoothingFourRetention": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/3/retention",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/3/retention",
         "text": "0.8178",
         "value": 0.8178096178792226
       },
       "smoothingFourRuns": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/3/n_runs",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/3/n_runs",
         "text": "11",
         "value": 11
       },
       "smoothingOneBinsUsed": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/0/bins_used",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/0/bins_used",
         "text": "6",
         "value": 6
       },
       "smoothingOneMinWidth": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/0/min_width",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/0/min_width",
         "text": "0.15",
         "value": 0.15
       },
       "smoothingOneRetention": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/0/retention",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/0/retention",
         "text": "0.9435",
         "value": 0.9435316298390771
       },
       "smoothingOneRuns": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/0/n_runs",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/0/n_runs",
         "text": "22",
         "value": 22
       },
       "smoothingThreeBinsUsed": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/2/bins_used",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/2/bins_used",
         "text": "6",
         "value": 6
       },
       "smoothingThreeMinWidth": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/2/min_width",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/2/min_width",
         "text": "0.50",
         "value": 0.5
       },
       "smoothingThreeRetention": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/2/retention",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/2/retention",
         "text": "0.8653",
         "value": 0.8653248879132388
       },
       "smoothingThreeRuns": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/2/n_runs",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/2/n_runs",
         "text": "14",
         "value": 14
       },
       "smoothingTwoBinsUsed": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/1/bins_used",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/1/bins_used",
         "text": "6",
         "value": 6
       },
       "smoothingTwoMinWidth": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/1/min_width",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/1/min_width",
         "text": "0.25",
         "value": 0.25
       },
       "smoothingTwoRetention": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/1/retention",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/1/retention",
         "text": "0.9302",
         "value": 0.9301887209838307
       },
       "smoothingTwoRuns": {
-        "source": "docs/examples/assets/michelson-phase.json#/profiled_diagnostics/smoothing/1/n_runs",
+        "source": "examples/outputs/michelson-phase.json#/profiled_diagnostics/smoothing/1/n_runs",
         "text": "19",
         "value": 19
       },
       "sweepBinsEight": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/2/n_bins",
+        "source": "examples/outputs/michelson-phase.json#/sweep/2/n_bins",
         "text": "8",
         "value": 8
       },
       "sweepBinsHeadline": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/1/n_bins",
+        "source": "examples/outputs/michelson-phase.json#/sweep/1/n_bins",
         "text": "6",
         "value": 6
       },
       "sweepBinsLow": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/0/n_bins",
+        "source": "examples/outputs/michelson-phase.json#/sweep/0/n_bins",
         "text": "4",
         "value": 4
       },
       "sweepBinsTen": {
-        "source": "docs/examples/assets/michelson-phase.json#/sweep/3/n_bins",
+        "source": "examples/outputs/michelson-phase.json#/sweep/3/n_bins",
         "text": "10",
         "value": 10
       },
       "visibility": {
-        "source": "docs/examples/assets/michelson-phase.json#/visibility",
+        "source": "examples/outputs/michelson-phase.json#/visibility",
         "text": "0.60",
         "value": 0.6
       }
     },
     "ratios": {
       "analyticBackgroundRatioMean": {
-        "source": "docs/examples/assets/door3-classifier.json#/closure_measure_mismatch/analytic_reference_measure_ratio_means/1",
+        "source": "examples/outputs/door3-classifier.json#/closure_measure_mismatch/analytic_reference_measure_ratio_means/1",
         "text": "1.1589",
         "value": 1.1589373947070176
       },
       "analyticSignalRatioMean": {
-        "source": "docs/examples/assets/door3-classifier.json#/closure_measure_mismatch/analytic_reference_measure_ratio_means/0",
+        "source": "examples/outputs/door3-classifier.json#/closure_measure_mismatch/analytic_reference_measure_ratio_means/0",
         "text": "0.8411",
         "value": 0.8410626055896501
       },
       "bins": {
-        "source": "docs/examples/assets/door3-classifier.json#/n_bins",
+        "source": "examples/outputs/door3-classifier.json#/n_bins",
         "text": "4",
         "value": 4
       },
       "ceilingEqualWidth": {
-        "source": "docs/examples/assets/door3-classifier.json#/naive_binning/exact_ceiling/equal_width_retention",
+        "source": "examples/outputs/door3-classifier.json#/naive_binning/exact_ceiling/equal_width_retention",
         "text": "0.9679",
         "value": 0.9678547355857964
       },
       "classifierInformationKind": {
-        "source": "docs/examples/assets/door3-classifier.json#/provenance/classifier/information_kind",
+        "source": "examples/outputs/door3-classifier.json#/provenance/classifier/information_kind",
         "text": "supplied_score_surrogate",
         "value": "supplied_score_surrogate"
       },
       "classifierProvenanceKind": {
-        "source": "docs/examples/assets/door3-classifier.json#/provenance/classifier/provenance_kind",
+        "source": "examples/outputs/door3-classifier.json#/provenance/classifier/provenance_kind",
         "text": "estimated_ratio",
         "value": "estimated_ratio"
       },
       "exactCeiling": {
-        "source": "docs/examples/assets/door3-classifier.json#/exact_ceiling/retention",
+        "source": "examples/outputs/door3-classifier.json#/exact_ceiling/retention",
         "text": "0.9724",
         "value": 0.9724151487580928
       },
       "exactClosure": {
-        "source": "docs/examples/assets/door3-classifier.json#/exact_ceiling/closure_residual",
+        "source": "examples/outputs/door3-classifier.json#/exact_ceiling/closure_residual",
         "text": "0.0017",
         "value": 0.001746535301208496
       },
       "exactInformationKind": {
-        "source": "docs/examples/assets/door3-classifier.json#/provenance/exact/information_kind",
+        "source": "examples/outputs/door3-classifier.json#/provenance/exact/information_kind",
         "text": "exact_fisher",
         "value": "exact_fisher"
       },
       "exactProvenanceKind": {
-        "source": "docs/examples/assets/door3-classifier.json#/provenance/exact/provenance_kind",
+        "source": "examples/outputs/door3-classifier.json#/provenance/exact/provenance_kind",
         "text": "exact",
         "value": "exact"
       },
       "largeClosure": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/2/closure_residual",
+        "source": "examples/outputs/door3-classifier.json#/ladder/2/closure_residual",
         "text": "0.0032",
         "value": 0.0032369494438171387
       },
       "largeEqualFrequency": {
-        "source": "docs/examples/assets/door3-classifier.json#/naive_binning/rows/2/equal_frequency_retention",
+        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/2/equal_frequency_retention",
         "text": "0.9378",
         "value": 0.9377758518182528
       },
       "largeEqualWidth": {
-        "source": "docs/examples/assets/door3-classifier.json#/naive_binning/rows/2/equal_width_retention",
+        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/2/equal_width_retention",
         "text": "0.9678",
         "value": 0.9678089030483656
       },
       "largeGap": {
-        "source": "docs/examples/assets/door3-classifier.json#/surrogate_gap/rows/2/gap",
+        "source": "examples/outputs/door3-classifier.json#/surrogate_gap/rows/2/gap",
         "text": "0.0035",
         "value": 0.0034874667656539238
       },
       "largeSurrogate": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/2/surrogate_retention",
+        "source": "examples/outputs/door3-classifier.json#/ladder/2/surrogate_retention",
         "text": "0.9700",
         "value": 0.9699531778931494
       },
       "largeTrainSize": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/2/n_per_class",
+        "source": "examples/outputs/door3-classifier.json#/ladder/2/n_per_class",
         "text": "300",
         "value": 300
       },
       "largeTrue": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/2/true_retention",
+        "source": "examples/outputs/door3-classifier.json#/ladder/2/true_retention",
         "text": "0.9665",
         "value": 0.9664657111274955
       },
       "largestGap": {
-        "source": "docs/examples/assets/door3-classifier.json#/surrogate_gap/largest_gap",
+        "source": "examples/outputs/door3-classifier.json#/surrogate_gap/largest_gap",
         "text": "0.0811",
         "value": 0.08110993932864141
       },
       "mediumClosure": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/1/closure_residual",
+        "source": "examples/outputs/door3-classifier.json#/ladder/1/closure_residual",
         "text": "0.0185",
         "value": 0.018507421016693115
       },
       "mediumEqualFrequency": {
-        "source": "docs/examples/assets/door3-classifier.json#/naive_binning/rows/1/equal_frequency_retention",
+        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/1/equal_frequency_retention",
         "text": "0.9304",
         "value": 0.9304424517429776
       },
       "mediumEqualWidth": {
-        "source": "docs/examples/assets/door3-classifier.json#/naive_binning/rows/1/equal_width_retention",
+        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/1/equal_width_retention",
         "text": "0.9366",
         "value": 0.9365844078803958
       },
       "mediumGap": {
-        "source": "docs/examples/assets/door3-classifier.json#/surrogate_gap/rows/1/gap",
+        "source": "examples/outputs/door3-classifier.json#/surrogate_gap/rows/1/gap",
         "text": "0.0170",
         "value": 0.017034592804553217
       },
       "mediumSurrogate": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/1/surrogate_retention",
+        "source": "examples/outputs/door3-classifier.json#/ladder/1/surrogate_retention",
         "text": "0.9691",
         "value": 0.9691271803067208
       },
       "mediumTrainSize": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/1/n_per_class",
+        "source": "examples/outputs/door3-classifier.json#/ladder/1/n_per_class",
         "text": "60",
         "value": 60
       },
       "mediumTrue": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/1/true_retention",
+        "source": "examples/outputs/door3-classifier.json#/ladder/1/true_retention",
         "text": "0.9521",
         "value": 0.9520925875021676
       },
       "nClosure": {
-        "source": "docs/examples/assets/door3-classifier.json#/n_closure",
+        "source": "examples/outputs/door3-classifier.json#/n_closure",
         "text": "50,000",
         "value": 50000
       },
       "nTest": {
-        "source": "docs/examples/assets/door3-classifier.json#/n_test",
+        "source": "examples/outputs/door3-classifier.json#/n_test",
         "text": "600",
         "value": 600
       },
       "nTrain": {
-        "source": "docs/examples/assets/door3-classifier.json#/n_train",
+        "source": "examples/outputs/door3-classifier.json#/n_train",
         "text": "400",
         "value": 400
       },
       "naiveLargestGap": {
-        "source": "docs/examples/assets/door3-classifier.json#/naive_binning/largest_gap",
+        "source": "examples/outputs/door3-classifier.json#/naive_binning/largest_gap",
         "text": "0.0155",
         "value": 0.015508179621771867
       },
       "naiveLargestGapTrainSize": {
-        "source": "docs/examples/assets/door3-classifier.json#/naive_binning/largest_gap_n_per_class",
+        "source": "examples/outputs/door3-classifier.json#/naive_binning/largest_gap_n_per_class",
         "text": "60",
         "value": 60
       },
       "signalFraction": {
-        "source": "docs/examples/assets/door3-classifier.json#/mixture/reference_fractions/0",
+        "source": "examples/outputs/door3-classifier.json#/mixture/reference_fractions/0",
         "text": "0.30",
         "value": 0.3
       },
       "smallClosure": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/0/closure_residual",
+        "source": "examples/outputs/door3-classifier.json#/ladder/0/closure_residual",
         "text": "0.0420",
         "value": 0.041996896266937256
       },
       "smallEqualFrequency": {
-        "source": "docs/examples/assets/door3-classifier.json#/naive_binning/rows/0/equal_frequency_retention",
+        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/0/equal_frequency_retention",
         "text": "0.8842",
         "value": 0.884225968823333
       },
       "smallEqualWidth": {
-        "source": "docs/examples/assets/door3-classifier.json#/naive_binning/rows/0/equal_width_retention",
+        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/0/equal_width_retention",
         "text": "0.8648",
         "value": 0.8648227463990631
       },
       "smallGap": {
-        "source": "docs/examples/assets/door3-classifier.json#/surrogate_gap/rows/0/gap",
+        "source": "examples/outputs/door3-classifier.json#/surrogate_gap/rows/0/gap",
         "text": "0.0811",
         "value": 0.08110993932864141
       },
       "smallSurrogate": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/0/surrogate_retention",
+        "source": "examples/outputs/door3-classifier.json#/ladder/0/surrogate_retention",
         "text": "0.9658",
         "value": 0.9658172725352395
       },
       "smallTrainSize": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/0/n_per_class",
+        "source": "examples/outputs/door3-classifier.json#/ladder/0/n_per_class",
         "text": "15",
         "value": 15
       },
       "smallTrue": {
-        "source": "docs/examples/assets/door3-classifier.json#/ladder/0/true_retention",
+        "source": "examples/outputs/door3-classifier.json#/ladder/0/true_retention",
         "text": "0.8847",
         "value": 0.8847073332065981
       },
       "wrongMeasureResidual": {
-        "source": "docs/examples/assets/door3-classifier.json#/closure_measure_mismatch/wrong_measure_residual",
+        "source": "examples/outputs/door3-classifier.json#/closure_measure_mismatch/wrong_measure_residual",
         "text": "0.1800",
         "value": 0.1799619197845459
       }

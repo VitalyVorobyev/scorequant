@@ -34,10 +34,7 @@ Repository = "https://github.com/VitalyVorobyev/scorequant"
 [project.optional-dependencies]
 viz = ["matplotlib>=3.10"]
 examples = [
-    "ipykernel>=6.29",
     "matplotlib>=3.10",
-    "nbclient>=0.10",
-    "nbformat>=5.10",
     "pandas>=2.3,<4",
     "scikit-learn>=1.9,<2",
 ]
@@ -51,10 +48,7 @@ docs = [
 ]
 dev = [
     "hypothesis>=6.130",
-    "ipykernel>=6.29",
     "matplotlib>=3.10",
-    "nbclient>=0.10",
-    "nbformat>=5.10",
     "py-spy>=0.4.2",
     "pytest>=8.3",
     "pytest-xdist>=3.6",
@@ -77,15 +71,12 @@ testpaths = ["tests"]
 # Tiers, applied per module by `tests/conftest.py`. A bare `uv run pytest` runs
 # every tier; CI selects one with `-m`.
 markers = [
-    "docs_execution: executes published prose (documentation snippets, README fences, notebooks)",
+    "docs_execution: executes published prose (documentation snippets, README fences, portal snippets)",
 ]
 
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-# Incoming proposals are verbatim source documents, and their code fences are
-# illustrative rather than runnable, so they stay outside the style gate.
-extend-exclude = ["agenticresearch", "docs/proposals"]
 
 [tool.ruff.lint]
 ignore = ["D105", "D107"]

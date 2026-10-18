@@ -2,7 +2,7 @@ import type {Props} from "@theme/DocRoot/Layout/Main";
 import type {ReactNode} from "react";
 
 /**
- * The reading frame for the two docs-plugin routes, `/walkthroughs` and `/research`.
+ * The reading frame for the two docs-plugin routes, `/walkthroughs` and `/get-started`.
  *
  * Replaces the stock `DocRoot/Layout/Main` for the same reason `BlogLayout` replaces
  * the stock blog grid: the stock version renders a second `<main>` inside the one

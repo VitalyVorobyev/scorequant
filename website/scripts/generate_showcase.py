@@ -41,7 +41,7 @@ from examples.cell_population.data import (  # noqa: E402
 
 FIXTURE = REPO_ROOT / "examples" / "data" / "flowcyt_fixture.npz"
 FIXTURE_FACTS = REPO_ROOT / "examples" / "data" / "flowcyt_fixture.json"
-STUDY_METRICS = REPO_ROOT / "docs" / "usecases" / "assets" / "cell_population.json"
+STUDY_METRICS = REPO_ROOT / "examples" / "outputs" / "cell_population.json"
 NARRATIVE_OUT = REPO_ROOT / "website" / "src" / "generated" / "showcase-data.json"
 WALKTHROUGH_OUT = REPO_ROOT / "examples" / "data" / "flowcyt_walkthrough.npz"
 WALKTHROUGH_FACTS_OUT = REPO_ROOT / "examples" / "data" / "flowcyt_walkthrough.json"

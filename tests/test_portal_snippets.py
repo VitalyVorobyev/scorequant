@@ -190,12 +190,7 @@ _WALKTHROUGHS = _walkthrough_pages()
 
 
 def test_every_walkthrough_was_discovered() -> None:
-    """All four walkthroughs exist and carry executable fences.
-
-    `docs/three-doors.md` was retired into these pages in S8; if one stops being
-    discovered, the fences it absorbed stop running and the coverage the
-    programme required to survive that retirement is gone.
-    """
+    """All four walkthroughs exist and carry executable fences."""
     assert [slug for slug, _ in _WALKTHROUGHS] == sorted(EXPECTED_WALKTHROUGHS)
 
 

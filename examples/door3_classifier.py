@@ -13,11 +13,9 @@ This is also the one library example that measures what an *estimated*
 density-ratio score reports about itself (`information_kind ==
 "supplied_score_surrogate"`, `ScoreProvenance.exact_fisher is False`) against
 what it actually achieves relative to the known analytic score -- the
-surrogate-information caveat `docs/book/ch13-estimated-scores.md` describes
-in prose. `run_study` records that measurement as committed evidence at
-`docs/examples/assets/door3-classifier.json`, alongside the existing figure
-`docs/examples/assets/door3-classifier.png`. This module backs both the
-notebook (`examples/notebooks/door3_classifier.ipynb`) and the docs page.
+surrogate-information caveat. `run_study` records that measurement as committed evidence at
+`examples/outputs/door3-classifier.json`, alongside the existing figure
+`examples/outputs/door3-classifier.png`. It backs the ratios walkthrough.
 """
 
 from __future__ import annotations
@@ -34,8 +32,8 @@ from sklearn.linear_model import LogisticRegression
 import scorequant as sq
 from examples._env import example_scale
 
-ASSET_PATH = Path("docs/examples/assets/door3-classifier.png")
-METRICS_PATH = Path("docs/examples/assets/door3-classifier.json")
+ASSET_PATH = Path("examples/outputs/door3-classifier.png")
+METRICS_PATH = Path("examples/outputs/door3-classifier.json")
 
 SIGNAL_MU, SIGNAL_SIGMA = 1.0, 0.5
 BACKGROUND_MU, BACKGROUND_SIGMA = 0.0, 1.5
@@ -768,7 +766,7 @@ def run_study(
     -------
     Study
         The exact structure written to
-        ``docs/examples/assets/door3-classifier.json``, together with the
+        ``examples/outputs/door3-classifier.json``, together with the
         ladder steps the figure draws.
     """
     n_per_class_values = (

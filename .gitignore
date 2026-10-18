@@ -17,17 +17,14 @@ website/static/pagefind/
 website/static/runtime/pyodide/
 website/static/runtime/wheels/
 flowcyt-results/
-papers/VenkTongSwami_Quant_06CISS.pdf
-# Publisher scans and catalogue pages held for the literature record; see papers/README.md.
-papers/local/
 
-# Copied from docs/examples/assets/ by website/scripts/generate_walkthroughs.py;
+# Copied from examples/outputs/ by website/scripts/generate_walkthroughs.py;
 # generated on every build, so not committed a second time.
 website/static/walkthrough-figures/
 setenv.sh
 
-# Lean build artifacts (agenticresearch/formal)
-agenticresearch/formal/.lake/
+# Lean build artifacts (research/formal)
+research/formal/.lake/
 
 # Claude Code session state: local worktrees and transcripts, never committed.
 .claude/
@@ -37,3 +34,4 @@ agenticresearch/formal/.lake/
 .env.*
 *.pem
 .hypothesis/
+benchmarks/profiles/

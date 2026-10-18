@@ -1,7 +1,6 @@
 """A Michelson interferometer phase: D-optimal quantization, then profiled D_s.
 
-This script is the deterministic generator behind
-`docs/examples/michelson-phase.md` and the portal walkthrough
+This script is the deterministic generator behind the portal walkthrough
 `website/walkthroughs/michelson.mdx`. It exercises the analytic
 `ScoreFunction` route (a score callback against a bounded
 `IntegrationSource`) on the NumPy backend, on a model exact enough that the
@@ -25,7 +24,7 @@ phase shift. The study tells a two-act story:
   that fragmentation the exchange moves created, and fits the reusable
   soft-Voronoi profiled rule that a profiled partition cannot compile into.
 
-It writes `docs/examples/assets/michelson-phase.json`, two study figures
+It writes `examples/outputs/michelson-phase.json`, two study figures
 beside it, and the two closed-form score panels the walkthrough shows.
 
 Run it with::
@@ -48,14 +47,14 @@ import scorequant as sq
 from examples._env import example_scale
 from scorequant.transforms import fisher_transform
 
-ASSET_DIR = Path("docs/examples/assets")
+ASSET_DIR = Path("examples/outputs")
 METRICS_PATH = ASSET_DIR / "michelson-phase.json"
 D_GEOMETRY_FIGURE_PATH = ASSET_DIR / "michelson-d-geometry.png"
 PROFILED_FIGURE_PATH = ASSET_DIR / "michelson-profiled-ds.png"
 
-#: Where the portal's committed figure files live (ADR 0032). Unlike
+#: Where the portal's committed figure files live. Unlike
 #: `website/static/walkthrough-figures/`, which `generate_walkthroughs.py`
-#: refills from `docs/examples/assets/` and `.gitignore` excludes, this
+#: refills from `examples/outputs/` and `.gitignore` excludes, this
 #: directory is committed: the walkthrough reads the closed-form score panels
 #: straight from it, so a file written here is committed alongside the code.
 SCORE_FIGURE_DIR = Path("website/static/figures")
@@ -952,7 +951,7 @@ def run_study(
     -------
     Study
         The exact structure written to
-        ``docs/examples/assets/michelson-phase.json``, together with the
+        ``examples/outputs/michelson-phase.json``, together with the
         objects the figures draw.
     """
     n_nodes = example_scale(8_000, 2_000) if n_nodes is None else n_nodes
@@ -1362,7 +1361,7 @@ def main() -> None:
         figure.savefig(path, dpi=160)
         plt.close(figure)
 
-    # The SVGs are committed (ADR 0032), so they have to regenerate byte for
+    # The SVGs are committed, so they have to regenerate byte for
     # byte or every rerun shows up as a diff of nothing. Matplotlib stamps a
     # wall-clock `dc:date` and derives every `<defs>` element id from a random
     # salt; a fixed salt and a suppressed date make the file a pure function

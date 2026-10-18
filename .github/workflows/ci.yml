@@ -55,7 +55,7 @@ jobs:
       # that the workers oversubscribe the runner and parallelism costs time.
       - run: uv run pytest -n auto -m "not docs_execution"
 
-  # The published prose -- documentation snippets, README fences, notebooks --
+  # The published prose -- documentation snippets, README fences, portal snippets --
   # re-runs the same `examples/` generators the library tier already asserts
   # against, so it detects presentation drift rather than numerical regressions.
   # Splitting it off keeps it beside the critical path instead of on it, and
@@ -92,7 +92,7 @@ jobs:
       - run: uv run pytest tests/test_float32.py
 
   # The Lean gate. It certifies statements, not the Python/JAX implementation
-  # of them: see ADR 0030. `lake build --wfail` rejects `sorry` and warnings,
+  # of them. `lake build --wfail` rejects `sorry` and warnings,
   # `leanchecker` re-checks the built environment, and the axiom audit fails on
   # anything outside the allowlist. Independent of the Python legs.
   formal:
@@ -101,7 +101,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: leanprover/lean-action@v1
         with:
-          lake-package-directory: agenticresearch/formal
+          lake-package-directory: research/formal
           auto-config: false
           build: true
           build-args: "--wfail"

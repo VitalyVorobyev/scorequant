@@ -29,7 +29,7 @@
       "name": "DExchangeConfig",
       "reference": "/reference/symbols/configuration/",
       "signature": "DExchangeConfig(rank_rtol: float | None = None, seed: int = 0, initializer_restarts: int = 8, max_scans: int | None = None, batch_moves: bool = True, solver_restarts: int = 1, init: Literal['kmeans++', 'random'] = 'kmeans++', gain_tolerance: float = 1e-10, first_improvement: bool = False, collapse_duplicates: bool | None = None)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L227",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L229",
       "summary": "Configure exact positive-gain D-optimal point exchange."
     },
     {
@@ -117,7 +117,7 @@
       "name": "KMeansConfig",
       "reference": "/reference/symbols/configuration/",
       "signature": "KMeansConfig(whiten: bool = True, rank_rtol: float | None = None, seed: int = 0, solver_restarts: int = 8, max_iter: int = 100, tolerance: float = 1e-06, record_every: int = 1)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L107",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L109",
       "summary": "Configure deterministic weighted score-space k-means."
     },
     {
@@ -141,7 +141,7 @@
       "name": "MahalanobisLloydConfig",
       "reference": "/reference/symbols/configuration/",
       "signature": "MahalanobisLloydConfig(rank_rtol: float | None = None, seed: int = 0, initializer_restarts: int = 8, max_iter: int = 100, guard: Literal['exchange', 'reject'] = 'exchange', gain_tolerance: float = 1e-10, collapse_duplicates: bool | None = None)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L315",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L317",
       "summary": "Configure guarded batch Mahalanobis-Lloyd iteration."
     },
     {
@@ -221,7 +221,7 @@
       "name": "Quantizer",
       "reference": "/reference/symbols/index/",
       "signature": "Quantizer(transform: FisherTransform, centers: np.ndarray, metric: np.ndarray | None, schema: ScoreSchema | None, provenance: ScoreProvenance, criterion: Criterion, execution: ExecutionConfig)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/artifact.py#L52",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/artifact.py#L53",
       "summary": "A frozen hard rule on score space."
     },
     {
@@ -269,7 +269,7 @@
       "name": "ScalarDPConfig",
       "reference": "/reference/symbols/configuration/",
       "signature": "ScalarDPConfig(whiten: bool = True, rank_rtol: float | None = None, seed: int = 0, max_rows: int = 20000)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L381",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L383",
       "summary": "Configure exact interval dynamic programming for one score coordinate."
     },
     {
@@ -325,7 +325,7 @@
       "name": "SoftVoronoiConfig",
       "reference": "/reference/symbols/configuration/",
       "signature": "SoftVoronoiConfig(whiten: bool = True, rank_rtol: float | None = None, seed: int = 0, initializer_restarts: int = 8, kmeans_max_iter: int = 100, tolerance: float = 1e-06, max_steps: int = 1000, learning_rate: float = 0.01, gradient_clip: float = 10.0, temperature_end_ratio: float = 0.05, record_every: int = 10)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L159",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L161",
       "summary": "Configure differentiable D-optimal soft Voronoi fitting."
     },
     {

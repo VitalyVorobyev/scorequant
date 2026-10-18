@@ -31,19 +31,13 @@ _FORBIDDEN_PROSE = (
 # no work-in-progress markers.
 _FRONT_DOOR = (
     "index.md",
-    "motivation.md",
-    "method.md",
-    "three-doors.md",
-    "user-workflow.md",
-    "related-work.md",
+    "guide.md",
 )
 
 # Pages that mkdocs.yml keeps out of the published site.
 _UNPUBLISHED = {
     Path("docs/development.md"),
-    Path("docs/roadmap.md"),
     Path("docs/system-design.md"),
-    Path("docs/decisions.md"),
 }
 
 
@@ -89,9 +83,7 @@ def test_published_markdown_has_no_internal_or_malformed_content() -> None:
     mkdocs = (REPO_ROOT / "mkdocs.yml").read_text(encoding="utf-8")
     excluded_paths = (
         "development.md",
-        "roadmap.md",
         "system-design.md",
-        "decisions.md",
     )
     for excluded in excluded_paths:
         assert excluded in mkdocs

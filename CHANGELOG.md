@@ -35,6 +35,20 @@ once already, which retroactively asserted that unshipped work had shipped.
   assignment is one routine; `retention_uncertainty` moved to its own module. The public API is
   unchanged, and a missing nuisance block reports one shared message.
 
+### Changed (breaking)
+
+- Every iteration cap is `max_iter`: `DExchangeConfig.max_scans` and `SoftVoronoiConfig.max_steps`
+  are renamed. `SoftVoronoiConfig.tolerance`, which only ever governed its k-means initializer,
+  is `kmeans_tolerance`, next to `kmeans_max_iter`.
+- `ScalarDPConfig.seed` is removed: the dynamic program consumes no randomness.
+
+| 0.3 | Now |
+| --- | --- |
+| `DExchangeConfig(max_scans=...)` | `DExchangeConfig(max_iter=...)` |
+| `SoftVoronoiConfig(max_steps=...)` | `SoftVoronoiConfig(max_iter=...)` |
+| `SoftVoronoiConfig(tolerance=...)` | `SoftVoronoiConfig(kmeans_tolerance=...)` |
+| `ScalarDPConfig(seed=...)` | `ScalarDPConfig()` |
+
 ## [0.3.0] — 2026-10-18
 
 Older entries cite design records as "ADR NNNN"; those records are in the repository history at

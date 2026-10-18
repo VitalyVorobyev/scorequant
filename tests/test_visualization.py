@@ -72,7 +72,7 @@ def test_high_dimensional_center_motion_uses_all_coordinates() -> None:
     result = fit_test_quantizer(
         scores,
         n_bins=5,
-        config=scorequant.SoftVoronoiConfig(max_steps=8, record_every=1),
+        config=scorequant.SoftVoronoiConfig(max_iter=8, record_every=1),
         diagnostics="full",
     )
     figure = scorequant.plot_optimization(result.trace)

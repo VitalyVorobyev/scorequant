@@ -344,7 +344,7 @@ def _walkthrough_chain(
             reference,
             n_bins=n_bins,
             criterion=sq.DOptimality(),
-            config=sq.SoftVoronoiConfig(seed=2026, initializer_restarts=4, max_steps=160),
+            config=sq.SoftVoronoiConfig(seed=2026, initializer_restarts=4, max_iter=160),
         ),
         "d_exchange": sq.optimize_partition(
             reference,

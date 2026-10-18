@@ -48,7 +48,7 @@ fit = sq.fit_quantizer(
     sq.ScoreSample(scores, weights),
     n_bins=5,
     criterion=sq.DOptimality(),
-    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_steps=120, record_every=20),
+    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_iter=120, record_every=20),
     execution=execution,
 )
 

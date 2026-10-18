@@ -150,7 +150,7 @@ diagnostics = {
 }
 ```
 
-`max_scans` bounds the work, `batch_moves=False` forces one relocation per scan, and
+`max_iter` bounds the number of scans, `batch_moves=False` forces one relocation per scan, and
 `solver_restarts` with `init` tries several seeded starts and keeps the best exact objective.
 
 To check labels from anywhere else — another tool, a hand edit — run one exact scan over them:
@@ -184,7 +184,7 @@ quantizer = sq.fit_quantizer(
     validation=sq.ScoreSample(holdout),
     n_bins=5,
     criterion=sq.DOptimality(),
-    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_steps=120, record_every=20),
+    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_iter=120, record_every=20),
 )
 soft_fit = {
     "train": float(quantizer.train_report.geometric_mean_retention),

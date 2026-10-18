@@ -186,7 +186,7 @@ def run_exchange(
     # the complete per-row table a guarded batch needs.
     batched = config.batch_moves and not config.first_improvement
     batch_size = label_array.shape[0]
-    limit = _SAFETY_SCAN_LIMIT if config.max_scans is None else config.max_scans
+    limit = _SAFETY_SCAN_LIMIT if config.max_iter is None else config.max_iter
     # True once a single move has updated the state by rank-two algebra; a
     # guarded batch is accepted on an exactly rebuilt state and resets it.
     incremental = False

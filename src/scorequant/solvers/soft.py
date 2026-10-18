@@ -106,7 +106,7 @@ def _soft_initial_centers(
         seed=config.seed,
         solver_restarts=config.initializer_restarts,
         max_iter=config.kmeans_max_iter,
-        tolerance=config.tolerance,
+        tolerance=config.kmeans_tolerance,
         record_every=config.kmeans_max_iter,
     )
     return weighted_kmeans(points, weights, n_bins, initializer_config).centers
@@ -371,8 +371,8 @@ def _run_soft_schedule(
         objective_dimension,
     )
 
-    for step in range(config.max_steps + 1):
-        fraction = step / config.max_steps
+    for step in range(config.max_iter + 1):
+        fraction = step / config.max_iter
         temperature = start_temperature * (end_temperature / start_temperature) ** fraction
         loss, gradients = soft_objective_and_center_gradient(
             points, objective_scores, weights, centers, temperature, criterion
@@ -382,7 +382,7 @@ def _run_soft_schedule(
             centers, optimizer, gradient_norm_value = adam_update(centers, gradients, optimizer)
             centers = jnp.asarray(centers)
             gradient_norm = jnp.asarray(gradient_norm_value, dtype=points.dtype)
-        if step % config.record_every == 0 or step == config.max_steps:
+        if step % config.record_every == 0 or step == config.max_iter:
             history.append(
                 step=step,
                 centers=centers,

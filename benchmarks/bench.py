@@ -165,7 +165,7 @@ def _partition_extra(result: sq.PartitionResult) -> dict[str, JsonValue]:
 
 def _bench_d_exchange(cfg: ScenarioConfig, repeats: int) -> RunOutcome:
     scores, weights = _synthetic_sample(cfg.seed, cfg.rows, cfg.dims)
-    config = sq.DExchangeConfig(seed=cfg.seed, max_scans=cfg.max_scans)
+    config = sq.DExchangeConfig(seed=cfg.seed, max_iter=cfg.max_scans)
     elapsed, result = _run_timed(
         lambda: sq.optimize_partition(scores, weights=weights, n_bins=cfg.bins, config=config),
         lambda r: r.labels,
@@ -183,7 +183,7 @@ def _bench_d_exchange(cfg: ScenarioConfig, repeats: int) -> RunOutcome:
 
 def _bench_d_exchange_nobatch(cfg: ScenarioConfig, repeats: int) -> RunOutcome:
     scores, weights = _synthetic_sample(cfg.seed, cfg.rows, cfg.dims)
-    config = sq.DExchangeConfig(seed=cfg.seed, batch_moves=False, max_scans=cfg.max_scans)
+    config = sq.DExchangeConfig(seed=cfg.seed, batch_moves=False, max_iter=cfg.max_scans)
     elapsed, result = _run_timed(
         lambda: sq.optimize_partition(scores, weights=weights, n_bins=cfg.bins, config=config),
         lambda r: r.labels,
@@ -219,7 +219,7 @@ def _bench_lloyd(cfg: ScenarioConfig, repeats: int) -> RunOutcome:
 
 def _bench_profiled_exchange(cfg: ScenarioConfig, repeats: int) -> RunOutcome:
     scores, weights = _synthetic_sample(cfg.seed, cfg.rows, cfg.dims)
-    config = sq.DExchangeConfig(seed=cfg.seed, max_scans=cfg.max_scans)
+    config = sq.DExchangeConfig(seed=cfg.seed, max_iter=cfg.max_scans)
     criterion = sq.ProfiledDOptimality(interest=(0,))
     elapsed, result = _run_timed(
         lambda: sq.optimize_partition(
@@ -265,7 +265,7 @@ def _bench_kmeans(cfg: ScenarioConfig, repeats: int) -> RunOutcome:
 def _bench_soft(cfg: ScenarioConfig, repeats: int) -> RunOutcome:
     scores, weights = _synthetic_sample(cfg.seed, cfg.rows, cfg.dims)
     sample = sq.ScoreSample(scores, weights)
-    config = sq.SoftVoronoiConfig(seed=cfg.seed, max_steps=200)
+    config = sq.SoftVoronoiConfig(seed=cfg.seed, max_iter=200)
     elapsed, result = _run_timed(
         lambda: sq.fit_quantizer(
             sample, n_bins=cfg.bins, criterion=sq.DOptimality(), config=config
@@ -289,7 +289,7 @@ def _bench_soft(cfg: ScenarioConfig, repeats: int) -> RunOutcome:
 def _bench_scalar_dp(cfg: ScenarioConfig, repeats: int) -> RunOutcome:
     scores, weights = _synthetic_sample(cfg.seed, cfg.rows, cfg.dims)
     sample = sq.ScoreSample(scores, weights)
-    config = sq.ScalarDPConfig(seed=cfg.seed)
+    config = sq.ScalarDPConfig()
     elapsed, result = _run_timed(
         lambda: sq.fit_quantizer(
             sample, n_bins=cfg.bins, criterion=sq.DOptimality(), config=config
@@ -386,7 +386,7 @@ def _bench_compile(cfg: ScenarioConfig, repeats: int) -> RunOutcome:
         scores,
         weights=weights,
         n_bins=cfg.bins,
-        config=sq.DExchangeConfig(seed=cfg.seed, max_scans=cfg.max_scans),
+        config=sq.DExchangeConfig(seed=cfg.seed, max_iter=cfg.max_scans),
     )
     elapsed, quantizer = _run_timed(
         partition.compile_quantizer,

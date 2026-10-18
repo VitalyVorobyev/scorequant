@@ -180,7 +180,7 @@ def test_a_profiled_rule_records_the_parameters_it_was_built_for(tmp_path: Path)
         sq.ScoreSample(scores, schema=schema),
         n_bins=5,
         criterion=sq.ProfiledDOptimality(interest=("HSPC",)),
-        config=sq.SoftVoronoiConfig(seed=SEED, max_steps=40, record_every=20),
+        config=sq.SoftVoronoiConfig(seed=SEED, max_iter=40, record_every=20),
     )
     restored = sq.Quantizer.load(result.quantizer.save(tmp_path / "profiled.sqz"))
     assert isinstance(restored.criterion, sq.ProfiledDOptimality)

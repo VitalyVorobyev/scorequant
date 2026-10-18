@@ -350,7 +350,7 @@ class PartitionResult:
             remedy = (
                 "set guard='exchange'"
                 if isinstance(self.config, MahalanobisLloydConfig)
-                else "raise max_scans, or leave it unset to run until stability"
+                else "raise max_iter, or leave it unset to run until stability"
             )
             raise RefusalError(
                 "only an exchange-stable D partition can be compiled; inspect "

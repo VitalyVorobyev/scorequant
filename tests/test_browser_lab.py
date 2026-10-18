@@ -116,7 +116,7 @@ def test_browser_adapter_matches_committed_numpy_fixture() -> None:
     ``sq.optimize_partition(scores, weights=weights, n_bins=5,
     config=sq.DExchangeConfig(seed=21))`` -- every other field at its class
     default, in particular ``initializer_restarts=8`` and
-    ``max_scans=None``. ``website/src/generated/snippet-outputs.json``
+    ``max_iter=None``. ``website/src/generated/snippet-outputs.json``
     (via ``website/src/lib/snippets.ts::firstFitRetention``) pins that run's
     own ``partition.train_report.geometric_mean_retention``. Reproducing that
     recipe through the browser adapter -- ``task: "optimize_partition"``, no

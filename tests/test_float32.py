@@ -19,7 +19,7 @@ def test_float32_fit_and_soft_step() -> None:
         config=scorequant.SoftVoronoiConfig(
             initializer_restarts=1,
             kmeans_max_iter=20,
-            max_steps=5,
+            max_iter=5,
             record_every=5,
         ),
     )

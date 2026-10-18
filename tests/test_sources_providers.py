@@ -77,7 +77,7 @@ def test_bounded_quadrature_matches_symmetric_reference_law() -> None:
         source,
         provider=provider,
         n_bins=2,
-        config=sq.DExchangeConfig(seed=2, initializer_restarts=3, max_scans=200),
+        config=sq.DExchangeConfig(seed=2, initializer_restarts=3, max_iter=200),
     )
     labels = np.asarray(result.predict_scores([[-0.5], [0.5]]))
     assert labels[0] != labels[1]

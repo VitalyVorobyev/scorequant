@@ -89,7 +89,7 @@ quantizer = sq.fit_quantizer(
     reference,
     n_bins=8,
     criterion=sq.DOptimality(),
-    config=sq.SoftVoronoiConfig(seed=2026, initializer_restarts=4, max_steps=160),
+    config=sq.SoftVoronoiConfig(seed=2026, initializer_restarts=4, max_iter=160),
 )
 ```
 

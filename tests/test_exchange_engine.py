@@ -114,12 +114,12 @@ def test_capped_scans_report_the_remaining_gain_and_refuse_compilation() -> None
         scores,
         weights=weights,
         n_bins=6,
-        config=sq.DExchangeConfig(batch_moves=False, max_scans=2),
+        config=sq.DExchangeConfig(batch_moves=False, max_iter=2),
     )
     assert partition.scans == 3
     assert partition.exchange_stable is False
     assert partition.best_remaining_gain > partition.config.gain_tolerance
-    with pytest.raises(sq.RefusalError, match="max_scans"):
+    with pytest.raises(sq.RefusalError, match="max_iter"):
         partition.compile_quantizer()
 
 
@@ -165,15 +165,15 @@ def test_first_improvement_still_accepts_one_move_per_scan() -> None:
 
 def test_configuration_rejects_invalid_engine_settings() -> None:
     """The exchange configuration validates its new fields at construction time."""
-    with pytest.raises(ValueError, match="max_scans"):
-        sq.DExchangeConfig(max_scans=0)
+    with pytest.raises(ValueError, match="max_iter"):
+        sq.DExchangeConfig(max_iter=0)
     with pytest.raises(ValueError, match="solver_restarts"):
         sq.DExchangeConfig(solver_restarts=0)
     with pytest.raises(ValueError, match="init must be"):
         sq.DExchangeConfig(init="lloyd")  # type: ignore[arg-type]
     with pytest.raises(TypeError, match="batch_moves"):
         sq.DExchangeConfig(batch_moves=1)  # type: ignore[arg-type]
-    assert sq.DExchangeConfig().to_dict()["max_scans"] is None
+    assert sq.DExchangeConfig().to_dict()["max_iter"] is None
 
 
 def test_reported_objective_is_rebuilt_from_the_final_labels() -> None:

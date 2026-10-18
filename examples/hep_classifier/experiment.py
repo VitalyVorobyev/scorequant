@@ -408,7 +408,7 @@ def fit_ds_rule(
         config=sq.SoftVoronoiConfig(
             seed=SOLVER_SEED,
             initializer_restarts=8,
-            max_steps=soft_steps,
+            max_iter=soft_steps,
             record_every=max(soft_steps // 8, 1),
         ),
     )

@@ -622,7 +622,7 @@ class ProfiledStudy:
 
 def _scalar_dp_config(n_rows: int, *, seed: int) -> sq.ScalarDPConfig:
     """Size the exact scalar solver for this study's partition subsample."""
-    return sq.ScalarDPConfig(seed=seed, max_rows=max(n_rows, 1))
+    return sq.ScalarDPConfig(max_rows=max(n_rows, 1))
 
 
 def _optimize(
@@ -881,7 +881,7 @@ def reusable_rules(
             sq.SoftVoronoiConfig(
                 seed=seed,
                 initializer_restarts=initializer_restarts,
-                max_steps=soft_steps,
+                max_iter=soft_steps,
                 record_every=max(soft_steps // 8, 1),
             ),
         ),

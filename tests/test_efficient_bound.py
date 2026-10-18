@@ -257,7 +257,7 @@ def test_scalar_dp_quantizer_fits_and_predicts_on_held_out_scores() -> None:
         validation=sq.ScoreSample(held_out),
         n_bins=5,
         criterion=sq.DOptimality(),
-        config=sq.ScalarDPConfig(seed=2),
+        config=sq.ScalarDPConfig(),
     )
     assert result.n_bins == 5
     assert result.rank == 1

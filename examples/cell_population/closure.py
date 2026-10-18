@@ -326,7 +326,7 @@ def _fit_partition(
         config = sq.SoftVoronoiConfig(
             seed=seed,
             initializer_restarts=3 if quick else 4,
-            max_steps=50 if quick else 160,
+            max_iter=50 if quick else 160,
             record_every=10,
         )
     else:

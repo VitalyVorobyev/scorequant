@@ -28,25 +28,25 @@ def _configuration(problem: dict[str, object], task: str) -> object:
         raw_max_scans = problem.get("maxScans")
         max_scans = None if raw_max_scans is None else int(raw_max_scans)
         if solver == "d_exchange":
-            return sq.DExchangeConfig(seed=seed, max_scans=max_scans)
+            return sq.DExchangeConfig(seed=seed, max_iter=max_scans)
         if solver == "mahalanobis_lloyd":
             return sq.MahalanobisLloydConfig(seed=seed, max_iter=max_steps)
         raise ValueError(f"unsupported browser solver for optimize_partition: {solver}")
     max_scans = int(problem.get("maxScans", 120))
     if solver == "d_exchange":
-        return sq.DExchangeConfig(seed=seed, initializer_restarts=2, max_scans=max_scans)
+        return sq.DExchangeConfig(seed=seed, initializer_restarts=2, max_iter=max_scans)
     if solver == "mahalanobis_lloyd":
         return sq.MahalanobisLloydConfig(seed=seed, initializer_restarts=2, max_iter=max_steps)
     if solver == "kmeans":
         return sq.KMeansConfig(seed=seed, solver_restarts=2, max_iter=max_steps)
     if solver == "scalar_dp":
-        return sq.ScalarDPConfig(seed=seed, max_rows=MAX_ROWS)
+        return sq.ScalarDPConfig(max_rows=MAX_ROWS)
     if solver == "soft_voronoi":
         return sq.SoftVoronoiConfig(
             seed=seed,
             initializer_restarts=2,
             kmeans_max_iter=min(80, max_steps),
-            max_steps=max_steps,
+            max_iter=max_steps,
             record_every=max(1, max_steps // 10),
         )
     raise ValueError(f"unsupported browser solver: {solver}")

@@ -152,13 +152,13 @@ def test_scalar_config_validates_and_serializes() -> None:
     config = sq.ScalarDPConfig()
     assert config.method == "scalar_dp"
     assert config.whiten is True
-    assert config.seed == 0
+    assert not hasattr(config, "seed")
     assert config.max_rows == 20_000
     assert config.to_dict()["method"] == "scalar_dp"
     with pytest.raises(TypeError, match="whiten"):
         sq.ScalarDPConfig(whiten=1)
-    with pytest.raises(ValueError, match="seed"):
-        sq.ScalarDPConfig(seed=-1)
+    with pytest.raises(TypeError, match="seed"):
+        sq.ScalarDPConfig(seed=0)  # type: ignore[call-arg]
     with pytest.raises(ValueError, match="max_rows"):
         sq.ScalarDPConfig(max_rows=0)
     with pytest.raises(ValueError, match="rank_rtol"):

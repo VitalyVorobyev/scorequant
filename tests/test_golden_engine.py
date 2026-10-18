@@ -31,7 +31,7 @@ def _legacy_config() -> sq.DExchangeConfig:
     Every frozen case converged in far fewer than the historical 200-sweep cap,
     so an uncapped scan budget reproduces the same terminal labels bit for bit.
     """
-    return sq.DExchangeConfig(batch_moves=False, solver_restarts=1, max_scans=None)
+    return sq.DExchangeConfig(batch_moves=False, solver_restarts=1, max_iter=None)
 
 
 def test_golden_d_case_a_unit_weight_small() -> None:

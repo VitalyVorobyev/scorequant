@@ -77,7 +77,7 @@ ds_rule = sq.fit_quantizer(
     validation=evaluation.sample(),
     n_bins=HEADLINE_BINS,
     criterion=sq.ProfiledDOptimality(("mu_htautau",)),
-    config=sq.SoftVoronoiConfig(seed=SOLVER_SEED, initializer_restarts=8, max_steps=400),
+    config=sq.SoftVoronoiConfig(seed=SOLVER_SEED, initializer_restarts=8, max_iter=400),
 )
 assert ds_rule.information_kind == "supplied_score_surrogate"
 

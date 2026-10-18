@@ -187,7 +187,7 @@ def test_geometry_report_matches_a_direct_raw_score_computation() -> None:
     scores = _seeded_scores(64, 40)
     weights = rng.uniform(0.3, 2.0, size=len(scores))
     result = sq.optimize_partition(
-        scores, weights=weights, n_bins=3, config=sq.DExchangeConfig(max_scans=1, init="random")
+        scores, weights=weights, n_bins=3, config=sq.DExchangeConfig(max_iter=1, init="random")
     )
     geometry = result.geometry
     assert geometry is not None
@@ -230,7 +230,7 @@ def test_geometry_report_bounds_the_remaining_gain_of_a_violating_partition(seed
         scores,
         weights=weights,
         n_bins=5,
-        config=sq.DExchangeConfig(seed=seed, init="random", max_scans=1, batch_moves=False),
+        config=sq.DExchangeConfig(seed=seed, init="random", max_iter=1, batch_moves=False),
     )
     geometry = result.geometry
     assert geometry is not None

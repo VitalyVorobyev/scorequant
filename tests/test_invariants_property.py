@@ -172,7 +172,7 @@ def test_row_ordering_preserves_the_solver_partition(
     _require_x64(backend)
     scores, weights, order = drawn
     execution = _execution(backend)
-    config = sq.DExchangeConfig(solver_restarts=1, batch_moves=False, max_scans=None, seed=0)
+    config = sq.DExchangeConfig(solver_restarts=1, batch_moves=False, max_iter=None, seed=0)
     base = sq.optimize_partition(
         scores, weights=weights, n_bins=3, config=config, execution=execution
     )

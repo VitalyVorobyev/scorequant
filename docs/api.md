@@ -38,7 +38,7 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `CentralLogRatioScore` | Stable | `predict`, `deltas`, `class_priors`, `description`, `metadata`, `schema` | `provenance`, `score` |
 | `CertificationConfig` | Stable | `method`, `max_nodes`, `max_rows`, `gain_tolerance` | `to_dict` |
 | `ContractError` | Stable | — | — |
-| `DExchangeConfig` | Stable | `method`, `rank_rtol`, `seed`, `initializer_restarts`, `max_scans`, `batch_moves`, `solver_restarts`, `init`, `gain_tolerance`, `first_improvement`, `collapse_duplicates` | `to_dict` |
+| `DExchangeConfig` | Stable | `method`, `rank_rtol`, `seed`, `initializer_restarts`, `max_iter`, `batch_moves`, `solver_restarts`, `init`, `gain_tolerance`, `first_improvement`, `collapse_duplicates` | `to_dict` |
 | `DOptimality` | Stable | `name` | `to_dict` |
 | `DensityRatioScore` | Stable | `ratio`, `parameterization`, `provenance`, `schema` | `from_classifier`, `score` |
 | `EfficientScoreBound` | Diagnostic | `upper_bound`, `labels`, `efficient_scores`, `n_bins`, `interest` | `gap_to`, `to_dict` |
@@ -68,14 +68,14 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas`, `gauges` | `to_dict` |
 | `RefusalError` | Stable | `counterexample` | — |
 | `RetentionUncertainty` | Diagnostic | `estimate`, `standard_error`, `confidence_interval`, `confidence_level`, `n_observations`, `status` | `to_dict` |
-| `ScalarDPConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `max_rows` | `to_dict` |
+| `ScalarDPConfig` | Stable | `method`, `whiten`, `rank_rtol`, `max_rows` | `to_dict` |
 | `ScoreFunction` | Stable | `function`, `provenance`, `schema` | `score` |
 | `ScoreProvenance` | Stable | `kind`, `description`, `reference_point`, `metadata`, `ratio` | `exact_fisher`, `to_dict` |
 | `ScoreProvider` | Stable | — | `provenance`, `score` |
 | `ScoreQuantError` | Stable | — | — |
 | `ScoreSample` | Stable | `scores`, `weights`, `provenance`, `schema` | — |
 | `ScoreSchema` | Stable | `parameters` | `dimension`, `index`, `select`, `to_dict` |
-| `SoftVoronoiConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `initializer_restarts`, `kmeans_max_iter`, `tolerance`, `max_steps`, `learning_rate`, `gradient_clip`, `temperature_end_ratio`, `record_every` | `to_dict` |
+| `SoftVoronoiConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `initializer_restarts`, `kmeans_max_iter`, `kmeans_tolerance`, `max_iter`, `learning_rate`, `gradient_clip`, `temperature_end_ratio`, `record_every` | `to_dict` |
 | `StabilityReport` | Diagnostic | `stable`, `best_gain`, `best_move`, `objective`, `n_bins`, `criterion`, `gain_tolerance` | `to_dict` |
 | `binned_fisher_information` | Stable | — | — |
 | `certify_partition` | Stable | — | — |
@@ -419,12 +419,16 @@ not a `ValueError`.
 |---|---|---|---|
 | `max_iter` | `KMeansConfig` | 100 | Lloyd iterations per restart |
 | `kmeans_max_iter` | `SoftVoronoiConfig` | 100 | Lloyd iterations per initialization restart |
-| `max_steps` | `SoftVoronoiConfig` | 1000 | Adam updates |
-| `max_scans` | `DExchangeConfig` | `None` (run to stability) | complete candidate scans |
+| `max_iter` | `SoftVoronoiConfig` | 1000 | Adam updates; the annealing schedule runs all of them |
+| `max_iter` | `DExchangeConfig` | `None` (run to stability) | complete candidate scans |
 | `max_iter` | `MahalanobisLloydConfig` | 100 | guarded batch iterations |
 | `max_nodes` | `CertificationConfig` | 2 000 000 | branch-and-bound nodes before `budget_exhausted` |
 
-These govern how long a solver may run. A separate set of parameters governs how big a problem it
+These govern how long a solver may run. Every iteration cap is `max_iter`, prefixed with the
+inner solver it belongs to when a configuration has two (`kmeans_max_iter`). Thresholds follow
+the same rule: `tolerance` is a relative objective-change tolerance (`kmeans_tolerance` for the
+soft solver's initializer), `gain_tolerance` an absolute log-determinant gain, and `rank_rtol` the
+relative eigenvalue threshold of the informative subspace. A separate set of parameters governs how big a problem it
 may accept: `solver_restarts` (8 on `KMeansConfig`, 1 on `DExchangeConfig`) and
 `initializer_restarts` (8 on the soft, exchange, and Lloyd configs) control how many restarts a
 solver tries, while `ScalarDPConfig.max_rows` (20 000) and `CertificationConfig.max_rows` (64,

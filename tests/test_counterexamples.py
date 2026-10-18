@@ -46,7 +46,7 @@ def test_small_d_exchange_matches_exhaustive_global_oracle() -> None:
     result = sq.optimize_partition(
         scores,
         n_bins=3,
-        config=sq.DExchangeConfig(seed=8, initializer_restarts=12, max_scans=200),
+        config=sq.DExchangeConfig(seed=8, initializer_restarts=12, max_iter=200),
     )
     assert result.objective == pytest.approx(optimum, abs=1e-10)
 

@@ -83,7 +83,7 @@ def test_information_partition_and_prediction_conform(backend: str) -> None:
 @pytest.mark.parametrize(
     ("config", "criterion"),
     [
-        (sq.DExchangeConfig(initializer_restarts=2, max_scans=30), sq.DOptimality()),
+        (sq.DExchangeConfig(initializer_restarts=2, max_iter=30), sq.DOptimality()),
         (
             sq.MahalanobisLloydConfig(initializer_restarts=2, max_iter=20),
             sq.DOptimality(),
@@ -94,7 +94,7 @@ def test_information_partition_and_prediction_conform(backend: str) -> None:
             sq.SoftVoronoiConfig(
                 initializer_restarts=1,
                 kmeans_max_iter=12,
-                max_steps=12,
+                max_iter=12,
                 record_every=6,
             ),
             sq.DOptimality(),
@@ -103,7 +103,7 @@ def test_information_partition_and_prediction_conform(backend: str) -> None:
             sq.SoftVoronoiConfig(
                 initializer_restarts=1,
                 kmeans_max_iter=12,
-                max_steps=12,
+                max_iter=12,
                 record_every=6,
             ),
             sq.ProfiledDOptimality((0,)),
@@ -134,7 +134,7 @@ def test_quantizer_solver_matrix_runs(
 @pytest.mark.parametrize(
     "config",
     [
-        sq.DExchangeConfig(initializer_restarts=2, max_scans=30),
+        sq.DExchangeConfig(initializer_restarts=2, max_iter=30),
         sq.MahalanobisLloydConfig(initializer_restarts=2, max_iter=20),
     ],
 )
@@ -333,19 +333,19 @@ def _cells(labels: np.ndarray) -> frozenset[frozenset[int]]:
 # that: `test_quantizer_solver_matrix_runs` above is a smoke test and cannot
 # catch a backend that silently converges somewhere else.
 _QUANTIZER_MATRIX: list[tuple[QuantizerConfig, Criterion]] = [
-    (sq.DExchangeConfig(initializer_restarts=2, max_scans=30), sq.DOptimality()),
+    (sq.DExchangeConfig(initializer_restarts=2, max_iter=30), sq.DOptimality()),
     (sq.MahalanobisLloydConfig(initializer_restarts=2, max_iter=20), sq.DOptimality()),
     (sq.KMeansConfig(solver_restarts=2, max_iter=20), sq.NormalizedTrace()),
     (sq.ScalarDPConfig(max_rows=100), sq.DOptimality()),
     (
         sq.SoftVoronoiConfig(
-            initializer_restarts=1, kmeans_max_iter=12, max_steps=12, record_every=6
+            initializer_restarts=1, kmeans_max_iter=12, max_iter=12, record_every=6
         ),
         sq.DOptimality(),
     ),
     (
         sq.SoftVoronoiConfig(
-            initializer_restarts=1, kmeans_max_iter=12, max_steps=12, record_every=6
+            initializer_restarts=1, kmeans_max_iter=12, max_iter=12, record_every=6
         ),
         sq.ProfiledDOptimality((0,)),
     ),
@@ -385,7 +385,7 @@ def test_quantizer_solver_matrix_backend_parity(
 @pytest.mark.parametrize(
     "config",
     [
-        sq.DExchangeConfig(initializer_restarts=2, max_scans=30),
+        sq.DExchangeConfig(initializer_restarts=2, max_iter=30),
         sq.MahalanobisLloydConfig(initializer_restarts=2, max_iter=20),
     ],
 )

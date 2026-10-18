@@ -59,7 +59,7 @@ def test_profiled_exchange_reaches_exact_counterexample_and_does_not_compile() -
         scores,
         n_bins=3,
         criterion=sq.ProfiledDOptimality((0,)),
-        config=sq.DExchangeConfig(seed=1, initializer_restarts=32, max_scans=200),
+        config=sq.DExchangeConfig(seed=1, initializer_restarts=32, max_iter=200),
     )
     assert result.exchange_stable
     assert np.exp(result.objective) == pytest.approx(8 * 20449 / 1920, abs=1e-10)
@@ -83,7 +83,7 @@ def test_soft_profiled_fit_is_an_explicit_reusable_rule() -> None:
         validation=sq.ScoreSample(validation),
         n_bins=5,
         criterion=criterion,
-        config=sq.SoftVoronoiConfig(seed=4, initializer_restarts=2, max_steps=20, record_every=10),
+        config=sq.SoftVoronoiConfig(seed=4, initializer_restarts=2, max_iter=20, record_every=10),
     )
     assert result.train_profiled_report is not None
     assert result.validation_profiled_report is not None

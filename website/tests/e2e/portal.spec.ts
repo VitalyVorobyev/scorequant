@@ -176,15 +176,23 @@ test("the flowcyt walkthrough tells the study end to end without loading a runti
   });
   await page.goto("./walkthroughs/flowcyt/");
 
-  await expect(page.getByRole("heading", {name: /Bone-marrow cell populations/})).toBeVisible();
-  for (const section of [
-    /The cells and a patient's composition/,
-    /Applying the frozen rule to held-out patients/,
-    /The bin budget/,
-    /Limits, and how to reproduce this/,
-  ]) {
-    await expect(page.getByRole("heading", {name: section})).toBeVisible();
-  }
+  await expect(page.getByRole("heading", {name: /Bone-marrow cell populations/, level: 1})).toBeVisible();
+
+  // The result before the method: the held-out estimate, then why marker
+  // gates fall short, then how the categories are built and applied.
+  const sections = [
+    "1. A patient's composition",
+    "2. The counts recover the composition",
+    "3. Why gates and clusters fall short",
+    "4. Categories drawn in score space",
+    "5. What the categories are",
+    "6. Applying the frozen rule",
+    "7. How many categories",
+    "8. What the result means",
+  ];
+  // Docusaurus appends a zero-width-space anchor to every heading; strip it.
+  const headings = (await page.getByRole("heading", {level: 2}).allInnerTexts()).map((text) => text.replace(/[\u200B\s]+$/g, ""));
+  expect(headings).toEqual(sections);
 
   // The licence is not decoration: the data is CC BY-NC-SA and the attribution
   // travels with anything derived from it.
@@ -195,7 +203,6 @@ test("the flowcyt walkthrough tells the study end to end without loading a runti
   await expect(page.getByRole("img", {name: /macro RMSE against bin budget/})).toBeVisible();
   await expect(page.getByRole("img", {name: /D-efficiency against bin budget/})).toBeVisible();
   await expect(page.getByRole("img", {name: /Estimated against expert population fractions/})).toBeVisible();
-  await expect(page.getByRole("img", {name: /FS INT intensity distribution/})).toBeVisible();
 
   expect(heavyRequests).toEqual([]);
 

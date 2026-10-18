@@ -159,7 +159,7 @@ class DObjective:
         labels: jnp.ndarray,
     ) -> jnp.ndarray:
         """Return the exact rank-two log-determinant gain of every candidate."""
-        return d_chunk_gains(points, weights, labels, state.weights, state.means, state.inverse)
+        return chunk_gains(points, weights, labels, state.weights, state.means, state.inverse)
 
     def apply_move(self, state: ExchangeState, relocation: Relocation) -> ExchangeState:
         """Apply the exact rank-two information and inverse update of one move."""
@@ -240,7 +240,7 @@ class ProfiledDObjective:
         labels: jnp.ndarray,
     ) -> jnp.ndarray:
         """Return the difference of the full and nuisance determinant-lemma gains."""
-        return _profiled_chunk_gains(
+        return chunk_gains(
             points,
             weights,
             labels,
@@ -365,64 +365,43 @@ def _determinant_ratios(
     ) + chunk.alpha[:, None] * chunk.beta * q_cross**2
 
 
-@backend_jit
-def d_chunk_gains(
+@backend_jit(static_argnames=("nuisance",))
+def chunk_gains(
     points: jnp.ndarray,
     weights: jnp.ndarray,
     labels: jnp.ndarray,
     cell_weights: jnp.ndarray,
     cell_means: jnp.ndarray,
     inverse: jnp.ndarray,
+    nuisance_inverse: jnp.ndarray | None = None,
+    nuisance: tuple[int, ...] | None = None,
 ) -> jnp.ndarray:
-    """Return one chunk of exact D gains as a single compiled kernel.
+    """Return one chunk of exact D or profiled-``D_s`` gains as a single compiled kernel.
 
     A scan evaluates this for every row of the sample, so it is the innermost
     hot loop of the whole engine. Compiling it lets XLA fuse the
     ``[chunk, n_bins, rank]`` destination residual into the contractions that
-    consume it instead of materializing it, which is where the win comes from;
-    the arithmetic is exactly the eager expression it replaces.
+    consume it instead of materializing it; the arithmetic is exactly the eager
+    expression. With ``nuisance`` (static, so the score-column slice is a
+    compile-time constant) the nuisance-block log ratio is subtracted.
     """
     chunk = _candidates(points, weights, labels, cell_weights, cell_means)
     ratios = _determinant_ratios(
         chunk, chunk.source_residuals, chunk.destination_residuals, inverse
     )
     valid = chunk.admissible & (ratios > 0)
-    return jnp.where(valid, jnp.log(jnp.where(valid, ratios, 1)), -jnp.inf)
-
-
-@backend_jit(static_argnames=("nuisance",))
-def _profiled_chunk_gains(
-    points: jnp.ndarray,
-    weights: jnp.ndarray,
-    labels: jnp.ndarray,
-    cell_weights: jnp.ndarray,
-    cell_means: jnp.ndarray,
-    inverse: jnp.ndarray,
-    nuisance_inverse: jnp.ndarray,
-    nuisance: tuple[int, ...],
-) -> jnp.ndarray:
-    """Return one chunk of exact profiled-``D_s`` gains as a single compiled kernel.
-
-    ``nuisance`` is static so the score-column slice is a compile-time constant
-    and the two determinant ratios fuse into one kernel.
-    """
-    chunk = _candidates(points, weights, labels, cell_weights, cell_means)
-    indices = jnp.asarray(nuisance)
-    full_ratios = _determinant_ratios(
-        chunk, chunk.source_residuals, chunk.destination_residuals, inverse
-    )
-    nuisance_ratios = _determinant_ratios(
-        chunk,
-        chunk.source_residuals[:, indices],
-        chunk.destination_residuals[:, :, indices],
-        nuisance_inverse,
-    )
-    valid = chunk.admissible & (full_ratios > 0) & (nuisance_ratios > 0)
-    return jnp.where(
-        valid,
-        jnp.log(jnp.where(valid, full_ratios, 1)) - jnp.log(jnp.where(valid, nuisance_ratios, 1)),
-        -jnp.inf,
-    )
+    gains = jnp.log(jnp.where(valid, ratios, 1))
+    if nuisance is not None and nuisance_inverse is not None:
+        indices = jnp.asarray(nuisance)
+        nuisance_ratios = _determinant_ratios(
+            chunk,
+            chunk.source_residuals[:, indices],
+            chunk.destination_residuals[:, :, indices],
+            nuisance_inverse,
+        )
+        valid = valid & (nuisance_ratios > 0)
+        gains = gains - jnp.log(jnp.where(valid, nuisance_ratios, 1))
+    return jnp.where(valid, gains, -jnp.inf)
 
 
 def relocation(

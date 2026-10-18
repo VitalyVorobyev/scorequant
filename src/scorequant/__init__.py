@@ -29,7 +29,6 @@ from .information import (
     fractional_fisher_information,
     information_report,
     profiled_information_report,
-    retention_uncertainty,
 )
 from .providers import (
     CentralLogRatioScore,
@@ -68,6 +67,7 @@ from .sources import (
     ScoreSchema,
 )
 from .transforms import FisherTransform
+from .uncertainty import retention_uncertainty
 from .visualization import plot_information, plot_optimization, plot_partition, plot_summary
 
 #: Installed distribution version. Resolved from package metadata so

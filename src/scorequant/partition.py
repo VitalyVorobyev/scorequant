@@ -24,6 +24,7 @@ from ._typing import ArrayLike
 from ._validation import (
     _ValidatedSample,
     collapse_duplicate_scores,
+    integer_labels,
     resolve_collapse_duplicates,
     validate_n_bins,
     validate_sample,
@@ -284,21 +285,6 @@ class _PreparedPartition:
     coordinates: jnp.ndarray
 
 
-def _maybe_collapse_duplicates(
-    scores: jnp.ndarray, weights: jnp.ndarray, collapse_duplicates: bool | None
-) -> tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
-    """Apply the configured duplicate-score-collapsing policy, or skip it.
-
-    Skipping returns an identity row mapping, so downstream code that expands
-    atom-level results back to input rows behaves the same either way; only
-    the effective atom count, and therefore the search space the solver
-    explores, changes.
-    """
-    if resolve_collapse_duplicates(collapse_duplicates, int(scores.shape[0])):
-        return collapse_duplicate_scores(scores, weights)
-    return scores, weights, jnp.arange(scores.shape[0])
-
-
 def _prepare_partition(
     scores: ArrayLike,
     weights: ArrayLike | None,
@@ -308,9 +294,15 @@ def _prepare_partition(
 ) -> _PreparedPartition:
     sample = validate_sample(scores, weights)
     validate_n_bins(n_bins, sample.n_effective)
-    effective_scores, effective_weights, inverse_rows = _maybe_collapse_duplicates(
-        sample.effective_scores, sample.effective_weights, config.collapse_duplicates
-    )
+    effective_scores, effective_weights = sample.effective_scores, sample.effective_weights
+    # Skipping the collapse keeps an identity row mapping, so expanding atom
+    # results back to input rows is the same code either way; only the atom
+    # count, and with it the search space, changes.
+    inverse_rows = jnp.arange(effective_scores.shape[0])
+    if resolve_collapse_duplicates(config.collapse_duplicates, int(effective_scores.shape[0])):
+        effective_scores, effective_weights, inverse_rows = collapse_duplicate_scores(
+            effective_scores, effective_weights
+        )
     if n_bins > effective_scores.shape[0]:
         raise ContractError("n_bins exceeds distinct positive-weight score rows")
     full_information = jnp.einsum(
@@ -339,12 +331,7 @@ def _collapsed_initial_labels(
     """
     if initial_labels is None:
         return None
-    labels = jnp.asarray(initial_labels)
-    n_rows = int(prepared.sample.scores.shape[0])
-    if labels.shape != (n_rows,):
-        raise ContractError(f"initial_labels must have shape [{n_rows}], got {labels.shape}")
-    if not jnp.issubdtype(labels.dtype, jnp.integer):
-        raise TypeError("initial_labels must contain integer bin labels")
+    labels = integer_labels(initial_labels, int(prepared.sample.scores.shape[0]), "initial_labels")
     effective = np.asarray(labels[prepared.sample.positive_weight_mask], dtype=np.int64)
     if effective.size and (effective.min() < 0 or effective.max() >= n_bins):
         raise ContractError("initial_labels contain a label outside [0, n_bins)")

@@ -88,20 +88,6 @@ def _soft_moment_chunk(
     return jnp.sum(weighted, axis=0), weighted.T @ objective_scores
 
 
-def _soft_moments(
-    points: jnp.ndarray,
-    objective_scores: jnp.ndarray,
-    weights: jnp.ndarray,
-    centers: jnp.ndarray,
-    temperature: float | jnp.ndarray,
-) -> tuple[jnp.ndarray, jnp.ndarray]:
-    """Return the soft cell occupancies and score moments of every row."""
-    occupancies, sums = _chunk_totals(
-        _soft_moment_chunk, (points, objective_scores, weights), centers, temperature
-    )
-    return occupancies, sums
-
-
 def _soft_fisher(occupancies: jnp.ndarray, sums: jnp.ndarray) -> jnp.ndarray:
     means = sums / jnp.maximum(occupancies[:, None], jnp.finfo(sums.dtype).tiny)
     fisher = jnp.einsum("b,bp,bq->pq", occupancies, means, means)
@@ -202,7 +188,9 @@ def soft_objective_and_center_gradient(
     rank verdict between them is the library's host-side rule, which is why
     the two passes are compiled separately rather than as one kernel.
     """
-    occupancies, sums = _soft_moments(points, objective_scores, weights, centers, temperature)
+    occupancies, sums = _chunk_totals(
+        _soft_moment_chunk, (points, objective_scores, weights), centers, temperature
+    )
     safe = jnp.maximum(occupancies, jnp.finfo(weights.dtype).tiny)
     fisher = jnp.einsum("b,bp,bq->pq", 1 / safe, sums, sums)
     fisher = 0.5 * (fisher + fisher.T)
@@ -281,7 +269,12 @@ class _SoftHistory:
     ) -> None:
         """Record one aggregate soft-optimization checkpoint."""
         soft_fisher = _soft_fisher(
-            *_soft_moments(self.points, self.objective_scores, self.weights, centers, temperature)
+            *_chunk_totals(
+                _soft_moment_chunk,
+                (self.points, self.objective_scores, self.weights),
+                centers,
+                temperature,
+            )
         )
         labels = assign_nearest(self.points, centers)
         self.steps.append(step)

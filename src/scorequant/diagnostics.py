@@ -18,14 +18,14 @@ from ._exchange import (
     ExchangeObjective,
     ExchangeState,
     cell_statistics,
-    d_chunk_gains,
+    chunk_gains,
     profiled_objective,
     profiled_semimetric,
 )
 from ._execution import canonicalize_public, execution_scope
 from ._execution import xp as jnp
 from ._typing import ArrayLike
-from ._validation import _ValidatedSample, validate_sample
+from ._validation import _ValidatedSample, integer_labels, validate_sample
 from .config import DExchangeConfig, ExecutionConfig, dtype_tolerance, resolve_gain_tolerance
 from .criteria import DOptimality, ProfiledDOptimality
 from .reports import GeometryReport, ProfiledGeometryReport, StabilityReport
@@ -135,12 +135,7 @@ def exchange_stability_report(
 
 def _validate_labeling(labels: ArrayLike, sample: _ValidatedSample) -> tuple[int, np.ndarray]:
     """Return the declared cell count and the positive-weight part of a labeling."""
-    array = jnp.asarray(labels)
-    n_rows = int(sample.scores.shape[0])
-    if array.shape != (n_rows,):
-        raise ContractError(f"labels must have shape [{n_rows}], got {array.shape}")
-    if not jnp.issubdtype(array.dtype, jnp.integer):
-        raise TypeError("labels must contain integer bin labels")
+    array = integer_labels(labels, int(sample.scores.shape[0]), "labels")
     declared = np.asarray(array, dtype=np.int64)
     if int(declared.min()) < 0:
         raise ContractError("labels must be nonnegative bin indices")
@@ -283,7 +278,7 @@ def geometry_report(
             # A clean chunk contributes 0.0 either way, so the gain kernel runs
             # only where there is actually a violation to price.
             exact = np.asarray(
-                d_chunk_gains(
+                chunk_gains(
                     coordinates[start:stop],
                     weights[start:stop],
                     label_array[start:stop],

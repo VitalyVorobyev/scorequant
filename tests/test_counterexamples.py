@@ -374,8 +374,9 @@ def test_ds15_rank_vacuity_is_refused_by_both_public_tasks(
     through the public API, where the same fact has to surface as a refusal
     rather than as a number: ``optimize_partition`` hits a singular initial
     state, and ``fit_quantizer`` would otherwise return a rule whose profiled
-    retention is zero, because the soft solver checks n_bins only against the
-    Fisher rank, which this configuration satisfies.
+    retention is zero. The soft solver checks n_bins only against the Fisher
+    rank, which this configuration satisfies, so the refusal comes from its
+    stall on a soft Fisher matrix that is singular at every temperature.
 
     The K = d_lambda + 2 control on the same atoms must still succeed and
     reproduce the fixture's recorded exact value 9/5.
@@ -405,7 +406,7 @@ def test_ds15_rank_vacuity_is_refused_by_both_public_tasks(
             )
 
     sample = sq.ScoreSample(scores, weights, provenance=provenance)
-    with pytest.raises(sq.RefusalError, match="profiled-D fit is degenerate"):
+    with pytest.raises(sq.RefusalError, match="CE-DS-MARGINS-RANK-VACUITY-001"):
         sq.fit_quantizer(
             sample,
             n_bins=vacuous_bins,
@@ -427,7 +428,7 @@ def test_ds15_rank_vacuity_is_refused_by_both_public_tasks(
             "profiled_information_report",
             _refuse_to_report,
         )
-        with pytest.raises(sq.RefusalError, match="profiled-D fit is degenerate"):
+        with pytest.raises(sq.RefusalError, match="CE-DS-MARGINS-RANK-VACUITY-001"):
             sq.fit_quantizer(
                 sample,
                 n_bins=vacuous_bins,

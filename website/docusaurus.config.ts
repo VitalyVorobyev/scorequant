@@ -121,11 +121,6 @@ const config: Config = {
     () => ({
       name: "runtime-boundary-warnings",
       configureWebpack: (_config, isServer) => ({
-        // This import intentionally resolves only in the assembled static
-        // artifact; keeping it dynamic is what prevents an eager runtime load.
-        ignoreWarnings: [
-          {module: /SearchDialog\.tsx$/, message: /request of a dependency is an expression/}
-        ],
         // Docusaurus's own ChunkAssetPlugin taps additionalTreeRuntimeRequirements
         // and appends `__webpack_require__.gca = ...` to every chunk that has a
         // runtime. A web worker built through `new Worker(new URL(...))` is its

@@ -152,15 +152,11 @@ for (const route of SCANNED) {
   });
 }
 
-test("core learning routes render and search opens from the keyboard", async ({page}) => {
+test("the walkthroughs index lists the four walkthroughs", async ({page}) => {
   await page.goto("./walkthroughs/");
   await expect(page.getByRole("heading", {name: "Walkthroughs", level: 1})).toBeVisible();
   await expect(page.locator(".walkthrough-card")).toHaveCount(4);
   await expect(page.getByRole("link", {name: "From a classifier to Fisher-preserving bins"})).toBeVisible();
-  await page.keyboard.press("Control+k");
-  await expect(page.getByRole("dialog", {name: "Search ScoreQuant"})).toBeVisible();
-  await page.getByPlaceholder("Search concepts, tasks, and symbols").fill("ExecutionConfig");
-  await expect(page.getByRole("link", {name: /ExecutionConfig/})).toBeVisible();
 });
 
 test("the get-started LiveFit demo stays behind its click, then actually reaches the runtime", async ({page}, testInfo) => {

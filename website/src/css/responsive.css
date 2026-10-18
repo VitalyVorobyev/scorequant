@@ -5,7 +5,6 @@
   .site-header__inner { grid-template-columns: auto 1fr auto; }
   .site-nav { justify-content: center; }
   .site-nav a { padding-inline: 8px; font-size: 12px; }
-  .search-trigger span:nth-child(2), .search-trigger kbd { display: none; }
   .theme-toggle span:last-child { display: none; }
 }
 

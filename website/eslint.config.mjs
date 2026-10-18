@@ -9,7 +9,6 @@ export default tseslint.config(
       "build/**",
       ".docusaurus/**",
       "static/lessons/**",
-      "static/pagefind/**",
       "static/runtime/pyodide/**",
       // Playwright writes traces here; they contain bundled third-party
       // JavaScript that type-aware linting cannot parse and should not judge.

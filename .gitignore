@@ -13,7 +13,6 @@ website/build/
 website/node_modules/
 website/playwright-report/
 website/test-results/
-website/static/pagefind/
 website/static/runtime/pyodide/
 website/static/runtime/wheels/
 flowcyt-results/

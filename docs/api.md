@@ -65,7 +65,7 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `Quantizer` | Stable | `transform`, `centers`, `metric`, `schema`, `provenance`, `criterion`, `execution` | `n_bins`, `rank`, `input_dim`, `information_kind`, `predict_scores`, `evaluate_scores`, `to_dict`, `save`, `load` |
 | `QuantizerResult` | Diagnostic | `quantizer`, `criterion`, `config`, `execution`, `trace`, `labels`, `train_report`, `validation_report`, `provenance`, `hardening_gap`, `source_kind`, `train_profiled_report`, `validation_profiled_report` | `centers`, `metric`, `transform`, `schema`, `n_bins`, `rank`, `information_kind`, `predict_scores`, `evaluate_scores`, `report`, `to_dict`, `plot_summary` |
 | `RatioClosureReport` | Diagnostic | `normalizers`, `max_residual` | `to_dict` |
-| `RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas` | `to_dict` |
+| `RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas`, `gauges` | `to_dict` |
 | `RefusalError` | Stable | `counterexample` | — |
 | `RetentionUncertainty` | Diagnostic | `estimate`, `standard_error`, `confidence_interval`, `confidence_level`, `n_observations`, `status` | `to_dict` |
 | `ScalarDPConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `max_rows` | `to_dict` |
@@ -292,7 +292,12 @@ declared measure and returns the per-component normalizers with their largest ab
 and `"custom_estimated"`; `exact_fisher` is derived from `kind` and cannot be set independently.
 Ratio-derived scores carry a structured `ScoreProvenance.ratio` record (`RatioProvenance`) naming
 the estimator, parameterization, reference fractions or coefficients, reference component,
-training priors, calibration method, and finite-difference offsets.
+training priors, calibration method, finite-difference offsets, and the gauge of each ratio column:
+the measure it is a density ratio against. Scores cancel only a factor common to every column of
+an event, so a provider whose declared gauges differ raises `ContractError`;
+`DensityRatioScore.from_classifier` declares `"training_mixture"` for every column. The
+[user guide](guide.md#a-classifier-signal-next-to-a-background) shows the one-gauge recipe for a
+classifier signal next to a background.
 
 ## The deployable rule
 

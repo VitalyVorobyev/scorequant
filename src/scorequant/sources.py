@@ -119,6 +119,14 @@ class RatioProvenance:
     score: which estimator produced the ratios, under which training priors
     and calibration, and through which parameterization they became scores.
     Fields that do not apply to a given construction stay ``None``.
+
+    ``gauges`` names, for each ratio column, the measure that column is a
+    density ratio against: ``"training_mixture"`` for prior-corrected
+    classifier posteriors, ``"absolute"`` for a Monte Carlo or analytic
+    density, or any label of the caller's choosing. The score map cancels only
+    a factor common to every column of an event, so a ratio provider refuses
+    columns declared in different gauges. ``None`` declares nothing and is not
+    checked.
     """
 
     estimator: str | None = None
@@ -129,6 +137,7 @@ class RatioProvenance:
     training_priors: tuple[float, ...] | tuple[tuple[float, float], ...] | None = None
     calibration: str | None = None
     deltas: tuple[float, ...] | None = None
+    gauges: tuple[str, ...] | None = None
 
     def to_dict(self) -> dict[str, JsonValue]:
         """Return a JSON-compatible ratio-provenance mapping."""
@@ -142,6 +151,7 @@ class RatioProvenance:
                 "training_priors": self.training_priors,
                 "calibration": self.calibration,
                 "deltas": self.deltas,
+                "gauges": self.gauges,
             }
         )
 

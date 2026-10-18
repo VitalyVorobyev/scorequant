@@ -136,7 +136,41 @@ def _merge_ratio_provenance(
         training_priors=supplied.training_priors,
         calibration=supplied.calibration,
         deltas=supplied.deltas,
+        gauges=supplied.gauges,
     )
+
+
+_TRAINING_MIXTURE_GAUGE = "training_mixture"
+
+
+def _require_common_gauge(ratio: RatioProvenance | None, n_components: int | None) -> None:
+    """Refuse ratio columns declared against different measures.
+
+    Every ratio-to-score map is invariant only under a factor common to all
+    columns of one event. Columns in different gauges, such as a prior-corrected
+    classifier ratio over ``p_train`` next to an absolute Monte Carlo density,
+    leave the event-dependent ``p_train(x)`` uncancelled, and every score is
+    silently wrong. Undeclared gauges cannot be checked and are let through.
+    """
+    if ratio is None or ratio.gauges is None:
+        return
+    gauges = ratio.gauges
+    if not isinstance(gauges, tuple) or not all(isinstance(label, str) for label in gauges):
+        raise TypeError("provenance.ratio.gauges must be a tuple of strings")
+    if n_components is not None and len(gauges) != n_components:
+        raise ContractError(
+            f"provenance.ratio.gauges declares {len(gauges)} columns; the parameterization "
+            f"consumes {n_components}"
+        )
+    if len(set(gauges)) > 1:
+        raise ContractError(
+            f"ratio columns are declared in different gauges {gauges}: scores cancel only a "
+            "factor common to every column of an event, so mixed gauges leave an "
+            "event-dependent denominator in every score. Return every column in one gauge; "
+            "for a two-class signal-versus-background classifier with priors pi, the columns "
+            "[(eta_sig / pi_sig) / (eta_bkg / pi_bkg), 1] share the background gauge and need "
+            "no Monte Carlo density"
+        )
 
 
 @dataclass(frozen=True, slots=True, init=False)
@@ -164,6 +198,8 @@ class DensityRatioScore:
         ``kind="exact"`` under the same caller responsibility as
         ``ScoreFunction``. Parameterization facts are always recorded in
         ``provenance.ratio`` and a conflicting supplied record is rejected.
+        Declaring ``provenance.ratio.gauges`` makes the provider refuse ratio
+        columns taken against different measures.
     """
 
     ratio: Callable[[ArrayLike], ArrayLike]
@@ -198,6 +234,7 @@ class DensityRatioScore:
                 metadata=provenance.metadata,
                 ratio=_merge_ratio_provenance(provenance.ratio, facts),
             )
+        _require_common_gauge(resolved.ratio, parameterization.n_components)
         object.__setattr__(self, "ratio", ratio)
         object.__setattr__(self, "parameterization", parameterization)
         object.__setattr__(self, "provenance", resolved)
@@ -223,7 +260,8 @@ class DensityRatioScore:
         intensity parameterization. When ``pi`` is proportional to
         ``theta_0`` the denominator is identically one. The provider always
         records estimated provenance — a classifier-derived ratio can never
-        claim exact Fisher semantics.
+        claim exact Fisher semantics — and declares every column in the
+        ``"training_mixture"`` gauge.
 
         Parameters
         ----------
@@ -261,6 +299,7 @@ class DensityRatioScore:
                 estimator="calibrated_classifier",
                 training_priors=tuple(float(value) for value in priors),
                 calibration=calibration,
+                gauges=(_TRAINING_MIXTURE_GAUGE,) * parameterization.n_components,
             ),
         )
         return cls(ratio, parameterization, provenance=provenance)
@@ -464,3 +503,6 @@ def validate_provider(provider: object) -> None:
         )
     if not callable(provider.score):
         raise TypeError("provider.score must be callable")
+    # The same gauge check as DensityRatioScore, for a provider written outside
+    # the library that declares its ratio columns.
+    _require_common_gauge(provider.provenance.ratio, None)

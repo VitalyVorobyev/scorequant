@@ -169,7 +169,7 @@ new_bins_d = d_quantizer.predict_scores(new_scores, execution=EXECUTION)
   wide
 />
 
-An exchange-stable D-optimal partition with a nonsingular Fisher matrix is exactly a Mahalanobis–Voronoi partition of score space, with the inverse of the binned Fisher matrix as metric (<ReferenceLink to="guide/#the-one-crossing-compiling-a-partition">user guide</ReferenceLink>). The {f("bins")} cells are therefore connected regions with straight boundaries. Along the detector, however, they form a comb, because the score curve passes through each cell several times.
+In an exchange-stable D-optimal partition with a nonsingular Fisher matrix, every node is strictly nearest the mean score of its own cell in the metric of the inverse binned Fisher matrix: the partition is a Mahalanobis–Voronoi partition of score space (<ReferenceLink to="guide/#the-one-crossing-compiling-a-partition">user guide</ReferenceLink>). The {f("bins")} cells are therefore connected regions with straight boundaries. Along the detector, however, they form a comb, because the score curve passes through each cell several times.
 
 The theorem also supplies a rule. The optimization labels only the grid nodes, but the Voronoi geometry assigns a bin to any score vector, so `compile_quantizer` turns the partition into a reusable readout $u \to s(u) \to q\bigl(s(u)\bigr)$.
 

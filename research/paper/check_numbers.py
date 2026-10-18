@@ -105,6 +105,11 @@ def voronoi_converse() -> dict[str, object]:
     mu, info = cells(scores, weights, z, 2)
     _, info1 = cells(scores, weights, list(fx["labels_after_or_optimum"]), 2)
     h = inverse(info)
+    # The paper states the merged form: the two rows at -3/4 become one atom of weight 1/2.
+    atoms, atom_weights = [[F(-3, 4)], [F(1, 4)], [F(5, 4)]], [F(1, 2), F(1, 4), F(1, 4)]
+    merged_mu, merged = cells(atoms, atom_weights, [0, 0, 1], 2)
+    _, merged_moved = cells(atoms, atom_weights, [0, 1, 1], 2)
+    merged_h = inverse(merged)
     return {
         "centroids": [m[0] for m in mu],
         "strict_voronoi": all(
@@ -112,6 +117,13 @@ def voronoi_converse() -> dict[str, object]:
         ),
         "info_before": info[0][0],
         "info_after": info1[0][0],
+        "merged_centroids": [m[0] for m in merged_mu],
+        "merged_strict_voronoi": all(
+            dist(merged_h, s, merged_mu[c]) < dist(merged_h, s, merged_mu[1 - c])
+            for s, c in zip(atoms, [0, 0, 1], strict=True)
+        ),
+        "merged_info_before": merged[0][0],
+        "merged_info_after": merged_moved[0][0],
     }
 
 

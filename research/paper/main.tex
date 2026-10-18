@@ -25,6 +25,9 @@
 vectors are nearest-centroid rules}
 \author{Vitaly Vorobyev}
 \date{October 2026}
+\subjclass[2020]{Primary 62K05; Secondary 62B10, 62H30, 94A29}
+\keywords{Fisher information, quantization, D-optimality, exchange algorithm, Voronoi partition,
+nuisance parameters, formal verification}
 
 
 \begin{document}
@@ -88,11 +91,13 @@ and that this rule reproduces the training labels without any tie-breaking conve
 
 The contribution is modest and structural. It is not a new algorithm: the exchange algorithm and
 its update formulas are known, and we credit them in Section~\ref{sec:moves}. What we add is the
-theorem, its machine-checked proof, and four exact examples marking where it stops: the batch
-nearest-centroid iteration can decrease the objective; a strict nearest-centroid labelling need
-not be stable; unmerged duplicate scores break the conclusion; and with nuisance parameters
-profiled out, even a global optimum can violate the nearest-centroid rule of its own efficient
-metric.
+theorem, its machine-checked proof, and exact examples marking where it stops. Two of them are
+new for the D criterion: the batch nearest-centroid iteration can decrease the objective, and
+with nuisance parameters profiled out even a global optimum can violate the nearest-centroid
+rule of its own efficient metric. Two others are one-dimensional, where D coincides with
+$k$-means, and restate known facts: a strict nearest-centroid labelling need not be
+stable~\cite{telgarsky2010}, and unmerged duplicate scores break the conclusion. They are
+included to show that the hypotheses of the theorem are needed.
 
 \section{Setting}\label{sec:setting}
 
@@ -123,8 +128,9 @@ $\mathbb{E}S=0$; they are statements about the finite object~\eqref{eq:info}. Wh
 centred, $\sum_cm_c=0$ and $\operatorname{rank}\Ib\le K-1$, so a nonsingular $\Ib$ needs
 $K\ge d+1$ cells.
 
-The eigenvalues of $T^{-1/2}\Ib\,T^{-1/2}$ lie in $[0,1]$ by~\eqref{eq:pythagoras}, and
-$(\det\Ib/\det T)^{1/d}$ is the usual D-efficiency of the binning. We call it the retention.
+When $T\succ0$, the eigenvalues of $T^{-1/2}\Ib\,T^{-1/2}$ lie in $[0,1]$
+by~\eqref{eq:pythagoras}, and $(\det\Ib/\det T)^{1/d}$ is the usual D-efficiency of the binning.
+We call it the retention.
 
 \subsection*{The D criterion}
 The D-optimal binning problem is
@@ -136,8 +142,8 @@ landmarks: $\max\tr\Ib$ is $\min\tr V(z)$, which is $k$-means on the scores; Fri
 Rubin's $\min\det V(z)$~\cite{friedman1967,marriott1971,scott1971} is a classical clustering
 criterion; and $\max\det(T-V(z))$ is neither. For $d=1$ all three coincide with $k$-means on the
 scalar score, so anything new lives in $d\ge2$. Under an invertible reparametrization
-$\theta=A\phi$ the scores become $A\T s$ and $\Ib$ becomes $A\T\Ib A$. This multiplies the
-objective by a constant and leaves the metric $(s-\mu)\T\Ib^{-1}(s-\mu)$ unchanged, so both the
+$\theta=A\phi$ the scores become $A\T s$ and $\Ib$ becomes $A\T\Ib A$. This multiplies
+$\det\Ib$ by $\det(A)^2$, so it adds the constant $2\log|\det A|$ to the objective, and it leaves the metric $(s-\mu)\T\Ib^{-1}(s-\mu)$ unchanged, so both the
 D-optimal partitions and the geometry below do not depend on the coordinates of~$\theta$.
 
 \section{Exact single-point moves}\label{sec:moves}
@@ -170,8 +176,8 @@ gives $wss\T-\beta u_bu_b\T$. The $ss\T$ terms cancel.
 \end{proof}
 
 \begin{proposition}[determinant ratio]\label{prop:detratio}
-Let $I\in\R^{d\times d}$ be symmetric and nonsingular, $H=I^{-1}$, $\alpha,\beta\in\R$ and
-$u_a,u_b\in\R^d$. With $q_{aa}=u_a\T Hu_a$, $q_{bb}=u_b\T Hu_b$ and $q_{ab}=u_a\T Hu_b$,
+Let $I\in\R^{d\times d}$ be symmetric and nonsingular, $G=I^{-1}$, $\alpha,\beta\in\R$ and
+$u_a,u_b\in\R^d$. With $q_{aa}=u_a\T Gu_a$, $q_{bb}=u_b\T Gu_b$ and $q_{ab}=u_a\T Gu_b$,
 \begin{equation}\label{eq:ratio}
 \det\bigl(I+\alpha u_au_a\T-\beta u_bu_b\T\bigr)=\det I\cdot\rho,\qquad
 \rho=(1+\alpha q_{aa})(1-\beta q_{bb})+\alpha\beta q_{ab}^2 .
@@ -181,18 +187,18 @@ If moreover $\det I>0$ and $\rho>0$, the change of $\log\det$ is $\log\rho$.
 
 \begin{proof}
 Write the update as $UCU\T$ with $U=[u_a\;u_b]$ and $C=\operatorname{diag}(\alpha,-\beta)$. By
-the Weinstein--Aronszajn identity, $\det(I+UCU\T)=\det I\cdot\det(I_2+CU\T HU)$, and the
-$2\times2$ determinant is $\rho$ because $H$ is symmetric, so $u_b\T Hu_a=q_{ab}$.
+the Weinstein--Aronszajn identity, $\det(I+UCU\T)=\det I\cdot\det(\mathrm{Id}_2+CU\T GU)$, and the
+$2\times2$ determinant is $\rho$ because $G$ is symmetric, so $u_b\T Gu_a=q_{ab}$.
 \end{proof}
 
 Both propositions are known in substance. Banfield and Bassill's transfer algorithm for
 $\min\det V$~\cite{banfield1977} uses exactly this rank-two change of the within-cell scatter
 and its determinant ratio; since $\Ib=T-V(z)$ with $T$ fixed, the same algebra applies here
 verbatim. Exchange algorithms for exact D-optimal designs rest on the same determinant-lemma
-updates~\cite{fedorov1972,mitchell1974,cook1980}. With $H$ cached, a candidate move costs $O(d^2)$,
-and an accepted move updates $H$ by the Woodbury identity. We write
+updates~\cite{fedorov1972,mitchell1974,cook1980}. With $G$ cached, a candidate move costs $O(d^2)$,
+and an accepted move updates $G$ by the Woodbury identity. We write
 \[
-E=\rho-1=\alpha q_{aa}-\beta q_{bb}-\alpha\beta\,(q_{aa}q_{bb}-q_{ab}^2)
+\kappa=\rho-1=\alpha q_{aa}-\beta q_{bb}-\alpha\beta\,(q_{aa}q_{bb}-q_{ab}^2)
 \]
 for the excess of the ratio over one.
 
@@ -200,13 +206,13 @@ for the excess of the ratio over one.
 
 \noindent\textbf{Standing hypotheses (H).} The scores $s_1,\dots,s_N$ are pairwise distinct
 (duplicates have been merged, Proposition~\ref{prop:merge}); the weights are positive; all $K$
-cells of $z$ are nonempty; and $\Ib$ is nonsingular. We write $H=\Ib^{-1}$ and
-$\|v\|_H^2=v\T Hv$.
+cells of $z$ are nonempty; and $\Ib$ is nonsingular. We write $G=\Ib^{-1}$ and
+$\|v\|_G^2=v\T Gv$.
 
 \begin{lemma}[leverage]\label{lem:leverage}
 If every cell is nonempty and $\Ib\succ0$, then for all cells $c$ and $a,b$,
 \[
-\mu_c\T H\mu_c\le\frac1{W_c},\qquad (\mu_a-\mu_b)\T H(\mu_a-\mu_b)\le\frac1{W_a}+\frac1{W_b}.
+\mu_c\T G\mu_c\le\frac1{W_c},\qquad (\mu_a-\mu_b)\T G(\mu_a-\mu_b)\le\frac1{W_a}+\frac1{W_b}.
 \]
 \end{lemma}
 
@@ -222,7 +228,7 @@ Let $0<w<W_a$, $W_b>0$, and $\alpha,\beta$ as in~\eqref{eq:coeffs}. Let $q_{aa},
 be real numbers with $0\le q_{bb}\le q_{aa}$, and put $q_\delta=q_{aa}+q_{bb}-2q_{ab}$. If
 $0\le q_\delta\le 1/W_a+1/W_b$, then
 \[
-E\ \ge\ \frac{\alpha\beta}{4}\Bigl(q_\delta^2+(q_{aa}-q_{bb})^2\Bigr).
+\kappa\ \ge\ \frac{\alpha\beta}{4}\Bigl(q_\delta^2+(q_{aa}-q_{bb})^2\Bigr).
 \]
 \end{lemma}
 
@@ -230,9 +236,9 @@ E\ \ge\ \frac{\alpha\beta}{4}\Bigl(q_\delta^2+(q_{aa}-q_{bb})^2\Bigr).
 From $1/\alpha=1/w-1/W_a$ and $1/\beta=1/w+1/W_b$ we get
 $\alpha-\beta=\alpha\beta\,(1/W_a+1/W_b)$, so the hypothesis on $q_\delta$ gives
 $\alpha-\beta-\alpha\beta q_\delta\ge0$. Substituting $q_{ab}=(q_{aa}+q_{bb}-q_\delta)/2$ into
-$E$ and expanding gives the identity
+$\kappa$ and expanding gives the identity
 \[
-E=\frac{\alpha\beta}{4}\Bigl(q_\delta^2+(q_{aa}-q_{bb})^2\Bigr)
+\kappa=\frac{\alpha\beta}{4}\Bigl(q_\delta^2+(q_{aa}-q_{bb})^2\Bigr)
 +\tfrac12\bigl(\alpha-\beta-\alpha\beta q_\delta\bigr)(q_{aa}+q_{bb})
 +\tfrac12(\alpha+\beta)(q_{aa}-q_{bb}),
 \]
@@ -242,22 +248,22 @@ whose last two terms are nonnegative.
 \begin{proposition}[gain of a violating move]\label{prop:gain}
 Assume (H), and let the relocation of row $i$ from $a=z_i$ to $b$ be admissible. If $s_i$ is at
 least as close to $\mu_b$ as to its own centroid,
-$\|s_i-\mu_b\|_H\le\|s_i-\mu_a\|_H$, then
+$\|s_i-\mu_b\|_G\le\|s_i-\mu_a\|_G$, then
 \[
 \det I(z^{i\to b})\ \ge\ \det\Ib\Bigl(1+\frac{\alpha\beta}{4}\,q_\delta^2\Bigr),\qquad
-q_\delta=\|\mu_a-\mu_b\|_H^2 .
+q_\delta=\|\mu_a-\mu_b\|_G^2 .
 \]
 If in addition $\mu_a\ne\mu_b$, then $\log\det I(z^{i\to b})-\log\det\Ib\ge
 \log(1+\alpha\beta q_\delta^2/4)>0$.
 \end{proposition}
 
 \begin{proof}
-By Propositions~\ref{prop:rank2} and~\ref{prop:detratio}, $\det I(z^{i\to b})=\det\Ib(1+E)$ with
-the $q$'s of~\eqref{eq:ratio} formed from $u_a,u_b$ and $H$. Since $H\succ0$, $q_{aa},q_{bb}\ge0$;
-the hypothesis is $q_{bb}\le q_{aa}$; and since $u_a-u_b=\mu_a-\mu_b$ and $H$ is symmetric,
+By Propositions~\ref{prop:rank2} and~\ref{prop:detratio}, $\det I(z^{i\to b})=\det\Ib(1+\kappa)$ with
+the $q$'s of~\eqref{eq:ratio} formed from $u_a,u_b$ and $G$. Since $G\succ0$, $q_{aa},q_{bb}\ge0$;
+the hypothesis is $q_{bb}\le q_{aa}$; and since $u_a-u_b=\mu_a-\mu_b$ and $G$ is symmetric,
 $q_{aa}+q_{bb}-2q_{ab}=q_\delta\ge0$. Lemma~\ref{lem:leverage} gives
 $q_\delta\le1/W_a+1/W_b$, so Lemma~\ref{lem:scalar} applies, and $\det\Ib>0$. If
-$\mu_a\ne\mu_b$ then $q_\delta>0$ because $H\succ0$.
+$\mu_a\ne\mu_b$ then $q_\delta>0$ because $G\succ0$.
 \end{proof}
 
 \begin{lemma}[stability separates centroids]\label{lem:distinct}
@@ -267,8 +273,8 @@ Under (H), if $z$ is exchange stable then $\mu_a\ne\mu_b$ for all cells $a\ne b$
 \begin{proof}
 Suppose $\mu_a=\mu_b$ and $|C_a|\ge2$. Because the scores are distinct, at most one row of $C_a$
 sits at $\mu_a$, so some $i\in C_a$ has $s_i\ne\mu_a$. Moving it to $b$ is admissible, and
-$u_a=u_b=u$ with $q=u\T Hu>0$, so $\rho=(1+\alpha q)(1-\beta q)+\alpha\beta q^2=1+(\alpha-\beta)q>1$,
-contradicting stability. Hence $|C_a|=|C_b|=1$; but then $\mu_a$ and $\mu_b$ are two scores of
+$u_a=u_b=u$ with $q=u\T Gu>0$, so $\rho=(1+\alpha q)(1-\beta q)+\alpha\beta q^2=1+(\alpha-\beta)q>1$,
+contradicting stability. Hence, by symmetry, $|C_a|=|C_b|=1$; but then $\mu_a$ and $\mu_b$ are two scores of
 the sample, and they are distinct.
 \end{proof}
 
@@ -287,7 +293,7 @@ Fix $i$ and $c\ne z_i=a$. By Lemma~\ref{lem:distinct}, $\mu_a\ne\mu_c$. If $|C_a
 of $i$ to $c$ is admissible, and if $s_i$ were at least as close to $\mu_c$ as to $\mu_a$,
 Proposition~\ref{prop:gain} would give it a strictly positive gain, contradicting stability. If
 $|C_a|=1$, then $\mu_a=s_i$, so the left side is $0$, while the right side is
-$\|\mu_a-\mu_c\|_H^2>0$.
+$\|\mu_a-\mu_c\|_G^2>0$.
 \end{proof}
 
 Stability with respect to $\log\det$ is the same hypothesis: at a nonsingular $\Ib$, a candidate
@@ -316,13 +322,13 @@ strictly nearest-centroid in $\Ib^{-1}$.
 A relocation is a relabelling, so a global maximizer is exchange stable.
 \end{proof}
 
-A rule $q:\R^d\to\{1,\dots,K\}$ is a \emph{nearest-centroid rule} of $z$ if
-$\|s-\mu_{q(s)}\|_H\le\|s-\mu_c\|_H$ for all $s\in\R^d$ and all $c$; ties may be broken
+A rule $r:\R^d\to\{1,\dots,K\}$ is a \emph{nearest-centroid rule} of $z$ if
+$\|s-\mu_{r(s)}\|_G\le\|s-\mu_c\|_G$ for all $s\in\R^d$ and all $c$; ties may be broken
 arbitrarily, even inconsistently.
 
 \begin{corollary}[the compiled rule reproduces the labels]\label{cor:compile}
 Under the hypotheses of Theorem~\ref{thm:main}, a nearest-centroid rule exists when $d\ge1$,
-and every nearest-centroid rule $q$ satisfies $q(s_i)=z_i$ for all $i$.
+and every nearest-centroid rule $r$ satisfies $r(s_i)=z_i$ for all $i$.
 \end{corollary}
 
 \begin{proof}
@@ -357,32 +363,35 @@ Figure~\ref{fig:michelson} shows the geometry on a worked example.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{../../examples/outputs/michelson-d-geometry.png}
-\caption{An exchange-stable D partition with $K=6$ of a two-parameter score: the phase of a Michelson
-interferometer and a fringe-frequency error, from the library's worked example. Top left: the
-compiled nearest-centroid rule in the raw score plane. Top right: after whitening by
-$\Ib^{-1/2}$ the same cells are an ordinary Voronoi diagram of the cell means. Bottom: the
-labels pulled back to the detector coordinate. Computed in floating point with a small positive
-gain tolerance; it illustrates Theorem~\ref{thm:main} and is not part of its proof.}
+\includegraphics[width=\textwidth]{michelson-d-geometry.png}
+\caption{An $\varepsilon$-stable D partition with $K=6$ of a two-parameter score: the phase of a
+Michelson interferometer and a fringe-frequency error, from the library's worked example.
+Top left: the compiled nearest-centroid rule in the raw score plane. Top right: after whitening
+by $\Ib^{-1/2}$ the same cells are an ordinary Voronoi diagram of the cell means. Bottom: the
+labels pulled back to the detector coordinate. Computed in floating point, accepting only gains
+above a small tolerance $\varepsilon>0$ (Section~\ref{sec:alg}); it illustrates
+Theorem~\ref{thm:main} and is not part of its proof.}
 \label{fig:michelson}
 \end{figure}
 
 \subsection*{What is machine-checked}
-Every result of Sections~\ref{sec:moves} and~\ref{sec:main}, the termination theorem of
+Every result of Sections~\ref{sec:moves} and~\ref{sec:main}, the termination result of
 Section~\ref{sec:alg} and the two examples of Propositions~\ref{prop:converse}
 and~\ref{prop:dup} are proved in Lean~4 (v4.33.1) with Mathlib, for arbitrary dimension~$d$
-(Table~\ref{tab:lean}). Each statement is frozen in a specification file
-(\texttt{*Spec.lean}) that fixes hypotheses, conclusion and the implication between them,
-separately from its proof; the definitions of $W_c$, $m_c$, $\mu_c$ and $\Ib$ are frozen too. The
-build rejects warnings and unfinished proofs, and an axiom audit admits only \texttt{propext},
-\texttt{Classical.choice} and \texttt{Quot.sound}.
+(Table~\ref{tab:lean}). Most of these statements are also frozen: a specification file
+(\texttt{*Spec.lean}) fixes their hypotheses, conclusion and the implication between them,
+separately from the proof, and the definitions of $W_c$, $m_c$, $\mu_c$ and $\Ib$ are frozen
+too. Lemma~\ref{lem:distinct}, Corollary~\ref{cor:global} and the two examples are proved but not
+frozen; their statements live in the proof modules. Table~\ref{tab:lean} names the specification
+of each frozen result. The build rejects warnings and unfinished proofs, and an axiom audit
+admits only \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}.
 
 The Lean statements use $\det$ for stability and require positive definiteness of $\Ib$, which
 for~\eqref{eq:info} is equivalent to nonsingularity. They do not cover: the identification of
 $\Ib$ with the Fisher information of a statistical model; positive gain tolerances; singular or
 pseudo-determinant objectives; the profiled criterion of Section~\ref{sec:nuisance}; the Lloyd
-example of Section~\ref{sec:sharp}, which is checked in exact rational arithmetic in Python; and
-the software. The chaining of a terminal exchange state back to the hypotheses of
+example of Section~\ref{sec:sharp} and the merged form of Proposition~\ref{prop:converse}, which
+are checked in exact rational arithmetic in Python; and the software. The chaining of a terminal exchange state back to the hypotheses of
 Theorem~\ref{thm:main} (Section~\ref{sec:alg}) is elementary but not mechanized.
 
 \begin{table}[t]
@@ -390,32 +399,34 @@ Theorem~\ref{thm:main} (Section~\ref{sec:alg}) is elementary but not mechanized.
 \small
 \begin{tabular}{@{}lll@{}}
 \toprule
-Result & Lean module & Declaration \\
+Result & Frozen statement & Proof declaration (module) \\
 \midrule
-Prop.~\ref{prop:rank2} & \texttt{Relocation} & \texttt{rank\_two\_relocation} \\
-Prop.~\ref{prop:detratio} & \texttt{DetGain} & \texttt{det\_relocation\_gain} \\
-Lemma~\ref{lem:leverage} & \texttt{Leverage} & \texttt{leverage\_inequality} \\
-Lemma~\ref{lem:scalar} & \texttt{ScalarExchange} & \texttt{scalarExchangeStrengthenedLowerBound} \\
-Prop.~\ref{prop:gain} & \texttt{ExchangeVoronoi} & \texttt{violation\_lower\_bound}, \texttt{violation\_log\_gain} \\
-Lemma~\ref{lem:distinct} & \texttt{ExchangeVoronoi} & \texttt{centroid\_ne\_of\_stable} \\
-Thm.~\ref{thm:main} & \texttt{ExchangeVoronoi} & \texttt{exchange\_voronoi} \\
-Cor.~\ref{cor:global} & \texttt{Corollaries} & \texttt{globalOptimum\_strictVoronoi} \\
-Cor.~\ref{cor:compile} & \texttt{Closure} & \texttt{closure\_reproduces\_labels} \\
-Prop.~\ref{prop:merge} & \texttt{Merge}, \texttt{Closure} & \texttt{merge\_invariance}, \texttt{closure\_duplicates} \\
-Thm.~\ref{thm:term} & \texttt{Termination} & \texttt{terminates}, \texttt{d\_exchange\_terminates} \\
-Prop.~\ref{prop:converse} & \texttt{Counterexamples} & \texttt{VoronoiConverse.*} \\
-Prop.~\ref{prop:dup} & \texttt{Counterexamples} & \texttt{UnmergedDuplicates.*} \\
+Prop.~\ref{prop:rank2} & \texttt{RelocationSpec} & \texttt{rank\_two\_relocation} (\texttt{Relocation}) \\
+Prop.~\ref{prop:detratio} & \texttt{DetGainSpec} & \texttt{det\_relocation\_gain} (\texttt{DetGain}) \\
+Lemma~\ref{lem:leverage} & \texttt{LeverageSpec} & \texttt{leverage\_inequality} (\texttt{Leverage}) \\
+Lemma~\ref{lem:scalar} & \texttt{ScalarExchangeSpec} & \texttt{scalarExchangeStrengthenedLowerBound} \\
+Prop.~\ref{prop:gain} & \texttt{ExchangeVoronoiSpec} & \texttt{violation\_lower\_bound}, \texttt{violation\_log\_gain} \\
+Lemma~\ref{lem:distinct} & --- & \texttt{centroid\_ne\_of\_stable} (\texttt{ExchangeVoronoi}) \\
+Thm.~\ref{thm:main} & \texttt{ExchangeVoronoiSpec} & \texttt{exchange\_voronoi} (\texttt{ExchangeVoronoi}) \\
+Cor.~\ref{cor:global} & --- & \texttt{globalOptimum\_strictVoronoi} (\texttt{Corollaries}) \\
+Cor.~\ref{cor:compile} & \texttt{ClosureSpec} & \texttt{closure\_reproduces\_labels} (\texttt{Closure}) \\
+Prop.~\ref{prop:merge} & \texttt{MergeSpec}, \texttt{ClosureSpec} & \texttt{merge\_invariance}, \texttt{closure\_duplicates} \\
+Prop.~\ref{prop:term} & \texttt{TerminationSpec} & \texttt{terminates}, \texttt{d\_exchange\_terminates} \\
+Prop.~\ref{prop:converse} (4 rows) & --- & \texttt{VoronoiConverse.*} (\texttt{Counterexamples}) \\
+Prop.~\ref{prop:dup} & --- & \texttt{UnmergedDuplicates.*} (\texttt{Counterexamples}) \\
 \bottomrule
 \end{tabular}
-\caption{Results and their Lean declarations, all under \texttt{research/formal/ScoreQuantFormal}.}
+\caption{Results, their frozen specifications where they have one, and their Lean proofs, all
+under \texttt{research/formal/ScoreQuantFormal}. The proof of Prop.~\ref{prop:gain} is in
+\texttt{ExchangeVoronoi}, that of Lemma~\ref{lem:scalar} in \texttt{ScalarExchange}.}
 \label{tab:lean}
 \end{table}
 
 \section{Sharpness}\label{sec:sharp}
 
 \subsection*{The nearest-centroid iteration can go backwards}
-Theorem~\ref{thm:main} suggests a Lloyd-type iteration: compute $H=\Ib^{-1}$ and the centroids,
-reassign every row to its nearest centroid in $H$, recompute, and repeat. For $k$-means, for
+Theorem~\ref{thm:main} suggests a Lloyd-type iteration: compute $G=\Ib^{-1}$ and the centroids,
+reassign every row to its nearest centroid in $G$, recompute, and repeat. For $k$-means, for
 Bregman clustering~\cite{lloyd1982,banerjee2005}, and for the Mahalanobis reduction step of
 $\min\det V$~\cite{gallegos2005}, this step never worsens the objective. For the D criterion it
 can.
@@ -450,12 +461,12 @@ zero); the scores are exact decimals.}
 \label{tab:lloyd}
 \end{table}
 
-The reason is concavity. The step is one Lloyd step of $k$-means in the frozen metric $H$: it
-lowers the within-cell distortion $\sum_iw_i\|s_i-\mu_{z_i}\|_H^2=\tr(HV(z))$, here from $13.545$
-to $5.318$, and so by~\eqref{eq:pythagoras} raises $\tr(H\,I(z'))$ by $8.227$. But $\log\det$ is
+The reason is concavity. The step is one Lloyd step of $k$-means in the frozen metric $G$: it
+lowers the within-cell distortion $\sum_iw_i\|s_i-\mu_{z_i}\|_G^2=\tr(GV(z))$, here from $13.545$
+to $5.318$, and so by~\eqref{eq:pythagoras} raises $\tr(G\,I(z'))$ by $8.227$. But $\log\det$ is
 concave, so
 \[
-\log\det I(z')\le\log\det\Ib+\tr\bigl(H(I(z')-\Ib)\bigr):
+\log\det I(z')\le\log\det\Ib+\tr\bigl(G(I(z')-\Ib)\bigr):
 \]
 the linearization bounds the gain from above, not from below. For $\min\det V$ the reduction
 step reassigns in the metric $V(z)^{-1}$, which lowers $\tr(V(z)^{-1}V(z'))$, and the same tangent
@@ -464,22 +475,30 @@ majorize--minimize step. For $\max\log\det(T-V)$ there is no such guarantee. A
 batch nearest-centroid proposal must therefore be checked against the exact objective before it
 is accepted.
 
+The remaining two examples are one-dimensional, where the D criterion is $k$-means on the
+scalar score. They restate facts known for $k$-means and are included only to show that the
+hypotheses of Theorem~\ref{thm:main} are needed.
+
 \subsection*{Nearest-centroid does not imply stable}
 
 \begin{proposition}[the converse fails]\label{prop:converse}
-Take $d=1$, scores $(-\tfrac34,-\tfrac34,\tfrac14,\tfrac54)$, weights $\tfrac14$, $K=2$ and
-labels $(1,1,1,2)$. The centroids are $-\tfrac5{12}$ and $\tfrac54$, $\Ib=\tfrac{25}{48}$, and
-every row is strictly nearest its own centroid. Moving the row at $\tfrac14$ to cell~$2$ is
-admissible and raises $\Ib$ to $\tfrac9{16}$.
+Take $d=1$, distinct scores $(-\tfrac34,\tfrac14,\tfrac54)$, weights
+$(\tfrac12,\tfrac14,\tfrac14)$, $K=2$ and labels $(1,1,2)$. The centroids are $-\tfrac5{12}$ and
+$\tfrac54$, $\Ib=\tfrac{25}{48}$, and every atom is strictly nearest its own centroid. Moving the
+atom at $\tfrac14$ to cell~$2$ is admissible and raises $\Ib$ to $\tfrac9{16}$.
 \end{proposition}
 
-Merging the two rows at $-\tfrac34$ into one atom of weight $\tfrac12$ changes none of these
-numbers, so the example also satisfies the merged-atoms hypothesis. Thus
+This merged three-atom form satisfies every hypothesis of Theorem~\ref{thm:main} except
+stability, and it is checked in exact rationals by \texttt{check\_numbers.py}. The Lean witness
+(\texttt{VoronoiConverse}) is the same example before merging: four rows
+$(-\tfrac34,-\tfrac34,\tfrac14,\tfrac54)$ of weight $\tfrac14$, with the same centroids and the
+same two values of $\Ib$. Thus
 \[
 \text{global optimum}\ \Rightarrow\ \text{exchange stable}\ \Rightarrow\
 \text{strictly nearest-centroid in }\Ib^{-1}
 \]
-under the hypotheses of Theorem~\ref{thm:main}, and the second implication cannot be reversed, as for $k$-means~\cite{telgarsky2010}.
+under the hypotheses of Theorem~\ref{thm:main}, and the second implication cannot be reversed, as
+for $k$-means~\cite{telgarsky2010}.
 
 \subsection*{Unmerged duplicates}
 
@@ -498,17 +517,17 @@ and Proposition~\ref{prop:merge} transfers its conclusion back to the original r
 The algorithm the theorem certifies is plain single-point exchange with exact gains. Start from a
 labelling with $K$ nonempty cells and $\Ib\succ0$, for example from $k$-means on the whitened
 scores or from a checked Lloyd proposal. Scan the admissible relocations, evaluate each ratio
-$\rho$ by~\eqref{eq:ratio} with the cached $H$, accept a move when $\rho>1$, and update
-$\Ib$, $H$ and the two centroids. Stop when no admissible move has $\rho>1$.
+$\rho$ by~\eqref{eq:ratio} with the cached $G$, accept a move when $\rho>1$, and update
+$\Ib$, $G$ and the two centroids. Stop when no admissible move has $\rho>1$.
 
-\begin{theorem}[strict ascent and termination]\label{thm:term}
+\begin{proposition}[strict ascent and termination]\label{prop:term}
 Let $F$ be any real function of labellings, and accept a relocation only if it is admissible and
 strictly increases $F$. Then every run strictly increases $F$ unless it is empty, never returns to
 a labelling it has left, and has no infinite continuation; from every starting labelling some
 finite run reaches a labelling at which no admissible relocation increases $F$. For
 $F=\det I(\cdot)$ the terminal labelling is exchange stable in the sense of
 Definition~\ref{def:move}.
-\end{theorem}
+\end{proposition}
 
 \begin{proof}
 Strict increase rules out cycles, and the set of labellings is finite.
@@ -517,16 +536,22 @@ Strict increase rules out cycles, and the set of labellings is finite.
 Admissible moves never empty a cell, and accepted moves raise $\det\Ib>0$, so a run on merged
 scores started with $\Ib\succ0$ ends at a labelling that satisfies every hypothesis of
 Theorem~\ref{thm:main}. Its nearest-centroid rule is then a deployable quantizer that reproduces the
-training labels. The theorem gives no bound on the number of moves and says nothing about global
-optimality; different starts can end at different stable labellings.
+training labels. Proposition~\ref{prop:term} gives no bound on the number of moves and says
+nothing about global optimality; different starts can end at different stable labellings.
 
-In floating point a solver accepts only gains above a tolerance $\varepsilon>0$. Then the
+In floating point a solver accepts only gains above a tolerance $\varepsilon>0$, and the
 guarantee weakens. If no admissible move gains more than $\varepsilon$ in $\log\det$, then by
 Proposition~\ref{prop:gain} a row of a non-singleton cell $a$ that is at least as close to another
-centroid $\mu_c$ has $\log(1+\alpha\beta q_\delta^2/4)\le\varepsilon$, so the two centroids are
-close in $H$; but distinct centroids and exact reproduction of the training labels are no longer
-implied, and the reference implementation checks the reproduction rather than assuming it. This
-tolerance statement is not mechanized.
+centroid $\mu_c$ satisfies
+\[
+q_\delta^2\ \le\ \frac{4\,(e^{\varepsilon}-1)}{\alpha\beta},\qquad q_\delta=\|\mu_a-\mu_c\|_G^2 .
+\]
+For a light row $\alpha\beta\approx w_i^2$, so with $w_i=1/N$ the bound reads roughly
+$q_\delta\le2N\sqrt{\varepsilon}$, while Lemma~\ref{lem:leverage} already gives
+$q_\delta\le1/W_a+1/W_c$, of order $K$ for balanced cells. The tolerance bound therefore says
+little unless $\varepsilon\lesssim(K/N)^2$. Distinct centroids and exact reproduction of the
+training labels are no longer implied, and the reference implementation checks the reproduction
+rather than assuming it. This tolerance statement is not mechanized.
 
 \section{Nuisance parameters}\label{sec:nuisance}
 
@@ -542,17 +567,21 @@ the $D_s$ criterion~\cite{karlin1966} maximizes
 \[
 F_s(z)=\log\det S_\psi(z)=\log\det\Ib-\log\det C(z)
 \]
-over labellings whose nuisance block $C(z)$ is nonsingular. Exact moves still work: by
+over labellings whose nuisance block $C(z)$ is nonsingular; we set $F_s(z)=-\infty$ when $C(z)$
+is singular, so that $F_s$ is defined on every labelling. Exact moves still work: by
 Proposition~\ref{prop:rank2} the nuisance block changes by the $\lambda$-components of the same
-rank-two update, so the gain of a move is $\log\rho_I-\log\rho_C$ with both ratios given
-by~\eqref{eq:ratio}, and the argument of Theorem~\ref{thm:term} gives termination. (Neither statement is part of the Lean
-development.)
+rank-two update, so between labellings with nonsingular blocks the gain of a move is
+$\log\rho_I-\log\rho_C$, with both ratios given by~\eqref{eq:ratio}. A run started at a
+labelling with $F_s>-\infty$ never accepts a move to $-\infty$, and the argument of
+Proposition~\ref{prop:term}, strict increase on a finite set, applies verbatim to this
+extended-real objective. (Neither statement is part of the Lean development, whose
+Proposition~\ref{prop:term} is stated for real-valued~$F$.)
 
 The gradient of $F_s$ with respect to $\Ib$ is the efficient semimetric
 \[
-G_s=\Ib^{-1}-E_\lambda C^{-1}E_\lambda\T=L\T S_\psi^{-1}L,\qquad L=[\,I_p,\ -BC^{-1}\,],
+G_s=\Ib^{-1}-J_\lambda C^{-1}J_\lambda\T=L\T S_\psi^{-1}L,\qquad L=[\,\mathrm{Id}_p,\ -BC^{-1}\,],
 \]
-where $E_\lambda$ selects the nuisance coordinates. It has rank $p$ and compares scores only
+where $J_\lambda$ selects the nuisance coordinates. It has rank $p$ and compares scores only
 through the binned efficient score $e(s)=s_\psi-BC^{-1}s_\lambda$. A first-order argument
 suggests that good $D_s$ partitions should be nearest-centroid in $G_s$, as D partitions are in
 $\Ib^{-1}$. The finite mechanism of Section~\ref{sec:main} does not carry over: a move also
@@ -586,19 +615,14 @@ exist, and we have not examined this. Nor does it say anything about the populat
 
 \section{A remark on estimated scores}\label{sec:estimated}
 
-In practice the score is often estimated, for instance from a classifier that approximates a
-density ratio~\cite{brehmer2018prl,brehmer2018prd}. The theorems above then hold for the sample
-of estimated scores $\hat s_i$, because they are statements about whatever vectors are supplied.
-The retention computed from them is a different matter. With labels $Z=q(\hat s)$, the
-information the labels actually carry is built from the cell means of the true score $s$, while
-the reported value is built from the cell means of $\hat s$ and compared with $\hat T$ instead of
-$T$. The reported retention is therefore a surrogate, and ranking quality does not control it.
-Take $s\in\{-2,-1,1,2\}$ with equal weights and the cut at zero, whose true retention is
-$\tfrac9{10}$. The strictly increasing distortions $\hat s=(-\tfrac{11}{10},-\tfrac9{10},
-\tfrac9{10},\tfrac{11}{10})$ and $\hat s=(-2,-1,1,100)$ keep every label and the whole ROC curve,
-and report $\tfrac{100}{101}$ and $\tfrac{5105}{10006}\approx0.51$. A retention figure for a
-binning fitted on estimated scores should be read as a property of the estimate; where the true
-score or likelihood is available, it should be measured against that, on independent data.
+When the score is estimated, for instance from a classifier that approximates a density
+ratio~\cite{brehmer2018prl,brehmer2018prd}, the theorems hold for the estimated scores $\hat s_i$,
+but a retention computed from them is a surrogate: the information the labels carry is built from
+the cell means of the true score. Ranking does not control the surrogate. For $s=(-2,-1,1,2)$
+with equal weights and the cut at zero, the true retention is $\tfrac9{10}$; the increasing
+distortions $\hat s=(-\tfrac{11}{10},-\tfrac9{10},\tfrac9{10},\tfrac{11}{10})$ and
+$\hat s=(-2,-1,1,100)$ keep every label and the ordering of the scores, yet report
+$\tfrac{100}{101}$ and $\tfrac{5105}{10006}\approx0.51$.
 
 \section{Related work}\label{sec:related}
 
@@ -609,10 +633,11 @@ score-function quantizers, thresholds on the scalar score, maximize the Fisher i
 quantized observation; Theorem~\ref{thm:main} plays the role of that statement for finite
 samples, vector parameters and the determinant. Barnes, Han and \"Ozg\"ur~\cite{barnes2018,barnes2020} write the
 quantized Fisher information as~\eqref{eq:info} and bound its trace; they use it for lower
-bounds, not design. D\"ulek~\cite{dulek2023} proves that for exponential families some partition
+bounds, not design. D\"ulek~\cite{dulek2023} shows that for exponential families some partition
 of the sufficient statistic into convex polytopes maximizes the trace of the quantized Fisher
-information. That is an existence result for the trace, whereas ours concerns every stable
-partition under the determinant. Optimal quantizers for detection or mutual information are
+information. That is an existence result for the trace. We could read only its abstract, which
+does not mention the determinant, and we found no treatment of the determinant criterion
+elsewhere; our result concerns every stable partition under the determinant. Optimal quantizers for detection or mutual information are
 likelihood-ratio threshold rules~\cite{tsitsiklis1993,kurkoski2014}, a different objective.
 
 \emph{Clustering criteria and exchange.} Determinant criteria for grouping go back to Friedman and
@@ -620,11 +645,13 @@ Rubin, Marriott, and Scott and Symons~\cite{friedman1967,marriott1971,scott1971}
 within-cell scatter $\det V$. Banfield and Bassill's transfer algorithm~\cite{banfield1977} contains
 the update of Section~\ref{sec:moves}. Gallegos and Ritter~\cite{gallegos2005} show, for
 $\min\det V$, that the Mahalanobis reduction step is monotone and that optimal clusters are
-separated by Mahalanobis bisectors; this is the closest structural precedent, and our
+separated by Mahalanobis bisectors, results that reduce without trimming to those of
+Sp\"ath~\cite{spath1985}; this is the closest structural precedent, and our
 Section~\ref{sec:sharp} shows that its monotonicity does not carry over to $\max\det(T-V)$.
 Hartigan's single-point method~\cite{hartigan1975,hartigan1979} and its analysis by Telgarsky and
 Vattani~\cite{telgarsky2010} are the template for Theorem~\ref{thm:main} and
-Proposition~\ref{prop:converse}. For separable objectives $\sum_cW_c\phi(\mu_c)$, such as Bregman
+Proposition~\ref{prop:converse}; Slonim, Aharoni and Crammer extend Hartigan's closed-form move to
+Bregman divergences~\cite{slonim2013}. For separable objectives $\sum_cW_c\phi(\mu_c)$, such as Bregman
 clustering and concave impurities, Lloyd steps are monotone and optimal cells can be taken
 convex~\cite{banerjee2005,burshtein1992,chou1991}; the D criterion is not separable.
 

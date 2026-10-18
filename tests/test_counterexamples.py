@@ -281,6 +281,12 @@ def test_paper_numbers_match_the_committed_fixtures() -> None:
     assert converse["info_before"] == Fraction(recorded["exact"]["information_before"])
     assert converse["info_after"] == Fraction(recorded["exact"]["information_after"])
     assert (converse["info_before"], converse["info_after"]) == (Fraction(25, 48), Fraction(9, 16))
+    assert converse["merged_strict_voronoi"]
+    assert converse["merged_centroids"] == converse["centroids"]
+    assert (converse["merged_info_before"], converse["merged_info_after"]) == (
+        converse["info_before"],
+        converse["info_after"],
+    )
 
     profiled = checks.profiled_optimum()
     recorded = fixture["CE-DS-GLOBAL-GEOMETRY-001"]

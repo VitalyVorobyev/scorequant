@@ -21,7 +21,9 @@ def _default_rank_rtol(dtype: jnp.dtype) -> float:
     return dtype_tolerance(_FLOAT64_RANK_RTOL, dtype)
 
 
-def numerical_rank(matrix: jnp.ndarray, rank_rtol: float | None = None) -> int:
+def numerical_rank(
+    matrix: jnp.ndarray, rank_rtol: float | None = None, *, unit_diagonal: bool = False
+) -> int:
     """Return the rank of a symmetric matrix at the library's relative threshold.
 
     This is the one rank rule: an eigenvalue counts only above ``rank_rtol``
@@ -30,7 +32,18 @@ def numerical_rank(matrix: jnp.ndarray, rank_rtol: float | None = None) -> int:
     ``max(M, N) * eps`` instead, and a ``slogdet`` sign on an exactly deficient
     matrix is decided by rounding noise, so neither may disagree with this rule
     about the same matrix.
+
+    ``unit_diagonal`` first rescales to ``D^-1/2 M D^-1/2`` with ``D`` the
+    diagonal. Rank is invariant under that congruence, so the verdict no longer
+    depends on the units of each parameter; information in a declared
+    interest/nuisance parameterization is judged this way, while whitened
+    coordinates already have a common scale. A zero diagonal entry keeps its
+    zero row and counts as deficient.
     """
+    if unit_diagonal:
+        diagonal = jnp.diagonal(matrix)
+        scale = jnp.where(diagonal > 0, 1 / jnp.sqrt(jnp.where(diagonal > 0, diagonal, 1)), 0)
+        matrix = matrix * scale[:, None] * scale[None, :]
     eigenvalues = jnp.linalg.eigvalsh(matrix)
     maximum = float(np.asarray(jnp.max(eigenvalues)))
     if maximum <= 0:
@@ -39,7 +52,9 @@ def numerical_rank(matrix: jnp.ndarray, rank_rtol: float | None = None) -> int:
     return int(np.asarray(jnp.sum(eigenvalues > resolved_rtol * maximum)))
 
 
-def is_numerically_singular(matrix: jnp.ndarray, rank_rtol: float | None = None) -> bool:
+def is_numerically_singular(
+    matrix: jnp.ndarray, rank_rtol: float | None = None, *, unit_diagonal: bool = False
+) -> bool:
     """Return whether a symmetric matrix is rank deficient at the library threshold.
 
     Shared by every singularity guard so that one state cannot be called
@@ -48,7 +63,7 @@ def is_numerically_singular(matrix: jnp.ndarray, rank_rtol: float | None = None)
     of the host LAPACK rather than of the data. The relative threshold is scale
     free, so it agrees everywhere.
     """
-    return numerical_rank(matrix, rank_rtol) < int(matrix.shape[0])
+    return numerical_rank(matrix, rank_rtol, unit_diagonal=unit_diagonal) < int(matrix.shape[0])
 
 
 @dataclass(frozen=True, slots=True)

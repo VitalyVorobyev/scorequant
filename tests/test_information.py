@@ -186,6 +186,9 @@ def test_nearly_singular_information_report_agrees_with_retention_uncertainty() 
     uncertainty = scorequant.retention_uncertainty(scores, labels)
     assert uncertainty.status == "singular_retained_information"
     assert uncertainty.estimate == 0.0
+    # The exact D exchange judges the same start by the same rule.
+    with pytest.raises(scorequant.ContractError, match="initial D partition is singular"):
+        scorequant.exchange_stability_report(scores, labels)
 
 
 def test_efficient_scores_refuse_a_nearly_singular_nuisance_block() -> None:
@@ -212,3 +215,18 @@ def test_rank_rtol_does_not_judge_the_retained_matrix() -> None:
     uncertainty = scorequant.retention_uncertainty(scores, labels, rank_rtol=0.1)
     assert uncertainty.status == "ok"
     assert uncertainty.estimate == pytest.approx(default.geometric_mean_retention, rel=1e-12)
+
+
+def test_profiled_rank_verdict_ignores_the_units_of_a_nuisance_parameter() -> None:
+    """Rescaling a nuisance column leaves the Schur block and the verdict unchanged."""
+    rng = np.random.default_rng(17)
+    scores = rng.normal(size=(600, 3)) + 0.3
+    labels = np.digitize(scores[:, 0], [-0.5, 0.3, 1.1]) + 4 * (scores[:, 1] > 0.3)
+    base = scorequant.profiled_information_report(scores, labels, interest=(0,), n_bins=8)
+    rescaled = scorequant.profiled_information_report(
+        scores * np.array([1.0, 1.0, 1e6]), labels, interest=(0,), n_bins=8
+    )
+    assert np.isfinite(base.objective)
+    assert rescaled.objective == pytest.approx(base.objective, rel=1e-9)
+    assert rescaled.interest_rank == base.interest_rank == 1
+    assert rescaled.nuisance_rank == base.nuisance_rank == 2

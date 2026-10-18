@@ -111,11 +111,11 @@ def _criterion_logdet(
     interest_block = fisher[jnp.ix_(interest_indices, interest_indices)]
     cross_block = fisher[jnp.ix_(interest_indices, nuisance_indices)]
     nuisance_block = fisher[jnp.ix_(nuisance_indices, nuisance_indices)]
-    if is_numerically_singular(nuisance_block):
+    if is_numerically_singular(nuisance_block, unit_diagonal=True):
         return False, jnp.asarray(-jnp.inf, dtype=fisher.dtype), len(criterion.interest_indices)
     schur = interest_block - cross_block @ jnp.linalg.solve(nuisance_block, cross_block.T)
     _, value = jnp.linalg.slogdet(0.5 * (schur + schur.T))
-    regular = not is_numerically_singular(fisher)
+    regular = not is_numerically_singular(fisher, unit_diagonal=True)
     return regular, value, len(criterion.interest_indices)
 
 

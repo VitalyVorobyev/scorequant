@@ -611,10 +611,11 @@ def binned_information_is_degenerate(information: jnp.ndarray) -> bool:
     the smallest eigenvalue is pure rounding noise, so a ``slogdet`` sign is
     decided by its last bits: it can come back positive on one machine and
     non-positive on another, and the two callers then blame different causes
-    for one state. The eigenvalue ratio is scale free and agrees everywhere
-    because the gap it measures is many orders of magnitude wide - over every
-    onto labeling of CE-DS-MARGINS-RANK-VACUITY-001 the largest ratio reached
-    is 1.3e-16, against a 1e-10 float64 threshold.
+    for one state. The eigenvalue ratio is taken after rescaling to unit
+    diagonal, so it does not depend on the units of any parameter, and it
+    agrees everywhere because the gap it measures is many orders of magnitude
+    wide - over every onto labeling of CE-DS-MARGINS-RANK-VACUITY-001 the
+    largest ratio reached is 3.2e-16, against a 1e-10 float64 threshold.
 
     Parameters
     ----------
@@ -626,7 +627,7 @@ def binned_information_is_degenerate(information: jnp.ndarray) -> bool:
     bool
         True when the matrix has no usable profiled value.
     """
-    return is_numerically_singular(information)
+    return is_numerically_singular(information, unit_diagonal=True)
 
 
 def _nuisance_information(
@@ -655,7 +656,7 @@ def _nuisance_information(
     # bin-budget ceiling makes deficient it is set by the last bits of the
     # factorization, so it can refuse on one machine and pass on another, and
     # a caller that would have blamed the bin budget then never runs.
-    if is_numerically_singular(nuisance_block):
+    if is_numerically_singular(nuisance_block, unit_diagonal=True):
         raise ContractError("profiled D requires nonsingular nuisance information")
     return nuisance_block, nuisance_logdet, nuisance
 
@@ -717,10 +718,10 @@ def profiled_information_report(
     # ranks add, rank(F) = rank(C) + rank(S), so the Schur rank is read off
     # the full matrix at the shared threshold; a relative threshold applied
     # to a one-parameter Schur block alone could never fire.
-    if is_numerically_singular(unbinned):
+    if is_numerically_singular(unbinned, unit_diagonal=True):
         raise ContractError("full-data profiled information is singular")
-    nuisance_rank = numerical_rank(nuisance_binned)
-    interest_rank = max(numerical_rank(binned) - nuisance_rank, 0)
+    nuisance_rank = numerical_rank(nuisance_binned, unit_diagonal=True)
+    interest_rank = max(numerical_rank(binned, unit_diagonal=True) - nuisance_rank, 0)
     if interest_rank < len(interest):
         objective = float("-inf")
         logdet_retention = float("-inf")
@@ -794,7 +795,7 @@ def efficient_scores(
     nuisance_indices = jnp.asarray(nuisance)
     cross = information[jnp.ix_(interest_indices, nuisance_indices)]
     nuisance_information = information[jnp.ix_(nuisance_indices, nuisance_indices)]
-    if is_numerically_singular(nuisance_information):
+    if is_numerically_singular(nuisance_information, unit_diagonal=True):
         raise ContractError("efficient-score projection requires nonsingular nuisance information")
     nuisance_coefficients = jnp.linalg.solve(nuisance_information, cross.T)
     return canonical_array(

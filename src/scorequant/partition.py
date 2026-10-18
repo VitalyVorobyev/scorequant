@@ -76,7 +76,7 @@ from .result import PartitionResult
 from .solvers.common import hard_assign
 from .solvers.kmeans import weighted_kmeans
 from .sources import ScoreProvenance, ScoreSchema
-from .transforms import FisherTransform, fisher_transform
+from .transforms import FisherTransform, fisher_transform, is_numerically_singular
 
 # Relative slack allowed when certifying the leverage bound q_delta <= 1/W_a +
 # 1/W_b. The bound is exact mathematics, so this only absorbs the rounding of
@@ -238,8 +238,12 @@ class _DObjective:
 
     def init_state(self, cells: _CellStatistics) -> _ExchangeState:
         """Build the cell information matrix, its inverse, and its log determinant."""
-        information, inverse, sign, logdet = _cell_information_matrices(cells.weights, cells.means)
-        if float(np.asarray(sign)) <= 0:
+        information, inverse, _sign, logdet = _cell_information_matrices(cells.weights, cells.means)
+        # The library's rank rule, as information_report applies it to the same
+        # whitened between-cell matrix: a positive log-determinant sign on a
+        # deficient matrix is rounding noise, and a start judged regular here
+        # but singular there would certify a partition the report calls empty.
+        if is_numerically_singular(information):
             raise ContractError(
                 "initial D partition is singular; increase n_bins or use a different "
                 "reference sample"
@@ -264,6 +268,8 @@ class _DObjective:
     def apply_move(self, state: _ExchangeState, relocation: _Relocation) -> _ExchangeState:
         """Apply the exact rank-two information and inverse update of one move."""
         block = _rank_two_block(state.information, state.inverse, relocation)
+        # Only a sanity check: an accepted move has a positive gain, so from a
+        # state the rank rule called regular the determinant can only grow.
         if block.sign <= 0:
             raise FloatingPointError("an accepted D move produced singular information")
         return _ExchangeState(

@@ -904,10 +904,15 @@ def downstream_uncertainty(
         row["kind"] = rule.kind
         row["n_bins"] = rule.n_bins
         row["sigma_mu_proxy_score"] = proxy
+        # The templates themselves, so a standard fit (`pyhf_fit.py`) can be
+        # built from the same counts without refitting the classifiers.
+        row["signal_templates"] = signal.tolist()
+        row["background_templates"] = background.tolist()
         rows[key] = row
     return {
         "events": nominal.n_events,
         "weighted_yield": float(np.sum(nominal.weights)),
+        "tes_points": list(shifted.points),
         "unbinned_proxy": unbinned_proxy_uncertainty(nominal, signal_fraction),
         "rules": rows,
     }

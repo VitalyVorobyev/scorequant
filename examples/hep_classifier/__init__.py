@@ -4,7 +4,8 @@ Door 3 (classifier to density ratios to scores) through profiled \\(D_s\\) on
 the FAIR Universe HiggsML public dataset, following the module shape of
 `examples.cell_population`: `data.py` loads and validates the committed
 fixture, `scores.py` is the classifier-to-score bridge, `experiment.py` runs
-the study, and `figures.py` renders the committed figures. The narrative is
+the study, `figures.py` renders the committed figures, and `pyhf_fit.py` fits
+the study's categories as a standard pyhf model. The narrative is
 the portal walkthrough `website/walkthroughs/hep.mdx`.
 
 ``examples/hep_classifier/fixture.py`` is the recorded fixture-build

@@ -37,6 +37,7 @@ OUTPUT = ROOT / "website/src/generated/walkthrough-data.json"
 #: that nothing pins.
 EVIDENCE = (
     "examples/outputs/hep-classifier.json",
+    "examples/outputs/hep-pyhf.json",
     "examples/outputs/michelson-phase.json",
     "examples/outputs/door3-classifier.json",
     "examples/outputs/cell_population.json",
@@ -94,6 +95,7 @@ FLOWCYT_STUDY = "examples/outputs/cell_population.json"
 FLOWCYT_FIXTURE = "examples/data/flowcyt_fixture.json"
 FLOWCYT_WALKTHROUGH = "examples/data/flowcyt_walkthrough.json"
 HEP_FIXTURE = "examples/data/hep_higgsml_fixture.json"
+HEP_PYHF = "examples/outputs/hep-pyhf.json"
 IDEAS = "examples/outputs/ideas-toys.json"
 LLOYD = "examples/outputs/lloyd-nonmonotone.json"
 BENCHMARK = "examples/outputs/benchmark-baselines.json"
@@ -280,6 +282,26 @@ FACTS: tuple[Fact, ...] = (
         "hep",
         "sigmaQuantileFixed",
         f"{HEP}#/downstream/all_events/rules/classifier_quantile/sigma_mu_tes_fixed",
+        _fixed(3),
+    ),
+    # The same categories fitted by pyhf as a standard HistFactory model.
+    Fact("hep", "pyhfDsRule", f"{HEP_PYHF}#/rules/ds_rule/pyhf_sigma_mu", _fixed(3)),
+    Fact(
+        "hep",
+        "pyhfDsRuleFixed",
+        f"{HEP_PYHF}#/rules/ds_rule/pyhf_sigma_mu_tes_fixed",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "pyhfLogit",
+        f"{HEP_PYHF}#/rules/classifier_logit_equal_width/pyhf_sigma_mu",
+        _fixed(3),
+    ),
+    Fact(
+        "hep",
+        "pyhfLogitFixed",
+        f"{HEP_PYHF}#/rules/classifier_logit_equal_width/pyhf_sigma_mu_tes_fixed",
         _fixed(3),
     ),
     # Provenance as three separate facts, from the fixture's own record: the

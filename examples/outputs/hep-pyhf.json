@@ -1,0 +1,27 @@
+{
+  "pyhf_version": "0.7.6",
+  "backend": "numpy",
+  "optimizer": "scipy",
+  "tes_histosys_points": [
+    0.95,
+    1.05
+  ],
+  "rules": {
+    "ds_rule": {
+      "label": "Profiled Ds rule",
+      "pyhf_sigma_mu_tes_fixed": 0.7058036617312118,
+      "pyhf_sigma_mu": 0.7102618653010563,
+      "study_sigma_mu_tes_fixed": 0.7058046175912842,
+      "study_sigma_mu": 0.7174953357983797,
+      "study_sigma_mu_central_difference": 0.7102632938987609
+    },
+    "classifier_logit_equal_width": {
+      "label": "Classifier logit, equal width",
+      "pyhf_sigma_mu_tes_fixed": 0.6360245664053608,
+      "pyhf_sigma_mu": 1.5897922841434498,
+      "study_sigma_mu_tes_fixed": 0.6360253003054837,
+      "study_sigma_mu": 1.4595680269191333,
+      "study_sigma_mu_central_difference": 1.5911671745078622
+    }
+  }
+}

@@ -227,8 +227,8 @@
       },
       "dsRuleHeldOut": {
         "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/ds_rule/evaluation_profiled_retention",
-        "text": "0.8576",
-        "value": 0.8576000760739684
+        "text": "0.8583",
+        "value": 0.8582892645339057
       },
       "evaluationCeilingAB": {
         "source": "examples/outputs/hep-classifier.json#/cross_evaluation/directions/0/evaluation_ceiling_retention",
@@ -265,6 +265,26 @@
         "text": "1,000",
         "value": 1000
       },
+      "pyhfDsRule": {
+        "source": "examples/outputs/hep-pyhf.json#/rules/ds_rule/pyhf_sigma_mu",
+        "text": "0.710",
+        "value": 0.7102618653010563
+      },
+      "pyhfDsRuleFixed": {
+        "source": "examples/outputs/hep-pyhf.json#/rules/ds_rule/pyhf_sigma_mu_tes_fixed",
+        "text": "0.706",
+        "value": 0.7058036617312118
+      },
+      "pyhfLogit": {
+        "source": "examples/outputs/hep-pyhf.json#/rules/classifier_logit_equal_width/pyhf_sigma_mu",
+        "text": "1.590",
+        "value": 1.5897922841434498
+      },
+      "pyhfLogitFixed": {
+        "source": "examples/outputs/hep-pyhf.json#/rules/classifier_logit_equal_width/pyhf_sigma_mu_tes_fixed",
+        "text": "0.636",
+        "value": 0.6360245664053608
+      },
       "quantileHeldOut": {
         "source": "examples/outputs/hep-classifier.json#/cross_evaluation/mean/classifier_quantile/evaluation_profiled_retention",
         "text": "0.3682",
@@ -282,13 +302,13 @@
       },
       "sigmaDsRule": {
         "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu",
-        "text": "0.720",
-        "value": 0.7198361143506828
+        "text": "0.717",
+        "value": 0.7174953357983797
       },
       "sigmaDsRuleFixed": {
         "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/ds_rule/sigma_mu_tes_fixed",
-        "text": "0.700",
-        "value": 0.7003032629637141
+        "text": "0.706",
+        "value": 0.7058046175912842
       },
       "sigmaIntervals": {
         "source": "examples/outputs/hep-classifier.json#/downstream/all_events/rules/classifier_significance_intervals/sigma_mu",

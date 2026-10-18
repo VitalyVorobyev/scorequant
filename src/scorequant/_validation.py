@@ -154,3 +154,21 @@ def collapse_duplicate_scores(
         jnp.asarray(collapsed_weights, dtype=weights.dtype),
         jnp.asarray(inverse),
     )
+
+
+def nuisance_complement(interest: tuple[int, ...], dimension: int) -> tuple[int, ...]:
+    """Return the nuisance complement of ``interest`` among ``dimension`` score columns.
+
+    The one check every profiled path shares: each interest index names a
+    score column, and at least one column is left to profile out.
+    """
+    if any(index >= dimension for index in interest):
+        raise ContractError(f"interest indices must be smaller than score dimension {dimension}")
+    interest_set = set(interest)
+    nuisance = tuple(index for index in range(dimension) if index not in interest_set)
+    if not nuisance:
+        raise ContractError(
+            "profiling requires at least one nuisance score column; with no nuisance "
+            "parameters use DOptimality"
+        )
+    return nuisance

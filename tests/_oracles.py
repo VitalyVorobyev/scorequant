@@ -3,7 +3,7 @@
 These oracles deliberately trade performance for mathematical transparency:
 brute-force enumeration and closed-form single-move recomputation. They exist
 only to certify the production D-exchange and profiled-D-exchange solvers in
-``scorequant.partition`` against ground truth, and are therefore kept out of
+``scorequant.solvers.exchange`` against ground truth, and are therefore kept out of
 ``src/`` rather than shipped as part of the library.
 """
 
@@ -15,9 +15,9 @@ from fractions import Fraction
 import jax.numpy as jnp
 import numpy as np
 
+from scorequant._exchange import DObjective, cell_statistics
 from scorequant._typing import ArrayLike
 from scorequant._validation import collapse_duplicate_scores, validate_n_bins, validate_sample
-from scorequant.partition import _cell_statistics, _DObjective
 from scorequant.transforms import fisher_transform
 
 
@@ -153,8 +153,8 @@ def _exhaustive_d_oracle(
         labels = jnp.asarray(candidate)
         try:
             objective = (
-                _DObjective()
-                .init_state(_cell_statistics(coordinates, effective_weights, labels, n_bins))
+                DObjective()
+                .init_state(cell_statistics(coordinates, effective_weights, labels, n_bins))
                 .objective
             )
         except ValueError:

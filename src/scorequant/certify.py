@@ -36,17 +36,16 @@ from typing import Literal
 import numpy as np
 
 from ._errors import ContractError
+from ._exchange import DObjective, cell_statistics
 from ._execution import canonicalize_public, execution_scope, scatter_set
 from ._execution import xp as jnp
 from ._json import json_ready
+from ._predict import assign_nearest
 from ._typing import ArrayLike, JsonValue
 from .config import DExchangeConfig, ExecutionConfig, _validate_finite, _validate_integer
 from .criteria import DOptimality, ProfiledDOptimality
 from .partition import (
-    _cell_statistics,
     _collapsed_initial_labels,
-    _DObjective,
-    _metric_assign,
     _optimize_labels,
     _prepare_partition,
     _PreparedPartition,
@@ -215,7 +214,7 @@ def _incumbent_labels(
         coordinates=prepared.coordinates,
         weights=prepared.weights,
         n_bins=n_bins,
-        objective=_DObjective(),
+        objective=DObjective(),
         config=config,
     )
     return np.asarray(run.labels, dtype=np.int64)
@@ -233,11 +232,11 @@ def _certificate(
             "certification found no regular n_bins-cell partition; the incumbent is "
             "singular and the node budget stopped the search before it found one"
         )
-    state = _DObjective().init_state(
-        _cell_statistics(prepared.coordinates, prepared.weights, jnp.asarray(certified), n_bins)
+    state = DObjective().init_state(
+        cell_statistics(prepared.coordinates, prepared.weights, jnp.asarray(certified), n_bins)
     )
     sample = prepared.sample
-    labels = _metric_assign(prepared.transform.apply(sample.scores), state.means, state.inverse)
+    labels = assign_nearest(prepared.transform.apply(sample.scores), state.means, state.inverse)
     labels = scatter_set(
         labels,
         sample.positive_weight_mask,

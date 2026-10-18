@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 import scorequant as sq
-from scorequant.partition import _cell_statistics, _ProfiledDObjective
+from scorequant._exchange import ProfiledDObjective, cell_statistics
 
 from ._oracles import _exact_profiled_d_move_gain
 
@@ -21,8 +21,8 @@ def test_exact_profiled_move_gain_matches_direct_recomputation() -> None:
     scores = rng.normal(size=(24, 3))
     weights = rng.uniform(0.2, 1.4, size=len(scores))
     labels = np.tile(np.arange(4), 6)
-    state = _ProfiledDObjective(interest=(0,), nuisance=(1, 2)).init_state(
-        _cell_statistics(scores, weights, labels, 4)
+    state = ProfiledDObjective(interest=(0,), nuisance=(1, 2)).init_state(
+        cell_statistics(scores, weights, labels, 4)
     )
     row, destination = 3, 2
     source = labels[row]

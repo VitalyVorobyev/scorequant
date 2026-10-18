@@ -14,11 +14,13 @@ from scorequant._execution import (
     scatter_block_add,
 )
 from scorequant._execution import xp as jnp
+from scorequant._predict import assign_nearest
+from scorequant._validation import nuisance_complement
 from scorequant.config import KMeansConfig, SoftVoronoiConfig
 from scorequant.criteria import DOptimality, ProfiledDOptimality
 from scorequant.transforms import fisher_transform, is_numerically_singular
 
-from .common import QuantizerRun, _bin_weights, chunked_hard_assign, squared_distances
+from .common import QuantizerRun, _bin_weights, squared_distances
 from .kmeans import weighted_kmeans
 
 
@@ -103,9 +105,7 @@ def _criterion_logdet(
     if isinstance(criterion, DOptimality):
         _, value = jnp.linalg.slogdet(fisher)
         return not is_numerically_singular(fisher), value, fisher.shape[0]
-    dimension = fisher.shape[0]
-    interest_set = set(criterion.interest_indices)
-    nuisance = tuple(index for index in range(dimension) if index not in interest_set)
+    nuisance = nuisance_complement(criterion.interest_indices, int(fisher.shape[0]))
     interest_indices = jnp.asarray(criterion.interest)
     nuisance_indices = jnp.asarray(nuisance)
     interest_block = fisher[jnp.ix_(interest_indices, interest_indices)]
@@ -157,9 +157,7 @@ def soft_objective_and_center_gradient(
 
     metric = -jnp.linalg.inv(fisher)
     if isinstance(criterion, ProfiledDOptimality):
-        interest_set = set(criterion.interest_indices)
-        nuisance = tuple(index for index in range(fisher.shape[0]) if index not in interest_set)
-        indices = jnp.asarray(nuisance)
+        indices = jnp.asarray(nuisance_complement(criterion.interest_indices, int(fisher.shape[0])))
         nuisance_information = fisher[jnp.ix_(indices, indices)]
         metric = scatter_block_add(metric, indices, jnp.linalg.inv(nuisance_information))
 
@@ -207,7 +205,7 @@ class _SoftHistory:
         """Record one aggregate soft-optimization checkpoint."""
         responsibilities = soft_responsibilities(self.points, centers, temperature)
         soft_fisher = _soft_fisher(self.objective_scores, responsibilities, self.weights)
-        labels = chunked_hard_assign(self.points, centers)
+        labels = assign_nearest(self.points, centers)
         self.steps.append(step)
         self.centers.append(centers)
         self.objectives.append(float(np.asarray(-loss)))

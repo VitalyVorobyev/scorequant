@@ -16,6 +16,7 @@ from ._execution import (
 from ._execution import (
     xp as jnp,
 )
+from ._predict import assign_nearest
 from ._typing import ArrayLike
 from ._validation import (
     _ValidatedSample,
@@ -45,7 +46,7 @@ from .information import (
 from .partition import optimize_d_partition, optimize_profiled_d_partition
 from .providers import ScoreProvider, validate_provider
 from .result import InformationReport, OptimizationTrace, PartitionResult, QuantizerResult
-from .solvers.common import QuantizerRun, chunked_hard_assign
+from .solvers.common import QuantizerRun
 from .solvers.kmeans import weighted_kmeans
 from .solvers.scalar import scalar_weighted_kmeans_dp
 from .solvers.soft import soft_voronoi
@@ -425,7 +426,7 @@ def _fit_geometric_quantizer(
         config=config,
     )
     run = _run_geometric_quantizer(prepared, n_bins, criterion)
-    labels = chunked_hard_assign(prepared.all_train_coordinates, run.centers)
+    labels = assign_nearest(prepared.all_train_coordinates, run.centers)
     # A report describes a labeling and does not judge it, so
     # profiled_information_report would hand back a rule that answers every
     # profiled question with zero -- and on a state this degenerate it raises
@@ -452,7 +453,7 @@ def _fit_geometric_quantizer(
         if prepared.validation_sample is not None and prepared.validation_coordinates is not None:
             validation_profiled_report = profiled_information_report(
                 prepared.validation_sample.scores,
-                chunked_hard_assign(prepared.validation_coordinates, run.centers),
+                assign_nearest(prepared.validation_coordinates, run.centers),
                 interest=criterion.interest_indices,
                 weights=prepared.validation_sample.weights,
                 n_bins=n_bins,
@@ -715,7 +716,7 @@ def _hard_retention_history(
     values: list[float] = [float("nan")] * len(run.center_history)
     for index in selected:
         centers = run.center_history[index]
-        labels = chunked_hard_assign(transformed_scores, centers)
+        labels = assign_nearest(transformed_scores, centers)
         if isinstance(criterion, ProfiledDOptimality):
             retention = profiled_information_report(
                 scores,
@@ -774,7 +775,7 @@ def _build_fit_diagnostics(
     )
     validation_report = information_report(
         prepared.validation_sample.scores,
-        chunked_hard_assign(prepared.validation_coordinates, run.centers),
+        assign_nearest(prepared.validation_coordinates, run.centers),
         prepared.validation_sample.weights,
         n_bins=n_bins,
         rank_rtol=prepared.config.rank_rtol,

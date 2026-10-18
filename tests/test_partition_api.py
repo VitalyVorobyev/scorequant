@@ -4,13 +4,8 @@ import numpy as np
 import pytest
 
 import scorequant as sq
-from scorequant.partition import (
-    _cell_statistics,
-    _DObjective,
-    _ExchangeState,
-    _relocation,
-    _scan,
-)
+from scorequant._exchange import DObjective, ExchangeState, cell_statistics, relocation
+from scorequant.solvers.exchange import scan
 
 from ._oracles import _exact_d_move_gain
 
@@ -23,8 +18,8 @@ def _scores(seed: int = 11, n_rows: int = 72) -> np.ndarray:
 
 def _d_state(
     scores: np.ndarray, weights: np.ndarray, labels: np.ndarray, n_bins: int
-) -> _ExchangeState:
-    return _DObjective().init_state(_cell_statistics(scores, weights, labels, n_bins))
+) -> ExchangeState:
+    return DObjective().init_state(cell_statistics(scores, weights, labels, n_bins))
 
 
 def test_exact_move_gain_matches_direct_recomputation() -> None:
@@ -61,15 +56,17 @@ def test_chunked_scan_and_rank_two_state_update_match_full_recomputation() -> No
     weights = np.linspace(0.5, 1.5, len(scores))
     labels = np.tile(np.arange(3), 16)
     state = _d_state(scores, weights, labels, 3)
-    objective = _DObjective()
+    objective = DObjective()
     config = sq.DExchangeConfig(max_scans=10)
     with patch("scorequant._chunking.WORKING_SET_BYTES", 256):
-        chunked = _scan(scores, weights, labels, state, objective, config, rows=True).best
+        chunked = scan(scores, weights, labels, state, objective, config, rows=True).best
     with patch("scorequant._chunking.WORKING_SET_BYTES", 1 << 40):
-        unchunked = _scan(scores, weights, labels, state, objective, config, rows=True).best
+        unchunked = scan(scores, weights, labels, state, objective, config, rows=True).best
     assert chunked == unchunked
     assert chunked is not None
-    updated = objective.apply_move(state, _relocation(scores, weights, labels, state, chunked))
+    updated = objective.apply_move(
+        state, relocation(scores, weights, labels, state, chunked.row, chunked.destination)
+    )
     moved_labels = labels.copy()
     moved_labels[chunked.row] = chunked.destination
     recomputed = _d_state(scores, weights, moved_labels, 3)
@@ -85,12 +82,14 @@ def test_repeated_rank_two_updates_do_not_accumulate_material_drift() -> None:
     weights = np.linspace(0.25, 2.0, len(scores))
     labels = np.tile(np.arange(4), 24)
     state = _d_state(scores, weights, labels, 4)
-    objective = _DObjective()
+    objective = DObjective()
     config = sq.DExchangeConfig(max_scans=20)
     for _ in range(12):
-        move = _scan(scores, weights, labels, state, objective, config, rows=False).best
+        move = scan(scores, weights, labels, state, objective, config, rows=False).best
         assert move is not None and move.gain > 0
-        state = objective.apply_move(state, _relocation(scores, weights, labels, state, move))
+        state = objective.apply_move(
+            state, relocation(scores, weights, labels, state, move.row, move.destination)
+        )
         labels[move.row] = move.destination
         recomputed = _d_state(scores, weights, labels, 4)
         np.testing.assert_allclose(

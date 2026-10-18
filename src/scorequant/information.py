@@ -20,10 +20,12 @@ from ._execution import (
 from ._execution import (
     xp as jnp,
 )
+from ._predict import assign_nearest
 from ._typing import ArrayLike
 from ._validation import (
     _ValidatedSample,
     collapse_duplicate_scores,
+    nuisance_complement,
     validate_n_bins,
     validate_sample,
 )
@@ -35,7 +37,6 @@ from .reports import (
     RetentionUncertainty,
     RetentionUncertaintyStatus,
 )
-from .solvers.common import chunked_hard_assign
 from .solvers.scalar import scalar_interval_dp
 from .sources import ScoreSchema
 from .transforms import (
@@ -642,14 +643,7 @@ def _nuisance_information(
     ``solve``/matmul, and hands back the log determinant so the caller does not
     factor the same block twice.
     """
-    dimension = information.shape[0]
-    if any(index >= dimension for index in interest):
-        raise ContractError(f"interest indices must be smaller than score dimension {dimension}")
-    nuisance = tuple(index for index in range(dimension) if index not in set(interest))
-    if not nuisance:
-        raise ContractError(
-            "profiled D requires at least one nuisance score column; use DOptimality"
-        )
+    nuisance = nuisance_complement(interest, int(information.shape[0]))
     nuisance_block, nuisance_logdet = _nuisance_block_slogdet(information, nuisance)
     # Decided by the scale-free rank test, not by the log determinant's sign.
     # The sign is unreliable exactly where this guard matters: on a block the
@@ -783,13 +777,7 @@ def efficient_scores(
     if not interest or len(set(interest)) != len(interest) or any(index < 0 for index in interest):
         raise ContractError("interest must contain unique nonnegative indices")
     sample = validate_sample(scores, weights)
-    dimension = sample.scores.shape[1]
-    if any(index >= dimension for index in interest):
-        raise ContractError(f"interest indices must be smaller than score dimension {dimension}")
-    interest_set = set(interest)
-    nuisance = tuple(index for index in range(dimension) if index not in interest_set)
-    if not nuisance:
-        raise ContractError("efficient-score projection requires at least one nuisance column")
+    nuisance = nuisance_complement(interest, int(sample.scores.shape[1]))
     information = _unbinned_fisher(sample)
     interest_indices = jnp.asarray(interest)
     nuisance_indices = jnp.asarray(nuisance)
@@ -921,7 +909,7 @@ def efficient_score_bound(
 
     # Zero-weight rows carry no measure; the interval rule still labels them.
     centers = scatter_bin_statistics(label_array, atom_weights, coordinates, n_bins).means
-    labels = chunked_hard_assign(transform.apply(efficient), centers)
+    labels = assign_nearest(transform.apply(efficient), centers)
     labels = scatter_set(labels, sample.positive_weight_mask, label_array[inverse_rows])
     return canonicalize_public(
         EfficientScoreBound(

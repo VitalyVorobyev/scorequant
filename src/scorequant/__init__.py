@@ -20,6 +20,7 @@ from .config import (
     SoftVoronoiConfig,
 )
 from .criteria import DOptimality, NormalizedTrace, ProfiledDOptimality
+from .diagnostics import exchange_stability_report
 from .information import (
     binned_fisher_information,
     efficient_score_bound,
@@ -30,7 +31,6 @@ from .information import (
     profiled_information_report,
     retention_uncertainty,
 )
-from .partition import exchange_stability_report
 from .providers import (
     CentralLogRatioScore,
     DensityRatioScore,

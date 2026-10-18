@@ -7,24 +7,29 @@
   },
   "cells": {
     "setup": {
-      "code": "import numpy as np\n\nimport scorequant as sq\n\nrng = np.random.default_rng(21)\nexecution = sq.ExecutionConfig(backend=\"numpy\", precision=\"float64\", device=\"cpu\")\n\n# N(mu, I_2) at mu0 = 0 has score s(x) = x: these raw observations already\n# are the score vectors every later cell works with.\nscores = rng.normal(size=(1_200, 2))\nweights = np.ones(scores.shape[0])",
+      "code": "import tempfile\nfrom pathlib import Path\n\nimport numpy as np\n\nimport scorequant as sq\n\nrng = np.random.default_rng(21)\n# NumPy at float64, so your output matches this page; see the last section.\nexecution = sq.ExecutionConfig(backend=\"numpy\", precision=\"float64\", device=\"cpu\")\n\n# N(mu, I_2) at mu0 = 0 has score s(x) = x: these observations already\n# are the score vectors.\nscores = rng.normal(size=(1_200, 2))\nweights = np.ones(scores.shape[0])",
       "stdout": "",
       "order": 0
     },
     "fit": {
-      "code": "quantizer = sq.fit_quantizer(\n    sq.ScoreSample(scores, weights),\n    n_bins=5,\n    criterion=sq.DOptimality(),\n    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_steps=120, record_every=20),\n    execution=execution,\n)\n\nreport = quantizer.train_report\nprint(f\"D-efficiency    {report.geometric_mean_retention:.4f}\")\nprint(f\"effective rank  {report.effective_rank}\")",
+      "code": "fit = sq.fit_quantizer(\n    sq.ScoreSample(scores, weights),\n    n_bins=5,\n    criterion=sq.DOptimality(),\n    config=sq.SoftVoronoiConfig(seed=21, initializer_restarts=4, max_steps=120, record_every=20),\n    execution=execution,\n)\n\nreport = fit.train_report\nprint(f\"D-efficiency    {report.geometric_mean_retention:.4f}\")\nprint(f\"effective rank  {report.effective_rank}\")",
       "stdout": "D-efficiency    0.6987\neffective rank  2\n",
       "order": 1
     },
     "predict": {
-      "code": "new_scores = rng.normal(loc=0.2, size=(300, 2))\nlabels = quantizer.predict_scores(new_scores)\ncounts = \", \".join(f\"{count}\" for count in np.bincount(labels, minlength=5))\n\nprint(f\"bin counts  [{counts}]\")",
+      "code": "new_scores = rng.normal(loc=0.2, size=(300, 2))\nlabels = fit.predict_scores(new_scores)\ncounts = \", \".join(f\"{count}\" for count in np.bincount(labels, minlength=5))\n\nprint(f\"bin counts  [{counts}]\")",
       "stdout": "bin counts  [38, 86, 52, 68, 56]\n",
       "order": 2
+    },
+    "save": {
+      "code": "with tempfile.TemporaryDirectory() as folder:\n    path = fit.quantizer.save(Path(folder) / \"rule.sqz\")\n    rule = sq.Quantizer.load(path)\n\nreloaded = rule.predict_scores(new_scores, execution=execution)\nprint(f\"same labels after loading  {np.array_equal(reloaded, labels)}\")",
+      "stdout": "same labels after loading  True\n",
+      "order": 3
     },
     "partition": {
       "code": "partition = sq.optimize_partition(\n    scores,\n    weights=weights,\n    n_bins=5,\n    criterion=sq.DOptimality(),\n    config=sq.DExchangeConfig(seed=21),\n    execution=execution,\n)\n\nprint(f\"D-efficiency  {partition.train_report.geometric_mean_retention:.4f}\")",
       "stdout": "D-efficiency  0.6988\n",
-      "order": 3
+      "order": 4
     }
   },
   "firstFit": {

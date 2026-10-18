@@ -7,14 +7,14 @@ sidebar_position: 1
 import Link from "@docusaurus/Link";
 
 import {GetStartedFirstFitLiveFit} from "@site/src/components/GetStartedFirstFitLiveFit";
+import {ReferenceLink} from "@site/src/components/ReferenceLink";
 import {Snippet} from "@site/src/components/Snippet";
-import {REFERENCE_BASE} from "@site/src/lib/site";
 
 # Get started
 
-ScoreQuant turns continuous **score vectors** into a small number of hard labels while retaining as much Fisher information as possible.
+ScoreQuant turns score vectors into a few hard labels that keep as much Fisher information as possible. You supply one score vector per event; ScoreQuant chooses the bins and reports what they kept.
 
-You provide one score vector `s(x)` for each observation. ScoreQuant finds the bins.
+This page fits a rule, uses it on new data and saves it. The <Link to="/walkthroughs">walkthroughs</Link> follow complete problems, and the <ReferenceLink to="guide/">user guide</ReferenceLink> covers inputs, criteria, solvers and nuisance parameters.
 
 ## Install
 
@@ -22,76 +22,44 @@ You provide one score vector `s(x)` for each observation. ScoreQuant finds the b
 uv add scorequant
 ```
 
-or:
-
-```bash
-pip install scorequant
-```
-
-Python 3.12 or newer.
+or `pip install scorequant`, on Python 3.12 or newer.
 
 ## Fit a quantizer
 
-Start with a small example. For a Gaussian location model with identity covariance, the score at the origin is the observation itself, `s(x) = x`, so we can generate score vectors directly. Everything after this point is the same whatever produced your scores.
-
-One choice is worth making explicitly rather than inheriting. ScoreQuant runs on two backends: JAX is the default and the faster one, NumPy is the portable one, and whether to enable 64-bit floats is the application's call and never the library's. Every cell below passes an explicit NumPy, float64 execution, so the output printed here is the output you get. The cells share one namespace and run top to bottom, and together they are a single file you can run yourself.
+For a Gaussian location model with identity covariance, the score at the origin is the observation itself, `s(x) = x`, so the example draws scores directly. Everything after this point is the same whatever produced your scores. The cells share one namespace and together form one file you can run.
 
 <Snippet id="setup" />
 
-Now replace those continuous two-dimensional scores with five discrete labels:
+Fit five bins:
 
 <Snippet id="fit" />
 
-That is the main result.
+The **D-efficiency** is the share of the information the five labels keep, averaged geometrically over the parameter directions; one would mean nothing was lost. The **effective rank** counts the directions the labels still see. A rank below the number of parameters means a direction is gone, whatever the average says.
 
-The original observations carry a two-dimensional Fisher information matrix. After replacing each observation by one of only five labels, the geometric mean information retention — the **D-efficiency** — is what the fit reports. It is a ratio rather than a score, which is what makes it comparable across bin budgets.
+## Use the rule on new data
 
-The **effective rank** is the number to read against your parameter count. Information is a matrix, and a partition can retain a great deal in one direction while collapsing another. A rank below the number of parameters means a direction is gone, and no averaged headline will tell you that.
-
-## Use the rule on new observations
-
-`fit_quantizer` returns a reusable rule in score space:
+`fit_quantizer` returns a rule in score space, and it labels scores it has never seen:
 
 <Snippet id="predict" />
 
-Each new score vector is now mapped to one of the same five bins.
+Prediction takes scores, not raw observations, so how you compute the scores stays in your own code and in view.
 
-ScoreQuant deliberately predicts from **scores**, not raw observations. How you obtain those scores — from an analytic likelihood, simulation, density ratios, or a classifier — is a separate part of the problem, and the conversion is never hidden inside prediction.
+## Save and load
 
-## What did we optimize?
+The rule saves to a small archive of arrays, not a pickle, and loads where JAX is not installed:
 
-If the original score is `s(x)`, observing it retains the full Fisher information available in that score. After quantization we keep only the bin label, one of `K` values. ScoreQuant chooses the rule so that these few discrete outcomes retain as much of the original information as possible.
-
-Here we used `DOptimality()`: it rewards partitions that retain information jointly across all parameter directions. `geometric_mean_retention` reports the resulting D-efficiency as a dimensionless ratio.
-
-That is the basic ScoreQuant workflow, and the reported retention is part of the output rather than an afterthought:
-
-<div className="showcase-pipeline">
-  <span>observations</span>
-  <span>scores</span>
-  <strong>fit_quantizer</strong>
-  <span>hard labels</span>
-  <span>information retained</span>
-</div>
+<Snippet id="save" />
 
 ## Only need labels for this sample?
 
-Sometimes there will be no future observations. You only want the best partition of a finite table already in memory.
-
-Use `optimize_partition` instead:
+If no new events will arrive, `optimize_partition` labels the rows you already have:
 
 <Snippet id="partition" />
 
-`partition.labels` contains the optimized labels for these rows.
-
-Unlike `fit_quantizer`, this operation does **not** in general define how an unseen score vector should be labeled. A finite-sample optimum names labels, not a rule: many different rules reproduce the same labels on one sample and disagree everywhere else, which is why `PartitionResult` has no predict method. If you need to label future observations, fit a quantizer.
-
-This finite fit is exact and deterministic, which is why it is the one you can re-run here, in your own browser, against the same table and the same seed:
+It returns labels, not a rule. Many rules agree on one sample and disagree elsewhere, so `PartitionResult` has no predict method. This fit is exact and deterministic, so you can rerun it in your browser:
 
 <GetStartedFirstFitLiveFit />
 
-## Where next?
+## Backends and precision
 
-For complete applied examples, go to <Link to="/walkthroughs">Walkthroughs</Link>. They start from an estimation problem and show where the scores come from, how the bins are fitted, and what the resulting information loss means.
-
-For solver options, criteria, diagnostics, weights, nuisance parameters, persistence, and the exact API, use the <a href={REFERENCE_BASE}>reference documentation</a>.
+JAX is the default backend; NumPy is the portable one, and the one your browser runs. JAX computes in single precision unless the application turns on 64-bit mode, which the library never does for you. The cells above pass an explicit NumPy, double-precision, CPU execution so that the output printed here is the output you get. The <ReferenceLink to="api/#execution">API guide</ReferenceLink> has the details.

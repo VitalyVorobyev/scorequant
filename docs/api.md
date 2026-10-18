@@ -501,8 +501,8 @@ Population singularity is a separate boundary of the Wald theorem
 influence values cancelled to rounding noise, so the standard error is zero and the interval is
 withheld. The test is \(\mathrm{rms}(B) \le \tau\,\mathrm{rms}(M)\), with \(B_i\) the bracket of the
 influence value, \(M_i\) the sum of the magnitudes of its three terms, and \(\tau\) the dtype's rank
-threshold, \(10^{-10}\) in float64 and about \(4\times10^{-5}\) in float32; `rank_rtol` moves the
-two rank guards, not this threshold. This numerical guard can suppress small positive influence
+threshold, \(10^{-10}\) in float64 and about \(4\times10^{-5}\) in float32. `rank_rtol` moves only
+the full-moment rank guard; the between-cell test and this threshold stay at the dtype default. This numerical guard can suppress small positive influence
 variance; it is not a finding that the population variance is zero.
 
 Scores from a classifier or any other estimator are not true scores. Their reported retention

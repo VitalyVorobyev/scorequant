@@ -90,9 +90,7 @@ def criterion_objective_label(criterion: DOptimality | ProfiledDOptimality) -> s
 
 
 def _criterion_logdet(
-    fisher: jnp.ndarray,
-    criterion: DOptimality | ProfiledDOptimality,
-    rank_rtol: float | None = None,
+    fisher: jnp.ndarray, criterion: DOptimality | ProfiledDOptimality
 ) -> tuple[bool, jnp.ndarray, int]:
     """Return whether the criterion is regular, its log determinant, and its dimension.
 
@@ -104,7 +102,7 @@ def _criterion_logdet(
     """
     if isinstance(criterion, DOptimality):
         _, value = jnp.linalg.slogdet(fisher)
-        return not is_numerically_singular(fisher, rank_rtol), value, fisher.shape[0]
+        return not is_numerically_singular(fisher), value, fisher.shape[0]
     dimension = fisher.shape[0]
     interest_set = set(criterion.interest_indices)
     nuisance = tuple(index for index in range(dimension) if index not in interest_set)
@@ -113,11 +111,11 @@ def _criterion_logdet(
     interest_block = fisher[jnp.ix_(interest_indices, interest_indices)]
     cross_block = fisher[jnp.ix_(interest_indices, nuisance_indices)]
     nuisance_block = fisher[jnp.ix_(nuisance_indices, nuisance_indices)]
-    if is_numerically_singular(nuisance_block, rank_rtol):
+    if is_numerically_singular(nuisance_block):
         return False, jnp.asarray(-jnp.inf, dtype=fisher.dtype), len(criterion.interest_indices)
     schur = interest_block - cross_block @ jnp.linalg.solve(nuisance_block, cross_block.T)
     _, value = jnp.linalg.slogdet(0.5 * (schur + schur.T))
-    regular = not is_numerically_singular(fisher, rank_rtol)
+    regular = not is_numerically_singular(fisher)
     return regular, value, len(criterion.interest_indices)
 
 
@@ -128,7 +126,6 @@ def soft_objective_and_center_gradient(
     centers: jnp.ndarray,
     temperature: float | jnp.ndarray,
     criterion: DOptimality | ProfiledDOptimality,
-    rank_rtol: float | None = None,
 ) -> tuple[jnp.ndarray, jnp.ndarray]:
     r"""Return the negative soft log determinant and its analytic center gradient.
 
@@ -144,7 +141,7 @@ def soft_objective_and_center_gradient(
     identity ``logdet(S) = logdet(F) - logdet(C)`` adds the nuisance-block
     inverse back to that metric. No backend maintains a separate objective or
     asks autodiff to rediscover this equation at runtime. A soft Fisher matrix
-    that is singular at ``rank_rtol`` has no finite objective: the loss is
+    that is singular at the dtype's rank threshold has no finite objective: the loss is
     infinite and the gradient zero.
     """
     responsibilities = soft_responsibilities(points, centers, temperature)
@@ -154,7 +151,7 @@ def soft_objective_and_center_gradient(
     sums = weighted.T @ objective_scores
     fisher = jnp.einsum("b,bp,bq->pq", 1 / safe, sums, sums)
     fisher = 0.5 * (fisher + fisher.T)
-    regular, logdet, _ = _criterion_logdet(fisher, criterion, rank_rtol)
+    regular, logdet, _ = _criterion_logdet(fisher, criterion)
     if not regular:
         return jnp.asarray(jnp.inf, dtype=points.dtype), jnp.zeros_like(centers)
 
@@ -190,7 +187,6 @@ class _SoftHistory:
     criterion: DOptimality | ProfiledDOptimality
     reference_objective: float
     objective_dimension: int
-    rank_rtol: float | None
     steps: list[int] = field(default_factory=list)
     centers: list[jnp.ndarray] = field(default_factory=list)
     objectives: list[float] = field(default_factory=list)
@@ -216,7 +212,7 @@ class _SoftHistory:
         self.centers.append(centers)
         self.objectives.append(float(np.asarray(-loss)))
         self.bin_weights.append(_bin_weights(labels, self.weights, self.n_bins))
-        regular, value, _ = _criterion_logdet(soft_fisher, self.criterion, self.rank_rtol)
+        regular, value, _ = _criterion_logdet(soft_fisher, self.criterion)
         retention = (
             jnp.exp((value - self.reference_objective) / self.objective_dimension)
             if regular
@@ -273,7 +269,7 @@ def _soft_voronoi_reference(
         raise ContractError("profiled-D soft fitting requires full-rank supplied-score information")
     full_fisher = jnp.einsum("n,np,nq->pq", weights, objective_scores, objective_scores)
     reference_regular, reference_value, objective_dimension = _criterion_logdet(
-        full_fisher, criterion, rank_rtol
+        full_fisher, criterion
     )
     if not reference_regular:
         raise ContractError("soft fitting requires nonsingular criterion information")
@@ -304,7 +300,6 @@ def _run_soft_schedule(
         criterion,
         reference_objective,
         objective_dimension,
-        config.rank_rtol,
     )
 
     for step in range(config.max_steps + 1):
@@ -318,7 +313,6 @@ def _run_soft_schedule(
                 centers,
                 temperature,
                 criterion,
-                config.rank_rtol,
             )
             centers, optimizer, gradient_norm_value = adam_update(centers, gradients, optimizer)
             centers = jnp.asarray(centers)
@@ -331,7 +325,6 @@ def _run_soft_schedule(
                 centers,
                 temperature,
                 criterion,
-                config.rank_rtol,
             )
             gradient_norm = jnp.asarray(0.0, dtype=points.dtype)
         if step % config.record_every == 0 or step == config.max_steps:

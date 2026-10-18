@@ -239,8 +239,10 @@ def _report_from_fishers(
     arithmetic = float(np.asarray(jnp.mean(eigenvalues)))
     # The same verdict ``retention_uncertainty`` reaches on these cells: a
     # retained eigenvalue below the rank threshold is rounding noise, and its
-    # logarithm would report a regular-looking retention.
-    if is_numerically_singular(retained, rank_rtol):
+    # logarithm would report a regular-looking retention. ``rank_rtol`` selects
+    # informative directions of the full matrix; a retained eigenvalue is a
+    # retention fraction on another scale, so it is judged at the dtype default.
+    if is_numerically_singular(retained):
         geometric = 0.0
         logdet = float("-inf")
     else:
@@ -395,7 +397,9 @@ def _retention_influence(
     # between-cell matrix the smallest eigenvalue is rounding noise, and its
     # d-th root is not (the audit measured 3.5e-9 in d = 2), so a determinant
     # ratio would report a regular-looking endpoint that the theorem excludes.
-    if is_numerically_singular(whitened_retained, rank_rtol):
+    # At the dtype default, never the caller's ``rank_rtol``, exactly as
+    # ``information_report`` judges the same between-cell matrix.
+    if is_numerically_singular(whitened_retained):
         return _RetentionInfluence("singular_retained_information", 0.0, None)
 
     eigenvalues = np.asarray(jnp.linalg.eigvalsh(whitened_retained), dtype=np.float64)
@@ -472,8 +476,10 @@ def retention_uncertainty(
     confidence_level
         Two-sided nominal level, strictly between zero and one.
     rank_rtol
-        Relative eigenvalue threshold for both rank guards. A dtype-aware
-        default is used when omitted. It does not move the cancellation
+        Relative eigenvalue threshold for the informative directions of the
+        full moment. A dtype-aware default is used when omitted. It moves
+        neither the between-cell singularity test, which is judged at the
+        dtype default as in ``information_report``, nor the cancellation
         threshold of the ``degenerate_variance`` guard.
 
     Returns
@@ -524,7 +530,7 @@ def retention_uncertainty(
     \(\mathrm{rms}(B)\le\tau\,\mathrm{rms}(M)\) with \(B_i\) the bracket
     of \(\psi_i\), \(M_i\) the sum of the magnitudes of its three terms and
     \(\tau\) the dtype's rank threshold (\(10^{-10}\) in float64,
-    \(10^{-5}\) in float32, not moved by ``rank_rtol``); it is a numerical
+    about \(4\times10^{-5}\) in float32, not moved by ``rank_rtol``); it is a numerical
     guard that can suppress small positive influence variance and never
     asserts that the population variance is zero. The endpoints of an
     ``ok`` interval are not clipped to ``[0, 1]``.

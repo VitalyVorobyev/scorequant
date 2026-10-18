@@ -197,3 +197,18 @@ def test_efficient_scores_refuse_a_nearly_singular_nuisance_block() -> None:
     assert np.linalg.slogdet(block)[0] > 0
     with pytest.raises(scorequant.ContractError, match="nonsingular nuisance"):
         scorequant.efficient_scores(scores, interest=(0,))
+
+
+def test_rank_rtol_does_not_judge_the_retained_matrix() -> None:
+    """``rank_rtol`` selects full-data directions; retained singularity uses the dtype default."""
+    rng = np.random.default_rng(7)
+    scores = rng.normal(size=(2000, 2)) + 0.3
+    labels = np.digitize(scores[:, 0] + 0.2 * scores[:, 1], [-0.2, 0.8])
+    default = scorequant.information_report(scores, labels, n_bins=3)
+    eigenvalues = np.asarray(default.retained_eigenvalues)
+    assert eigenvalues.min() < 0.1 * eigenvalues.max()
+    loose = scorequant.information_report(scores, labels, n_bins=3, rank_rtol=0.1)
+    assert loose.geometric_mean_retention == default.geometric_mean_retention > 0.1
+    uncertainty = scorequant.retention_uncertainty(scores, labels, rank_rtol=0.1)
+    assert uncertainty.status == "ok"
+    assert uncertainty.estimate == pytest.approx(default.geometric_mean_retention, rel=1e-12)

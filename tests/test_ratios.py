@@ -289,16 +289,17 @@ def test_mixed_gauge_ratio_columns_are_refused_with_the_fix() -> None:
         sq.DensityRatioScore(mixed, _GAUGE_YIELDS, provenance=_ratio_provenance(("absolute",) * 3))
 
 
-def test_an_external_provider_with_mixed_gauges_is_refused() -> None:
-    class External:
-        provenance = _ratio_provenance(("training_mixture", "absolute"))
-
-        def score(self, observations: np.ndarray) -> np.ndarray:
-            return _exact_intensity_scores(observations)
-
-    sample = sq.ObservationSample(np.linspace(-3.0, 3.0, 40)[:, None])
+def test_no_record_can_carry_mixed_gauges() -> None:
+    """External providers and ready score samples meet the same refusal."""
     with pytest.raises(sq.ContractError, match="different gauges"):
-        sq.fit_quantizer(sample, provider=External(), n_bins=3)
+        sq.RatioProvenance(gauges=("training_mixture", "absolute"))
+    with pytest.raises(TypeError, match="tuple of strings"):
+        sq.RatioProvenance(gauges=["absolute", "absolute"])  # type: ignore[arg-type]
+    with pytest.raises(sq.ContractError, match="different gauges"):
+        sq.ScoreSample(
+            _exact_intensity_scores(np.linspace(-3.0, 3.0, 40)[:, None]),
+            provenance=_ratio_provenance(("training_mixture", "absolute")),
+        )
 
 
 def test_one_gauge_recipe_recovers_the_exact_scores() -> None:

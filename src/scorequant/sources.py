@@ -124,8 +124,9 @@ class RatioProvenance:
     density ratio against: ``"training_mixture"`` for prior-corrected
     classifier posteriors, ``"absolute"`` for a Monte Carlo or analytic
     density, or any label of the caller's choosing. The score map cancels only
-    a factor common to every column of an event, so a ratio provider refuses
-    columns declared in different gauges. ``None`` declares nothing and is not
+    a factor common to every column of an event, so columns declared in
+    different gauges are refused when the record is built; no provider, score
+    sample or saved rule can carry them. ``None`` declares nothing and is not
     checked.
     """
 
@@ -138,6 +139,30 @@ class RatioProvenance:
     calibration: str | None = None
     deltas: tuple[float, ...] | None = None
     gauges: tuple[str, ...] | None = None
+
+    def __post_init__(self) -> None:
+        """Refuse ratio columns declared against different measures.
+
+        Every ratio-to-score map is invariant only under a factor common to all
+        columns of one event. Columns in different gauges, such as a
+        prior-corrected classifier ratio over ``p_train`` next to an absolute
+        Monte Carlo density, leave the event-dependent ``p_train(x)``
+        uncancelled, and every score is silently wrong.
+        """
+        gauges = self.gauges
+        if gauges is None:
+            return
+        if not isinstance(gauges, tuple) or not all(isinstance(label, str) for label in gauges):
+            raise TypeError("RatioProvenance.gauges must be a tuple of strings")
+        if len(set(gauges)) > 1:
+            raise ContractError(
+                f"ratio columns are declared in different gauges {gauges}: scores cancel only "
+                "a factor common to every column of an event, so mixed gauges leave an "
+                "event-dependent denominator in every score. Return every column in one "
+                "gauge; for a two-class signal-versus-background classifier with priors pi, "
+                "the columns [(eta_sig / pi_sig) / (eta_bkg / pi_bkg), 1] share the background "
+                "gauge and need no Monte Carlo density"
+            )
 
     def to_dict(self) -> dict[str, JsonValue]:
         """Return a JSON-compatible ratio-provenance mapping."""

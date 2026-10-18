@@ -143,33 +143,18 @@ def _merge_ratio_provenance(
 _TRAINING_MIXTURE_GAUGE = "training_mixture"
 
 
-def _require_common_gauge(ratio: RatioProvenance | None, n_components: int | None) -> None:
-    """Refuse ratio columns declared against different measures.
+def _require_gauge_count(ratio: RatioProvenance | None, n_components: int) -> None:
+    """Require one declared gauge per ratio column the parameterization consumes.
 
-    Every ratio-to-score map is invariant only under a factor common to all
-    columns of one event. Columns in different gauges, such as a prior-corrected
-    classifier ratio over ``p_train`` next to an absolute Monte Carlo density,
-    leave the event-dependent ``p_train(x)`` uncancelled, and every score is
-    silently wrong. Undeclared gauges cannot be checked and are let through.
+    ``RatioProvenance`` itself refuses mixed gauges, wherever the record is
+    built; only the column count needs the provider's parameterization.
     """
     if ratio is None or ratio.gauges is None:
         return
-    gauges = ratio.gauges
-    if not isinstance(gauges, tuple) or not all(isinstance(label, str) for label in gauges):
-        raise TypeError("provenance.ratio.gauges must be a tuple of strings")
-    if n_components is not None and len(gauges) != n_components:
+    if len(ratio.gauges) != n_components:
         raise ContractError(
-            f"provenance.ratio.gauges declares {len(gauges)} columns; the parameterization "
-            f"consumes {n_components}"
-        )
-    if len(set(gauges)) > 1:
-        raise ContractError(
-            f"ratio columns are declared in different gauges {gauges}: scores cancel only a "
-            "factor common to every column of an event, so mixed gauges leave an "
-            "event-dependent denominator in every score. Return every column in one gauge; "
-            "for a two-class signal-versus-background classifier with priors pi, the columns "
-            "[(eta_sig / pi_sig) / (eta_bkg / pi_bkg), 1] share the background gauge and need "
-            "no Monte Carlo density"
+            f"provenance.ratio.gauges declares {len(ratio.gauges)} columns; the "
+            f"parameterization consumes {n_components}"
         )
 
 
@@ -234,7 +219,7 @@ class DensityRatioScore:
                 metadata=provenance.metadata,
                 ratio=_merge_ratio_provenance(provenance.ratio, facts),
             )
-        _require_common_gauge(resolved.ratio, parameterization.n_components)
+        _require_gauge_count(resolved.ratio, parameterization.n_components)
         object.__setattr__(self, "ratio", ratio)
         object.__setattr__(self, "parameterization", parameterization)
         object.__setattr__(self, "provenance", resolved)
@@ -503,6 +488,3 @@ def validate_provider(provider: object) -> None:
         )
     if not callable(provider.score):
         raise TypeError("provider.score must be callable")
-    # The same gauge check as DensityRatioScore, for a provider written outside
-    # the library that declares its ratio columns.
-    _require_common_gauge(provider.provenance.ratio, None)

@@ -302,7 +302,7 @@ events = sq.ObservationSample(np.random.default_rng(5).normal(size=(800, 1)))
 hep_fit = sq.fit_quantizer(events, provider=provider, n_bins=4)
 ```
 
-Declaring `gauges` is what lets the provider check them: a classifier column next to a Monte Carlo
+Declaring `gauges` is what lets ScoreQuant check them: a classifier column next to a Monte Carlo
 density, declared `("training_mixture", "absolute")`, raises `ContractError` instead of returning
 wrong scores. `DensityRatioScore.from_classifier` declares the training-mixture gauge for every
 column; an undeclared ratio callback is not checked.

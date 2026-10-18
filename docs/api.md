@@ -294,7 +294,7 @@ Ratio-derived scores carry a structured `ScoreProvenance.ratio` record (`RatioPr
 the estimator, parameterization, reference fractions or coefficients, reference component,
 training priors, calibration method, finite-difference offsets, and the gauge of each ratio column:
 the measure it is a density ratio against. Scores cancel only a factor common to every column of
-an event, so a provider whose declared gauges differ raises `ContractError`;
+an event, so a record whose declared gauges differ raises `ContractError` when it is built;
 `DensityRatioScore.from_classifier` declares `"training_mixture"` for every column. The
 [user guide](guide.md#a-classifier-signal-next-to-a-background) shows the one-gauge recipe for a
 classifier signal next to a background.

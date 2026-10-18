@@ -34,3 +34,4 @@ research/formal/.lake/
 .env.*
 *.pem
 .hypothesis/
+benchmarks/profiles/

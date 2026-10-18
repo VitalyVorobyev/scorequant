@@ -55,17 +55,22 @@ One idea and one live demo per post:
 
 ## Size budget
 
-Tracked lines per area, lockfiles excluded. Re-measure at every milestone:
-`git ls-files <area> | xargs wc -l | tail -1`.
+Lines of code per area (Python, TypeScript, CSS, Markdown, Lean), excluding committed data
+(JSON evidence, fixtures, generated portal data) and lockfiles. Re-measure at every milestone:
+`git ls-files <area> | grep -E '\.(py|ts|tsx|mjs|css|mdx|md|lean|yml)$' | xargs wc -l | tail -1`.
 
-| Area | Budget | Holds |
-| --- | --- | --- |
-| `src/` | 9.5k | the library |
-| `tests/` | 8k | library behaviour, counterexample fixtures, one prose tier |
-| `examples/` | 8k | only what generates walkthrough, demo or paper data |
-| `docs/` | 4k | API reference, user guide, glossary, development, system design |
-| `website/` | 15k | landing, get-started, walkthroughs, Ideas, research page |
-| `research/` | 6k | paper, JOSS paper, Lean proofs |
+| Area | 18 Oct 2026, after M0 | Budget | Holds |
+| --- | ---: | ---: | --- |
+| `src/` | 9.6k | 9.5k | the library |
+| `tests/` | 9.8k | 8k | library behaviour, counterexample tests, walkthrough evidence, one prose tier |
+| `examples/` | 11.5k | 8k | the four walkthrough studies and the Lloyd counterexample |
+| `docs/` | 1.6k | 2k | user guide, API guide, symbol reference, glossary, development, system design |
+| `website/` | 12.6k | 10k | landing, get-started, walkthroughs, Ideas, research page |
+| `research/` | 2.9k | 5k | Lean proofs now; the paper and the JOSS paper in M4 |
+| `benchmarks/` | 1.1k | 1.1k | timing and quality harness, profiler |
+
+Before M0 the repository tracked 935 files and about 160k lines; after it, 322 files and 86k lines
+including data. The examples and website budgets are met by the M3 walkthrough rewrite.
 
 ## Not planned
 

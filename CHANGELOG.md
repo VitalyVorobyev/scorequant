@@ -19,6 +19,10 @@ Older entries cite design records as "ADR NNNN"; those records are in git at the
 - The research workspace, the Research Atlas and the decision journal. The library's design
   principles are now in `docs/system-design.md`, the Lean proofs in `research/formal`, and the
   counterexample fixtures behind refusals in `tests/fixtures/counterexamples`.
+- The documentation book, case-study and example pages, gallery and notebooks. The portal
+  walkthroughs carry the narrative; the reference site keeps a user guide, the API guide, the
+  symbol reference and the glossary. Example scripts that only fed the deleted pages are gone;
+  study outputs live in `examples/outputs`.
 - The private `scorequant.quantizers` façade; internal imports now use their owning
   `scorequant.solvers` modules. These modules remain private.
 

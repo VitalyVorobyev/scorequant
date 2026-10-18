@@ -157,7 +157,7 @@ both execution stacks remain lazy at their public boundaries.
 ## Learning and reference sites
 
 `website/` is the Docusaurus portal at the site root: the landing page, get-started, the
-walkthroughs and the browser runtime that powers their live demos. MkDocs at `/docs/` is the
+walkthroughs, the research page and the browser runtime that powers their live demos. MkDocs at `/docs/` is the
 reference: API, user guide and glossary. Browser schemas, workers and plotting never enter
 `src/scorequant`.
 

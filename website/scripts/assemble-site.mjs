@@ -24,7 +24,7 @@ await cp(portalBuild, assembled, {recursive: true});
  * it, so a portal route named `docs` would be silently overwritten by the
  * reference and the portal page would vanish from the published site with
  * every gate still green. Nothing emits one today -- the portal's routes are
- * `get-started` and `walkthroughs` -- and this is what keeps that true.
+ * `get-started`, `walkthroughs` and `research` -- and this is what keeps that true.
  */
 if (await directoryExists(resolve(portalBuild, referenceMount))) {
   process.stderr.write(

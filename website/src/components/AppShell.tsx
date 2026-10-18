@@ -13,6 +13,7 @@ import {SearchDialog} from "./SearchDialog";
 const navigation = [
   ["Get started", "/get-started"],
   ["Walkthroughs", "/walkthroughs"],
+  ["Research", "/research"],
   ["Reference", REFERENCE_BASE]
 ] as const;
 

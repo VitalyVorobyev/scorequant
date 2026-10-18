@@ -27,7 +27,7 @@ export default function Home(): React.JSX.Element {
             information about your model parameters as possible, and it reports how much they kept.
           </p>
           <p className="home-article__install">
-            <code>uv add scorequant</code> <Link to="/get-started">Get started →</Link>
+            <code>pip install scorequant</code> <Link to="/get-started">Get started →</Link>
           </p>
           <Figure
             src={siteUrl("walkthrough-figures/michelson-d-geometry.png")}

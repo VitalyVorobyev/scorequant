@@ -103,7 +103,7 @@ export const WALKTHROUGHS: readonly WalkthroughCard[] = [
   },
   {
     slug: "hep",
-    title: "A Higgs search with a floating energy scale",
+    title: "A Higgs boson measurement",
     href: "/walkthroughs/hep",
     lead:
       `Fit a ${hep("bins")}-category rule on half the simulated collisions, apply it to the other ` +

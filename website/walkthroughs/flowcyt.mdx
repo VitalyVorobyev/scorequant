@@ -61,7 +61,7 @@ Dashed lines are the conventional reductions, given the same reference cells and
 
 ## 4. Categories drawn in score space
 
-The population densities a score needs are unknown, so a classifier cross-fitted across the reference patients estimates them: its calibrated probabilities become density ratios, and the ratios become a five-coordinate score (the [density-ratio walkthrough](/walkthroughs/ratios/) explains the step). Because the score is estimated, the library reports the information it carries as a surrogate, never as exact Fisher information; the unbinned fit of the second section is the check that the estimate is good.
+The population densities a score needs are unknown, so a classifier cross-fitted across the reference patients estimates them: its calibrated probabilities become density ratios, and the ratios become a five-coordinate score (the [density-ratio walkthrough](/walkthroughs/ratios/#classifier-to-score) explains the step). Because the score is estimated, the library reports the information it carries as a surrogate, never as exact Fisher information; the unbinned fit of the second section is the check that the estimate is good.
 
 ```python
 import numpy as np

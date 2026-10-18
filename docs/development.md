@@ -102,7 +102,7 @@ separate toolchain, needed only when the formal evidence changes:
 
 ```bash
 curl https://elan.lean-lang.org/elan-init.sh -sSf | sh   # once
-cd agenticresearch/formal && lake exe cache get && lake build --wfail
+cd research/formal && lake exe cache get && lake build --wfail
 ```
 
 The build is a required pull-request and release gate, alongside `leanchecker` and an axiom
@@ -289,5 +289,5 @@ uv run mkdocs build --strict
 ```
 
 Plus `corepack pnpm validate` in `website/` when the portal changed, and
-`(cd agenticresearch/formal && lake build --wfail)` when the Lean formal evidence changed. This
+`(cd research/formal && lake build --wfail)` when the Lean formal evidence changed. This
 block is the single copy of the handoff gate in the repository; other files point here.

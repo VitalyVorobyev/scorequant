@@ -165,7 +165,7 @@ def test_every_refusal_cites_a_registered_counterexample() -> None:
     # forcing the refusal. Keep both in sync with the registry." Every
     # RefusalError call site must cite a counterexample id that actually
     # exists in the registry, and there must be more than zero of them.
-    counterexamples = ROOT / "agenticresearch" / "COUNTEREXAMPLES"
+    counterexamples = ROOT / "tests" / "fixtures" / "counterexamples"
     sites: list[tuple[Path, int, str]] = []
     for path in _package_sources():
         tree = ast.parse(path.read_text())

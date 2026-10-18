@@ -23,8 +23,8 @@ class RefusalError(ScoreQuantError, RuntimeError):
     message
         Plain-English refusal, unchanged from the pre-hierarchy message text.
     counterexample
-        Registry id (``agenticresearch/COUNTEREXAMPLES/<id>.json``) of the counterexample that
-        forces the refusal. Always a string literal at the raise site.
+        Id of the exact counterexample that forces the refusal; the repository
+        keeps it as ``tests/fixtures/counterexamples/<id>.json``. Always a string literal at the raise site.
     """
 
     counterexample: str

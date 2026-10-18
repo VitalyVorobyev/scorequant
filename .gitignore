@@ -26,8 +26,8 @@ papers/local/
 website/static/walkthrough-figures/
 setenv.sh
 
-# Lean build artifacts (agenticresearch/formal)
-agenticresearch/formal/.lake/
+# Lean build artifacts (research/formal)
+research/formal/.lake/
 
 # Claude Code session state: local worktrees and transcripts, never committed.
 .claude/

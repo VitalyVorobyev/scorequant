@@ -10,7 +10,7 @@ implements the same formulas.
 Install [Elan](https://lean-lang.org/install/) once, then run:
 
 ```bash
-cd agenticresearch/formal
+cd research/formal
 lake exe cache get
 lake build --wfail
 ```

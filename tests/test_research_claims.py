@@ -17,7 +17,7 @@ from ._oracles import _exhaustive_d_oracle, _o7_exact_plugin
 
 # The research workspace holding the counterexample bank; if it moves, update
 # this constant and tests/test_research_registry.py together.
-RESEARCH_WORKSPACE = Path(__file__).parents[1] / "agenticresearch"
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def _canonical_partitions(n_rows: int, n_bins: int) -> list[tuple[int, ...]]:
@@ -113,10 +113,10 @@ def test_d_voronoi_violation_has_positive_gain_lower_bound() -> None:
 
 def test_unmerged_duplicate_atoms_are_an_exact_boundary_failure() -> None:
     """Split duplicates can be vacuously stable without strict score geometry."""
-    fixture_path = RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-D-UNMERGED-DUPLICATES-001.json"
+    fixture_path = FIXTURES / "counterexamples" / "CE-D-UNMERGED-DUPLICATES-001.json"
     assert fixture_path.is_file(), (
         f"counterexample fixture missing at {fixture_path}; the research "
-        "workspace may have moved — update RESEARCH_WORKSPACE"
+        "workspace may have moved — update FIXTURES"
     )
     fixture = json.loads(fixture_path.read_text())
     scores = tuple(Fraction(row[0]) for row in fixture["scores"])
@@ -313,7 +313,7 @@ def _exact_binned_information(
 
 
 def test_global_profiled_ds_optimum_can_be_a_degenerate_tie_class() -> None:
-    path = RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-DEGENERATE-GLOBAL-TIE-001.json"
+    path = FIXTURES / "counterexamples" / "CE-DS-DEGENERATE-GLOBAL-TIE-001.json"
     fixture = json.loads(path.read_text())
     scores = [[Fraction(value) for value in row] for row in fixture["scores"]]
     n_rows, n_bins = 8, 3
@@ -374,7 +374,7 @@ def test_global_profiled_ds_optimum_can_be_a_degenerate_tie_class() -> None:
 
 def test_symmetric_wasted_cells_defeat_the_efficient_semimetric_rule() -> None:
     fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-POP-WASTED-CELLS-001.json").read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-POP-WASTED-CELLS-001.json").read_text()
     )
     scores = [[Fraction(value) for value in row] for row in fixture["scores"]]
     labels = tuple(fixture["labels_after_or_optimum"])
@@ -568,7 +568,7 @@ def test_ds15_profiled_value_is_bounded_by_the_efficient_score_interval_optimum(
     optimum sits strictly below the interval optimum on this sample.
     """
     fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-GLOBAL-GEOMETRY-001.json").read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-GLOBAL-GEOMETRY-001.json").read_text()
     )
     scores = [[Fraction(value) for value in row] for row in fixture["scores"]]
     n_rows, n_bins = len(scores), 3
@@ -634,7 +634,7 @@ def test_ds15_rank_deficiency_zeroes_every_feasible_profiled_value() -> None:
     (i) of DS15 therefore needs K >= d_lambda + 2, not K >= 3.
     """
     fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-MARGINS-RANK-VACUITY-001.json").read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-MARGINS-RANK-VACUITY-001.json").read_text()
     )
     scores = [[Fraction(value) for value in row] for row in fixture["scores"]]
     n_rows = len(scores)
@@ -717,7 +717,7 @@ def test_ds15_rank_vacuity_diagnosis_does_not_depend_on_the_labeling() -> None:
     to the rank tolerance cannot silently reopen the platform split.
     """
     fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-MARGINS-RANK-VACUITY-001.json").read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-MARGINS-RANK-VACUITY-001.json").read_text()
     )
     scores = np.array([[float(Fraction(v)) for v in row] for row in fixture["scores"]])
     weights = np.array([float(Fraction(w)) for w in fixture["weights"]])
@@ -765,7 +765,7 @@ def test_ds15_rank_vacuity_is_refused_by_both_public_tasks(
     reproduce the fixture's recorded exact value 9/5.
     """
     fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-MARGINS-RANK-VACUITY-001.json").read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-MARGINS-RANK-VACUITY-001.json").read_text()
     )
     scores = np.array([[float(Fraction(v)) for v in row] for row in fixture["scores"]])
     weights = np.array([float(Fraction(w)) for w in fixture["weights"]])
@@ -940,9 +940,7 @@ def test_ds16_exchange_stable_state_can_retain_macroscopic_margins() -> None:
     margins; it prices them (CE-DS-STABLE-MARGIN-RETAINING-001).
     """
     fixture = json.loads(
-        (
-            RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-STABLE-MARGIN-RETAINING-001.json"
-        ).read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-STABLE-MARGIN-RETAINING-001.json").read_text()
     )
     scores = [[Fraction(value) for value in row] for row in fixture["scores"]]
     n_rows, n_bins = len(scores), 3
@@ -1055,9 +1053,7 @@ def test_ds16_efficient_score_interval_seed_is_not_exchange_stable() -> None:
     (CE-DS-INTERVAL-SEED-UNSTABLE-001).
     """
     fixture = json.loads(
-        (
-            RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-INTERVAL-SEED-UNSTABLE-001.json"
-        ).read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-INTERVAL-SEED-UNSTABLE-001.json").read_text()
     )
     scores = [[Fraction(value) for value in row] for row in fixture["scores"]]
     n_rows, n_bins = len(scores), 3
@@ -1149,7 +1145,7 @@ def test_ds17_signsplit_stationary_state_retains_margins_without_separation() ->
     carries no margin (CE-DS-LCM-SIGNSPLIT-MARGIN-001).
     """
     fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-LCM-SIGNSPLIT-MARGIN-001.json").read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-LCM-SIGNSPLIT-MARGIN-001.json").read_text()
     )
     scores = [[Fraction(value) for value in row] for row in fixture["scores"]]
     weights = [Fraction(value) for value in fixture["weights"]]
@@ -1228,9 +1224,7 @@ def test_ds17_signsplit_stationary_state_retains_margins_without_separation() ->
 def test_ds17_minimal_atomic_signsplit_is_only_a_boundary_witness() -> None:
     """The N=3 sign-split algebra is minimal but outside DS17's hypotheses."""
     fixture = json.loads(
-        (
-            RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-LCM-SIGNSPLIT-MINIMAL-001.json"
-        ).read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-LCM-SIGNSPLIT-MINIMAL-001.json").read_text()
     )
     scores = [[Fraction(value) for value in row] for row in fixture["scores"]]
     weights = [Fraction(value) for value in fixture["weights"]]
@@ -1305,9 +1299,7 @@ def test_ds18_population_cut_labels_need_not_be_exchange_stable() -> None:
     """Boundary noise can defeat the raw population labels at finite N."""
     fixture = json.loads(
         (
-            RESEARCH_WORKSPACE
-            / "COUNTEREXAMPLES"
-            / "CE-DS-NONCENTERED-POPULATION-CUT-UNSTABLE-001.json"
+            FIXTURES / "counterexamples" / "CE-DS-NONCENTERED-POPULATION-CUT-UNSTABLE-001.json"
         ).read_text()
     )
     scores = [[Fraction(value) for value in row] for row in fixture["scores"]]
@@ -1393,13 +1385,7 @@ def test_ds18_named_off_class_root_and_margins_are_exact() -> None:
     assert Fraction(1, 2) < Fraction(2, 3)
 
     artifact = json.loads(
-        (
-            RESEARCH_WORKSPACE
-            / "WORK"
-            / "artifacts"
-            / "OPEN-DS-MARGINS-NONCENTERED"
-            / "exact-falsification.json"
-        ).read_text()
+        (FIXTURES / "research_artifacts" / "exact-falsification.json").read_text()
     )
     exact = artifact["population_exact"]
     assert exact["binned_information"] == [["8/27", "0"], ["0", "32/81"]]
@@ -1600,9 +1586,7 @@ def test_ds18_singular_destination_beats_the_regular_optimum() -> None:
     """The in-bin feasibility convention is load-bearing at the minimal support."""
     fixture = json.loads(
         (
-            RESEARCH_WORKSPACE
-            / "COUNTEREXAMPLES"
-            / "CE-DS-NONCENTERED-SINGULAR-DESTINATION-001.json"
+            FIXTURES / "counterexamples" / "CE-DS-NONCENTERED-SINGULAR-DESTINATION-001.json"
         ).read_text()
     )
     xs = tuple(Fraction(value) for value in fixture["construction_x"])
@@ -1667,7 +1651,7 @@ def test_ds18_singular_destination_beats_the_regular_optimum() -> None:
 def test_ds19_tilt_dual_has_a_support_minimal_exact_positive_gap() -> None:
     """Two tilt quadratics certify a strict gap without locating the algebraic minimizer."""
     fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-TILT-DUAL-GAP-001.json").read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-TILT-DUAL-GAP-001.json").read_text()
     )
     scores = [[Fraction(value) for value in row] for row in fixture["scores"]]
     weights = [Fraction(value) for value in fixture["weights"]]
@@ -1837,7 +1821,7 @@ def test_ds19_weak_duality_and_scalar_contiguity_survive_adversarial_ties() -> N
     # Split-weight duplication is exactly invariant after pooling identical
     # full-score atoms, which is the ScoreQuant default on these small tables.
     fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-TILT-DUAL-GAP-001.json").read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-TILT-DUAL-GAP-001.json").read_text()
     )
     pooled: dict[tuple[Fraction, Fraction], Fraction] = {}
     for row, raw_weight in zip(fixture["scores"], fixture["weights"], strict=True):
@@ -1934,15 +1918,7 @@ def test_ds19_ds18_empirical_projection_tax_identity_is_exact_on_practical_cases
             checked += 1
 
     assert checked == 1394
-    artifact = json.loads(
-        (
-            RESEARCH_WORKSPACE
-            / "WORK"
-            / "artifacts"
-            / "DS-PRACTICAL-CERTIFIED-SOLVER"
-            / "ds18-search.json"
-        ).read_text()
-    )
+    artifact = json.loads((FIXTURES / "research_artifacts" / "ds18-search.json").read_text())
     assert artifact["summary"]["tax_identity_violations"] == 0
     assert artifact["summary"]["contiguity_disagreements"] == 0
     assert artifact["summary"]["positive_probe_gaps"] == 1
@@ -1951,9 +1927,7 @@ def test_ds19_ds18_empirical_projection_tax_identity_is_exact_on_practical_cases
 def test_ds19_matrix_tilt_outer_map_is_not_quasiconvex() -> None:
     """Tier B exact midpoint violation (CE-DS-MATRIX-TILT-NONQUASICONVEX-001)."""
     fixture = json.loads(
-        (
-            RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-MATRIX-TILT-NONQUASICONVEX-001.json"
-        ).read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-MATRIX-TILT-NONQUASICONVEX-001.json").read_text()
     )
     scores = [[Fraction(value) for value in row] for row in fixture["scores"]]
     weights = [Fraction(value) for value in fixture["weights"]]
@@ -2125,7 +2099,7 @@ def _audit19_exact_dual_min(
 def test_ds19_audit_exact_dual_minimum_of_gap_witness() -> None:
     """The exact envelope minimum of the N=4 gap witness is rational and above the certificate."""
     fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-TILT-DUAL-GAP-001.json").read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-TILT-DUAL-GAP-001.json").read_text()
     )
     scores = [[Fraction(v) for v in row] for row in fixture["scores"]]
     weights = [Fraction(v) for v in fixture["weights"]]
@@ -2160,7 +2134,7 @@ def test_ds19_audit_exact_dual_minimum_of_gap_witness() -> None:
 def test_ds19_audit_support_minimal_gap_fixture_002() -> None:
     """CE-DS-TILT-DUAL-GAP-002: an N=3, K=2 gap with a fully rational proof of d=1/2."""
     fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-TILT-DUAL-GAP-002.json").read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-TILT-DUAL-GAP-002.json").read_text()
     )
     scores = [[Fraction(v) for v in row] for row in fixture["scores"]]
     weights = [Fraction(v) for v in fixture["weights"]]
@@ -2205,7 +2179,7 @@ def test_ds19_audit_support_minimal_gap_fixture_002() -> None:
 def test_ds19_audit_tie_masked_closure_fixture() -> None:
     """CE-DS-TILT-DUAL-TIE-MASK-001: the bracket closes but one DP tie order hides it."""
     fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-TILT-DUAL-TIE-MASK-001.json").read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-TILT-DUAL-TIE-MASK-001.json").read_text()
     )
     scores = [[Fraction(v) for v in row] for row in fixture["scores"]]
     weights = [Fraction(v) for v in fixture["weights"]]
@@ -2467,9 +2441,7 @@ def test_ds19_audit_ds18_strip_dp_delta_chain_on_seeded_sample() -> None:
 def test_ds19_audit_matrix_tilt_midpoint_violation_by_direct_evaluation() -> None:
     """Tier B: V(B) evaluated directly from the tilted form, not from the closed form."""
     fixture = json.loads(
-        (
-            RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-DS-MATRIX-TILT-NONQUASICONVEX-001.json"
-        ).read_text()
+        (FIXTURES / "counterexamples" / "CE-DS-MATRIX-TILT-NONQUASICONVEX-001.json").read_text()
     )
     scores = [[Fraction(v) for v in row] for row in fixture["scores"]]
     weights = [Fraction(v) for v in fixture["weights"]]
@@ -2588,9 +2560,7 @@ def test_o6_audit_eta_zero_law_has_zero_influence_variance_with_many_atoms() -> 
     is not restricted to two atoms per cell, and an atomless cell does not
     imply (A4) unless eta > 0. The fixture has four atoms in cell 0.
     """
-    fixture_path = (
-        RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-O6-ETA-ZERO-MULTIATOM-VARIANCE-001.json"
-    )
+    fixture_path = FIXTURES / "counterexamples" / "CE-O6-ETA-ZERO-MULTIATOM-VARIANCE-001.json"
     assert fixture_path.is_file(), f"counterexample fixture missing at {fixture_path}"
     fixture = json.loads(fixture_path.read_text())
     atoms = [
@@ -2740,7 +2710,7 @@ def test_o7_ellipsoid_law_has_zero_influence_variance_on_the_whole_circle() -> N
     cell mean - atomless ones included - has sigma^2 = 0. O6's "atomless cell
     implies sigma^2 > 0 when eta > 0" does not lift to d >= 2.
     """
-    fixture_path = RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-O7-ELLIPSOID-ZERO-VARIANCE-001.json"
+    fixture_path = FIXTURES / "counterexamples" / "CE-O7-ELLIPSOID-ZERO-VARIANCE-001.json"
     assert fixture_path.is_file(), f"counterexample fixture missing at {fixture_path}"
     fixture = json.loads(fixture_path.read_text())
     scores = [[Fraction(x) for x in row] for row in fixture["scores"]]
@@ -2796,9 +2766,7 @@ def test_o7_audit_unit_retention_singular_sample_fixture() -> None:
     and reports 1 on the retained subspace. Every composition with both cells
     occupied gives the ratio exactly 1.
     """
-    fixture_path = (
-        RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / "CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001.json"
-    )
+    fixture_path = FIXTURES / "counterexamples" / "CE-O7-UNIT-RETENTION-SINGULAR-SAMPLE-001.json"
     assert fixture_path.is_file(), f"counterexample fixture missing at {fixture_path}"
     fixture = json.loads(fixture_path.read_text())
     law = fixture["population_law"]
@@ -2918,7 +2886,7 @@ def _o8_det(m: list[list[Fraction]]) -> Fraction:
 
 
 def _o8_fixture(name: str) -> dict:
-    path = RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / f"{name}.json"
+    path = FIXTURES / "counterexamples" / f"{name}.json"
     assert path.is_file(), f"counterexample fixture missing at {path}"
     return json.loads(path.read_text())
 
@@ -3231,9 +3199,7 @@ def test_o8_audit_calibration_does_not_certify_retention_distortion(suffix: str)
 def test_compile_tolerance_boundary_exact_ratios(
     fixture_id: str, maximum_ratio: Fraction, batch_ratio: Fraction
 ) -> None:
-    fixture = json.loads(
-        (RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / f"{fixture_id}.json").read_text()
-    )
+    fixture = json.loads((FIXTURES / "counterexamples" / f"{fixture_id}.json").read_text())
     scores = [Fraction(row[0]) for row in fixture["scores"]]
     labels = fixture["labels_before"]
     n_bins = fixture["K"]

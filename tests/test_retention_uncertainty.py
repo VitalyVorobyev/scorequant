@@ -24,7 +24,7 @@ from scorequant.information import _retention_influence
 
 from ._oracles import _o7_exact_plugin
 
-RESEARCH_WORKSPACE = Path(__file__).parents[1] / "agenticresearch"
+COUNTEREXAMPLES = Path(__file__).parent / "fixtures" / "counterexamples"
 BACKENDS = ("jax", "numpy")
 _TOLERANCE = {"rtol": 1e-10, "atol": 1e-12}
 
@@ -34,7 +34,7 @@ def _execution(backend: str) -> sq.ExecutionConfig:
 
 
 def _fixture(name: str) -> dict:
-    path = RESEARCH_WORKSPACE / "COUNTEREXAMPLES" / f"{name}.json"
+    path = COUNTEREXAMPLES / f"{name}.json"
     assert path.is_file(), f"counterexample fixture missing at {path}"
     return json.loads(path.read_text())
 

@@ -27,7 +27,7 @@ jobs:
       - name: Lean formal gate
         uses: leanprover/lean-action@v1
         with:
-          lake-package-directory: agenticresearch/formal
+          lake-package-directory: research/formal
           auto-config: false
           build: true
           build-args: "--wfail"

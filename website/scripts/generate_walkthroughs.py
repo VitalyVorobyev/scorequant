@@ -641,28 +641,15 @@ FACTS: tuple[Fact, ...] = (
     Fact("hep", "licenseRecordUrl", f"{HEP_FIXTURE}#/license_record_url", _text),
     # ----------------------------------------------------------------- ratios
     Fact("ratios", "bins", f"{DOOR3}#/n_bins", _count),
-    Fact("ratios", "nTrain", f"{DOOR3}#/n_train", _count),
-    Fact("ratios", "nTest", f"{DOOR3}#/n_test", _count),
-    Fact("ratios", "nClosure", f"{DOOR3}#/n_closure", _count),
     Fact("ratios", "signalFraction", f"{DOOR3}#/mixture/reference_fractions/0", _fixed(2)),
     Fact("ratios", "smallTrainSize", f"{DOOR3}#/ladder/0/n_per_class", _count),
     Fact("ratios", "mediumTrainSize", f"{DOOR3}#/ladder/1/n_per_class", _count),
     Fact("ratios", "largeTrainSize", f"{DOOR3}#/ladder/2/n_per_class", _count),
     Fact("ratios", "smallSurrogate", f"{DOOR3}#/ladder/0/surrogate_retention", _fixed(4)),
     Fact("ratios", "smallTrue", f"{DOOR3}#/ladder/0/true_retention", _fixed(4)),
-    Fact("ratios", "mediumSurrogate", f"{DOOR3}#/ladder/1/surrogate_retention", _fixed(4)),
-    Fact("ratios", "mediumTrue", f"{DOOR3}#/ladder/1/true_retention", _fixed(4)),
-    Fact("ratios", "largeSurrogate", f"{DOOR3}#/ladder/2/surrogate_retention", _fixed(4)),
-    Fact("ratios", "largeTrue", f"{DOOR3}#/ladder/2/true_retention", _fixed(4)),
-    Fact("ratios", "smallGap", f"{DOOR3}#/surrogate_gap/rows/0/gap", _fixed(4)),
-    Fact("ratios", "mediumGap", f"{DOOR3}#/surrogate_gap/rows/1/gap", _fixed(4)),
     Fact("ratios", "largeGap", f"{DOOR3}#/surrogate_gap/rows/2/gap", _fixed(4)),
-    Fact("ratios", "largestGap", f"{DOOR3}#/surrogate_gap/largest_gap", _fixed(4)),
-    Fact("ratios", "exactCeiling", f"{DOOR3}#/exact_ceiling/retention", _fixed(4)),
     Fact("ratios", "smallClosure", f"{DOOR3}#/ladder/0/closure_residual", _fixed(4)),
-    Fact("ratios", "mediumClosure", f"{DOOR3}#/ladder/1/closure_residual", _fixed(4)),
     Fact("ratios", "largeClosure", f"{DOOR3}#/ladder/2/closure_residual", _fixed(4)),
-    Fact("ratios", "exactClosure", f"{DOOR3}#/exact_ceiling/closure_residual", _fixed(4)),
     # The wrong-measure contrast. Published deliberately: it is what
     # `ratio_closure_report` returns when handed a sample from the wrong
     # measure, it is present for a perfect score, and it is not estimator error.
@@ -674,93 +661,15 @@ FACTS: tuple[Fact, ...] = (
     ),
     Fact(
         "ratios",
-        "analyticSignalRatioMean",
-        f"{DOOR3}#/closure_measure_mismatch/analytic_reference_measure_ratio_means/0",
-        _fixed(4),
-    ),
-    Fact(
-        "ratios",
-        "analyticBackgroundRatioMean",
-        f"{DOOR3}#/closure_measure_mismatch/analytic_reference_measure_ratio_means/1",
-        _fixed(4),
-    ),
-    Fact(
-        "ratios",
-        "classifierProvenanceKind",
-        f"{DOOR3}#/provenance/classifier/provenance_kind",
-        _text,
-    ),
-    Fact(
-        "ratios",
         "classifierInformationKind",
         f"{DOOR3}#/provenance/classifier/information_kind",
         _text,
     ),
-    Fact("ratios", "exactProvenanceKind", f"{DOOR3}#/provenance/exact/provenance_kind", _text),
     Fact(
         "ratios",
         "exactInformationKind",
         f"{DOOR3}#/provenance/exact/information_kind",
         _text,
-    ),
-    # The naive one-dimensional binnings of the same estimated score. Published
-    # even though they nearly tie the fitted partition -- in one dimension they
-    # do, and at the largest training size equal-width cells actually win. That
-    # is the honest result and it is what makes the multi-dimensional examples
-    # mean something.
-    Fact(
-        "ratios",
-        "smallEqualFrequency",
-        f"{DOOR3}#/naive_binning/rows/0/equal_frequency_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "ratios",
-        "smallEqualWidth",
-        f"{DOOR3}#/naive_binning/rows/0/equal_width_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "ratios",
-        "mediumEqualFrequency",
-        f"{DOOR3}#/naive_binning/rows/1/equal_frequency_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "ratios",
-        "mediumEqualWidth",
-        f"{DOOR3}#/naive_binning/rows/1/equal_width_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "ratios",
-        "largeEqualFrequency",
-        f"{DOOR3}#/naive_binning/rows/2/equal_frequency_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "ratios",
-        "largeEqualWidth",
-        f"{DOOR3}#/naive_binning/rows/2/equal_width_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "ratios",
-        "ceilingEqualWidth",
-        f"{DOOR3}#/naive_binning/exact_ceiling/equal_width_retention",
-        _fixed(4),
-    ),
-    Fact(
-        "ratios",
-        "naiveLargestGap",
-        f"{DOOR3}#/naive_binning/largest_gap",
-        _fixed(4),
-    ),
-    Fact(
-        "ratios",
-        "naiveLargestGapTrainSize",
-        f"{DOOR3}#/naive_binning/largest_gap_n_per_class",
-        _count,
     ),
     # -------------------------------------------------------------- michelson
     Fact("michelson", "bins", f"{MICHELSON}#/headline_bins", _count),

@@ -204,6 +204,103 @@
         "value": 0.49819665199074037
       }
     },
+    "ideas": {
+      "clusterBins": {
+        "source": "examples/outputs/ideas-toys.json#/clusters/bins",
+        "text": "3",
+        "value": 3
+      },
+      "dArithmetic": {
+        "source": "examples/outputs/ideas-toys.json#/clusters/d_optimal/arithmetic_mean_retention",
+        "text": "0.64",
+        "value": 0.637637904157295
+      },
+      "dGeometric": {
+        "source": "examples/outputs/ideas-toys.json#/clusters/d_optimal/geometric_mean_retention",
+        "text": "0.62",
+        "value": 0.6212212503799842
+      },
+      "dHigh": {
+        "source": "examples/outputs/ideas-toys.json#/clusters/d_optimal/retained_eigenvalues/1",
+        "text": "0.78",
+        "value": 0.7813955296748194
+      },
+      "dLow": {
+        "source": "examples/outputs/ideas-toys.json#/clusters/d_optimal/retained_eigenvalues/0",
+        "text": "0.49",
+        "value": 0.4938802786397707
+      },
+      "fringeBins": {
+        "source": "examples/outputs/ideas-toys.json#/fringe/headline_bins",
+        "text": "4",
+        "value": 4
+      },
+      "fringeEqual": {
+        "source": "examples/outputs/ideas-toys.json#/fringe/headline_equal",
+        "text": "0.00",
+        "value": 0.0
+      },
+      "fringeScore": {
+        "source": "examples/outputs/ideas-toys.json#/fringe/headline_score",
+        "text": "0.94",
+        "value": 0.936436041215
+      },
+      "fringes": {
+        "source": "examples/outputs/ideas-toys.json#/fringe/fringes",
+        "text": "4",
+        "value": 4
+      },
+      "kmeansArithmetic": {
+        "source": "examples/outputs/ideas-toys.json#/clusters/kmeans/arithmetic_mean_retention",
+        "text": "0.66",
+        "value": 0.6646062848300188
+      },
+      "kmeansGeometric": {
+        "source": "examples/outputs/ideas-toys.json#/clusters/kmeans/geometric_mean_retention",
+        "text": "0.58",
+        "value": 0.5805299156634347
+      },
+      "kmeansHigh": {
+        "source": "examples/outputs/ideas-toys.json#/clusters/kmeans/retained_eigenvalues/1",
+        "text": "0.99",
+        "value": 0.9881592648122244
+      },
+      "kmeansLow": {
+        "source": "examples/outputs/ideas-toys.json#/clusters/kmeans/retained_eigenvalues/0",
+        "text": "0.34",
+        "value": 0.3410533048478132
+      },
+      "ledgerDownhill": {
+        "source": "examples/outputs/lloyd-nonmonotone.json#/ledger_totals/downhill_runs",
+        "text": "0",
+        "value": 0
+      },
+      "ledgerEmptied": {
+        "source": "examples/outputs/lloyd-nonmonotone.json#/ledger_totals/emptied_runs",
+        "text": "139",
+        "value": 139
+      },
+      "ledgerRuns": {
+        "source": "examples/outputs/lloyd-nonmonotone.json#/ledger_totals/runs",
+        "text": "432",
+        "value": 432
+      },
+      "lloydMoved": {
+        "source": "examples/outputs/lloyd-nonmonotone.json#/counterexample/moved",
+        "text": "4",
+        "value": 4
+      },
+      "lloydStep": {
+        "source": "examples/outputs/lloyd-nonmonotone.json#/counterexample/step",
+        "text": "-0.14",
+        "value": -0.1365211885967863
+      },
+      "lloydTangent": {
+        "source": "examples/outputs/lloyd-nonmonotone.json#/counterexample/tangent_change",
+        "text": "8.2",
+        "value": 8.227402215988814
+      }
+    },
     "michelson": {
       "bins": {
         "source": "examples/outputs/michelson-phase.json#/headline_bins",

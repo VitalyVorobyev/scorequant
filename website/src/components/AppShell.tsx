@@ -14,6 +14,7 @@ const navigation = [
   ["Get started", "/get-started"],
   ["Walkthroughs", "/walkthroughs"],
   ["Research", "/research"],
+  ["Ideas", "/ideas"],
   ["Reference", REFERENCE_BASE]
 ] as const;
 

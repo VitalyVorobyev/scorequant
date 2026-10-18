@@ -96,6 +96,19 @@ const config: Config = {
     [
       "@docusaurus/plugin-content-docs",
       {
+        // The Ideas series: short essays, one idea each. A docs instance like
+        // the walkthroughs, so it shares their frame, contents list and TeX.
+        id: "ideas",
+        path: "ideas",
+        routeBasePath: "ideas",
+        sidebarPath: false,
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex]
+      }
+    ],
+    [
+      "@docusaurus/plugin-content-docs",
+      {
         // `/get-started` is a docs instance rather than an MDX page route so it
         // inherits the swizzled DocItem table of contents and the single-`<main>`
         // DocRoot layout the e2e suite asserts on every route.

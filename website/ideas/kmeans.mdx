@@ -1,0 +1,67 @@
+---
+title: Why k-means is the wrong clustering for D
+sidebar_label: k-means and D
+sidebar_position: 3
+description: k-means adds up the information each direction keeps; D-optimality multiplies it, and with several parameters they choose different bins.
+---
+
+import {Figure} from "@site/src/components/Figure";
+import {ReferenceLink} from "@site/src/components/ReferenceLink";
+import {factsFor} from "@site/src/lib/facts";
+import {siteUrl} from "@site/src/lib/site";
+
+export const f = factsFor("ideas");
+
+# Why k-means is the wrong clustering for D
+
+*k-means adds up the information each direction keeps. D-optimality multiplies it. With more than one parameter, they choose different bins.*
+
+## Two ways to make the scatter small
+
+[The first post](./score-space.mdx) showed that bins lose exactly the scatter of the score inside them:
+
+$$
+I-I_{\rm bin}=\sum_b\sum_{i\in b} w_i\,(s_i-\mu_b)(s_i-\mu_b)^\top .
+$$
+
+With one parameter this is a number, and the best bins make it as small as possible. With several parameters it is a matrix, and "small" needs a definition.
+
+k-means offers one. It minimizes the summed squared distance from each point to its cell mean, which is the trace of that matrix. Since the trace of $I$ is fixed, this is the same as maximizing the trace of $I_{\rm bin}$.
+
+The trace has two problems. The first is units. Measure one parameter in millimetres instead of metres and its score shrinks a thousandfold, its share of the trace a millionfold, and k-means stops caring about it. Whitening the scores first, so that the unbinned information becomes the identity, removes the units. ScoreQuant's trace baseline, `NormalizedTrace`, does exactly that, and in whitened coordinates the trace becomes the sum of the retention spectrum: the eigenvalues of $I^{-1}I_{\rm bin}$, one per direction in parameter space, each the fraction of information kept in that direction.
+
+The second problem survives whitening. A sum will trade one direction for another whenever the total rises: it is content to keep nearly all of one direction and little of another.
+
+## What D-optimality asks for
+
+D-optimality maximizes $\log\det I_{\rm bin}$ instead. The determinant is the product of the eigenvalues, so in retention terms D maximizes their geometric mean, which ScoreQuant reports as `geometric_mean_retention`. The reason a product behaves differently is simple: it cannot be propped up by one large factor, and a direction that keeps nothing makes it zero whatever the others do.
+
+The determinant also has a direct meaning. The asymptotic joint confidence region of the parameters is an ellipsoid whose volume scales as $(\det I_{\rm bin})^{-1/2}$, so D-optimal bins make that region as small as possible. And an invertible change of parameters multiplies the determinant by a constant, so units and reparametrizations do not change which bins are best.
+
+## A case where they disagree
+
+Take scores in two dimensions. The first coordinate falls into two tight clusters and the second is spread normally; both have unit variance, so the scores are already whitened. There are {f("clusterBins")} bins.
+
+<Figure
+  src={siteUrl("walkthrough-figures/ideas-kmeans-d.png")}
+  alt="Two scatter plots of the same scores: two vertical columns of points at score 1 equal to minus one and plus one. Left, k-means: the left column is split in half at zero on the second score and the right column is one cell. Right, D-optimal: the left column is split the same way, but the top and bottom tails of the right column join the two left cells. Large circles mark each cell's mean, and each title gives the two retentions."
+  caption="The same scores in three bins. Left: k-means on whitened scores. Right: the D-optimal partition. Large circles mark the cell means; the titles give the retention spectrum."
+  paper
+  wide
+/>
+
+k-means keeps the clusters apart and splits one of them along the second score. It keeps {f("kmeansHigh")} of one direction and {f("kmeansLow")} of the other. The D-optimal bins split the same cluster but hand the tails of the other cluster to those two cells, so that all three cells differ in the second score. That gives up some of the first direction to keep more of the second: {f("dHigh")} and {f("dLow")}.
+
+Each method wins on its own measure. k-means has the larger sum, an arithmetic mean of {f("kmeansArithmetic")} against {f("dArithmetic")}; D has the larger product, a geometric mean of {f("dGeometric")} against {f("kmeansGeometric")}. Which measure matters depends on the fit. When both parameters are estimated, it is the determinant, because it sets the size of their joint confidence region.
+
+## Nearest mean, in a moving metric
+
+The two answers share a geometry. A converged k-means partition assigns every point to its nearest cell mean in a fixed metric, Euclidean after whitening. An exchange-stable D partition, one that no single move of an event improves, with nonsingular binned information, assigns every point to its nearest cell mean too, but in the metric of $I_{\rm bin}^{-1}$ (<ReferenceLink to="guide/#the-one-crossing-compiling-a-partition">user guide</ReferenceLink>). That metric stretches the directions the bins currently keep least, so a step along a poorly kept direction counts for more and the cells are drawn to split along it. That is what moved the tails of the second cluster in the right panel.
+
+The metric depends on the bins, so it moves whenever they change. This makes D-optimal bins harder to find than k-means bins: [the next post](./lloyd.mdx) shows what goes wrong when the k-means algorithm is applied to them unchanged.
+
+## With one parameter
+
+With a single parameter there is nothing to trade. The trace and the determinant of a one-by-one matrix are the same number, so k-means on the score and D-optimality are the same criterion and have the same best bins: intervals of the score. The difference starts with the second parameter.
+
+Running both on a real problem is cheap, and the user guide recommends it: the gap between them says whether the determinant buys anything on that data (<ReferenceLink to="guide/#3-which-criterion">user guide</ReferenceLink>).

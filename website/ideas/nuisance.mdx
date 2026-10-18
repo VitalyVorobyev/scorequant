@@ -1,0 +1,67 @@
+---
+title: Nuisance parameters break the rule
+sidebar_label: Nuisance parameters
+sidebar_position: 5
+description: With a nuisance parameter profiled out, the best bins need not follow their own nearest-mean geometry, so a reusable rule has to be fitted.
+---
+
+import {Figure} from "@site/src/components/Figure";
+import {ReferenceLink} from "@site/src/components/ReferenceLink";
+import {factsFor} from "@site/src/lib/facts";
+import {siteUrl} from "@site/src/lib/site";
+
+export const m = factsFor("michelson");
+
+# Nuisance parameters break the rule
+
+*When only some parameters are reported and the rest are fitted alongside, the best bins stop being a nearest-mean partition of their own geometry. They can still be found, but a rule for new events has to be fitted rather than read off them.*
+
+## Reporting one parameter
+
+Often only some of the parameters are wanted. An interferometer reports a phase, but the fringe frequency has to be fitted with it; a particle search reports a signal strength, but an energy scale floats. The parameters fitted and not reported are nuisance parameters. What matters is the information about the parameter of interest $\psi$ that survives estimating the nuisance $\lambda$ from the same counts, the profiled information
+
+$$
+I_{\psi\mid\lambda}
+=
+I_{\psi\psi}-I_{\psi\lambda}I_{\lambda\lambda}^{-1}I_{\lambda\psi}.
+$$
+
+The profiled criterion, $D_s$, maximizes the log determinant of this quantity computed from the binned information. It does not care how well the bins resolve $\lambda$ for its own sake, and will give up a lot of nuisance information to keep information about $\psi$.
+
+With one parameter of interest there is a clean way to see what it wants. The efficient score
+
+$$
+\hat s=s_\psi-I_{\psi\lambda}I_{\lambda\lambda}^{-1}s_\lambda
+$$
+
+is the part of the $\psi$ score that no change of $\lambda$ can imitate, and its second moment is exactly $I_{\psi\mid\lambda}$. Good profiled bins separate values of $\hat s$.
+
+## Where the D argument stops
+
+For plain D-optimality, a stable partition is a nearest-mean partition in the metric of $I_{\rm bin}^{-1}$, as [the k-means post](./kmeans.mdx) described. That fact is what makes the partition reusable. The cell means and the metric define a Voronoi rule, which assigns a bin to any new score, and ScoreQuant's `compile_quantizer` turns a stable D partition into that rule.
+
+Apply the same reasoning to $D_s$ and the metric collapses to a single direction. To first order, the criterion sees a change of the bins only through the binned efficient score, the efficient score built from the binned information rather than the unbinned. Its "nearest mean" is therefore nearest along that one direction, and its cells would be intervals of it.
+
+That picture is only first order, and the efficient direction itself depends on the bins. ScoreQuant keeps an example, eight scores in three cells, in which even the globally optimal partition, found by exhaustive exact search, places events in a cell whose mean is not the nearest along its own efficient direction. The reason this matters is simple: a rule is only canonical if the partition contains it, and here it does not. So `compile_quantizer` refuses a profiled partition rather than invent a rule for it (<ReferenceLink to="guide/#the-one-crossing-compiling-a-partition">user guide</ReferenceLink>).
+
+## Fitting a rule instead
+
+A rule is still needed whenever new events must be categorized: recorded data, a shifted simulation, the next run. It is fitted directly. `fit_quantizer` with `SoftVoronoiConfig` optimizes the profiled criterion over a smooth family of score-space rules and then hardens the result into hard bins (<ReferenceLink to="guide/#parameters-of-interest-with-nuisance">user guide</ReferenceLink>). The result is a rule by construction, and its retention is measured like any other.
+
+On the events it was fitted to, it cannot beat the best partition of those events, since its labels there are one such partition, and in practice it keeps somewhat less. In the interferometer, the fitted rule keeps {m("dsRuleProfiledRetention")} of the profiled phase information against {m("profiledRetentionAtSix")} for the partition, with the same number of bins.
+
+<Figure
+  src={siteUrl("walkthrough-figures/michelson-profiled-ds.png")}
+  alt="Three panels. Top: the interferometer's score curve, four loops coloured by six profiled cells that cut across the loops. Middle: the efficient score along the detector in the same colours, each colour a band of efficient-score values. Bottom: label strips along the detector for the efficient-score start, the profiled partition and the fitted rule."
+  caption={<>Profiled bins for the interferometer phase with the fringe frequency as nuisance: on the score curve (top), on the efficient score along the detector (middle), and along the detector for the efficient-score start, the profiled partition and the fitted rule (bottom).</>}
+  paper
+  wide
+/>
+
+## Two concrete cases
+
+The [interferometer walkthrough](/walkthroughs/michelson/#7-a-reusable-rule-for-the-phase) shows the shape of the answer. D-optimal bins separate the loops of the score curve from one another, which is what resolving the fringe frequency requires. Profiled bins cut across the loops instead, along bands of the efficient score.
+
+The [Higgs walkthrough](/walkthroughs/hep/#5-the-uncertainty-on-the-signal-strength) shows why it matters. With the tau energy scale floating, slices of a signal-versus-background classifier lose most of their information about the signal strength, because the energy scale can imitate much of the signal's pattern across them. A profiled rule, fitted on half the events and tested on the other half, keeps most of it.
+
+In both cases the partition alone was not enough, and a rule had to be fitted. For one parameter of interest there is also a certified ceiling on what any partition can keep, which [the last post](./retention.mdx) uses to judge how close a binning came.

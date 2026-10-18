@@ -1,0 +1,101 @@
+---
+title: How much did my binning keep?
+sidebar_label: How much did it keep?
+sidebar_position: 6
+description: Retention is the binned information over the unbinned; a certified ceiling, the quality of the scores and sampling error decide how far to trust it.
+---
+
+import {BinningComparison} from "@site/src/components/BinningComparison";
+import {ReferenceLink} from "@site/src/components/ReferenceLink";
+import {factValue, factsFor} from "@site/src/lib/facts";
+
+export const m = factsFor("michelson");
+export const r = factsFor("ratios");
+
+# How much did my binning keep?
+
+*One ratio answers the question: the information in the bins over the information in the events. Three further questions decide how far to trust it. How much could any binning keep? Were the scores right? How noisy is the number?*
+
+## Retention
+
+[The first post](./score-space.mdx) wrote the information of unbinned events as $I$ and that of their bin counts as $I_{\rm bin}$. With one parameter, retention is the ratio $I_{\rm bin}/I$. It lies between zero and one, and the asymptotic standard error of the maximum-likelihood estimate grows by a factor $1/\sqrt{I_{\rm bin}/I}$ when the counts replace the events.
+
+With several parameters, the eigenvalues of $I^{-1}I_{\rm bin}$ give one retention per direction of parameter space. Their geometric mean,
+
+$$
+\left(\frac{\det I_{\rm bin}}{\det I}\right)^{1/P}
+$$
+
+for $P$ parameters, summarizes them, and ScoreQuant reports it as `geometric_mean_retention`. It does not depend on units or on how the parameters are written, and it is zero as soon as one direction is lost. With nuisance parameters, the same ratio is taken of the profiled information. For a fitted rule, it is measured on events the rule never saw:
+
+```python
+import numpy as np
+
+import scorequant as sq
+
+rng = np.random.default_rng(5)
+train = rng.normal(size=(4_000, 2))  # scores of a two-parameter Gaussian location model
+held_out = rng.normal(size=(4_000, 2))
+
+rule = sq.fit_quantizer(
+    sq.ScoreSample(train),
+    n_bins=6,
+    criterion=sq.DOptimality(),
+    config=sq.DExchangeConfig(seed=5),
+)
+labels = rule.predict_scores(held_out)
+
+kept = sq.information_report(held_out, labels, n_bins=6).geometric_mean_retention
+error_bar = sq.retention_uncertainty(held_out, labels, n_bins=6)
+```
+
+## How much could any binning keep?
+
+A retention means little without knowing what is possible with the same number of bins. With one parameter, the best bins are intervals of the score, and they are found exactly. With one parameter of interest and nuisance parameters beside it, `efficient_score_bound` computes a certified ceiling: no partition of the same events into that many bins keeps more profiled information (<ReferenceLink to="api/#the-efficient-score-upper-bound">API guide</ReferenceLink>).
+
+The reason the ceiling holds is simple. The profiled information of any bins is at most what those same bins keep of the efficient score, the part of the score of interest that the nuisance cannot imitate. That is a single score, and the best intervals of a single score are found exactly.
+
+<BinningComparison
+  axisLabel="Profiled phase information retained"
+  caption={`The interferometer phase with the fringe frequency as nuisance, ${m("bins")} bins each. The dashed line is the certified ceiling. Higher is better.`}
+  rows={[
+    {
+      label: "Equal segments",
+      text: m("equalWidthRetentionAtSix"),
+      value: factValue("michelson", "equalWidthRetentionAtSix"),
+    },
+    {
+      label: "D-optimal",
+      text: m("dOptimalRetentionAtSix"),
+      value: factValue("michelson", "dOptimalRetentionAtSix"),
+    },
+    {
+      isScoreQuant: true,
+      label: "Profiled Ds",
+      text: m("profiledRetentionAtSix"),
+      value: factValue("michelson", "profiledRetentionAtSix"),
+    },
+    {
+      isCeiling: true,
+      label: "Certified ceiling",
+      text: m("ceilingRetentionAtSix"),
+      value: factValue("michelson", "ceilingRetentionAtSix"),
+    },
+  ]}
+/>
+
+In the [interferometer walkthrough](/walkthroughs/michelson/) the profiled bins reach the ceiling to the digits shown, so no partition of that size could do noticeably better. The D-optimal bins, built to resolve both parameters, fall short of it, and equal segments fall far short. Without the ceiling, the profiled bins' retention would look merely good; with it, the question of whether a better binning exists is closed. With more than one parameter of interest there is no certified ceiling, and ScoreQuant raises an error rather than return an uncertified number.
+
+## Were the scores right?
+
+Retention is computed from the scores the analysis supplied. When they are estimated, by a classifier for instance, the fit grades the bins against the very score it was fitted to, so information lost in estimating the score is invisible to it. In the [density-ratio walkthrough](/walkthroughs/ratios/), bins fitted on a classifier trained on {r("smallTrainSize")} events per component report {r("smallSurrogate")}, but achieve only {r("smallTrue")} when graded against the exact score, which a synthetic problem happens to know. The gap closes only as the classifier improves.
+
+ScoreQuant marks such results as surrogate information rather than Fisher information, through `information_kind`. A real analysis has no exact score to compare against, but it can check that its density ratios close (<ReferenceLink to="glossary/#ratio-closure">glossary</ReferenceLink>).
+
+## How noisy is the number?
+
+A retention measured on a finite held-out sample is an estimate. `retention_uncertainty` attaches a standard error and a Wald confidence interval to it, as in the code above. It applies to a frozen rule, evaluated on fresh, equally weighted events whose scores are the model's true scores at the reference point. It does not cover the estimated-score gap of the previous section, weighted samples, or profiled retention, and as an asymptotic interval it can undercover on heavy-tailed scores (<ReferenceLink to="api/#held-out-retention-uncertainty">API guide</ReferenceLink>).
+
+## Reading the number
+
+A retention close to one is good news only if the scores were right, and only if its error bar is small. A modest retention is bad news only if the ceiling says a better binning exists. ScoreQuant reports the three pieces separately because each answers a different question, and none can stand in for another.

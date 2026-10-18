@@ -29,9 +29,9 @@ class ExecutionConfig:
         Input precision policy. ``"preserve"`` retains float32/float64 inputs
         while promoting integer and lower-precision inputs to float32. JAX
         retains float64 only when X64 is enabled; otherwise it computes in
-        float32 and warns once per process. Default rank thresholds and
-        ``gain_tolerance`` follow the working dtype: 1e-10 in float64 and
-        about 4e-5 in float32.
+        float32 and warns once per process. Default tolerances follow the
+        working dtype: ``gain_tolerance`` is 1e-10 in float64 and about 1.2e-6
+        in float32, the rank threshold 1e-10 and about 1.2e-5.
     device
         Requested device family. NumPy accepts only ``"default"`` and
         ``"cpu"``. JAX resolves the first available device of the requested
@@ -81,33 +81,32 @@ def _validate_finite(name: str, value: object, *, positive: bool) -> None:
         raise ContractError(f"{name} must be nonnegative")
 
 
-_FLOAT64_EPS = float(np.finfo(np.float64).eps)
-
 FLOAT64_GAIN_TOLERANCE = 1e-10
-"""Default ``gain_tolerance`` of a float64 run; other dtypes scale it."""
+"""Default ``gain_tolerance`` of a float64 run; other dtypes raise it to their noise floor."""
+
+GAIN_EPS_MULTIPLE = 10
+"""Noise floor of a log-determinant gain, in units of the working epsilon.
+
+A gain is the logarithm of a determinant ratio near one, so its rounding is a
+few epsilon; below that a float32 gain rounds to exactly zero.
+"""
 
 
-def dtype_tolerance(float64_value: float, dtype: DTypeLike) -> float:
-    """Scale a float64 default tolerance to the working dtype.
+def dtype_tolerance(float64_value: float, dtype: DTypeLike, eps_multiple: float) -> float:
+    """Raise a float64 default tolerance to the noise floor of the working dtype.
 
-    Float64 returns ``float64_value`` unchanged. Any other float dtype keeps
-    the same share of its decimal precision: a tolerance ``eps64 ** k`` becomes
-    ``eps ** k``, so the float64 default of 1e-10 becomes about 4e-5 in
-    float32. A fixed 1e-10 sits far below float32 resolution, so a stability
-    or geometry verdict stated at it would claim a precision the arithmetic
-    does not have.
+    Returns ``max(float64_value, eps_multiple * eps)``. Float64 defaults sit far
+    above that floor and come back unchanged; in float32 the floor decides, so a
+    stability or geometry verdict is stated just above the precision the
+    arithmetic has and no real gain above it is left unused.
     """
-    resolved = np.dtype(dtype)
-    if resolved == np.float64:
-        return float64_value
-    eps = float(np.finfo(resolved).eps)
-    return float(eps ** float(np.log(float64_value) / np.log(_FLOAT64_EPS)))
+    return max(float64_value, eps_multiple * float(np.finfo(np.dtype(dtype)).eps))
 
 
 def resolve_gain_tolerance(gain_tolerance: float | None, dtype: DTypeLike) -> float:
     """Return an explicit ``gain_tolerance`` unchanged, or the working dtype's default."""
     if gain_tolerance is None:
-        return dtype_tolerance(FLOAT64_GAIN_TOLERANCE, dtype)
+        return dtype_tolerance(FLOAT64_GAIN_TOLERANCE, dtype, GAIN_EPS_MULTIPLE)
     return gain_tolerance
 
 
@@ -148,8 +147,8 @@ class KMeansConfig:
         Whiten retained Fisher directions before computing distances.
     rank_rtol
         Relative eigenvalue threshold for informative-rank selection. ``None``
-        uses the working dtype's default, 1e-10 in float64 and about 4e-5 in
-        float32.
+        uses the working dtype's default, 1e-10 in float64 and about 1.2e-5
+        in float32.
     seed
         Nonnegative JAX random seed.
     solver_restarts
@@ -201,8 +200,8 @@ class SoftVoronoiConfig:
         Whiten retained Fisher directions before computing distances.
     rank_rtol
         Relative eigenvalue threshold for informative-rank selection. ``None``
-        uses the working dtype's default, 1e-10 in float64 and about 4e-5 in
-        float32.
+        uses the working dtype's default, 1e-10 in float64 and about 1.2e-5
+        in float32.
     seed
         Nonnegative JAX random seed.
     initializer_restarts
@@ -273,7 +272,7 @@ class DExchangeConfig:
     ----------
     rank_rtol
         Relative threshold for the informative Fisher subspace. ``None`` uses the
-        working dtype's default, 1e-10 in float64 and about 4e-5 in float32.
+        working dtype's default, 1e-10 in float64 and about 1.2e-5 in float32.
     seed
         Base seed of deterministic initialization. Exchange restart ``r`` uses
         ``seed + r``.
@@ -303,9 +302,9 @@ class DExchangeConfig:
         balanced random labeling.
     gain_tolerance
         Strict minimum accepted log-determinant gain. ``None`` (default) uses
-        the working dtype's default, 1e-10 in float64 and about 4e-5 in
-        float32, so exchange stability and the geometry certificate sit above
-        rounding noise; the result's ``config`` records the resolved value. An
+        the working dtype's default, 1e-10 in float64 and about 1.2e-6 (ten
+        epsilon) in float32, so exchange stability and the geometry certificate
+        sit just above rounding noise; the result's ``config`` records the resolved value. An
         explicit value is used unchanged.
     first_improvement
         Accept the first improving move in deterministic row/bin order instead
@@ -370,7 +369,7 @@ class MahalanobisLloydConfig:
     ----------
     rank_rtol
         Relative threshold for the informative Fisher subspace. ``None`` uses the
-        working dtype's default, 1e-10 in float64 and about 4e-5 in float32.
+        working dtype's default, 1e-10 in float64 and about 1.2e-5 in float32.
     seed
         Nonnegative seed of the deterministic k-means seeding.
     initializer_restarts
@@ -441,7 +440,7 @@ class ScalarDPConfig:
         within-segment objective and matches the other score-space solvers.
     rank_rtol
         Relative threshold for the informative score direction. ``None`` uses the
-        working dtype's default, 1e-10 in float64 and about 4e-5 in float32.
+        working dtype's default, 1e-10 in float64 and about 1.2e-5 in float32.
     seed
         Nonnegative seed recorded for reproducibility. The dynamic program
         consumes no randomness and resolves ties by the smallest split index.

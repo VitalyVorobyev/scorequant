@@ -19,7 +19,8 @@ once already, which retroactively asserted that unshipped work had shipped.
   objective rebuilt from its final labels rather than the incrementally updated one.
 - Default tolerances follow the working dtype: `gain_tolerance` (now `None` by default in
   `DExchangeConfig`, `MahalanobisLloydConfig` and `exchange_stability_report`), the rank threshold
-  and the separation slack keep their float64 values and become about `4e-5` in float32, so
+  and the separation slack keep their float64 values and rise to the float32 noise floor
+  (`gain_tolerance` about `1.2e-6`, ten epsilon; the rank threshold about `1.2e-5`), so
   float32 certificates sit above rounding noise; results record the resolved value.
 - `RatioProvenance.gauges` declares the measure each ratio column is taken against; a record
   whose declared gauges differ raises `ContractError` naming the one-gauge recipe, and

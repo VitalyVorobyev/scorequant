@@ -530,7 +530,7 @@ def retention_uncertainty(
     \(\mathrm{rms}(B)\le\tau\,\mathrm{rms}(M)\) with \(B_i\) the bracket
     of \(\psi_i\), \(M_i\) the sum of the magnitudes of its three terms and
     \(\tau\) the dtype's rank threshold (\(10^{-10}\) in float64,
-    about \(4\times10^{-5}\) in float32, not moved by ``rank_rtol``); it is a numerical
+    about \(1.2\times10^{-5}\) in float32, not moved by ``rank_rtol``); it is a numerical
     guard that can suppress small positive influence variance and never
     asserts that the population variance is zero. The endpoints of an
     ``ok`` interval are not clipped to ``[0, 1]``.

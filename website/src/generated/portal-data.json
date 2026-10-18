@@ -29,7 +29,7 @@
       "name": "DExchangeConfig",
       "reference": "/reference/symbols/configuration/",
       "signature": "DExchangeConfig(rank_rtol: float | None = None, seed: int = 0, initializer_restarts: int = 8, max_scans: int | None = None, batch_moves: bool = True, solver_restarts: int = 1, init: Literal['kmeans++', 'random'] = 'kmeans++', gain_tolerance: float | None = None, first_improvement: bool = False, collapse_duplicates: bool | None = None)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L263",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L262",
       "summary": "Configure exact positive-gain D-optimal point exchange."
     },
     {
@@ -69,7 +69,7 @@
       "name": "FisherTransform",
       "reference": "/reference/symbols/index/",
       "signature": "FisherTransform(matrix: np.ndarray, eigenvectors: np.ndarray, eigenvalues: np.ndarray, retained_eigenvalues: np.ndarray, rank_rtol: float, threshold: float, whiten: bool)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/transforms.py#L69",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/transforms.py#L74",
       "summary": "Projection onto informative Fisher directions, optionally whitened."
     },
     {
@@ -117,7 +117,7 @@
       "name": "KMeansConfig",
       "reference": "/reference/symbols/configuration/",
       "signature": "KMeansConfig(whiten: bool = True, rank_rtol: float | None = None, seed: int = 0, solver_restarts: int = 8, max_iter: int = 100, tolerance: float = 1e-06, record_every: int = 1)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L141",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L140",
       "summary": "Configure deterministic weighted score-space k-means."
     },
     {
@@ -141,7 +141,7 @@
       "name": "MahalanobisLloydConfig",
       "reference": "/reference/symbols/configuration/",
       "signature": "MahalanobisLloydConfig(rank_rtol: float | None = None, seed: int = 0, initializer_restarts: int = 8, max_iter: int = 100, guard: Literal['exchange', 'reject'] = 'exchange', gain_tolerance: float | None = None, collapse_duplicates: bool | None = None)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L357",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L356",
       "summary": "Configure guarded batch Mahalanobis-Lloyd iteration."
     },
     {
@@ -269,7 +269,7 @@
       "name": "ScalarDPConfig",
       "reference": "/reference/symbols/configuration/",
       "signature": "ScalarDPConfig(whiten: bool = True, rank_rtol: float | None = None, seed: int = 0, max_rows: int = 20000)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L427",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L426",
       "summary": "Configure exact interval dynamic programming for one score coordinate."
     },
     {
@@ -325,7 +325,7 @@
       "name": "SoftVoronoiConfig",
       "reference": "/reference/symbols/configuration/",
       "signature": "SoftVoronoiConfig(whiten: bool = True, rank_rtol: float | None = None, seed: int = 0, initializer_restarts: int = 8, kmeans_max_iter: int = 100, tolerance: float = 1e-06, max_steps: int = 1000, learning_rate: float = 0.01, gradient_clip: float = 10.0, temperature_end_ratio: float = 0.05, record_every: int = 10)",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L194",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/config.py#L193",
       "summary": "Configure differentiable D-optimal soft Voronoi fitting."
     },
     {
@@ -373,7 +373,7 @@
       "name": "exchange_stability_report",
       "reference": "/reference/symbols/index/",
       "signature": "exchange_stability_report(scores: ArrayLike, labels: ArrayLike, *, weights: ArrayLike | None = None, criterion: DOptimality | ProfiledDOptimality | None = None, rank_rtol: float | None = None, gain_tolerance: float | None = None, execution: ExecutionConfig | None = None) -> StabilityReport",
-      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/partition.py#L609",
+      "source": "https://github.com/VitalyVorobyev/scorequant/blob/main/src/scorequant/partition.py#L610",
       "summary": "Certify one supplied labeling against every single-row relocation."
     },
     {

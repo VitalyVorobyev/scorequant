@@ -368,9 +368,10 @@ sq.ExecutionConfig(backend="jax", precision="preserve", device="default")
   and lower-precision inputs are promoted to float32), `"float32"`, or `"float64"`. JAX keeps
   float64 only with 64-bit mode enabled in the application: without it, `"preserve"` computes in
   float32 and warns once, and `"float64"` is refused. Default tolerances follow the working dtype:
-  the rank threshold and `gain_tolerance` are \(10^{-10}\) in float64 and about
-  \(4\times10^{-5}\) in float32, the same share of each dtype's precision, so float32 stability
-  and geometry certificates sit above its rounding noise. A tolerance you set is used unchanged,
+  each is its float64 value or a few epsilon of the working dtype, whichever is larger.
+  `gain_tolerance` is \(10^{-10}\) in float64 and about \(1.2\times10^{-6}\) in float32, the rank
+  threshold \(10^{-10}\) and about \(1.2\times10^{-5}\), so float32 stability and geometry
+  certificates sit just above its rounding noise. A tolerance you set is used unchanged,
   and results record the value they were computed at.
 - **`device`** is `"default"`, `"cpu"`, `"gpu"`, or `"tpu"`. NumPy accepts only the default CPU
   device; JAX resolves the first available device of the requested family.
@@ -501,9 +502,10 @@ Population singularity is a separate boundary of the Wald theorem
 influence values cancelled to rounding noise, so the standard error is zero and the interval is
 withheld. The test is \(\mathrm{rms}(B) \le \tau\,\mathrm{rms}(M)\), with \(B_i\) the bracket of the
 influence value, \(M_i\) the sum of the magnitudes of its three terms, and \(\tau\) the dtype's rank
-threshold, \(10^{-10}\) in float64 and about \(4\times10^{-5}\) in float32. `rank_rtol` moves only
-the full-moment rank guard; the between-cell test and this threshold stay at the dtype default. This numerical guard can suppress small positive influence
-variance; it is not a finding that the population variance is zero.
+threshold, \(10^{-10}\) in float64 and about \(1.2\times10^{-5}\) in float32. `rank_rtol` moves only
+the full-moment rank guard; the between-cell test and this threshold stay at the dtype default.
+This numerical guard can suppress small positive influence variance; it is not a finding that the
+population variance is zero.
 
 Scores from a classifier or any other estimator are not true scores. Their reported retention
 carries a separate proxy bias that this error bar never measures; the score-error budget bounds that

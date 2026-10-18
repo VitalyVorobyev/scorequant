@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 import scorequant
-from scorequant.config import dtype_tolerance
+from scorequant.config import resolve_gain_tolerance
 from scorequant.transforms import fisher_transform
 from tests._fit import fit_test_quantizer
 
@@ -132,16 +132,15 @@ def test_float32_solvers_are_individually_valid_on_each_backend() -> None:
 
 def test_default_tolerances_follow_the_working_dtype() -> None:
     """Float64 keeps its constants bit for bit; float32 gets its own values."""
-    assert dtype_tolerance(1e-10, np.float64) == 1e-10
-    assert dtype_tolerance(1e-8, np.float64) == 1e-8
-    assert dtype_tolerance(1e-10, np.float32) == pytest.approx(3.775e-5, rel=1e-3)
-    assert dtype_tolerance(1e-8, np.float32) == pytest.approx(2.894e-4, rel=1e-3)
+    assert resolve_gain_tolerance(None, np.float64) == 1e-10
+    assert resolve_gain_tolerance(None, np.float32) == pytest.approx(1.192e-6, rel=1e-3)
+    assert resolve_gain_tolerance(1e-10, np.float32) == 1e-10
 
     fisher = np.diag([2.0, 1.0])
     numpy64 = scorequant.ExecutionConfig(backend="numpy", precision="float64")
     assert fisher_transform(fisher, execution=numpy64).rank_rtol == 1e-10
     transform32 = fisher_transform(fisher.astype(np.float32))
-    assert transform32.rank_rtol == pytest.approx(3.775e-5, rel=1e-3)
+    assert transform32.rank_rtol == pytest.approx(1.192e-5, rel=1e-3)
 
 
 def test_float32_results_record_the_float32_default() -> None:
@@ -151,7 +150,7 @@ def test_float32_results_record_the_float32_default() -> None:
     result = scorequant.optimize_partition(
         scores, n_bins=4, config=scorequant.DExchangeConfig(initializer_restarts=2)
     )
-    assert result.config.gain_tolerance == pytest.approx(3.775e-5, rel=1e-3)
+    assert result.config.gain_tolerance == pytest.approx(1.192e-6, rel=1e-3)
     assert result.geometry is not None
     assert result.geometry.gain_tolerance == result.config.gain_tolerance
     report = scorequant.exchange_stability_report(scores, result.labels)
@@ -166,3 +165,21 @@ def test_float32_explicit_gain_tolerance_is_used_unchanged() -> None:
     assert result.config.gain_tolerance == 1e-10
     report = scorequant.exchange_stability_report(scores, result.labels, gain_tolerance=1e-10)
     assert report.gain_tolerance == 1e-10
+
+
+def test_float32_default_keeps_gains_a_coarser_tolerance_left_unused() -> None:
+    """Gains between the noise floor and 3.8e-5 are real, and the default takes them."""
+    scores = (np.random.default_rng(0).normal(size=(2000, 3)) + 0.4).astype(np.float32)
+    coarse = scorequant.optimize_partition(
+        scores,
+        n_bins=6,
+        config=scorequant.DExchangeConfig(initializer_restarts=1, gain_tolerance=3.8e-5),
+    )
+    default = scorequant.optimize_partition(
+        scores, n_bins=6, config=scorequant.DExchangeConfig(initializer_restarts=1)
+    )
+    left = scorequant.exchange_stability_report(scores, coarse.labels)
+    assert not left.stable
+    assert left.best_gain > 10 * default.config.gain_tolerance
+    assert default.exchange_stable
+    assert default.objective > coarse.objective + left.best_gain / 2

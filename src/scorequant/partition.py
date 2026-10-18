@@ -81,8 +81,9 @@ from .transforms import FisherTransform, fisher_transform, is_numerically_singul
 # Relative slack allowed when certifying the leverage bound q_delta <= 1/W_a +
 # 1/W_b. The bound is exact mathematics, so this only absorbs the rounding of
 # one inverse and two quadratic forms; it never hides a real violation. This is
-# the float64 value; other dtypes scale it with their precision.
+# the float64 value; other dtypes raise it to their noise floor.
 _SEPARATION_RTOL = 1e-8
+_SEPARATION_EPS_MULTIPLE = 100
 
 # Strict positive-gain acceptance cannot revisit a labeling, so the exchange
 # terminates without any scan cap. This bound only stops a run that a numerical
@@ -1789,7 +1790,8 @@ def _geometry_report(
         evaluated_moves=evaluated,
         voronoi_consistent=violation_gain <= gain_tolerance,
         separation_certified=separation_residual
-        <= dtype_tolerance(_SEPARATION_RTOL, coordinates.dtype) * separation_scale,
+        <= dtype_tolerance(_SEPARATION_RTOL, coordinates.dtype, _SEPARATION_EPS_MULTIPLE)
+        * separation_scale,
         gain_tolerance=gain_tolerance,
     )
 

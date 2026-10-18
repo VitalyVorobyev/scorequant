@@ -15,10 +15,15 @@ from .config import ExecutionConfig, dtype_tolerance, validate_rank_rtol
 
 _FLOAT64_RANK_RTOL = 1e-10
 
+# An eigenvalue ratio carries the rounding of a sum over every row and of the
+# eigensolver, more than one log-determinant gain does, so its floor is ten
+# times the gain tolerance's: about 1.2e-5 in float32.
+_RANK_EPS_MULTIPLE = 100
+
 
 def _default_rank_rtol(dtype: jnp.dtype) -> float:
     """Return the relative rank threshold of the working dtype (1e-10 in float64)."""
-    return dtype_tolerance(_FLOAT64_RANK_RTOL, dtype)
+    return dtype_tolerance(_FLOAT64_RANK_RTOL, dtype, _RANK_EPS_MULTIPLE)
 
 
 def numerical_rank(

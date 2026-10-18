@@ -42,6 +42,7 @@ import pytest
 
 import scorequant as sq
 from tests.test_docs_snippets import Snippet, _extract_blocks
+from tests.test_public_surface import SUBMODULES
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -76,6 +77,27 @@ def _load_generator() -> ModuleType:
     return module
 
 
+def _non_public_references(tree: ast.AST) -> set[str]:
+    """Return every ``sq.<name>`` or ``sq.<submodule>.<name>`` outside the public API."""
+    submodules = {name: importlib.import_module(f"scorequant.{name}") for name in SUBMODULES}
+    offenders: set[str] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Attribute):
+            continue
+        if isinstance(node.value, ast.Name) and node.value.id == "sq":
+            if node.attr not in sq.__all__ and node.attr not in submodules:
+                offenders.add(node.attr)
+        elif (
+            isinstance(node.value, ast.Attribute)
+            and isinstance(node.value.value, ast.Name)
+            and node.value.value.id == "sq"
+            and node.value.attr in submodules
+            and node.attr not in submodules[node.value.attr].__all__
+        ):
+            offenders.add(f"{node.value.attr}.{node.attr}")
+    return offenders
+
+
 _GENERATOR = _load_generator()
 _PROGRAM_SOURCE = GET_STARTED_PROGRAM.read_text(encoding="utf-8")
 _CELLS: list[tuple[str, str]] = _GENERATOR.split_cells(_PROGRAM_SOURCE)
@@ -105,18 +127,11 @@ def test_get_started_cells_execute_and_produce_a_result() -> None:
 
 @pytest.mark.parametrize("cell_id, code", _CELLS, ids=[cell_id for cell_id, _ in _CELLS])
 def test_get_started_cell_uses_public_symbols(cell_id: str, code: str) -> None:
-    """Every ``sq.<name>`` the page shows is in the public API."""
-    public = set(sq.__all__)
+    """Every ``sq.<name>`` and ``sq.<submodule>.<name>`` the page shows is public."""
     tree = ast.parse(code, filename=f"{GET_STARTED_PROGRAM}:{cell_id}")
-    referenced = {
-        node.attr
-        for node in ast.walk(tree)
-        if isinstance(node, ast.Attribute)
-        and isinstance(node.value, ast.Name)
-        and node.value.id == "sq"
-    }
-    assert referenced <= public, (
-        f"get-started cell {cell_id!r} uses private or missing names: {sorted(referenced - public)}"
+    offenders = _non_public_references(tree)
+    assert not offenders, (
+        f"get-started cell {cell_id!r} uses private or missing names: {sorted(offenders)}"
     )
 
 
@@ -241,18 +256,11 @@ def test_walkthrough_fences_execute_and_produce_a_result(slug: str, blocks: list
 
 @pytest.mark.parametrize("slug, blocks", _WALKTHROUGHS, ids=[slug for slug, _ in _WALKTHROUGHS])
 def test_walkthrough_fences_use_public_symbols(slug: str, blocks: list[Snippet]) -> None:
-    """Every ``sq.<name>`` a walkthrough shows is in the public API."""
-    public = set(sq.__all__)
+    """Every ``sq.<name>`` and ``sq.<submodule>.<name>`` a walkthrough shows is public."""
     for block in blocks:
         tree = ast.parse(block.code, filename=f"website/{_page_path(slug)}:{block.index}")
-        referenced = {
-            node.attr
-            for node in ast.walk(tree)
-            if isinstance(node, ast.Attribute)
-            and isinstance(node.value, ast.Name)
-            and node.value.id == "sq"
-        }
-        assert referenced <= public, (
+        offenders = _non_public_references(tree)
+        assert not offenders, (
             f"walkthrough {slug!r} block {block.index} uses private or missing names: "
-            f"{sorted(referenced - public)}"
+            f"{sorted(offenders)}"
         )

@@ -35,12 +35,12 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 
 | Public name | Stability | Fields | Methods and properties |
 | --- | --- | --- | --- |
-| `CentralLogRatioScore` | Stable | `predict`, `deltas`, `class_priors`, `description`, `metadata`, `schema` | `provenance`, `score` |
+| `ratios.CentralLogRatioScore` | Stable | `predict`, `deltas`, `class_priors`, `description`, `metadata`, `schema` | `provenance`, `score` |
 | `CertificationConfig` | Stable | `method`, `max_nodes`, `max_rows`, `gain_tolerance` | `to_dict` |
 | `ContractError` | Stable | — | — |
 | `DExchangeConfig` | Stable | `method`, `rank_rtol`, `seed`, `initializer_restarts`, `max_iter`, `batch_moves`, `solver_restarts`, `init`, `gain_tolerance`, `first_improvement`, `collapse_duplicates` | `to_dict` |
 | `DOptimality` | Stable | `name` | `to_dict` |
-| `DensityRatioScore` | Stable | `ratio`, `parameterization`, `provenance`, `schema` | `from_classifier`, `score` |
+| `ratios.DensityRatioScore` | Stable | `ratio`, `parameterization`, `provenance`, `schema` | `from_classifier`, `score` |
 | `EfficientScoreBound` | Diagnostic | `upper_bound`, `labels`, `efficient_scores`, `n_bins`, `interest` | `gap_to`, `to_dict` |
 | `ExecutionConfig` | Stable | `backend`, `precision`, `device` | `to_dict` |
 | `FisherTransform` | Stable | `matrix`, `eigenvectors`, `eigenvalues`, `retained_eigenvalues`, `rank_rtol`, `threshold`, `whiten` | `input_dim`, `rank`, `dropped_directions`, `apply`, `to_dict` |
@@ -48,12 +48,11 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `GeometryReport` | Diagnostic | `maximum_voronoi_violation`, `guaranteed_violation_gain`, `maximum_violation_gain`, `maximum_separation_residual`, `violating_moves`, `evaluated_moves`, `voronoi_consistent`, `separation_certified`, `gain_tolerance` | `to_dict` |
 | `InformationReport` | Diagnostic | `fisher_unbinned`, `fisher_binned`, `retained_matrix`, `retained_eigenvalues`, `arithmetic_mean_retention`, `geometric_mean_retention`, `logdet_retention`, `bin_weights`, `bin_counts`, `bin_effective_sample_sizes`, `effective_rank`, `rank_threshold`, `psd_residual_min_eigenvalue` | `to_dict` |
 | `IntegrationSource` | Stable | `bounds`, `density`, `quadrature` | `materialize` |
-| `IntensityParameterization` | Stable | `coefficients` | `n_components`, `scores` |
+| `ratios.IntensityParameterization` | Stable | `coefficients` | `n_components`, `scores` |
 | `KMeansConfig` | Stable | `method`, `whiten`, `rank_rtol`, `seed`, `solver_restarts`, `max_iter`, `tolerance`, `record_every` | `to_dict` |
-| `LinearComponentScore` | Stable | `model`, `provenance` | `schema`, `score` |
-| `LinearComponents` | Stable | `components`, `coefficients`, `component_names`, `variables` | `evaluate_components`, `to_dict` |
+| `LinearComponentScore` | Stable | `components`, `coefficients`, `component_names`, `variables`, `provenance` | `schema`, `evaluate_components`, `score` |
 | `MahalanobisLloydConfig` | Stable | `method`, `rank_rtol`, `seed`, `initializer_restarts`, `max_iter`, `guard`, `gain_tolerance`, `collapse_duplicates` | `to_dict` |
-| `MixtureParameterization` | Stable | `reference_fractions`, `reference_component` | `n_components`, `scores` |
+| `ratios.MixtureParameterization` | Stable | `reference_fractions`, `reference_component` | `n_components`, `scores` |
 | `NormalizedTrace` | Stable | `name` | `to_dict` |
 | `ObservationSample` | Stable | `observations`, `weights` | — |
 | `OptimizationTrace` | Diagnostic | `steps`, `centers`, `objective`, `bin_weights`, `train_hard_retention`, `objective_label`, `validation_hard_retention`, `soft_retention`, `temperatures`, `gradient_norms` | `to_dict` |
@@ -64,8 +63,8 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `ProfiledInformationReport` | Diagnostic | `interest`, `nuisance`, `schur_unbinned`, `schur_binned`, `nuisance_unbinned`, `nuisance_binned`, `objective`, `logdet_retention`, `geometric_mean_retention`, `interest_rank`, `nuisance_rank`, `schema` | `interest_names`, `nuisance_names`, `describe`, `to_dict` |
 | `Quantizer` | Stable | `transform`, `centers`, `metric`, `schema`, `provenance`, `criterion`, `execution` | `n_bins`, `rank`, `input_dim`, `information_kind`, `predict_scores`, `evaluate_scores`, `to_dict`, `save`, `load` |
 | `QuantizerResult` | Diagnostic | `quantizer`, `criterion`, `config`, `execution`, `trace`, `labels`, `train_report`, `validation_report`, `provenance`, `hardening_gap`, `source_kind`, `train_profiled_report`, `validation_profiled_report` | `centers`, `metric`, `transform`, `schema`, `n_bins`, `rank`, `information_kind`, `predict_scores`, `evaluate_scores`, `report`, `to_dict`, `plot_summary` |
-| `RatioClosureReport` | Diagnostic | `normalizers`, `max_residual` | `to_dict` |
-| `RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas`, `gauges` | `to_dict` |
+| `ratios.RatioClosureReport` | Diagnostic | `normalizers`, `max_residual` | `to_dict` |
+| `ratios.RatioProvenance` | Stable | `estimator`, `parameterization`, `coefficients`, `reference_fractions`, `reference_component`, `training_priors`, `calibration`, `deltas`, `gauges` | `to_dict` |
 | `RefusalError` | Stable | `counterexample` | — |
 | `RetentionUncertainty` | Diagnostic | `estimate`, `standard_error`, `confidence_interval`, `confidence_level`, `n_observations`, `status` | `to_dict` |
 | `ScalarDPConfig` | Stable | `method`, `whiten`, `rank_rtol`, `max_rows` | `to_dict` |
@@ -86,17 +85,15 @@ global or population guarantee beyond its stated criterion, sample and tolerance
 | `fit_quantizer` | Stable | — | — |
 | `fractional_fisher_information` | Stable | — | — |
 | `information_report` | Stable | — | — |
-| `mixture_scores_from_ratios` | Stable | — | — |
 | `optimize_partition` | Stable | — | — |
 | `plot_information` | Stable | — | — |
 | `plot_optimization` | Stable | — | — |
 | `plot_partition` | Stable | — | — |
 | `plot_summary` | Stable | — | — |
 | `profiled_information_report` | Stable | — | — |
-| `ratio_closure_report` | Stable | — | — |
-| `ratios_from_posteriors` | Stable | — | — |
+| `ratios.ratio_closure_report` | Stable | — | — |
+| `ratios.ratios_from_posteriors` | Stable | — | — |
 | `retention_uncertainty` | Stable | — | — |
-| `scores_from_components` | Stable | — | — |
 
 `ScoreProvider` requires `provenance` and `score(observations)`; optional schema discovery
 is unchanged. Python standard exception members are inherited normally. `__version__` is
@@ -114,7 +111,6 @@ minor release, so consumers should select the keys they need rather than require
 | Serializer | Keys differing from the field inventory |
 | --- | --- |
 | `FisherTransform.to_dict()` | Adds `rank`, `dropped_directions`. |
-| `LinearComponents.to_dict()` | Omits the callable `components`; records `coefficients`, `component_names`, `variables`. |
 | `ScoreProvenance.to_dict()` | Adds derived `exact_fisher`. |
 | `PartitionResult.to_dict()` | Omits `training_scores`, `positive_weight_mask`; adds `information_kind`. |
 | `QuantizerResult.to_dict()` | Omits the `quantizer` object; adds `centers`, `metric`, `transform`, `schema`, `information_kind`. |

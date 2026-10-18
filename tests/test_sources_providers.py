@@ -103,7 +103,7 @@ def test_central_log_ratio_score_corrects_training_priors() -> None:
     prior_odds = priors[1] / priors[0]
     odds = prior_odds * np.exp(2 * deltas[0] * target_score[:, 0])
     probabilities = np.column_stack([1 / (1 + odds), odds / (1 + odds)])
-    provider = sq.CentralLogRatioScore(lambda values: probabilities, deltas, priors)
+    provider = sq.ratios.CentralLogRatioScore(lambda values: probabilities, deltas, priors)
     assert np.allclose(np.asarray(provider.score(target_score)), target_score)
 
 
@@ -113,7 +113,7 @@ def test_central_log_ratio_score_is_always_estimated() -> None:
         plus = 1 / (1 + np.exp(-0.2 * observations))
         return np.column_stack([1 - plus, plus])
 
-    provider = sq.CentralLogRatioScore(
+    provider = sq.ratios.CentralLogRatioScore(
         predict,
         [0.1],
         [0.5, 0.5],
@@ -145,10 +145,10 @@ def _mixture_predict(values: object) -> np.ndarray:
 
 
 def test_classifier_derived_ratio_provider_records_full_provenance() -> None:
-    provider = sq.DensityRatioScore.from_classifier(
+    provider = sq.ratios.DensityRatioScore.from_classifier(
         _mixture_predict,
         [0.4, 0.35, 0.25],
-        sq.MixtureParameterization([0.2, 0.3, 0.5]),
+        sq.ratios.MixtureParameterization([0.2, 0.3, 0.5]),
         calibration="temperature_oof",
         description="ready calibrated model",
     )
@@ -177,11 +177,11 @@ def test_density_ratio_provider_matches_the_explicit_composition() -> None:
     priors = np.asarray([0.4, 0.35, 0.25])
     fractions = np.asarray([0.2, 0.3, 0.5])
     observations = np.linspace(-2, 2, 40)[:, None]
-    provider = sq.DensityRatioScore.from_classifier(
-        _mixture_predict, priors, sq.MixtureParameterization(fractions)
+    provider = sq.ratios.DensityRatioScore.from_classifier(
+        _mixture_predict, priors, sq.ratios.MixtureParameterization(fractions)
     )
-    expected = sq.mixture_scores_from_ratios(
-        sq.ratios_from_posteriors(_mixture_predict(observations), priors), fractions
+    expected = sq.ratios.MixtureParameterization(fractions).scores(
+        sq.ratios.ratios_from_posteriors(_mixture_predict(observations), priors)
     )
     np.testing.assert_allclose(np.asarray(provider.score(observations)), np.asarray(expected))
 
@@ -200,11 +200,10 @@ def test_analytic_component_ratios_reproduce_the_component_score() -> None:
         array = np.asarray(values)
         return np.column_stack([signal(array) / background(array), np.ones(array.shape[0])])
 
-    model = sq.LinearComponents(components=[signal, background], coefficients=list(coefficients))
-    exact = sq.LinearComponentScore(model).score(observations)
-    via_ratios = sq.DensityRatioScore(
+    exact = sq.LinearComponentScore([signal, background], list(coefficients)).score(observations)
+    via_ratios = sq.ratios.DensityRatioScore(
         component_ratios,
-        sq.IntensityParameterization(coefficients),
+        sq.ratios.IntensityParameterization(coefficients),
         provenance=sq.ScoreProvenance(kind="exact"),
     )
     np.testing.assert_allclose(
@@ -216,28 +215,30 @@ def test_analytic_component_ratios_reproduce_the_component_score() -> None:
 
 
 def test_density_ratio_provider_rejects_invalid_constructions() -> None:
-    parameterization = sq.MixtureParameterization([0.5, 0.5])
+    parameterization = sq.ratios.MixtureParameterization([0.5, 0.5])
     with pytest.raises(TypeError, match="callable"):
-        sq.DensityRatioScore("not callable", parameterization)  # type: ignore[arg-type]
+        sq.ratios.DensityRatioScore("not callable", parameterization)  # type: ignore[arg-type]
     with pytest.raises(TypeError, match="parameterization"):
-        sq.DensityRatioScore(lambda values: values, "mixture")  # type: ignore[arg-type]
+        sq.ratios.DensityRatioScore(lambda values: values, "mixture")  # type: ignore[arg-type]
     with pytest.raises(ValueError, match="conflicts"):
-        sq.DensityRatioScore(
+        sq.ratios.DensityRatioScore(
             lambda values: values,
             parameterization,
-            provenance=sq.ScoreProvenance(ratio=sq.RatioProvenance(reference_fractions=(0.4, 0.6))),
+            provenance=sq.ScoreProvenance(
+                ratio=sq.ratios.RatioProvenance(reference_fractions=(0.4, 0.6))
+            ),
         )
     with pytest.raises(ValueError, match="class_priors"):
-        sq.DensityRatioScore.from_classifier(
+        sq.ratios.DensityRatioScore.from_classifier(
             lambda values: values, [0.5, 0.4, 0.1], parameterization
         )
 
-    provider = sq.DensityRatioScore(
+    provider = sq.ratios.DensityRatioScore(
         lambda values: -np.ones((np.asarray(values).shape[0], 2)), parameterization
     )
     with pytest.raises(ValueError, match="nonnegative"):
         provider.score(np.zeros((4, 1)))
-    wrong_width = sq.DensityRatioScore(
+    wrong_width = sq.ratios.DensityRatioScore(
         lambda values: np.ones((np.asarray(values).shape[0], 3)), parameterization
     )
     with pytest.raises(ValueError, match="2 components"):
@@ -246,12 +247,12 @@ def test_density_ratio_provider_rejects_invalid_constructions() -> None:
 
 def test_central_log_ratio_score_rejects_invalid_constructions() -> None:
     with pytest.raises(TypeError, match="callable"):
-        sq.CentralLogRatioScore("not callable", [0.1], [0.5, 0.5])  # type: ignore[arg-type]
+        sq.ratios.CentralLogRatioScore("not callable", [0.1], [0.5, 0.5])  # type: ignore[arg-type]
     with pytest.raises(ValueError, match="deltas"):
-        sq.CentralLogRatioScore(lambda values: values, [-0.1], [0.5, 0.5])
+        sq.ratios.CentralLogRatioScore(lambda values: values, [-0.1], [0.5, 0.5])
     with pytest.raises(ValueError, match="class_priors"):
-        sq.CentralLogRatioScore(lambda values: values, [0.1], [0.5, 0.5, 0.5])
-    provider = sq.CentralLogRatioScore(
+        sq.ratios.CentralLogRatioScore(lambda values: values, [0.1], [0.5, 0.5, 0.5])
+    provider = sq.ratios.CentralLogRatioScore(
         lambda values: np.column_stack(
             [np.full(np.asarray(values).shape[0], 0.7), np.full(np.asarray(values).shape[0], 0.7)]
         ),
@@ -278,7 +279,7 @@ def test_integration_source_end_to_end_with_two_score_columns() -> None:
     def background_component(x: np.ndarray) -> np.ndarray:
         return problem.background_densities[0](np.asarray(x)[:, 0])
 
-    model = sq.LinearComponents(
+    provider = sq.LinearComponentScore(
         components={"signal": signal_component, "background": background_component},
         coefficients={
             "signal": float(problem.coefficients[0]),
@@ -286,7 +287,6 @@ def test_integration_source_end_to_end_with_two_score_columns() -> None:
         },
         variables=["x"],
     )
-    provider = sq.LinearComponentScore(model)
 
     source = sq.IntegrationSource(
         problem.bounds, density=problem.intensity, quadrature=sq.GaussLegendreConfig(order=48)

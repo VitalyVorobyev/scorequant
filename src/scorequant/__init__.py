@@ -3,14 +3,12 @@
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _distribution_version
 
+from . import ratios as ratios
 from ._errors import ContractError, RefusalError, ScoreQuantError
 from .api import fit_quantizer, optimize_partition
 from .artifact import Quantizer
 from .certify import CertificationConfig, certify_partition
-from .components import (
-    LinearComponents,
-    scores_from_components,
-)
+from .components import LinearComponentScore
 from .config import (
     DExchangeConfig,
     ExecutionConfig,
@@ -30,21 +28,8 @@ from .information import (
     information_report,
     profiled_information_report,
 )
-from .providers import (
-    CentralLogRatioScore,
-    DensityRatioScore,
-    LinearComponentScore,
-    ScoreFunction,
-    ScoreProvider,
-)
-from .ratios import (
-    IntensityParameterization,
-    MixtureParameterization,
-    mixture_scores_from_ratios,
-    ratio_closure_report,
-    ratios_from_posteriors,
-)
-from .reports import RatioClosureReport, RetentionUncertainty
+from .providers import ScoreFunction, ScoreProvider
+from .reports import RetentionUncertainty
 from .result import (
     EfficientScoreBound,
     GeometryReport,
@@ -61,7 +46,6 @@ from .sources import (
     GaussLegendreConfig,
     IntegrationSource,
     ObservationSample,
-    RatioProvenance,
     ScoreProvenance,
     ScoreSample,
     ScoreSchema,
@@ -79,25 +63,20 @@ except PackageNotFoundError:  # pragma: no cover - only hit in an uninstalled tr
     __version__ = "0.0.0.dev0"
 
 __all__ = [
-    "CentralLogRatioScore",
     "CertificationConfig",
     "ContractError",
     "DExchangeConfig",
     "ExecutionConfig",
     "DOptimality",
-    "DensityRatioScore",
     "EfficientScoreBound",
     "FisherTransform",
     "GaussLegendreConfig",
     "GeometryReport",
     "InformationReport",
     "IntegrationSource",
-    "IntensityParameterization",
     "KMeansConfig",
     "LinearComponentScore",
-    "LinearComponents",
     "MahalanobisLloydConfig",
-    "MixtureParameterization",
     "NormalizedTrace",
     "ObservationSample",
     "OptimizationTrace",
@@ -108,8 +87,6 @@ __all__ = [
     "ProfiledInformationReport",
     "Quantizer",
     "QuantizerResult",
-    "RatioClosureReport",
-    "RatioProvenance",
     "RefusalError",
     "RetentionUncertainty",
     "ScalarDPConfig",
@@ -130,15 +107,11 @@ __all__ = [
     "fit_quantizer",
     "fractional_fisher_information",
     "information_report",
-    "mixture_scores_from_ratios",
     "optimize_partition",
     "plot_information",
     "plot_optimization",
     "plot_partition",
     "plot_summary",
     "profiled_information_report",
-    "ratio_closure_report",
-    "ratios_from_posteriors",
     "retention_uncertainty",
-    "scores_from_components",
 ]

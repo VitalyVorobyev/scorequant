@@ -388,8 +388,8 @@ def fit_score_model(
         reference.patients,
         np.full(len(CLASS_NAMES), 1.0 / len(CLASS_NAMES)),
     )
-    closure = sq.ratio_closure_report(
-        sq.ratios_from_posteriors(calibrated, calibration.class_priors), reference_weights
+    closure = sq.ratios.ratio_closure_report(
+        sq.ratios.ratios_from_posteriors(calibrated, calibration.class_priors), reference_weights
     )
     selection["final_calibration"] = {
         "strategy": calibration.strategy,

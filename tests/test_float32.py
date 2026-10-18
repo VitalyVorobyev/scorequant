@@ -33,8 +33,8 @@ def test_float32_ratio_algebra_promotes_low_precision() -> None:
         [[0.5, 0.25, 0.25], [0.125, 0.375, 0.5]],
         dtype=jnp.float16,
     )
-    ratios = scorequant.ratios_from_posteriors(posteriors, [0.5, 0.25, 0.25])
-    scores = scorequant.mixture_scores_from_ratios(ratios, [0.25, 0.25, 0.5])
+    ratios = scorequant.ratios.ratios_from_posteriors(posteriors, [0.5, 0.25, 0.25])
+    scores = scorequant.ratios.MixtureParameterization([0.25, 0.25, 0.5]).scores(ratios)
     assert ratios.dtype == jnp.float32
     assert scores.dtype == jnp.float32
     assert np.isfinite(np.asarray(scores)).all()

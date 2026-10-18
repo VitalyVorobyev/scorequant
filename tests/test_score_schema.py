@@ -128,7 +128,7 @@ def test_schema_reaches_both_results() -> None:
 
 def test_linear_component_provider_derives_its_schema() -> None:
     """Component names already exist, so the schema is derived rather than asked for."""
-    model = sq.LinearComponents(
+    provider = sq.LinearComponentScore(
         components={
             "peak": lambda X: np.exp(-0.5 * ((X[:, 0] - 1.0) / 0.4) ** 2),
             "flat": lambda X: np.ones(X.shape[0]),
@@ -136,7 +136,6 @@ def test_linear_component_provider_derives_its_schema() -> None:
         coefficients={"peak": 1.0, "flat": 0.5},
         variables=["mass"],
     )
-    provider = sq.LinearComponentScore(model)
     assert provider.schema.parameters == ("peak", "flat")
     source = sq.IntegrationSource(
         [[-2.0, 3.0]],

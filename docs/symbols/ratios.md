@@ -1,13 +1,13 @@
 # Density ratios
 
-::: scorequant.ratios_from_posteriors
+::: scorequant.ratios.ratios_from_posteriors
 
 ::: scorequant.mixture_scores_from_ratios
 
-::: scorequant.IntensityParameterization
+::: scorequant.ratios.IntensityParameterization
 
-::: scorequant.MixtureParameterization
+::: scorequant.ratios.MixtureParameterization
 
-::: scorequant.ratio_closure_report
+::: scorequant.ratios.ratio_closure_report
 
-::: scorequant.RatioClosureReport
+::: scorequant.ratios.RatioClosureReport

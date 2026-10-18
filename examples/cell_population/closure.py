@@ -227,9 +227,11 @@ def ratio_model_audit(
             strategy, raw, reference.labels, reference.patients
         )
         probabilities = calibration.apply(raw)
-        ratios = np.asarray(sq.ratios_from_posteriors(probabilities, calibration.class_priors))
-        closure = sq.ratio_closure_report(ratios, uniform_weights)
-        scores = np.asarray(sq.mixture_scores_from_ratios(ratios, theta0))
+        ratios = np.asarray(
+            sq.ratios.ratios_from_posteriors(probabilities, calibration.class_priors)
+        )
+        closure = sq.ratios.ratio_closure_report(ratios, uniform_weights)
+        scores = np.asarray(sq.ratios.MixtureParameterization(theta0).scores(ratios))
         mean_score = np.sum(theta_weights[:, None] * scores, axis=0)
         patient_residuals = _patient_residuals(ratios, reference.labels, reference.patients)
         rows[strategy] = {

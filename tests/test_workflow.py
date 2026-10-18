@@ -7,9 +7,10 @@ import numpy as np
 import pytest
 
 import scorequant as sq
+from scorequant.components import _scores_from_components
 
 
-def _model() -> sq.LinearComponents:
+def _model() -> sq.LinearComponentScore:
     def signal(values: np.ndarray) -> np.ndarray:
         energy, angle = values.T
         return 0.1 + np.exp(-0.5 * ((energy - 0.4) / 0.2) ** 2) * (1 + 0.3 * angle)
@@ -18,7 +19,7 @@ def _model() -> sq.LinearComponents:
         energy, angle = values.T
         return 0.2 + (1 - energy) ** 2 * (1 - 0.2 * angle)
 
-    return sq.LinearComponents(
+    return sq.LinearComponentScore(
         components={"signal": signal, "background": background},
         coefficients={"background": 0.4, "signal": 1.0},
         variables=("energy", "cos_theta"),
@@ -43,7 +44,7 @@ def test_named_model_evaluation_preserves_explicit_metadata() -> None:
     assert model.coefficients == (1.0, 0.4)
     assert model.variables == ("energy", "cos_theta")
     coefficients = np.asarray(model.coefficients)
-    scores = sq.scores_from_components(components, coefficients)
+    scores = model.score(values)
     np.testing.assert_allclose(scores, components / (components @ coefficients)[:, None])
 
 
@@ -51,8 +52,7 @@ def test_score_component_and_observation_workflows_are_equivalent() -> None:
     values = _observations(2, 300)
     weights = np.linspace(0.2, 1.8, len(values))
     model = _model()
-    components = model.evaluate_components(values)
-    scores = sq.scores_from_components(components, model.coefficients)
+    scores = model.score(values)
     config = sq.KMeansConfig(seed=9, solver_restarts=3)
     common = {
         "n_bins": 5,
@@ -62,7 +62,7 @@ def test_score_component_and_observation_workflows_are_equivalent() -> None:
     score_result = sq.fit_quantizer(sq.ScoreSample(scores, weights), **common)
     observation_result = sq.fit_quantizer(
         sq.ObservationSample(values, weights),
-        provider=sq.LinearComponentScore(model),
+        provider=model,
         **common,
     )
     _same_partition(np.asarray(score_result.labels), np.asarray(observation_result.labels))
@@ -72,7 +72,7 @@ def test_score_component_and_observation_workflows_are_equivalent() -> None:
 def test_observation_prediction_keeps_score_step_explicit() -> None:
     train = _observations(3, 250)
     data = _observations(4, 80)
-    provider = sq.LinearComponentScore(_model())
+    provider = _model()
     result = sq.fit_quantizer(
         sq.ObservationSample(train),
         provider=provider,
@@ -89,7 +89,7 @@ def test_observation_prediction_keeps_score_step_explicit() -> None:
 def test_validation_is_diagnostic_through_observation_provider() -> None:
     train = _observations(5, 240)
     validation = _observations(6, 120)
-    provider = sq.LinearComponentScore(_model())
+    provider = _model()
     config = sq.KMeansConfig(seed=5)
     without = sq.fit_quantizer(
         sq.ObservationSample(train),
@@ -111,7 +111,7 @@ def test_validation_is_diagnostic_through_observation_provider() -> None:
 
 
 def test_sequence_model_uses_stable_generated_names() -> None:
-    model = sq.LinearComponents(
+    model = sq.LinearComponentScore(
         components=[lambda values: np.ones(len(values)), lambda values: 1 + values[:, 0]],
         coefficients=[1.0, 0.5],
     )
@@ -124,28 +124,34 @@ def test_sequence_model_uses_stable_generated_names() -> None:
 def test_component_and_model_failures_are_explicit() -> None:
     values = _observations(8, 20)
     with pytest.raises(ValueError, match="keys must match"):
-        sq.LinearComponents(
+        sq.LinearComponentScore(
             components={"a": lambda rows: np.ones(len(rows))},
             coefficients={"b": 1.0},
         )
     with pytest.raises(ValueError, match="must return shape"):
-        sq.LinearComponents(
+        sq.LinearComponentScore(
             components=[lambda rows: np.ones((len(rows), 1))], coefficients=[1.0]
         ).evaluate_components(values)
     with pytest.raises(ValueError, match="variables"):
-        sq.LinearComponents(
+        sq.LinearComponentScore(
             components=[lambda rows: np.ones(len(rows))],
             coefficients=[1.0],
             variables=["only_one"],
         ).evaluate_components(values)
     with pytest.raises(ValueError, match="strictly positive"):
-        sq.scores_from_components(-np.ones((20, 1)), [1.0])
-    with pytest.raises(TypeError, match="LinearComponents"):
-        sq.LinearComponentScore(object())  # type: ignore[arg-type]
+        sq.LinearComponentScore([lambda rows: -np.ones(len(rows))], [1.0]).score(values)
+    with pytest.raises(TypeError, match="callable"):
+        sq.LinearComponentScore([object()], [1.0])  # type: ignore[list-item]
+    with pytest.raises(TypeError, match="provenance"):
+        sq.LinearComponentScore(
+            [lambda rows: np.ones(len(rows))],
+            [1.0],
+            provenance="exact",  # type: ignore[arg-type]
+        )
 
 
-def test_scores_from_components_returns_canonical_numpy() -> None:
-    scores = sq.scores_from_components(
+def test_component_score_map_returns_canonical_numpy() -> None:
+    scores = _scores_from_components(
         jnp.asarray([[1.0, 0.2], [0.5, 1.0]]),
         jnp.asarray([1.0, 0.3]),
     )

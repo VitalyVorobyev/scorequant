@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from scorequant import scores_from_components
+from scorequant.ratios import IntensityParameterization
 
 
 @dataclass(frozen=True, slots=True)
@@ -69,7 +69,7 @@ def spectral_templates(
         x = rng.uniform(0, 1, size)
         components = _spectral_components(x)
         intensity = components @ coefficients
-        scores = np.asarray(scores_from_components(components, coefficients))
+        scores = np.asarray(IntensityParameterization(coefficients).scores(components))
         return SyntheticDataset(x[:, None], scores, intensity)
 
     train, validation, test = _three_splits(generate, seed=seed, sizes=sizes)
@@ -100,7 +100,7 @@ def spatial_sources(
         observations = rng.uniform(-1, 1, size=(size, 2))
         components = _spatial_components(observations)
         intensity = components @ coefficients
-        scores = np.asarray(scores_from_components(components, coefficients))
+        scores = np.asarray(IntensityParameterization(coefficients).scores(components))
         return SyntheticDataset(observations, scores, intensity)
 
     train, validation, test = _three_splits(generate, seed=seed, sizes=sizes)
@@ -134,7 +134,8 @@ def two_parameter_gaussian_mixture(
     baseline (the "solver shootout"): the reference measure is uniform over a
     bounded square, the two components are isotropic Gaussian bumps centered
     symmetrically on the x-axis, and each event's exact score is the linear
-    component score ``phi_k(x) / lambda(x; c0)`` from `scores_from_components`.
+    component score ``phi_k(x) / lambda(x; c0)``, the intensity map of
+    `scorequant.ratios.IntensityParameterization`.
 
     Parameters
     ----------
@@ -166,7 +167,7 @@ def two_parameter_gaussian_mixture(
         observations = rng.uniform(-2.5, 2.5, size=(size, 2))
         components = _mixture_components(observations, separation=separation, width=width)
         intensity = components @ coefficients
-        scores = np.asarray(scores_from_components(components, coefficients))
+        scores = np.asarray(IntensityParameterization(coefficients).scores(components))
         return SyntheticDataset(observations, scores, intensity)
 
     train, validation, test = _three_splits(generate, seed=seed, sizes=sizes)
@@ -302,7 +303,7 @@ def signal_background_shape(
     phi_k(x)``, with every ``phi_k`` an exact, normalized density on
     ``[0, 1]`` and every ``c_k`` summing to one. The exact linear component
     score at the reference point is ``s_k(x) = phi_k(x) / lambda(x; c0)``
-    (`scores_from_components`); column 0 is the signal-fraction score and the
+    (`scorequant.ratios.IntensityParameterization`); column 0 is the signal-fraction score and the
     remaining columns are the background-shape scores, matching
     `scorequant.ProfiledDOptimality`'s ``interest``/nuisance convention
     directly.
@@ -365,7 +366,7 @@ def signal_background_shape(
         x = rng.uniform(0.0, 1.0, size)
         components = evaluate(x)
         intensity = components @ coefficients
-        scores = np.asarray(scores_from_components(components, coefficients))
+        scores = np.asarray(IntensityParameterization(coefficients).scores(components))
         return SignalBackgroundDataset(x[:, None], scores, intensity)
 
     train, validation, test = _three_splits(generate, seed=seed, sizes=sizes)  # type: ignore[arg-type]

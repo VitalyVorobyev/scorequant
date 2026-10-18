@@ -2,10 +2,10 @@
 
 Two classifiers, two different ratio doors:
 
-* a signal-vs-background classifier feeds `scorequant.DensityRatioScore` under
-  `scorequant.IntensityParameterization`, giving the two rate columns
+* a signal-vs-background classifier feeds `scorequant.ratios.DensityRatioScore` under
+  `scorequant.ratios.IntensityParameterization`, giving the two rate columns
   (`mu_htautau`, `nu_background`) in closed form once the ratio is known;
-* a `tes`-minus-vs-plus classifier feeds `scorequant.CentralLogRatioScore`,
+* a `tes`-minus-vs-plus classifier feeds `scorequant.ratios.CentralLogRatioScore`,
   the library's central-difference door, giving the one nuisance-shape
   column (`tes`) that has no closed form.
 
@@ -424,14 +424,14 @@ def _score_columns(
     delta: float,
 ) -> np.ndarray:
     """Turn the two calibrated posterior tables into the three score columns."""
-    rate_provider = sq.DensityRatioScore.from_classifier(
+    rate_provider = sq.ratios.DensityRatioScore.from_classifier(
         lambda observations: rate_probabilities,
         [0.5, 0.5],
-        sq.IntensityParameterization([1.0 - signal_fraction, signal_fraction]),
+        sq.ratios.IntensityParameterization([1.0 - signal_fraction, signal_fraction]),
         calibration="temperature",
         description="signal-vs-background classifier, out-of-fold",
     )
-    tes_provider = sq.CentralLogRatioScore(
+    tes_provider = sq.ratios.CentralLogRatioScore(
         lambda observations: tes_probabilities,
         deltas=[delta],
         class_priors=[0.5, 0.5],

@@ -305,17 +305,16 @@ def _prepare_experiment(
     )
     theta0 = reference_composition(reference.labels, reference.patients)
     reference_scores = np.asarray(
-        sq.mixture_scores_from_ratios(
-            sq.ratios_from_posteriors(
+        sq.ratios.MixtureParameterization(theta0).scores(
+            sq.ratios.ratios_from_posteriors(
                 score_fit.out_of_fold_probabilities, score_fit.model.class_priors
-            ),
-            theta0,
+            )
         )
     )
     test_probabilities = score_fit.model.predict_proba(test.features)
     test_scores = np.asarray(
-        sq.mixture_scores_from_ratios(
-            sq.ratios_from_posteriors(test_probabilities, score_fit.model.class_priors), theta0
+        sq.ratios.MixtureParameterization(theta0).scores(
+            sq.ratios.ratios_from_posteriors(test_probabilities, score_fit.model.class_priors)
         )
     )
     patients, true_fractions = _true_patient_fractions(test)
@@ -394,7 +393,7 @@ def _evaluate_bin_count(
     score_provenance = sq.ScoreProvenance(
         kind="estimated_ratio",
         description="patient-cross-fitted calibrated FlowCyt mixture score",
-        ratio=sq.RatioProvenance(
+        ratio=sq.ratios.RatioProvenance(
             estimator="calibrated_classifier",
             parameterization="mixture",
             reference_fractions=tuple(float(value) for value in context.theta0),

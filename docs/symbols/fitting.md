@@ -20,10 +20,10 @@
 
 ::: scorequant.LinearComponentScore
 
-::: scorequant.DensityRatioScore
+::: scorequant.ratios.DensityRatioScore
 
-::: scorequant.CentralLogRatioScore
+::: scorequant.ratios.CentralLogRatioScore
 
 ::: scorequant.ScoreProvenance
 
-::: scorequant.RatioProvenance
+::: scorequant.ratios.RatioProvenance

@@ -290,12 +290,12 @@ def background_gauge(x):
     return np.column_stack([signal, np.ones_like(signal)])
 
 
-provider = sq.DensityRatioScore(
+provider = sq.ratios.DensityRatioScore(
     background_gauge,
-    sq.IntensityParameterization([0.1, 1.0]),  # signal, background reference yields
+    sq.ratios.IntensityParameterization([0.1, 1.0]),  # signal, background reference yields
     provenance=sq.ScoreProvenance(
         kind="estimated_ratio",
-        ratio=sq.RatioProvenance(gauges=("background", "background")),
+        ratio=sq.ratios.RatioProvenance(gauges=("background", "background")),
     ),
 )
 events = sq.ObservationSample(np.random.default_rng(5).normal(size=(800, 1)))

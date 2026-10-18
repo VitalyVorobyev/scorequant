@@ -627,153 +627,38 @@
       }
     },
     "ratios": {
-      "analyticBackgroundRatioMean": {
-        "source": "examples/outputs/door3-classifier.json#/closure_measure_mismatch/analytic_reference_measure_ratio_means/1",
-        "text": "1.1589",
-        "value": 1.1589373947070176
-      },
-      "analyticSignalRatioMean": {
-        "source": "examples/outputs/door3-classifier.json#/closure_measure_mismatch/analytic_reference_measure_ratio_means/0",
-        "text": "0.8411",
-        "value": 0.8410626055896501
-      },
       "bins": {
         "source": "examples/outputs/door3-classifier.json#/n_bins",
         "text": "4",
         "value": 4
-      },
-      "ceilingEqualWidth": {
-        "source": "examples/outputs/door3-classifier.json#/naive_binning/exact_ceiling/equal_width_retention",
-        "text": "0.9679",
-        "value": 0.9678547355857964
       },
       "classifierInformationKind": {
         "source": "examples/outputs/door3-classifier.json#/provenance/classifier/information_kind",
         "text": "supplied_score_surrogate",
         "value": "supplied_score_surrogate"
       },
-      "classifierProvenanceKind": {
-        "source": "examples/outputs/door3-classifier.json#/provenance/classifier/provenance_kind",
-        "text": "estimated_ratio",
-        "value": "estimated_ratio"
-      },
-      "exactCeiling": {
-        "source": "examples/outputs/door3-classifier.json#/exact_ceiling/retention",
-        "text": "0.9724",
-        "value": 0.9724151487580928
-      },
-      "exactClosure": {
-        "source": "examples/outputs/door3-classifier.json#/exact_ceiling/closure_residual",
-        "text": "0.0017",
-        "value": 0.001746535301208496
-      },
       "exactInformationKind": {
         "source": "examples/outputs/door3-classifier.json#/provenance/exact/information_kind",
         "text": "exact_fisher",
         "value": "exact_fisher"
-      },
-      "exactProvenanceKind": {
-        "source": "examples/outputs/door3-classifier.json#/provenance/exact/provenance_kind",
-        "text": "exact",
-        "value": "exact"
       },
       "largeClosure": {
         "source": "examples/outputs/door3-classifier.json#/ladder/2/closure_residual",
         "text": "0.0032",
         "value": 0.0032369494438171387
       },
-      "largeEqualFrequency": {
-        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/2/equal_frequency_retention",
-        "text": "0.9378",
-        "value": 0.9377758518182528
-      },
-      "largeEqualWidth": {
-        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/2/equal_width_retention",
-        "text": "0.9678",
-        "value": 0.9678089030483656
-      },
       "largeGap": {
         "source": "examples/outputs/door3-classifier.json#/surrogate_gap/rows/2/gap",
         "text": "0.0035",
         "value": 0.0034874667656539238
-      },
-      "largeSurrogate": {
-        "source": "examples/outputs/door3-classifier.json#/ladder/2/surrogate_retention",
-        "text": "0.9700",
-        "value": 0.9699531778931494
       },
       "largeTrainSize": {
         "source": "examples/outputs/door3-classifier.json#/ladder/2/n_per_class",
         "text": "300",
         "value": 300
       },
-      "largeTrue": {
-        "source": "examples/outputs/door3-classifier.json#/ladder/2/true_retention",
-        "text": "0.9665",
-        "value": 0.9664657111274955
-      },
-      "largestGap": {
-        "source": "examples/outputs/door3-classifier.json#/surrogate_gap/largest_gap",
-        "text": "0.0811",
-        "value": 0.08110993932864141
-      },
-      "mediumClosure": {
-        "source": "examples/outputs/door3-classifier.json#/ladder/1/closure_residual",
-        "text": "0.0185",
-        "value": 0.018507421016693115
-      },
-      "mediumEqualFrequency": {
-        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/1/equal_frequency_retention",
-        "text": "0.9304",
-        "value": 0.9304424517429776
-      },
-      "mediumEqualWidth": {
-        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/1/equal_width_retention",
-        "text": "0.9366",
-        "value": 0.9365844078803958
-      },
-      "mediumGap": {
-        "source": "examples/outputs/door3-classifier.json#/surrogate_gap/rows/1/gap",
-        "text": "0.0170",
-        "value": 0.017034592804553217
-      },
-      "mediumSurrogate": {
-        "source": "examples/outputs/door3-classifier.json#/ladder/1/surrogate_retention",
-        "text": "0.9691",
-        "value": 0.9691271803067208
-      },
       "mediumTrainSize": {
         "source": "examples/outputs/door3-classifier.json#/ladder/1/n_per_class",
-        "text": "60",
-        "value": 60
-      },
-      "mediumTrue": {
-        "source": "examples/outputs/door3-classifier.json#/ladder/1/true_retention",
-        "text": "0.9521",
-        "value": 0.9520925875021676
-      },
-      "nClosure": {
-        "source": "examples/outputs/door3-classifier.json#/n_closure",
-        "text": "50,000",
-        "value": 50000
-      },
-      "nTest": {
-        "source": "examples/outputs/door3-classifier.json#/n_test",
-        "text": "600",
-        "value": 600
-      },
-      "nTrain": {
-        "source": "examples/outputs/door3-classifier.json#/n_train",
-        "text": "400",
-        "value": 400
-      },
-      "naiveLargestGap": {
-        "source": "examples/outputs/door3-classifier.json#/naive_binning/largest_gap",
-        "text": "0.0155",
-        "value": 0.015508179621771867
-      },
-      "naiveLargestGapTrainSize": {
-        "source": "examples/outputs/door3-classifier.json#/naive_binning/largest_gap_n_per_class",
         "text": "60",
         "value": 60
       },
@@ -786,21 +671,6 @@
         "source": "examples/outputs/door3-classifier.json#/ladder/0/closure_residual",
         "text": "0.0420",
         "value": 0.041996896266937256
-      },
-      "smallEqualFrequency": {
-        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/0/equal_frequency_retention",
-        "text": "0.8842",
-        "value": 0.884225968823333
-      },
-      "smallEqualWidth": {
-        "source": "examples/outputs/door3-classifier.json#/naive_binning/rows/0/equal_width_retention",
-        "text": "0.8648",
-        "value": 0.8648227463990631
-      },
-      "smallGap": {
-        "source": "examples/outputs/door3-classifier.json#/surrogate_gap/rows/0/gap",
-        "text": "0.0811",
-        "value": 0.08110993932864141
       },
       "smallSurrogate": {
         "source": "examples/outputs/door3-classifier.json#/ladder/0/surrogate_retention",

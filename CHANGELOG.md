@@ -5,122 +5,55 @@ All notable changes to ScoreQuant are recorded here. The format follows
 [semantic versioning](https://semver.org/spec/v2.0.0.html) — with the usual `0.x` caveat that the
 public API may still change between minor releases.
 
-An `[Unreleased]` section is created by the first change that lands after a release. The file
-deliberately carries no empty one: a standing `unreleased` heading was dated by a later commit
-once already, which retroactively asserted that unshipped work had shipped.
-
 ## [Unreleased]
 
-Older entries cite design records as "ADR NNNN"; those records are in git at the
-`research-archive-2026-10` tag (`docs/decisions.md`).
+## [0.3.0] - 2026-10-18
 
-### Removed
+Older entries cite design records as "ADR NNNN"; those records are in the repository history at
+the `research-archive-2026-10` tag.
 
-- The research workspace, the Research Atlas and the decision journal. The library's design
-  principles are now in `docs/system-design.md`, the Lean proofs in `research/formal`, and the
-  counterexample fixtures behind refusals in `tests/fixtures/counterexamples`.
-- The documentation book, case-study and example pages, gallery and notebooks. The portal
-  walkthroughs carry the narrative; the reference site keeps a user guide, the API guide, the
-  symbol reference and the glossary. Example scripts that only fed the deleted pages are gone;
-  study outputs live in `examples/outputs`.
-- The private `scorequant.quantizers` façade; internal imports now use their owning
-  `scorequant.solvers` modules. These modules remain private.
+The development status moves from Alpha to Beta.
 
-### Fixed
+### Added
+
+- `retention_uncertainty` and `RetentionUncertainty`: the plug-in standard error and Wald interval
+  for a frozen rule's `geometric_mean_retention`, from an independent, equally weighted sample of
+  true scores from the reference law. Degenerate cases (a rule with at most \(d\) declared cells,
+  a rank-deficient moment, influence values that cancel to rounding) return a named status with
+  the interval withheld. The interval covers sampling uncertainty only, under the conditions in
+  `docs/api.md`.
+- A compatibility fixture that loads a saved 0.2.0 quantizer, and a written inventory of the
+  public API that 1.x will keep stable.
+
+### Changed
 
 - A loaded `Quantizer` no longer restores the execution it was fitted under, so a rule fitted on a
-  GPU, or with float64 on JAX, loads and predicts on a CPU-only or JAX-less machine. It defaults to
-  JAX when importable and NumPy otherwise. `save` writes a default `execution` object only so 0.2
-  readers can still open the file; the format version is unchanged.
+  GPU, or with float64 on JAX, loads and predicts on a CPU-only or JAX-less machine. It uses JAX
+  when importable and NumPy otherwise. `save` still writes a default `execution` object so 0.2
+  readers can open the file; the artifact format version is unchanged.
 - `precision="preserve"` on JAX without X64 now warns once when it computes float64 inputs in
   float32, instead of truncating silently under tolerances tuned for float64.
-- Separate mathematical proof prerequisites from audit/evidence references in the research
-  registry and Atlas; validate the proof DAG.
-- Explain D-only global certification as an implementation boundary, not a failure of Schur
-  refinement monotonicity.
+- `information_report`'s docstring states its uncentred second-moment convention.
 
 ### Documentation
 
-- Inventory the 1.x public stability contract and add a v0.2.0 format-1 artifact compatibility fixture.
-
-### Diagnostics
-
-- `retention_uncertainty` and `RetentionUncertainty` (ADR 0039): the audited plug-in standard error
-  and untruncated Wald interval for a frozen rule's `geometric_mean_retention` on an independent,
-  equally weighted sample of true scores from the reference law. A rule with at most \(d\) declared
-  cells, a rank-deficient full moment, a rank-deficient between-cell moment and influence values that
-  cancel to rounding each return a named status with the interval withheld. Sampling uncertainty
-  only, under the conditions stated in `docs/api.md`; proxy-score bias is documented as a separate
-  quantity.
-- `information_report`'s docstring now states its uncentred second-moment convention instead of a
-  variance shorthand.
-
-### Site
-
-- The FlowCyt and HEP walkthroughs are rebuilt as linear scientific walkthroughs (ADR 0038).
-  FlowCyt's page code now runs the whole reference-to-held-out chain on a committed
-  fixture-scale table (`examples/data/flowcyt_walkthrough.npz`, written by
-  `generate_showcase.py --force`, replacing the unused `showcase-data/flowcyt-scores.json`),
-  shows what the eight categories are as \(P(\text{population}\mid\text{bin})\), leads with the
-  held-out estimation error, and tells the bin-budget story from the evidence; the unsupported
-  pairwise-separability claim, the misnamed marker grid, the contract demonstrations and the
-  Gaussian mini-example are gone. HEP's page leads with a reusable profiled-\(D_s\) rule fitted
-  on half the events and applied to the other half, and with the expected signal-strength
-  uncertainty from the count table's own likelihood with the energy scale fixed and floating.
-- New chart components: `BinCompositionHeatmap`, `EstimateScatter`, a `metric` switch on
-  `MethodComparison`, and a `targetsOnly` view on `CompositionBars`. The HEP walkthrough score
-  table nothing fetched is no longer generated.
+- The reference site is now the user guide, the API guide, the symbol reference and the glossary;
+  the learning material lives in the portal at the site root, with the reference under `/docs/`.
+  The book chapters, case-study pages, gallery and notebooks are gone.
+- D-only global certification is explained as an implementation boundary, not a failure of Schur
+  refinement monotonicity.
+- The FlowCyt, HEP and Michelson walkthroughs are rewritten as linear scientific walkthroughs.
 
 ### Examples
 
-- `examples/hep_classifier` is restructured around reusable rules evaluated out of sample: a
-  stratified half/half event split cross-evaluated in both directions with percentile bootstrap
-  envelopes and per-half certified ceilings; an Asimov downstream uncertainty on the signal
-  strength from each rule's yield templates at the seven committed energy-scale points, with and
-  without the Monte Carlo statistical inflation and with a recorded physical-width constraint;
-  a maximum-\(S^2/(S+B)\) interval baseline with a minimum background count; a `tes`
-  score-reliability diagnostic. The `tes` classifier now trains under the Monte Carlo weights,
-  which changes the downstream conclusion, not only the numbers. The in-sample-only "reusable
-  rule" scored on its own full-sample classifiers is removed. Two figures replace the dashboard.
+- `examples/hep_classifier` evaluates reusable rules out of sample, with bootstrap envelopes,
+  per-half certified ceilings and the downstream signal-strength uncertainty. Example scripts that
+  only fed the deleted pages are removed; study outputs live in `examples/outputs`.
 
-- The learning portal takes the site root and the hand-written landing page is retired
-  (ADR 0035, superseding ADR 0027). Two surfaces remain: the portal at `/`, the MkDocs
-  documentation at `/docs/`. `landing/` and its guard test are deleted, `baseUrl` and `SITE_BASE`
-  move together, and the assemble script's landing-link parity check becomes a check that every
-  `/docs/` link the built portal carries resolves in the assembled tree. The portal's two days at
-  `portal/` are not stubbed, for the reason ADR 0027 gave for not stubbing its one day at the root.
-- The portal home page is rewritten to the shape ADR 0035 amends into ADR 0031: what the library
-  is for, why score space, the two tasks, where scores come from and what is optimised. The
-  displayed binning-cost identity and the list of derivations move off it; the primary
-  navigation's *Reference* entry is the home page's route into the documentation.
-- `/get-started` is shortened to one arc — a table, a reusable quantizer, its prediction, and the
-  finite partition of the same table — with the compile bridge, the theorem-backed refusal,
-  profiled `D_s`, the scalar dynamic programme and global certification left to the reference
-  documentation. Its cells still come from `website/scripts/get_started_program.py` and its output
-  is still captured rather than typed.
-- The density-ratio walkthrough is retitled *From a classifier to Fisher-preserving bins* and
-  reopens on a schematic of its two lanes: the workflow a real analysis runs, and the oracle check
-  the synthetic model affords. Its browser refit is removed — the page's argument is the gap
-  between a reported and an achieved retention, which refitting the estimated score cannot show.
-- The site topology is reversed after the owner's review of the portal front door (ADR 0027,
-  superseding ADR 0025). A hand-written landing page owns the site root and links to both
-  surfaces; the MkDocs documentation is mounted at `docs/` with *Why ScoreQuant*, *Three doors*
-  and *Choosing your workflow* restored to it; the portal is published unchanged at `portal/`.
-  The package's Documentation URL now points at `docs/`; every pre-portal URL still redirects.
-- The portal's free-form Lab console (solver pickers, file upload, notebook embed) is removed;
-  `/portal/lab/` is a lesson index and browser computation is reached only through a lesson's
-  experiment (ADR 0029).
-- The Michelson walkthrough is the first lesson in the seven-step pattern of ADR 0028: a problem
-  contract before any exposition, the model and score as displayed equations, and one experiment
-  (the bin budget) whose browser refit reproduces the committed profiled partition on the same
-  table. The walkthroughs' links into the reference now resolve through `ReferenceLink`; the
-  hand-written `pathname:///reference/…` anchors reached the browser verbatim and were not URLs.
-- The portal is reduced to four surfaces after the owner's review of 5 September 2026 (ADR
-  0031): the home page is definitions and references in ordinary type, with no measurement and
-  no demo; the Lessons index, the API catalogue, the Benchmarks page and the development blog
-  are removed; the walkthroughs index is a card per problem with API tags; the Michelson page is
-  an article (the instrument, its history, a bench diagram, the fringe law, the readout question)
-  rather than a numbered procedure with a contract table; every "who this is for" preface is gone.
+### Removed
+
+- The private `scorequant.quantizers` facade; internal imports use the owning
+  `scorequant.solvers` modules, which remain private.
 
 ## [0.2.0] — 2026-09-04
 
